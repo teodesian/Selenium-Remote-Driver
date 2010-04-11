@@ -2,11 +2,13 @@ package Selenium::Remote::Driver;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 use Carp qw(croak);
 
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
+use Selenium::Remote::ErrorHandler;
 
 =head1 NAME
 
@@ -58,10 +60,12 @@ sub new {
           version            => delete $args{version}            || '',
           session_id         => undef,
           remote_conn        => undef,
+          error_handler      => undef,
           commands           => $commands,
     };
     bless $self, $class or die "Can't bless $class: $!";
-
+    
+    $self->{error_handler} = new Selenium::Remote::ErrorHandler;
     # Connect to remote server & establish a new session
     $self->{remote_conn} =
       new Selenium::Remote::RemoteConnection($self->{remote_server_addr},
@@ -77,26 +81,31 @@ sub new {
 
 # When a command is processed by the remote server & a result is sent back, it
 # also includes other relevant info. We strip those & just return the value we're
-# interested in.
+# interested in. And if there is an error, ErrorHandler will handle it.
 sub _get_command_result {
     my ($self, @args) = @_;
     my $resp = $self->{remote_conn}->request(@args);
-    if (defined $resp->{'value'}) {
+    if (defined $resp->{'status'} && $resp->{'status'} != 0) {
+        $self->{error_handler}->process_error($resp);
+    }
+    elsif (defined $resp->{'value'}) {
         return $resp->{'value'};
     }
     else {
-        return;
+        # If there is no value or status assume success
+        return 1;
     }
 }
 
 sub new_session {
     my $self = shift;
-    my $args = {
-                 'browserName'       => $self->{browser_name},
-                 'platform'          => $self->{platform},
-                 'javascriptEnabled' => $self->{javascript},
-                 'version'           => $self->{version},
-    };
+    my $args = { 'desiredCapabilities' => {
+                                            'browserName'       => $self->{browser_name},
+                                            'platform'          => $self->{platform},
+                                            'javascriptEnabled' => $self->{javascript},
+                                            'version'           => $self->{version},
+                                          }
+                };
     my $resp =
       $self->{remote_conn}->request(
                                   $self->{commands}->{'newSession'}->{'method'},
@@ -105,6 +114,23 @@ sub new_session {
       );
     if ((defined $resp->{'sessionId'}) && $resp->{'sessionId'} ne '') {
         $self->{session_id} = $resp->{'sessionId'};
+    }
+    else {
+        croak "Could not create new session";
+    }
+}
+
+sub get_capabilities {
+    my $self = shift;
+    my $command = 'getCapabilities';
+    my $args = { 'session_id' => $self->{'session_id'}, };
+    my $data = $self->{commands}->getParams($command, $args);
+    
+    if ($data) {
+        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
     }
 }
 
@@ -122,6 +148,48 @@ sub quit {
     }
 }
 
+sub get_current_window_handle {
+    my $self = shift;
+    my $command = 'getCurrentWindowHandle';
+    my $args = { 'session_id' => $self->{'session_id'}, };
+    my $data = $self->{commands}->getParams($command, $args);
+    
+    if ($data) {
+        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+sub get_window_handles {
+    my $self = shift;
+    my $command = 'getWindowHandles';
+    my $args = { 'session_id' => $self->{'session_id'}, };
+    my $data = $self->{commands}->getParams($command, $args);
+    
+    if ($data) {
+        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+sub get_current_url {
+    my $self = shift;
+    my $command = 'getCurrentUrl';
+    my $args = { 'session_id' => $self->{'session_id'}, };
+    my $data = $self->{commands}->getParams($command, $args);
+    
+    if ($data) {
+        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
 sub navigate {
     my ($self, $url) = @_;
     $self->get($url);
@@ -132,9 +200,10 @@ sub get {
     my $command = 'get';
     my $args    = { 'session_id' => $self->{'session_id'}, };
     my $data    = $self->{commands}->getParams($command, $args);
+    my $params = {'url' => $url};
 
     if ($data) {
-        $self->{remote_conn}->request($data->{'method'}, $data->{'url'}, $url);
+        $self->{remote_conn}->request($data->{'method'}, $data->{'url'}, $params);
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -182,6 +251,22 @@ sub go_forward {
         croak "Couldn't retrieve command $command settings\n";
     }
 }
+
+sub refresh {
+    my $self    = shift;
+    my $command = 'goForward';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $data    = $self->{commands}->getParams($command, $args);
+
+    if ($data) {
+        $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+
 
 1;
 

@@ -6,9 +6,11 @@ use warnings;
 use LWP::UserAgent;
 use HTTP::Headers;
 use HTTP::Request;
+use Net::Ping;
 use Carp qw(croak);
 use JSON;
-#use Data::Dumper;
+use Error;
+use Data::Dumper;
 
 sub new {
     my ($class, $remote_srvr, $port) = @_;
@@ -19,7 +21,12 @@ sub new {
     };
     bless $self, $class or die "Can't bless $class: $!";
     
-    # Add extra code to ping the remote server to see if it is alive.
+    # Try connecting to the Selenium RC port
+    my $p = Net::Ping->new("tcp", 2);
+    $p->port_number($self->{'port'});
+    croak "Selenium RC server is not responding\n"
+            unless $p->ping($self->{'remote_server_addr'});
+    undef($p);
 
     return $self;
 }
@@ -41,11 +48,10 @@ sub request {
           . "/wd/hub/$url";
     }
 
-    #print "Full URL: $fullurl\n";
-
     if ((defined $params) && $params ne '') {
         my $json = new JSON;
-        $content = "[" . $json->allow_nonref->utf8->encode($params) . "]";
+        #$content = "[" . $json->allow_nonref->utf8->encode($params) . "]";
+        $content = $json->allow_nonref->utf8->encode($params);
     }
 
     # HTTP request
@@ -54,6 +60,8 @@ sub request {
       HTTP::Headers->new(Content_Type => 'application/json; charset=utf-8');
     $header->header('Accept' => 'application/json');
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
+    
+    #print Dumper($request);
     my $response = $ua->request($request);
 
     #return $response;
@@ -62,14 +70,14 @@ sub request {
 
 sub _process_response {
     my ($self, $response) = @_;
-    my $data = "";    #returned data from server
+    my $data;    #returned data from server
 
     if ($response->is_redirect) {
         return $self->request('GET', $response->header('location'));
     }
     elsif (($response->is_success) && ($response->code == 200)) {
         $data = from_json($response->content);
-        if ($data->{'error'} eq 'true') {
+        if ($data->{'status'} != 0) {
             croak "Error occurred in server while processing request: $data";
         }
         return $data;

@@ -7,219 +7,216 @@ use String::TT qw/tt/;
 
 sub new {
     my $class = shift;
+    
+    # http://code.google.com/p/selenium/wiki/JsonWireProtocol
     my $self = {
-        'addCookie' => {
-                        'method' => 'POST',
-                        'url' => "session/[% session_id %]/[% context %]/cookie"
-        },
-        'goBack' => {
-                      'method' => 'POST',
-                      'url'    => "session/[% session_id %]/[% context %]/back"
-        },
-        'clearElement' => {
-               'method' => 'POST',
-               'url' =>
-                 "session/[% session_id %]/[% context %]/element/[% id %]/clear"
-        },
-        'clickElement' => {
-               'method' => 'POST',
-               'url' =>
-                 "session/[% session_id %]/[% context %]/element/[% id %]/click"
-        },
-        'close' => {
-                     'method' => 'DELETE',
-                     'url'    => "session/[% session_id %]/[% context %]/window"
-        },
-        'getCurrentUrl' => {
-                           'method' => 'GET',
-                           'url' => "session/[% session_id %]/[% context %]/url"
-        },
-        'deleteAllCookies' => {
-                        'method' => 'DELETE',
-                        'url' => "session/[% session_id %]/[% context %]/cookie"
-        },
-        'deleteCookie' => {
-             'method' => 'DELETE',
-             'url' => "session/[% session_id %]/[% context %]/cookie/[% name %]"
-        },
-        'dragElement' => {
-                'method' => 'POST',
-                'url' =>
-                  "session/[% session_id %]/[% context %]/element/[% id %]/drag"
-        },
-        'elementEquals' => {
-            'method' => 'GET',
-            'url' =>
-"session/[% session_id %]/[% context %]/element/[% id %]/equals/[% other %]"
-        },
-        'executeScript' => {
-                       'method' => 'POST',
-                       'url' => "session/[% session_id %]/[% context %]/execute"
-        },
-        'findElement' => {
-                       'method' => 'POST',
-                       'url' => "session/[% session_id %]/[% context %]/element"
-        },
-        'findElements' => {
-                      'method' => 'POST',
-                      'url' => "session/[% session_id %]/[% context %]/elements"
-        },
-        'findChildElement' => {
-            'method' => 'POST',
-            'url' =>
-"session/[% session_id %]/[% context %]/element/[% id %]/element/[% using %]"
-        },
-        'findChildElements' => {
-            'method' => 'POST',
-            'url' =>
-"session/[% session_id %]/[% context %]/element/[% id %]/elements/[% using %]"
-        },
-        'goForward' => {
-                       'method' => 'POST',
-                       'url' => "session/[% session_id %]/[% context %]/forward"
-        },
-        'get' => {
-                   'method' => 'POST',
-                   'url'    => "session/[% session_id %]/[% context %]/url"
-        },
-        'getActiveElement' => {
-                'method' => 'POST',
-                'url' => "session/[% session_id %]/[% context %]/element/active"
-        },
-        'getAllCookies' => {
-                        'method' => 'GET',
-                        'url' => "session/[% session_id %]/[% context %]/cookie"
-        },
-        'getCurrentWindowHandle' => {
-                 'method' => 'GET',
-                 'url' => "session/[% session_id %]/[% context %]/window_handle"
-        },
-        'getElementAttribute' => {
-            'method' => 'GET',
-            'url' =>
-"session/[% session_id %]/[% context %]/element/[% id %]/attribute/[% name %]"
-        },
-        'getElementLocation' => {
-            'method' => 'GET',
-            'url' =>
-              "session/[% session_id %]/[% context %]/element/[% id %]/location"
-        },
-        'getElementSize' => {
-                'method' => 'GET',
-                'url' =>
-                  "session/[% session_id %]/[% context %]/element/[% id %]/size"
-        },
-        'getElementText' => {
-                'method' => 'GET',
-                'url' =>
-                  "session/[% session_id %]/[% context %]/element/[% id %]/text"
-        },
-        'getElementValue' => {
-               'method' => 'GET',
-               'url' =>
-                 "session/[% session_id %]/[% context %]/element/[% id %]/value"
-        },
-        'getSpeed' => {
-                        'method' => 'GET',
-                        'url' => "session/[% session_id %]/[% context %]/speed"
-        },
-        'getElementTagName' => {
-                'method' => 'GET',
-                'url' =>
-                  "session/[% session_id %]/[% context %]/element/[% id %]/name"
-        },
-        'getTitle' => {
-                        'method' => 'GET',
-                        'url' => "session/[% session_id %]/[% context %]/title"
-        },
-        'getElementValueOfCssProperty' => {
-            'method' => 'GET',
-            'url' =>
-"session/[% session_id %]/[% context %]/element/[% id %]/css/[% property_name %]"
-        },
-        'getVisible' => {
-                       'method' => 'GET',
-                       'url' => "session/[% session_id %]/[% context %]/visible"
-        },
-        'getWindowHandles' => {
-                'method' => 'GET',
-                'url' => "session/[% session_id %]/[% context %]/window_handles"
-        },
-        'hoverOverElement' => {
-               'method' => 'POST',
-               'url' =>
-                 "session/[% session_id %]/[% context %]/element/[% id %]/hover"
-        },
-        'isElementDisplayed' => {
-            'method' => 'GET',
-            'url' =>
-"session/[% session_id %]/[% context %]/element/[% id %]/displayed"
-        },
-        'isElementEnabled' => {
-             'method' => 'GET',
-             'url' =>
-               "session/[% session_id %]/[% context %]/element/[% id %]/enabled"
-        },
-        'isElementSelected' => {
-            'method' => 'GET',
-            'url' =>
-              "session/[% session_id %]/[% context %]/element/[% id %]/selected"
-        },
         'newSession' => {
                           'method' => 'POST',
                           'url'    => 'session'
         },
-        'getPageSource' => {
-                        'method' => 'GET',
-                        'url' => "session/[% session_id %]/[% context %]/source"
+        'getCapabilities' => {
+                          'method' => 'GET',
+                          'url'    => 'session/[% session_id %]'
         },
         'quit' => {
                     'method' => 'DELETE',
                     'url'    => "session/[% session_id %]"
         },
+        'getCurrentWindowHandle' => {
+                 'method' => 'GET',
+                 'url' => "session/[% session_id %]/window_handle"
+        },
+        'getWindowHandles' => {
+                'method' => 'GET',
+                'url' => "session/[% session_id %]/window_handles"
+        },
+        'getCurrentUrl' => {
+                           'method' => 'GET',
+                           'url' => "session/[% session_id %]/url"
+        },
+        'get' => {
+                   'method' => 'POST',
+                   'url'    => "session/[% session_id %]/url"
+        },
+        'goForward' => {
+                       'method' => 'POST',
+                       'url' => "session/[% session_id %]/forward"
+        },
+        'goBack' => {
+                      'method' => 'POST',
+                      'url'    => "session/[% session_id %]/back"
+        },
         'refresh' => {
                        'method' => 'POST',
-                       'url' => "session/[% session_id %]/[% context %]/refresh"
+                       'url' => "session/[% session_id %]/refresh"
+        },
+        'executeScript' => {
+                       'method' => 'POST',
+                       'url' => "session/[% session_id %]/execute"
         },
         'screenshot' => {
                     'method' => 'GET',
-                    'url' => "session/[% session_id %]/[% context %]/screenshot"
-        },
-        'sendKeysToElement' => {
-               'method' => 'POST',
-               'url' =>
-                 "session/[% session_id %]/[% context %]/element/[% id %]/value"
-        },
-        'setElementSelected' => {
-            'method' => 'POST',
-            'url' =>
-              "session/[% session_id %]/[% context %]/element/[% id %]/selected"
-        },
-        'setSpeed' => {
-                        'method' => 'POST',
-                        'url' => "session/[% session_id %]/[% context %]/speed"
-        },
-        'setVisible' => {
-                       'method' => 'POST',
-                       'url' => "session/[% session_id %]/[% context %]/visible"
-        },
-        'submitElement' => {
-              'method' => 'POST',
-              'url' =>
-                "session/[% session_id %]/[% context %]/element/[% id %]/submit"
+                    'url' => "session/[% session_id %]/screenshot"
         },
         'switchToFrame' => {
                 'method' => 'POST',
-                'url' => "session/[% session_id %]/[% context %]/frame/[% id %]"
+                'url' => "session/[% session_id %]/frame"
         },
         'switchToWindow' => {
              'method' => 'POST',
-             'url' => "session/[% session_id %]/[% context %]/window/[% name %]"
+             'url' => "session/[% session_id %]/window"
+        },
+        'getSpeed' => {
+                        'method' => 'GET',
+                        'url' => "session/[% session_id %]/speed"
+        },
+        'setSpeed' => {
+                        'method' => 'POST',
+                        'url' => "session/[% session_id %]/speed"
+        },
+        'getAllCookies' => {
+                        'method' => 'GET',
+                        'url' => "session/[% session_id %]/cookie"
+        },
+        'addCookie' => {
+                        'method' => 'POST',
+                        'url' => "session/[% session_id %]/cookie"
+        },
+        'deleteAllCookies' => {
+                        'method' => 'DELETE',
+                        'url' => "session/[% session_id %]/cookie"
+        },
+        'deleteCookieNamed' => {
+             'method' => 'DELETE',
+             'url' => "session/[% session_id %]/cookie/[% name %]"
+        },
+        'getPageSource' => {
+                        'method' => 'GET',
+                        'url' => "session/[% session_id %]/source"
+        },
+        'getTitle' => {
+                        'method' => 'GET',
+                        'url' => "session/[% session_id %]/title"
+        },
+        'findElement' => {
+                       'method' => 'POST',
+                       'url' => "session/[% session_id %]/element"
+        },
+        'findElements' => {
+                      'method' => 'POST',
+                      'url' => "session/[% session_id %]/elements"
+        },
+        'getActiveElement' => {
+                'method' => 'POST',
+                'url' => "session/[% session_id %]/element/active"
+        },
+        'describeElement' => {
+                'method' => 'POST',
+                'url' => "session/[% session_id %]/element/[% id %]"
+        },
+        'findChildElement' => {
+            'method' => 'POST',
+            'url' => "session/[% session_id %]/element/[% id %]/element"
+        },
+        'findChildElements' => {
+            'method' => 'POST',
+            'url' => "session/[% session_id %]/element/[% id %]/elements"
+        },
+        'clickElement' => {
+               'method' => 'POST',
+               'url' => "session/[% session_id %]/element/[% id %]/click"
+        },
+        'submitElement' => {
+              'method' => 'POST',
+              'url' => "session/[% session_id %]/element/[% id %]/submit"
+        },
+        'getElementValue' => {
+               'method' => 'GET',
+               'url' => "session/[% session_id %]/element/[% id %]/value"
+        },
+        'sendKeysToElement' => {
+               'method' => 'POST',
+               'url' => "session/[% session_id %]/element/[% id %]/value"
+        },
+        'isElementSelected' => {
+            'method' => 'GET',
+            'url' => "session/[% session_id %]/element/[% id %]/selected"
+        },
+        'setElementSelected' => {
+            'method' => 'POST',
+            'url' => "session/[% session_id %]/element/[% id %]/selected"
         },
         'toggleElement' => {
               'method' => 'POST',
-              'url' =>
-                "session/[% session_id %]/[% context %]/element/[% id %]/toggle"
+              'url' => "session/[% session_id %]/element/[% id %]/toggle"
+        },
+        'isElementEnabled' => {
+             'method' => 'GET',
+             'url' => "session/[% session_id %]/element/[% id %]/enabled"
+        },
+        'getElementLocation' => {
+            'method' => 'GET',
+            'url' => "session/[% session_id %]/element/[% id %]/location"
+        },
+        'getElementLocationInView' => {
+            'method' => 'GET',
+            'url' => "session/[% session_id %]/element/[% id %]/location_in_view"
+        },
+        'getElementTagName' => {
+                'method' => 'GET',
+                'url' => "session/[% session_id %]/element/[% id %]/name"
+        },
+        'clearElement' => {
+               'method' => 'POST',
+               'url' => "session/[% session_id %]/element/[% id %]/clear"
+        },
+        'getElementAttribute' => {
+            'method' => 'GET',
+            'url' =>
+"session/[% session_id %]/element/[% id %]/attribute/[% name %]"
+        },
+        'elementEquals' => {
+            'method' => 'GET',
+            'url' => "session/[% session_id %]/element/[% id %]/equals/[% other %]"
+        },
+        'isElementDisplayed' => {
+            'method' => 'GET',
+            'url' => "session/[% session_id %]/element/[% id %]/displayed"
+        },
+        'close' => {
+                     'method' => 'DELETE',
+                     'url'    => "session/[% session_id %]/window"
+        },
+        'dragElement' => {
+                'method' => 'POST',
+                'url' => "session/[% session_id %]/element/[% id %]/drag"
+        },
+        'getElementSize' => {
+                'method' => 'GET',
+                'url' => "session/[% session_id %]/element/[% id %]/size"
+        },
+        'getElementText' => {
+                'method' => 'GET',
+                'url' =>
+                  "session/[% session_id %]/element/[% id %]/text"
+        },
+        'getElementValueOfCssProperty' => {
+            'method' => 'GET',
+            'url' =>
+"session/[% session_id %]/element/[% id %]/css/[% property_name %]"
+        },
+        'getVisible' => {
+                       'method' => 'GET',
+                       'url' => "session/[% session_id %]/visible"
+        },
+        'hoverOverElement' => {
+               'method' => 'POST',
+               'url' =>
+                 "session/[% session_id %]/element/[% id %]/hover"
+        },
+        'setVisible' => {
+                       'method' => 'POST',
+                       'url' => "session/[% session_id %]/visible"
         },
     };
 
@@ -237,10 +234,9 @@ sub getParams {
 
     # TT does lexical template replacement, so we need exact name of the vars.
     my $session_id = $args->{'session_id'};
-    my $context = (defined $args->{'context'}) ? $args->{'context'} : 'context';
     my $id      = $args->{'id'};
     my $name    = $args->{'name'};
-    my $using   = $args->{'using'};
+    my $property_name = $args->{'property_name'};
 
     $data->{'method'} = $self->{$command}->{'method'};
     $data->{'url'}    = tt $self->{$command}->{'url'};
