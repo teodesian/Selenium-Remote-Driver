@@ -12,6 +12,8 @@ use JSON;
 use Error;
 use Data::Dumper;
 
+use Selenium::Remote::ErrorHandler;
+
 sub new {
     my ($class, $remote_srvr, $port) = @_;
     
@@ -27,7 +29,7 @@ sub new {
     croak "Selenium RC server is not responding\n"
             unless $p->ping($self->{'remote_server_addr'});
     undef($p);
-
+    
     return $self;
 }
 
@@ -71,27 +73,50 @@ sub request {
 sub _process_response {
     my ($self, $response) = @_;
     my $data;    #returned data from server
+     my $json = new JSON;
 
     if ($response->is_redirect) {
         return $self->request('GET', $response->header('location'));
     }
-    elsif (($response->is_success) && ($response->code == 200)) {
-        $data = from_json($response->content);
-        if ($data->{'status'} != 0) {
-            croak "Error occurred in server while processing request: $data";
-        }
-        return $data;
-    }
-    elsif (   ($response->is_success)
-           && (($response->code == 200) || ($response->code == 204))) {
-
-        # Nothing to do.
-    }
     elsif ($response->code == 404) {
-        croak "No such command.";
+        return "Command not implemented on the RC server.";
+    }
+    elsif ($response->code > 199) {
+        my $decoded_json; 
+        if ($response->message ne 'No Content') {
+            $decoded_json = $json->allow_nonref->utf8->decode($response->content);
+        }
+        return $self->_get_command_result($decoded_json);
     }
     else {
-        croak "Remote server error with status = " . $response->code;
+        return "Unrecognized server status = " . $response->code;
+    }
+}
+
+# When a command is processed by the remote server & a result is sent back, it
+# also includes other relevant info. We strip those & just return the value we're
+# interested in. And if there is an error, ErrorHandler will handle it.
+sub _get_command_result {
+    my ($self, $resp) = @_;
+    my $error_handler = new Selenium::Remote::ErrorHandler;
+    
+    if (defined $resp) {
+        if (ref $resp eq 'HASH') {
+            if (defined $resp->{'status'} && $resp->{'status'} != 0) {
+                return $error_handler->process_error($resp);
+            }
+            else {
+                return $resp;
+            }
+        }
+        else
+        {
+            return $resp;
+        }
+    }
+    else {
+        # If there is no value or status assume success
+        return 1;
     }
 }
 

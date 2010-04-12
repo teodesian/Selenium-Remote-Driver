@@ -72,9 +72,10 @@ sub process_error {
     
     # TODO: Handle screen if it sent back with the response.
     
-    croak "ERROR: ".$self->STATUS_CODE->{$resp->{'status'}}->{'code'}."\n".
-          "DETAIL: ".$self->STATUS_CODE->{$resp->{'status'}}->{'msg'}."\n".
-          "RESPONSE: ".Dumper($resp);
+    #croak "ERROR: ".$self->STATUS_CODE->{$resp->{'status'}}->{'code'}."\n".
+    #      "DETAIL: ".$self->STATUS_CODE->{$resp->{'status'}}->{'msg'}."\n".
+    #      "RESPONSE: ".Dumper($resp);
+    return $self->STATUS_CODE->{$resp->{'status'}};
 }
 
 1;

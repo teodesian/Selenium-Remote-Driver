@@ -79,24 +79,6 @@ sub new {
     return $self;
 }
 
-# When a command is processed by the remote server & a result is sent back, it
-# also includes other relevant info. We strip those & just return the value we're
-# interested in. And if there is an error, ErrorHandler will handle it.
-sub _get_command_result {
-    my ($self, @args) = @_;
-    my $resp = $self->{remote_conn}->request(@args);
-    if (defined $resp->{'status'} && $resp->{'status'} != 0) {
-        $self->{error_handler}->process_error($resp);
-    }
-    elsif (defined $resp->{'value'}) {
-        return $resp->{'value'};
-    }
-    else {
-        # If there is no value or status assume success
-        return 1;
-    }
-}
-
 sub new_session {
     my $self = shift;
     my $args = { 'desiredCapabilities' => {
@@ -127,7 +109,7 @@ sub get_capabilities {
     my $data = $self->{commands}->getParams($command, $args);
     
     if ($data) {
-        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -141,7 +123,7 @@ sub quit {
     my $data = $self->{commands}->getParams('quit', $args);
 
     if ($data) {
-        $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
@@ -155,7 +137,7 @@ sub get_current_window_handle {
     my $data = $self->{commands}->getParams($command, $args);
     
     if ($data) {
-        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -169,7 +151,7 @@ sub get_window_handles {
     my $data = $self->{commands}->getParams($command, $args);
     
     if ($data) {
-        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -183,7 +165,7 @@ sub get_current_url {
     my $data = $self->{commands}->getParams($command, $args);
     
     if ($data) {
-        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -203,7 +185,7 @@ sub get {
     my $params = {'url' => $url};
 
     if ($data) {
-        $self->{remote_conn}->request($data->{'method'}, $data->{'url'}, $params);
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'}, $params);
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -217,7 +199,7 @@ sub get_title {
     my $data    = $self->{commands}->getParams($command, $args);
 
     if ($data) {
-        return $self->_get_command_result($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -231,7 +213,7 @@ sub go_back {
     my $data    = $self->{commands}->getParams($command, $args);
 
     if ($data) {
-        $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -245,7 +227,7 @@ sub go_forward {
     my $data    = $self->{commands}->getParams($command, $args);
 
     if ($data) {
-        $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -259,13 +241,43 @@ sub refresh {
     my $data    = $self->{commands}->getParams($command, $args);
 
     if ($data) {
-        $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
     }
 }
 
+sub execute_script {
+    my ($self, $script, @args)    = @_;
+    if (not defined $script) {
+        return 'No script provided';
+    }
+    my $command = 'executeScript';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $data    = $self->{commands}->getParams($command, $args);
+
+    if ($data) {
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+sub screenshot {
+    my ($self)    = @_;
+    my $command = 'screenshot';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $data    = $self->{commands}->getParams($command, $args);
+
+    if ($data) {
+        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
 
 
 1;
