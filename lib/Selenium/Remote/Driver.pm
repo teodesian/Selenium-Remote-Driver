@@ -48,7 +48,7 @@ the Selenium Server.  (The Selenium Server is a Java application.)
 
 sub new {
     my ($class, %args) = @_;
-    my $commands = new Selenium::Remote::Commands;
+    my $ress = new Selenium::Remote::Commands;
 
     # Set the defaults if user doesn't send any
     my $self = {
@@ -60,7 +60,7 @@ sub new {
           version            => delete $args{version}            || '',
           session_id         => undef,
           remote_conn        => undef,
-          commands           => $commands,
+          commands           => $ress,
     };
     bless $self, $class or die "Can't bless $class: $!";
     
@@ -78,9 +78,9 @@ sub new {
 }
 
 sub _execute_command {
-    my ($self, $command, $params) = @_;
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams($command, $args);
+    my ($self, $res, $params) = @_;
+    $res->{'session_id'} = $self->{'session_id'};
+    my $resource = $self->{commands}->get_params($res);
     if ($resource) {
         return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
     }
@@ -114,32 +114,32 @@ sub new_session {
 
 sub get_capabilities {
     my $self = shift;
-    my $command = 'getCapabilities';
-    return $self->_execute_command($command);
+    my $res = 'getCapabilities';
+    return $self->_execute_command($res);
 }
 
 sub quit {
     my $self = shift;
-    my $command = 'quit';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'quit'};
+    return $self->_execute_command($res);
 }
 
 sub get_current_window_handle {
     my $self = shift;
-    my $command = 'getCurrentWindowHandle';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'getCurrentWindowHandle'};
+    return $self->_execute_command($res);
 }
 
 sub get_window_handles {
     my $self = shift;
-    my $command = 'getWindowHandles';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'getWindowHandles'};
+    return $self->_execute_command($res);
 }
 
 sub get_current_url {
     my $self = shift;
-    my $command = 'getCurrentUrl';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'getCurrentUrl'};
+    return $self->_execute_command($res);
 }
 
 sub navigate {
@@ -149,33 +149,33 @@ sub navigate {
 
 sub get {
     my ($self, $url) = @_;
-    my $command = 'get';
+    my $res = {'command' => 'get'};
     my $params = {'url' => $url};
-    return $self->_execute_command($command, $params);
+    return $self->_execute_command($res, $params);
 }
 
 sub get_title {
     my $self    = shift;
-    my $command = 'getTitle';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'getTitle'};
+    return $self->_execute_command($res);
 }
 
 sub go_back {
     my $self    = shift;
-    my $command = 'goBack';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'goBack'};
+    return $self->_execute_command($res);
 }
 
 sub go_forward {
     my $self    = shift;
-    my $command = 'goForward';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'goForward'};
+    return $self->_execute_command($res);
 }
 
 sub refresh {
     my $self    = shift;
-    my $command = 'goForward';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'goForward'};
+    return $self->_execute_command($res);
 }
 
 sub execute_script {
@@ -185,22 +185,22 @@ sub execute_script {
     if (not defined $script) {
         return 'No script provided';
     }
-    my $command = 'executeScript';
+    my $res = {'command' => 'executeScript'};
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($res, $args);
 
     if ($resource) {
         return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
-        croak "Couldn't retrieve command $command settings\n";
+        croak "Couldn't retrieve command $res settings\n";
     }
 }
 
 sub screenshot {
     my ($self)    = @_;
-    my $command = 'screenshot';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'screenshot'};
+    return $self->_execute_command($res);
 }
 
 sub switch_to_frame {
@@ -208,9 +208,9 @@ sub switch_to_frame {
     my $json_null = JSON::null;
     $id = (defined $id)?$id:$json_null;
 
-    my $command = 'switchToFrame';
+    my $res = {'command' => 'switchToFrame'};
     my $params = {'id' => $id};
-    return $self->_execute_command($command, $params);
+    return $self->_execute_command($res, $params);
 }
 
 sub switch_to_window {
@@ -218,15 +218,15 @@ sub switch_to_window {
     if (not defined $name) {
         return 'Window name not provided';
     }
-    my $command = 'switchToWindow';
+    my $res = {'command' => 'switchToWindow'};
     my $params = {'name' => $name};
-    return $self->_execute_command($command, $params);
+    return $self->_execute_command($res, $params);
 }
 
 sub get_speed {
     my ($self)    = @_;
-    my $command = 'getSpeed';
-    return $self->_execute_command($command);
+    my $res = {'command' => 'getSpeed'};
+    return $self->_execute_command($res);
 }
 
 sub set_speed {
@@ -234,10 +234,48 @@ sub set_speed {
     if (not defined $speed) {
         return 'Speed not provided.';
     }
-    my $command = 'switchToWindow';
+    my $res = {'command' => 'switchToWindow'};
     my $params = {'speed' => $speed};
-    return $self->_execute_command($command, $params);
+    return $self->_execute_command($res, $params);
 }
+
+sub get_all_cookies {
+    my ($self)    = @_;
+    my $res = {'command' => 'getAllCookies'};
+    return $self->_execute_command($res);
+}
+
+sub add_cookie {
+    my($self, $name, $value, $path, $domain, $secure) = @_;
+    
+    if ((not defined $name) ||(not defined $value) ||(not defined $path) ||
+        (not defined $domain)) {
+        return "Missing parameters";
+    }
+    
+    my $res = {'command' => 'addCookie'};
+    my $json_false = JSON::false;
+    my $json_true = JSON::true;
+    $secure = (defined $secure)?$json_true:$json_false;
+    
+    my $params = {
+        'name' => $name,
+        'value' => $value,
+        'path' => $path,
+        'domain' => $domain,
+        'secure' => $secure,
+    };
+    
+    return $self->_execute_command($res, $params);
+}
+
+sub delete_all_cookies {
+    my ($self)    = @_;
+    my $res = {'command' => 'deleteAllCookies'};
+    return $self->_execute_command($res);
+}
+
+
 
 
 1;

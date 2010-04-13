@@ -225,12 +225,13 @@ sub new {
 }
 
 # This method will replace the template & return
-sub getParams {
-    my ($self, $command, $args) = @_;
+sub get_params {
+    my ($self, $args) = @_;
     if (!(defined $args->{'session_id'})) {
         return;
     }
     my $data = {};
+    my $command = $args->{'command'};
 
     # TT does lexical template replacement, so we need exact name of the vars.
     my $session_id = $args->{'session_id'};
