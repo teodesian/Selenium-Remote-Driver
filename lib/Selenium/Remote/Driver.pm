@@ -60,12 +60,10 @@ sub new {
           version            => delete $args{version}            || '',
           session_id         => undef,
           remote_conn        => undef,
-          error_handler      => undef,
           commands           => $commands,
     };
     bless $self, $class or die "Can't bless $class: $!";
     
-    $self->{error_handler} = new Selenium::Remote::ErrorHandler;
     # Connect to remote server & establish a new session
     $self->{remote_conn} =
       new Selenium::Remote::RemoteConnection($self->{remote_server_addr},
@@ -106,10 +104,10 @@ sub get_capabilities {
     my $self = shift;
     my $command = 'getCapabilities';
     my $args = { 'session_id' => $self->{'session_id'}, };
-    my $data = $self->{commands}->getParams($command, $args);
+    my $resource = $self->{commands}->getParams($command, $args);
     
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -120,10 +118,10 @@ sub quit {
     my $self = shift;
 
     my $args = { 'session_id' => $self->{'session_id'}, };
-    my $data = $self->{commands}->getParams('quit', $args);
+    my $resource = $self->{commands}->getParams('quit', $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
@@ -134,10 +132,10 @@ sub get_current_window_handle {
     my $self = shift;
     my $command = 'getCurrentWindowHandle';
     my $args = { 'session_id' => $self->{'session_id'}, };
-    my $data = $self->{commands}->getParams($command, $args);
+    my $resource = $self->{commands}->getParams($command, $args);
     
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -148,10 +146,10 @@ sub get_window_handles {
     my $self = shift;
     my $command = 'getWindowHandles';
     my $args = { 'session_id' => $self->{'session_id'}, };
-    my $data = $self->{commands}->getParams($command, $args);
+    my $resource = $self->{commands}->getParams($command, $args);
     
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -162,10 +160,10 @@ sub get_current_url {
     my $self = shift;
     my $command = 'getCurrentUrl';
     my $args = { 'session_id' => $self->{'session_id'}, };
-    my $data = $self->{commands}->getParams($command, $args);
+    my $resource = $self->{commands}->getParams($command, $args);
     
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -181,11 +179,11 @@ sub get {
     my ($self, $url) = @_;
     my $command = 'get';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
     my $params = {'url' => $url};
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'}, $params);
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -196,10 +194,10 @@ sub get_title {
     my $self    = shift;
     my $command = 'getTitle';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -210,10 +208,10 @@ sub go_back {
     my $self    = shift;
     my $command = 'goBack';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -224,10 +222,10 @@ sub go_forward {
     my $self    = shift;
     my $command = 'goForward';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -238,10 +236,10 @@ sub refresh {
     my $self    = shift;
     my $command = 'goForward';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -255,10 +253,10 @@ sub execute_script {
     }
     my $command = 'executeScript';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
@@ -269,16 +267,83 @@ sub screenshot {
     my ($self)    = @_;
     my $command = 'screenshot';
     my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $data    = $self->{commands}->getParams($command, $args);
+    my $resource    = $self->{commands}->getParams($command, $args);
 
-    if ($data) {
-        return $self->{remote_conn}->request($data->{'method'}, $data->{'url'});
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
     }
     else {
         croak "Couldn't retrieve command $command settings\n";
     }
 }
 
+sub switch_to_frame {
+    my ($self, $id)    = @_;
+    my $json_null = JSON::null;
+    $id = (defined $id)?$id:$json_null;
+
+    my $command = 'switchToFrame';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $resource    = $self->{commands}->getParams($command, $args);
+    my $params = {'id' => $id};
+
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+sub switch_to_window {
+    my ($self, $name)    = @_;
+    if (not defined $name) {
+        return 'Window name not provided';
+    }
+    my $command = 'switchToWindow';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $resource    = $self->{commands}->getParams($command, $args);
+    my $params = {'name' => $name};
+
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+sub get_speed {
+    my ($self)    = @_;
+    my $command = 'getSpeed';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $resource    = $self->{commands}->getParams($command, $args);
+
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
+
+sub set_speed {
+    my ($self, $speed)    = @_;
+    if (not defined $speed) {
+        return 'Speed not provided.';
+    }
+    my $command = 'switchToWindow';
+    my $args    = { 'session_id' => $self->{'session_id'}, };
+    my $resource    = $self->{commands}->getParams($command, $args);
+    my $params = {'speed' => $speed};
+
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
+    }
+    else {
+        croak "Couldn't retrieve command $command settings\n";
+    }
+}
 
 1;
 
