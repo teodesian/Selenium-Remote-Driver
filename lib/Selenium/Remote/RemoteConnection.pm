@@ -106,7 +106,14 @@ sub _get_command_result {
                 return $error_handler->process_error($resp);
             }
             else {
-                return $resp;
+                # For new session we need to grab the session id.
+                if ((ref $resp->{'value'} eq 'HASH') &&
+                    ($resp->{'value'}->{'class'} eq 'org.openqa.selenium.remote.DesiredCapabilities')) {
+                        return $resp;
+                }
+                else {
+                    return $resp->{'value'};
+                }
             }
         }
         else
