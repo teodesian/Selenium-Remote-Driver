@@ -77,6 +77,18 @@ sub new {
     return $self;
 }
 
+sub _execute_command {
+    my ($self, $command, $params) = @_;
+    my $args = { 'session_id' => $self->{'session_id'}, };
+    my $resource = $self->{commands}->getParams($command, $args);
+    if ($resource) {
+        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
+    }
+    else {
+        croak "Couldn't retrieve command settings properly\n";
+    }
+}
+
 sub new_session {
     my $self = shift;
     my $args = { 'desiredCapabilities' => {
@@ -103,71 +115,31 @@ sub new_session {
 sub get_capabilities {
     my $self = shift;
     my $command = 'getCapabilities';
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams($command, $args);
-    
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub quit {
     my $self = shift;
-
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams('quit', $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command settings properly\n";
-    }
+    my $command = 'quit';
+    return $self->_execute_command($command);
 }
 
 sub get_current_window_handle {
     my $self = shift;
     my $command = 'getCurrentWindowHandle';
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams($command, $args);
-    
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub get_window_handles {
     my $self = shift;
     my $command = 'getWindowHandles';
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams($command, $args);
-    
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub get_current_url {
     my $self = shift;
     my $command = 'getCurrentUrl';
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams($command, $args);
-    
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub navigate {
@@ -178,75 +150,37 @@ sub navigate {
 sub get {
     my ($self, $url) = @_;
     my $command = 'get';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
     my $params = {'url' => $url};
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command, $params);
 }
 
 sub get_title {
     my $self    = shift;
     my $command = 'getTitle';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub go_back {
     my $self    = shift;
     my $command = 'goBack';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub go_forward {
     my $self    = shift;
     my $command = 'goForward';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub refresh {
     my $self    = shift;
     my $command = 'goForward';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub execute_script {
+    # TODO: this method is not finished
+    
     my ($self, $script, @args)    = @_;
     if (not defined $script) {
         return 'No script provided';
@@ -266,15 +200,7 @@ sub execute_script {
 sub screenshot {
     my ($self)    = @_;
     my $command = 'screenshot';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub switch_to_frame {
@@ -283,16 +209,8 @@ sub switch_to_frame {
     $id = (defined $id)?$id:$json_null;
 
     my $command = 'switchToFrame';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
     my $params = {'id' => $id};
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command, $params);
 }
 
 sub switch_to_window {
@@ -301,30 +219,14 @@ sub switch_to_window {
         return 'Window name not provided';
     }
     my $command = 'switchToWindow';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
     my $params = {'name' => $name};
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command, $params);
 }
 
 sub get_speed {
     my ($self)    = @_;
     my $command = 'getSpeed';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command);
 }
 
 sub set_speed {
@@ -333,17 +235,10 @@ sub set_speed {
         return 'Speed not provided.';
     }
     my $command = 'switchToWindow';
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($command, $args);
     my $params = {'speed' => $speed};
-
-    if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
-    }
-    else {
-        croak "Couldn't retrieve command $command settings\n";
-    }
+    return $self->_execute_command($command, $params);
 }
+
 
 1;
 
