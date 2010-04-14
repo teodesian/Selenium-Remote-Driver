@@ -239,6 +239,9 @@ sub set_speed {
     return $self->_execute_command($res, $params);
 }
 
+# TODO: Verify all these cookied methods - some return errors some don't
+#       No idea whether they're implemented on the server yet
+
 sub get_all_cookies {
     my ($self)    = @_;
     my $res = {'command' => 'getAllCookies'};
@@ -275,7 +278,103 @@ sub delete_all_cookies {
     return $self->_execute_command($res);
 }
 
+sub delete_cookie_named {
+    my ($self, $cookie_name)    = @_;
+    if (not defined $cookie_name) {
+        return "Cookie name not provided";
+    }
+    my $res = {'command' => 'deleteAllCookies', 'name' => $cookie_name};
+    return $self->_execute_command($res);
+}
 
+sub get_page_source {
+    my ($self)    = @_;
+    my $res = {'command' => 'getPageSource'};
+    return $self->_execute_command($res);
+}
+
+sub find_element {
+    # TODO: Find out what the locator strategies are - I am assuming xpath, css
+    # dom etc.
+    
+    my ($self, $query, $method)    = @_;
+    if (not defined $query) {
+        return 'Search string to find element not provided.';
+    }
+    my $using = (defined $method)?$method:'xpath';
+    my $res = {'command' => 'findElement'};
+    my $params = {'using' => $using, 'value' => $query};
+    return $self->_execute_command($res, $params);
+}
+
+sub find_elements {
+    # TODO: Find out what the locator strategies are - I am assuming xpath, css
+    # dom etc. 
+    
+    my ($self, $query, $method)    = @_;
+    if (not defined $query) {
+        return 'Search string to find element not provided.';
+    }
+    my $using = (defined $method)?$method:'xpath';
+    my $res = {'command' => 'findElements'};
+    my $params = {'using' => $using, 'value' => $query};
+    return $self->_execute_command($res, $params);
+}
+
+sub get_active_element {
+    my ($self)    = @_;
+    my $res = {'command' => 'getActiveElement'};
+    return $self->_execute_command($res);
+}
+
+sub describe_element {
+    my ($self, $element)    = @_;
+    #if (not defined $element) {
+    #    return "Element not provided";
+    #}
+    #my $res = {'command' => 'desribeElement', 'name' => $element};
+    #return $self->_execute_command($res);
+    return "Not yet supported";
+}
+
+sub find_child_element {
+    # TODO: same as find_element - no idea what locator strategy string is & no
+    # idea what the id is.
+    
+    my ($self, $id, $query, $method)    = @_;
+    if ((not defined $id) || (not defined $query)) {
+        return "Missing parameters";
+    }
+    my $using = (defined $method)?$method:'xpath';
+    my $res = {'command' => 'findChildElement', 'id' => $id};
+    my $params = {'using' => $using, 'value' => $query};
+    return $self->_execute_command($res, $params);
+}
+
+sub find_child_elements {
+    # TODO: same as find_element - no idea what locator strategy string is & no
+    # idea what the id is.
+    
+    my ($self, $id, $query, $method)    = @_;
+    if ((not defined $id) || (not defined $query)) {
+        return "Missing parameters";
+    }
+    my $using = (defined $method)?$method:'xpath';
+    my $res = {'command' => 'findChildElements', 'id' => $id};
+    my $params = {'using' => $using, 'value' => $query};
+    return $self->_execute_command($res, $params);
+}
+
+sub click {
+    #TODO: verify - my local tests are failing
+    
+    my ($self, $id)    = @_;
+    if (not defined $id) {
+        return "Element id not provided";
+    }
+    my $res = {'command' => 'clickElement', 'id' => $id};
+    return $self->_execute_command($res);
+}
 
 
 1;
