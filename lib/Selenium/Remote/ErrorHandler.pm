@@ -69,10 +69,13 @@ sub new {
 
 sub process_error {
     my ($self, $resp) = @_;
-    
     # TODO: Handle screen if it sent back with the response.
+    
+    my $ret;
+    $ret->{'stackTrace'} = $resp->{'value'}->{'stackTrace'};
+    $ret->{'error'} = $self->STATUS_CODE->{$resp->{'status'}};
 
-    return $self->STATUS_CODE->{$resp->{'status'}};
+    return $ret;
 }
 
 1;
