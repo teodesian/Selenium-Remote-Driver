@@ -9,7 +9,6 @@ use HTTP::Request;
 use Net::Ping;
 use Carp qw(croak);
 use JSON;
-use Error;
 use Data::Dumper;
 
 use Selenium::Remote::ErrorHandler;
@@ -33,6 +32,7 @@ sub new {
     return $self;
 }
 
+# This request method is tailored for Selenium RC server
 sub request {
     my ($self, $method, $url, $params) = @_;
     my $content = '';
@@ -52,7 +52,6 @@ sub request {
 
     if ((defined $params) && $params ne '') {
         my $json = new JSON;
-        #$content = "[" . $json->allow_nonref->utf8->encode($params) . "]";
         $content = $json->allow_nonref->utf8->encode($params);
     }
 
@@ -62,14 +61,13 @@ sub request {
       HTTP::Headers->new(Content_Type => 'application/json; charset=utf-8');
     $header->header('Accept' => 'application/json');
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
-    
-    #print Dumper($request);
     my $response = $ua->request($request);
 
-    #return $response;
     return $self->_process_response($response);
 }
 
+# Even though there are multiple error codes returned, at this point we care
+# mainly about 404. We should add code to handle specific HTTP Response codes.
 sub _process_response {
     my ($self, $response) = @_;
     my $data;    #returned data from server
@@ -147,7 +145,7 @@ Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
 
 =head1 LICENSE
 
-Copyright (c) 2010 Juniper Networks, Inc
+Copyright (c) 2010 Aditya Ivaturi
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
