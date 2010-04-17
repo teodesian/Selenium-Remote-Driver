@@ -21,7 +21,7 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
     use Selenium::Remote::Driver;
     
     my $driver = new Selenium::Remote::Driver;
-    $driver->get("http://www.google.com");
+    $driver->get('http://www.google.com');
     print $driver->get_title();
     $driver->quit();
 
@@ -46,65 +46,120 @@ the Selenium Server.  (The Selenium Server is a Java application.)
 
 =cut
 
+=head1 FUNCTIONS
+
+=cut
+
+=head2 new
+
+ Description:
+    Constructor for Driver. It'll instantiate the object if it can communicate
+    with the Selenium RC server.
+
+ Input Parameter: 1
+    desired_capabilities - HASH - Following options are accepted:
+      Optional:
+        'remote_server_addr' - <string> - IP or FQDN of the RC server machine
+        'browser_name' - <string> - desired browser string:
+                      {iphone|firefox|internet explorer|htmlunit|iphone|chrome}
+        'version' - <string> - desired browser version number
+        'platform' - <string> - desired platform:
+                                {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
+        'javascript' - <boolean> - whether javascript should be supported
+        
+        If no values are provided, then these defaults will be assumed:
+            'remote_server_addr' => 'localhost'
+            'browser_name' => 'firefox'
+            'version'      => ''
+            'platform'     => 'ANY'
+            'javascript'   => 1
+
+ Output:
+    Remote Driver object
+
+ Usage:
+    my $driver = new Selenium::Remote::Driver;
+    or
+    my $driver = new Selenium::Remote::Driver('browser_name' => '10.37.129.2',
+                                              'platform' => 'MAC')
+
+=cut
+
 sub new {
-    my ($class, %args) = @_;
+    my ( $class, %args ) = @_;
     my $ress = new Selenium::Remote::Commands;
 
     # Set the defaults if user doesn't send any
     my $self = {
-          remote_server_addr => delete $args{remote_server_addr} || 'localhost',
-          browser_name       => delete $args{browser_name}       || 'firefox',
-          platform           => delete $args{platform}           || 'ANY',
-          port               => delete $args{port}               || '4444',
-          javascript         => delete $args{javascript}         || JSON::true,
-          version            => delete $args{version}            || '',
-          session_id         => undef,
-          remote_conn        => undef,
-          commands           => $ress,
+        remote_server_addr => delete $args{remote_server_addr} || 'localhost',
+        browser_name       => delete $args{browser_name}       || 'firefox',
+        platform           => delete $args{platform}           || 'ANY',
+        port               => delete $args{port}               || '4444',
+        version            => delete $args{version}            || '',
+        session_id         => undef,
+        remote_conn        => undef,
+        commands           => $ress,
     };
     bless $self, $class or die "Can't bless $class: $!";
-    
+
+    if ( defined $args{javascript} ) {
+        if ( $args{javascript} ) {
+            $self->{javascript} = JSON::true;
+        }
+        else {
+            $self->{javascript} = JSON::false;
+        }
+    }
+    else {
+        $self->{javascript} = JSON::true;
+    }
+
     # Connect to remote server & establish a new session
     $self->{remote_conn} =
-      new Selenium::Remote::RemoteConnection($self->{remote_server_addr},
-                                             $self->{port});
+      new Selenium::Remote::RemoteConnection( $self->{remote_server_addr},
+        $self->{port} );
     $self->new_session();
 
-    if (!(defined $self->{session_id})) {
+    if ( !( defined $self->{session_id} ) ) {
         croak "Could not establish a session with the remote server\n";
     }
 
     return $self;
 }
 
+# This is an internal method used the Driver & is not supposed to be used by
+# end user. This method is used by Driver to set up all the parameters (url & JSON),
+# send commands & receive response from the server.
 sub _execute_command {
-    my ($self, $res, $params) = @_;
+    my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->{'session_id'};
     my $resource = $self->{commands}->get_params($res);
     if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'}, $params);
+        return $self->{remote_conn}
+          ->request( $resource->{'method'}, $resource->{'url'}, $params );
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
     }
 }
 
+# A method that is used by the Driver itself. It'll be called to set the
+# desired capabilities on the server.
 sub new_session {
     my $self = shift;
-    my $args = { 'desiredCapabilities' => {
-                                            'browserName'       => $self->{browser_name},
-                                            'platform'          => $self->{platform},
-                                            'javascriptEnabled' => $self->{javascript},
-                                            'version'           => $self->{version},
-                                          }
-                };
+    my $args = {
+        'desiredCapabilities' => {
+            'browserName'       => $self->{browser_name},
+            'platform'          => $self->{platform},
+            'javascriptEnabled' => $self->{javascript},
+            'version'           => $self->{version},
+        }
+    };
     my $resp =
-      $self->{remote_conn}->request(
-                                  $self->{commands}->{'newSession'}->{'method'},
-                                  $self->{commands}->{'newSession'}->{'url'},
-                                  $args,
-      );
-    if ((defined $resp->{'sessionId'}) && $resp->{'sessionId'} ne '') {
+      $self->{remote_conn}
+      ->request( $self->{commands}->{'newSession'}->{'method'},
+        $self->{commands}->{'newSession'}->{'url'}, $args, );
+    if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
         $self->{session_id} = $resp->{'sessionId'};
     }
     else {
@@ -112,223 +167,405 @@ sub new_session {
     }
 }
 
+=head2 get_capabilities
+
+ Description:
+    Retrieve the capabilities of the specified session.
+
+ Output:
+    A hash of all the values.
+
+ Usage:
+    my $capab = $driver->get_capabilities();
+    print Dumper($capab);
+
+=cut
+
 sub get_capabilities {
     my $self = shift;
-    my $res = 'getCapabilities';
+    my $res  = {'command' => 'getCapabilities'};
     return $self->_execute_command($res);
 }
+
+=head2 quit
+
+ Description:
+    Delete the session & close open browsers.
+
+ Usage:
+    $driver->quit();
+
+=cut
 
 sub quit {
     my $self = shift;
-    my $res = {'command' => 'quit'};
+    my $res = { 'command' => 'quit' };
     return $self->_execute_command($res);
 }
+
+=head2 get_current_window_handle
+
+ Description:
+    Retrieve the current window handle.
+
+ Output:
+    String - the window handle
+
+ Usage:
+    print $driver->get_current_window_handle();
+
+=cut
 
 sub get_current_window_handle {
     my $self = shift;
-    my $res = {'command' => 'getCurrentWindowHandle'};
+    my $res = { 'command' => 'getCurrentWindowHandle' };
     return $self->_execute_command($res);
 }
+
+=head2 get_current_window_handles
+
+ Description:
+    Retrieve the list of window handles used in the session.
+
+ Output:
+    Array of string - list of the window handles
+
+ Usage:
+    print Dumper($driver->get_current_window_handles());
+
+=cut
 
 sub get_window_handles {
     my $self = shift;
-    my $res = {'command' => 'getWindowHandles'};
+    my $res = { 'command' => 'getWindowHandles' };
     return $self->_execute_command($res);
 }
+
+=head2 get_current_url
+
+ Description:
+    Retrieve the url of the current page
+
+ Output:
+    String - url
+
+ Usage:
+    print $driver->get_current_url();
+
+=cut
 
 sub get_current_url {
     my $self = shift;
-    my $res = {'command' => 'getCurrentUrl'};
+    my $res = { 'command' => 'getCurrentUrl' };
     return $self->_execute_command($res);
 }
 
+=head2 navigate
+
+ Description:
+    Navigate to a given url. This is same as get() method.
+    
+ Input:
+    String - url
+
+ Usage:
+    $driver->navigate('http://www.google.com');
+
+=cut
+
 sub navigate {
-    my ($self, $url) = @_;
+    my ( $self, $url ) = @_;
     $self->get($url);
 }
 
+=head2 get
+
+ Description:
+    Navigate to a given url
+    
+ Input:
+    String - url
+
+ Usage:
+    $driver->get('http://www.google.com');
+
+=cut
+
 sub get {
-    my ($self, $url) = @_;
-    my $res = {'command' => 'get'};
-    my $params = {'url' => $url};
-    return $self->_execute_command($res, $params);
+    my ( $self, $url ) = @_;
+    my $res    = { 'command' => 'get' };
+    my $params = { 'url'     => $url };
+    return $self->_execute_command( $res, $params );
 }
+
+=head2 get_title
+
+ Description:
+    Get the current page title
+
+ Output:
+    String - Page title
+
+ Usage:
+    print $driver->get_title();
+
+=cut
 
 sub get_title {
-    my $self    = shift;
-    my $res = {'command' => 'getTitle'};
+    my $self = shift;
+    my $res = { 'command' => 'getTitle' };
     return $self->_execute_command($res);
 }
+
+=head2 go_back
+
+ Description:
+    Equivalent to hitting the back button on the browser.
+
+ Usage:
+    $driver->go_back();
+
+=cut
 
 sub go_back {
-    my $self    = shift;
-    my $res = {'command' => 'goBack'};
+    my $self = shift;
+    my $res = { 'command' => 'goBack' };
     return $self->_execute_command($res);
 }
+
+=head2 go_back
+
+ Description:
+    Equivalent to hitting the forward button on the browser.
+
+ Usage:
+    $driver->go_forward();
+
+=cut
 
 sub go_forward {
-    my $self    = shift;
-    my $res = {'command' => 'goForward'};
+    my $self = shift;
+    my $res = { 'command' => 'goForward' };
     return $self->_execute_command($res);
 }
 
+=head2 refresh
+
+ Description:
+    Reload the current page.
+
+ Usage:
+    $driver->refresh();
+
+=cut
+
 sub refresh {
-    my $self    = shift;
-    my $res = {'command' => 'goForward'};
+    my $self = shift;
+    my $res = { 'command' => 'goForward' };
     return $self->_execute_command($res);
 }
 
 sub execute_script {
+
     # TODO: this method is not finished
-    
-    my ($self, $script, @args)    = @_;
-    if (not defined $script) {
+
+    my ( $self, $script, @args ) = @_;
+    if ( not defined $script ) {
         return 'No script provided';
     }
-    my $res = {'command' => 'executeScript'};
-    my $args    = { 'session_id' => $self->{'session_id'}, };
-    my $resource    = $self->{commands}->getParams($res, $args);
+    my $res  = { 'command'    => 'executeScript' };
+    my $args = { 'session_id' => $self->{'session_id'}, };
+    my $resource = $self->{commands}->getParams( $res, $args );
 
     if ($resource) {
-        return $self->{remote_conn}->request($resource->{'method'}, $resource->{'url'});
+        return $self->{remote_conn}
+          ->request( $resource->{'method'}, $resource->{'url'} );
     }
     else {
         croak "Couldn't retrieve command $res settings\n";
     }
 }
 
+=head2 screenshot
+
+ Description:
+    Get a screenshot of the current page as a base64 encoded image.
+
+ Output:
+    String - base64 encoded image
+
+ Usage:
+    print $driver->go_screenshot();
+
+=cut
+
 sub screenshot {
-    my ($self)    = @_;
-    my $res = {'command' => 'screenshot'};
+    my ($self) = @_;
+    my $res = { 'command' => 'screenshot' };
     return $self->_execute_command($res);
 }
 
-sub switch_to_frame {
-    my ($self, $id)    = @_;
-    my $json_null = JSON::null;
-    $id = (defined $id)?$id:$json_null;
 
-    my $res = {'command' => 'switchToFrame'};
-    my $params = {'id' => $id};
-    return $self->_execute_command($res, $params);
+
+sub switch_to_frame {
+    my ( $self, $id ) = @_;
+    my $json_null = JSON::null;
+    $id = ( defined $id ) ? $id : $json_null;
+
+    my $res    = { 'command' => 'switchToFrame' };
+    my $params = { 'id'      => $id };
+    return $self->_execute_command( $res, $params );
 }
 
 sub switch_to_window {
-    my ($self, $name)    = @_;
-    if (not defined $name) {
+    my ( $self, $name ) = @_;
+    if ( not defined $name ) {
         return 'Window name not provided';
     }
-    my $res = {'command' => 'switchToWindow'};
-    my $params = {'name' => $name};
-    return $self->_execute_command($res, $params);
+    my $res    = { 'command' => 'switchToWindow' };
+    my $params = { 'name'    => $name };
+    return $self->_execute_command( $res, $params );
 }
 
+=head2 get_speed
+
+ Description:
+    Get the current user input speed. The actual input speed is still browser
+    specific and not covered by the Driver.
+
+ Output:
+    String - One of these: SLOW, MEDIUM, FAST
+
+ Usage:
+    print $driver->get_speed();
+
+=cut
+
 sub get_speed {
-    my ($self)    = @_;
-    my $res = {'command' => 'getSpeed'};
+    my ($self) = @_;
+    my $res = { 'command' => 'getSpeed' };
     return $self->_execute_command($res);
 }
 
+=head2 set_speed
+
+ Description:
+    Set the user input speed.
+
+ Input:
+    String - One of these: SLOW, MEDIUM, FAST
+
+ Usage:
+    $driver->set_speed('MEDIUM');
+
+=cut
+
 sub set_speed {
-    my ($self, $speed)    = @_;
-    if (not defined $speed) {
+    my ( $self, $speed ) = @_;
+    if ( not defined $speed ) {
         return 'Speed not provided.';
     }
-    my $res = {'command' => 'switchToWindow'};
-    my $params = {'speed' => $speed};
-    return $self->_execute_command($res, $params);
+    my $res    = { 'command' => 'switchToWindow' };
+    my $params = { 'speed'   => $speed };
+    return $self->_execute_command( $res, $params );
 }
 
 # TODO: Verify all these cookied methods - some return errors some don't
 #       No idea whether they're implemented on the server yet
 
 sub get_all_cookies {
-    my ($self)    = @_;
-    my $res = {'command' => 'getAllCookies'};
+    my ($self) = @_;
+    my $res = { 'command' => 'getAllCookies' };
     return $self->_execute_command($res);
 }
 
 sub add_cookie {
-    my($self, $name, $value, $path, $domain, $secure) = @_;
-    
-    if ((not defined $name) ||(not defined $value) ||(not defined $path) ||
-        (not defined $domain)) {
+    my ( $self, $name, $value, $path, $domain, $secure ) = @_;
+
+    if (   ( not defined $name )
+        || ( not defined $value )
+        || ( not defined $path )
+        || ( not defined $domain ) )
+    {
         return "Missing parameters";
     }
-    
-    my $res = {'command' => 'addCookie'};
+
+    my $res        = { 'command' => 'addCookie' };
     my $json_false = JSON::false;
-    my $json_true = JSON::true;
-    $secure = (defined $secure)?$json_true:$json_false;
-    
+    my $json_true  = JSON::true;
+    $secure = ( defined $secure ) ? $json_true : $json_false;
+
     my $params = {
-        'name' => $name,
-        'value' => $value,
-        'path' => $path,
+        'name'   => $name,
+        'value'  => $value,
+        'path'   => $path,
         'domain' => $domain,
         'secure' => $secure,
     };
-    
-    return $self->_execute_command($res, $params);
+
+    return $self->_execute_command( $res, $params );
 }
 
 sub delete_all_cookies {
-    my ($self)    = @_;
-    my $res = {'command' => 'deleteAllCookies'};
+    my ($self) = @_;
+    my $res = { 'command' => 'deleteAllCookies' };
     return $self->_execute_command($res);
 }
 
 sub delete_cookie_named {
-    my ($self, $cookie_name)    = @_;
-    if (not defined $cookie_name) {
+    my ( $self, $cookie_name ) = @_;
+    if ( not defined $cookie_name ) {
         return "Cookie name not provided";
     }
-    my $res = {'command' => 'deleteAllCookies', 'name' => $cookie_name};
+    my $res = { 'command' => 'deleteAllCookies', 'name' => $cookie_name };
     return $self->_execute_command($res);
 }
 
 sub get_page_source {
-    my ($self)    = @_;
-    my $res = {'command' => 'getPageSource'};
+    my ($self) = @_;
+    my $res = { 'command' => 'getPageSource' };
     return $self->_execute_command($res);
 }
 
 sub find_element {
+
     # TODO: Find out what the locator strategies are - I am assuming xpath, css
     # dom etc.
-    
-    my ($self, $query, $method)    = @_;
-    if (not defined $query) {
+
+    my ( $self, $query, $method ) = @_;
+    if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
-    my $using = (defined $method)?$method:'xpath';
-    my $res = {'command' => 'findElement'};
-    my $params = {'using' => $using, 'value' => $query};
-    return $self->_execute_command($res, $params);
+    my $using = ( defined $method ) ? $method : 'xpath';
+    my $res = { 'command' => 'findElement' };
+    my $params = { 'using' => $using, 'value' => $query };
+    return $self->_execute_command( $res, $params );
 }
 
 sub find_elements {
+
     # TODO: Find out what the locator strategies are - I am assuming xpath, css
-    # dom etc. 
-    
-    my ($self, $query, $method)    = @_;
-    if (not defined $query) {
+    # dom etc.
+
+    my ( $self, $query, $method ) = @_;
+    if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
-    my $using = (defined $method)?$method:'xpath';
-    my $res = {'command' => 'findElements'};
-    my $params = {'using' => $using, 'value' => $query};
-    return $self->_execute_command($res, $params);
+    my $using = ( defined $method ) ? $method : 'xpath';
+    my $res = { 'command' => 'findElements' };
+    my $params = { 'using' => $using, 'value' => $query };
+    return $self->_execute_command( $res, $params );
 }
 
 sub get_active_element {
-    my ($self)    = @_;
-    my $res = {'command' => 'getActiveElement'};
+    my ($self) = @_;
+    my $res = { 'command' => 'getActiveElement' };
     return $self->_execute_command($res);
 }
 
 sub describe_element {
-    my ($self, $element)    = @_;
+    my ( $self, $element ) = @_;
+
     #if (not defined $element) {
     #    return "Element not provided";
     #}
@@ -338,44 +575,46 @@ sub describe_element {
 }
 
 sub find_child_element {
+
     # TODO: same as find_element - no idea what locator strategy string is & no
     # idea what the id is.
-    
-    my ($self, $id, $query, $method)    = @_;
-    if ((not defined $id) || (not defined $query)) {
+
+    my ( $self, $id, $query, $method ) = @_;
+    if ( ( not defined $id ) || ( not defined $query ) ) {
         return "Missing parameters";
     }
-    my $using = (defined $method)?$method:'xpath';
-    my $res = {'command' => 'findChildElement', 'id' => $id};
-    my $params = {'using' => $using, 'value' => $query};
-    return $self->_execute_command($res, $params);
+    my $using = ( defined $method ) ? $method : 'xpath';
+    my $res = { 'command' => 'findChildElement', 'id' => $id };
+    my $params = { 'using' => $using, 'value' => $query };
+    return $self->_execute_command( $res, $params );
 }
 
 sub find_child_elements {
+
     # TODO: same as find_element - no idea what locator strategy string is & no
     # idea what the id is.
-    
-    my ($self, $id, $query, $method)    = @_;
-    if ((not defined $id) || (not defined $query)) {
+
+    my ( $self, $id, $query, $method ) = @_;
+    if ( ( not defined $id ) || ( not defined $query ) ) {
         return "Missing parameters";
     }
-    my $using = (defined $method)?$method:'xpath';
-    my $res = {'command' => 'findChildElements', 'id' => $id};
-    my $params = {'using' => $using, 'value' => $query};
-    return $self->_execute_command($res, $params);
+    my $using = ( defined $method ) ? $method : 'xpath';
+    my $res = { 'command' => 'findChildElements', 'id' => $id };
+    my $params = { 'using' => $using, 'value' => $query };
+    return $self->_execute_command( $res, $params );
 }
 
 sub click {
+
     #TODO: verify - my local tests are failing
-    
-    my ($self, $id)    = @_;
-    if (not defined $id) {
+
+    my ( $self, $id ) = @_;
+    if ( not defined $id ) {
         return "Element id not provided";
     }
-    my $res = {'command' => 'clickElement', 'id' => $id};
+    my $res = { 'command' => 'clickElement', 'id' => $id };
     return $self->_execute_command($res);
 }
-
 
 1;
 
@@ -397,7 +636,7 @@ Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
 
 =head1 LICENSE
 
-Copyright (c) 2010 Juniper Networks, Inc
+Copyright (c) 2010 Aditya Ivaturi
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
