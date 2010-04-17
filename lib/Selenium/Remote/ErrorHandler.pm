@@ -7,6 +7,7 @@ use Data::Dumper;
 use Carp qw(croak);
 
 # We're going to handle only codes that are errors.
+# http://code.google.com/p/selenium/wiki/JsonWireProtocol
 use constant STATUS_CODE => {
                     7 => {
                             'code' => 'NO_SUCH_ELEMENT',
@@ -67,9 +68,14 @@ sub new {
     return $self;
 }
 
+# Instead of just returning the end user a server returned error code, we will
+# put a more human readable & usable error message & that is what this method
+# is going to do. 
 sub process_error {
     my ($self, $resp) = @_;
-    # TODO: Handle screen if it sent back with the response.
+    # TODO: Handle screen if it sent back with the response. Either we could
+    # let the end user handle it or we can save it an image file at a temp
+    # location & return the path. 
     
     my $ret;
     $ret->{'stackTrace'} = $resp->{'value'}->{'stackTrace'};
@@ -78,4 +84,37 @@ sub process_error {
     return $ret;
 }
 
+
 1;
+
+__END__
+
+=head1 SEE ALSO
+
+For more information about Selenium , visit the website at
+L<http://code.google.com/p/selenium/>.
+
+=head1 BUGS
+
+The Selenium issue tracking system is available online at
+L<http://code.google.com/p/selenium/issues/list>.
+
+=head1 AUTHOR
+
+Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
+
+=head1 LICENSE
+
+Copyright (c) 2010 Aditya Ivaturi
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
