@@ -265,7 +265,7 @@ Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
 
 =head1 LICENSE
 
-Copyright (c) 2010 Juniper Networks, Inc
+Copyright (c) 2010 Aditya Ivaturi
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

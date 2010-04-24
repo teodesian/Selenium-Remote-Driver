@@ -66,64 +66,51 @@ sub request {
     return $self->_process_response($response);
 }
 
-# Even though there are multiple error codes returned, at this point we care
-# mainly about 404. We should add code to handle specific HTTP Response codes.
 sub _process_response {
     my ($self, $response) = @_;
-    my $data;    #returned data from server
-     my $json = new JSON;
+    my $data; # server response 'value' that'll be returned to the user
+    my $json = new JSON;
 
     if ($response->is_redirect) {
         return $self->request('GET', $response->header('location'));
     }
-    elsif ($response->code == 404) {
-        return "Command not implemented on the RC server.";
-    }
-    elsif ($response->code > 199) {
-        my $decoded_json; 
-        if ($response->message ne 'No Content') {
-            $decoded_json = $json->allow_nonref->utf8->decode($response->content);
-        }
-        return $self->_get_command_result($decoded_json);
-    }
     else {
-        return "Unrecognized server status = " . $response->code;
+        my $decoded_json = undef; 
+        if ($response->message ne 'No Content') {
+            $decoded_json = $json->allow_nonref(1)->utf8(1)->decode($response->content);
+            $data->{'sessionId'} = $decoded_json->{'sessionId'};
+        }
+        
+        if ($response->is_error) {
+            my $error_handler = new Selenium::Remote::ErrorHandler;
+            $data->{'cmd_status'} = 'NOTOK';
+            if (defined $decoded_json) {
+                $data->{'cmd_return'} = $error_handler->process_error($decoded_json);
+            }
+            else {
+                $data->{'cmd_return'} = 'Server returned error code '.$response->code.' and no data';          
+            }
+            return $data;
+        }
+        elsif ($response->is_success) {
+            $data->{'cmd_status'} = 'OK';
+            if (defined $decoded_json) {
+                $data->{'cmd_return'} = $decoded_json->{'value'};
+            }
+            else {
+                $data->{'cmd_return'} = 'Server returned status code '.$response->code.' but no data';          
+            }
+            return $data;
+        }
+        else {
+            # No idea what the server is telling me, must be high
+            $data->{'cmd_status'} = 'NOTOK';
+            $data->{'cmd_return'} = 'Server returned status code '.$response->code.' which I don\'t understand';
+            return $data;
+        }
     }
 }
 
-# When a command is processed by the remote server & a result is sent back, it
-# also includes other relevant info. We strip those & just return the value we're
-# interested in. And if there is an error, ErrorHandler will handle it.
-sub _get_command_result {
-    my ($self, $resp) = @_;
-    my $error_handler = new Selenium::Remote::ErrorHandler;
-    
-    if (defined $resp) {
-        if (ref $resp eq 'HASH') {
-            if (defined $resp->{'status'} && $resp->{'status'} != 0) {
-                return $error_handler->process_error($resp);
-            }
-            else {
-                # For new session we need to grab the session id.
-                if ((ref $resp->{'value'} eq 'HASH') &&
-                    ($resp->{'value'}->{'class'} eq 'org.openqa.selenium.remote.DesiredCapabilities')) {
-                        return $resp;
-                }
-                else {
-                    return $resp->{'value'};
-                }
-            }
-        }
-        else
-        {
-            return $resp;
-        }
-    }
-    else {
-        # If there is no value or status assume success
-        return 1;
-    }
-}
 
 1;
 

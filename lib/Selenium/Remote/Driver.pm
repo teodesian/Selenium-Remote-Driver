@@ -135,8 +135,9 @@ sub _execute_command {
     $res->{'session_id'} = $self->{'session_id'};
     my $resource = $self->{commands}->get_params($res);
     if ($resource) {
-        return $self->{remote_conn}
+        my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
+        return $resp;
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
