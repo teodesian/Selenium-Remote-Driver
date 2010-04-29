@@ -24,6 +24,29 @@ sub click {
     return $driver->_execute_command($res);
 }
 
+sub get_value {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementValue', 'id' => $self->{id} };
+    return $driver->_execute_command($res);
+}
+
+sub submit {
+    my ($self) = @_;
+    my $res = { 'command' => 'submitElement', 'id' => $self->{id} };
+    return $driver->_execute_command($res);
+}
+
+sub send_keys {
+    my ($self, $string) = @_;
+    my $res = { 'command' => 'sendKeysToElement', 'id' => $self->{id} };
+    my $params = {
+        'value' => $string
+    };
+    return $driver->_execute_command($res, $params);
+}
+
+
+
 
 
 1;
