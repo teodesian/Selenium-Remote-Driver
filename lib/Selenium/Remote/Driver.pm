@@ -8,7 +8,20 @@ use Carp qw(croak);
 
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
-use Selenium::Remote::ErrorHandler;
+use Selenium::Remote::WebElement;
+
+use constant FINDERS => {
+        class             => 'ClassName',
+        class_name        => 'ClassName',
+        css               => 'CssSelector',
+        id                => 'Id',
+        link              => 'LinkText',
+        link_text         => 'LinkText',
+        name              => 'Name',
+        partial_link_text => 'PartialLinkText',
+        tag_name          => 'TagName',
+        xpath             => 'Xpath',
+};
 
 =head1 NAME
 
@@ -466,7 +479,7 @@ sub set_speed {
     if ( not defined $speed ) {
         return 'Speed not provided.';
     }
-    my $res    = { 'command' => 'switchToWindow' };
+    my $res    = { 'command' => 'setSpeed' };
     my $params = { 'speed'   => $speed };
     return $self->_execute_command( $res, $params );
 }
@@ -497,11 +510,13 @@ sub add_cookie {
     $secure = ( defined $secure ) ? $json_true : $json_false;
 
     my $params = {
-        'name'   => $name,
-        'value'  => $value,
-        'path'   => $path,
-        'domain' => $domain,
-        'secure' => $secure,
+        'cookie' => {
+            'name'   => $name,
+            'value'  => $value,
+            'path'   => $path,
+            'domain' => $domain,
+            'secure' => $secure,
+        }
     };
 
     return $self->_execute_command( $res, $params );
@@ -529,33 +544,62 @@ sub get_page_source {
 }
 
 sub find_element {
-
-    # TODO: Find out what the locator strategies are - I am assuming xpath, css
-    # dom etc.
-
     my ( $self, $query, $method ) = @_;
     if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? $method : 'xpath';
-    my $res = { 'command' => 'findElement' };
-    my $params = { 'using' => $using, 'value' => $query };
-    return $self->_execute_command( $res, $params );
+    my $ret;
+    if (exists FINDERS->{$using}) {
+        my $res = { 'command' => 'findElement' };
+        my $params = { 'using' => $using, 'value' => $query };
+        my $ret_data = $self->_execute_command( $res, $params );
+        if (defined $ret_data->{'cmd_error'}) {
+            $ret = $ret_data;
+        }
+        else {
+            $ret_data->{'cmd_return'} = new Selenium::Remote::WebElement($ret_data->{'cmd_return'}->{ELEMENT}, $self);
+            $ret = $ret_data;
+        }
+    }
+    else {
+        $ret = "Bad method, expected - class, class_name, css, id, link,
+                link_text, partial_link_text, name, tag_name, xpath";
+    }
+    return $ret;
 }
 
 sub find_elements {
-
-    # TODO: Find out what the locator strategies are - I am assuming xpath, css
-    # dom etc.
-
     my ( $self, $query, $method ) = @_;
     if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? $method : 'xpath';
-    my $res = { 'command' => 'findElements' };
-    my $params = { 'using' => $using, 'value' => $query };
-    return $self->_execute_command( $res, $params );
+    my $ret;
+    if (exists FINDERS->{$using}) {
+        my $res = { 'command' => 'findElements' };
+        my $params = { 'using' => $using, 'value' => $query };
+        my $ret_data = $self->_execute_command( $res, $params );
+        if (defined $ret_data->{'cmd_error'}) {
+            $ret = $ret_data;
+        }
+        else {
+            my $elem_obj_arr;
+            my $i = 0;
+            my $elem_arr = $ret_data->{'cmd_return'};
+            foreach (@$elem_arr) {
+                $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+                $i++;
+            }
+            $ret_data->{'cmd_return'} = $elem_obj_arr;
+            $ret = $ret_data;
+        }
+    }
+    else {
+        $ret = "Bad method, expected - class, class_name, css, id, link,
+                link_text, partial_link_text, name, tag_name, xpath";
+    }
+    return $ret;
 }
 
 sub get_active_element {
@@ -605,17 +649,7 @@ sub find_child_elements {
     return $self->_execute_command( $res, $params );
 }
 
-sub click {
 
-    #TODO: verify - my local tests are failing
-
-    my ( $self, $id ) = @_;
-    if ( not defined $id ) {
-        return "Element id not provided";
-    }
-    my $res = { 'command' => 'clickElement', 'id' => $id };
-    return $self->_execute_command($res);
-}
 
 1;
 
