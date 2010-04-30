@@ -195,27 +195,24 @@ sub new {
         },
         'getElementText' => {
                 'method' => 'GET',
-                'url' =>
-                  "session/:sessionId/element/:id/text"
+                'url' => "session/:sessionId/element/:id/text"
         },
         'getElementValueOfCssProperty' => {
             'method' => 'GET',
-            'url' =>
-"session/:sessionId/element/:id/css/:propertyName"
-        },
-        'getVisible' => {
-                       'method' => 'GET',
-                       'url' => "session/:sessionId/visible"
+            'url' => "session/:sessionId/element/:id/css/:propertyName"
         },
         'hoverOverElement' => {
                'method' => 'POST',
-               'url' =>
-                 "session/:sessionId/element/:id/hover"
+               'url' => "session/:sessionId/element/:id/hover"
         },
-        'setVisible' => {
-                       'method' => 'POST',
-                       'url' => "session/:sessionId/visible"
-        },
+        #'setVisible' => {
+        #               'method' => 'POST',
+        #               'url' => "session/:sessionId/visible"
+        #},
+        #'getVisible' => {
+        #               'method' => 'GET',
+        #               'url' => "session/:sessionId/visible"
+        #},
     };
 
     bless $self, $class or die "Can't bless $class: $!";

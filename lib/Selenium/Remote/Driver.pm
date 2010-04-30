@@ -602,6 +602,66 @@ sub find_elements {
     return $ret;
 }
 
+sub find_child_element {
+    my ( $self, $elem, $query, $method ) = @_;
+    my $ret;
+    if ( ( not defined $elem ) || ( not defined $query ) ) {
+        return "Missing parameters";
+    }
+    my $using = ( defined $method ) ? $method : 'xpath';
+    if (exists FINDERS->{$using}) {
+        my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
+        my $params = { 'using' => $using, 'value' => $query };
+        my $ret_data = $self->_execute_command( $res, $params );
+        if (defined $ret_data->{'cmd_error'}) {
+            $ret = $ret_data;
+        }
+        else {
+            $ret_data->{'cmd_return'} = new Selenium::Remote::WebElement($ret_data->{'cmd_return'}->{ELEMENT}, $self);
+            $ret = $ret_data;
+        }
+    }
+    else {
+        $ret = "Bad method, expected - class, class_name, css, id, link,
+                link_text, partial_link_text, name, tag_name, xpath";
+    }
+    return $ret;
+}
+
+sub find_child_elements {
+    my ( $self, $elem, $query, $method ) = @_;
+    my $ret;
+    if ( ( not defined $elem ) || ( not defined $query ) ) {
+        return "Missing parameters";
+    }
+    my $using = ( defined $method ) ? $method : 'xpath';
+    if (exists FINDERS->{$using}) {
+        my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
+        my $params = { 'using' => $using, 'value' => $query };
+        my $ret_data = $self->_execute_command( $res, $params );
+        if (defined $ret_data->{'cmd_error'}) {
+            $ret = $ret_data;
+        }
+        else {
+            my $elem_obj_arr;
+            my $i = 0;
+            my $elem_arr = $ret_data->{'cmd_return'};
+            foreach (@$elem_arr) {
+                $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+                $i++;
+            }
+            $ret_data->{'cmd_return'} = $elem_obj_arr;
+            $ret = $ret_data;
+        }
+    }
+    else {
+        $ret = "Bad method, expected - class, class_name, css, id, link,
+                link_text, partial_link_text, name, tag_name, xpath";
+    }
+
+    return $ret;
+}
+
 sub get_active_element {
     my ($self) = @_;
     my $res = { 'command' => 'getActiveElement' };
@@ -619,36 +679,14 @@ sub describe_element {
     return "Not yet supported";
 }
 
-sub find_child_element {
-
-    # TODO: same as find_element - no idea what locator strategy string is & no
-    # idea what the id is.
-
-    my ( $self, $id, $query, $method ) = @_;
-    if ( ( not defined $id ) || ( not defined $query ) ) {
-        return "Missing parameters";
-    }
-    my $using = ( defined $method ) ? $method : 'xpath';
-    my $res = { 'command' => 'findChildElement', 'id' => $id };
-    my $params = { 'using' => $using, 'value' => $query };
-    return $self->_execute_command( $res, $params );
+sub compare_elements {
+    my ($self, $elem1, $elem2) = @_;
+    my $res = { 'command' => 'elementEquals',
+                'id' => $elem1->{id},
+                'other' => $elem2->{id}
+              };
+    return $self->_execute_command($res);
 }
-
-sub find_child_elements {
-
-    # TODO: same as find_element - no idea what locator strategy string is & no
-    # idea what the id is.
-
-    my ( $self, $id, $query, $method ) = @_;
-    if ( ( not defined $id ) || ( not defined $query ) ) {
-        return "Missing parameters";
-    }
-    my $using = ( defined $method ) ? $method : 'xpath';
-    my $res = { 'command' => 'findChildElements', 'id' => $id };
-    my $params = { 'using' => $using, 'value' => $query };
-    return $self->_execute_command( $res, $params );
-}
-
 
 
 1;
