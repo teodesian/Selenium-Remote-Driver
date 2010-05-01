@@ -23,6 +23,8 @@ use constant FINDERS => {
         xpath             => 'Xpath',
 };
 
+our $VERSION = "0.10";
+
 =head1 NAME
 
 Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
