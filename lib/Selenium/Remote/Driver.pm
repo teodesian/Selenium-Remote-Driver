@@ -114,6 +114,7 @@ sub new {
         session_id         => undef,
         remote_conn        => undef,
         commands           => $ress,
+        auto_close         => 1, # by default we will close remote session on DESTROY
     };
     bless $self, $class or die "Can't bless $class: $!";
 
@@ -140,6 +141,11 @@ sub new {
     }
 
     return $self;
+}
+
+sub DESTROY {
+    my ($self) = @_;
+    $self->quit() if ($self->{auto_close} && defined $self->{session_id});
 }
 
 # This is an internal method used the Driver & is not supposed to be used by
@@ -223,7 +229,8 @@ sub set_implicit_wait_timeout {
 sub quit {
     my $self = shift;
     my $res = { 'command' => 'quit' };
-    return $self->_execute_command($res);
+    $self->_execute_command($res);
+    $self->{session_id} = undef;
 }
 
 =head2 get_current_window_handle
