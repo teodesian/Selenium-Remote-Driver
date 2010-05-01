@@ -201,6 +201,13 @@ sub get_capabilities {
     return $self->_execute_command($res);
 }
 
+sub set_implicit_wait_timeout {
+    my ($self, $ms) = @_;
+    my $res  = {'command' => 'setImplicitWaitTimeout'};
+    my $params  = {'ms' => $ms};
+    return $self->_execute_command($res, $params);
+}
+
 =head2 quit
 
  Description:
@@ -380,23 +387,34 @@ sub refresh {
 }
 
 sub execute_script {
-
-    # TODO: this method is not finished
-
     my ( $self, $script, @args ) = @_;
-    if ( not defined $script ) {
-        return 'No script provided';
-    }
-    my $res  = { 'command'    => 'executeScript' };
-    my $args = { 'session_id' => $self->{'session_id'}, };
-    my $resource = $self->{commands}->getParams( $res, $args );
-
-    if ($resource) {
-        return $self->{remote_conn}
-          ->request( $resource->{'method'}, $resource->{'url'} );
+    if ($self->javascript) {
+        if ( not defined $script ) {
+            return 'No script provided';
+        }
+        my $res  = { 'command'    => 'executeScript' };
+        
+        # Check the args array if the elem obj is provided & replace it with
+        # JSON representation
+        for (my $i=0; $i<@args; $i++) {
+            if (ref $args[$i] eq 'Selenium::Remote::WebElement') {
+                $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
+            }
+        }
+        
+        my $params = {'args' => @args};
+        my $ret = $self->_execute_command($res, $params);
+        
+        # replace any ELEMENTS with WebElement
+        if (exists $ret->{'cmd_return'}->{'ELEMENT'}) {
+            $ret->{'cmd_return'} =
+                new Selenium::Remote::WebElement(
+                                        $ret->{'cmd_return'}->{ELEMENT}, $self);
+        }
+        return $ret;
     }
     else {
-        croak "Couldn't retrieve command $res settings\n";
+        return 'Javascript is not enabled on remote driver instance.';
     }
 }
 
@@ -418,8 +436,6 @@ sub screenshot {
     my $res = { 'command' => 'screenshot' };
     return $self->_execute_command($res);
 }
-
-
 
 sub switch_to_frame {
     my ( $self, $id ) = @_;
@@ -483,9 +499,6 @@ sub set_speed {
     my $params = { 'speed'   => $speed };
     return $self->_execute_command( $res, $params );
 }
-
-# TODO: Verify all these cookied methods - some return errors some don't
-#       No idea whether they're implemented on the server yet
 
 sub get_all_cookies {
     my ($self) = @_;
