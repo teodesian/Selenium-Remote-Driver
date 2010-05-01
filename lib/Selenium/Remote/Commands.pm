@@ -16,6 +16,10 @@ sub new {
                           'method' => 'GET',
                           'url'    => 'session/:sessionId'
         },
+        'setImplicitWaitTimeout' => {
+                        'method' => 'POST',
+                        'url'    => 'session/:session_id/timeouts/implicit_wait'
+        },
         'quit' => {
                     'method' => 'DELETE',
                     'url'    => "session/:sessionId"
