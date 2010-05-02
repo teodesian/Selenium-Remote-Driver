@@ -11,7 +11,7 @@ build_requires 'HTTP::Headers';
 build_requires 'HTTP::Request';
 build_requires 'Carp';
 build_requires 'JSON';
-build_requires 'String::TT';
+build_requires 'Net::Ping';
 
 auto_install;
 

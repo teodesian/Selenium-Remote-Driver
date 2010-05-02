@@ -1,5 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
-0.01    Date/time
+0.10    5-2-2010
+        Implemented support for JSON wire protocol as of a4 release of
+        Selenium 2.0
+0.01    2-21-2010
         First version, released on an unsuspecting world.
 

@@ -3,7 +3,9 @@ MANIFEST
 Makefile.PL
 README
 lib/Selenium/Remote/Driver.pm
+lib/Selenium/Remote/WebElement.pm
+lib/Selenium/Remote/RemoteConnection.pm
+lib/Selenium/Remote/ErrorHandler.pm
+lib/Selenium/Remote/Commands.pm
 t/00-load.t
-t/manifest.t
-t/pod-coverage.t
-t/pod.t
+t/01-driver.t
