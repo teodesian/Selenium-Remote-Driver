@@ -105,7 +105,10 @@ So a rule of thumb while invoking methods on the driver is to check whether the
 return type is a hash or not. If it is a hash then check for the value of
 cmd_status & take necessary actions accordingly. All the method PODs will list
 what the cmd_return will contain as that is what an end user is mostly interested
-in.
+in. Also, for some of the commands, server does not return any thing back. And
+Server Response Hash will contain a generic string stating that server didn't
+return any thing back. But if cmd_status value is 'OK', then you can safely
+assume that command executed successfully on the server.
 
 =head2 WebElement
 
@@ -134,7 +137,7 @@ created when you use the find_* methods.
     Constructor for Driver. It'll instantiate the object if it can communicate
     with the Selenium RC server.
 
- Input Parameter: 1
+ Input: 7 (all optional)
     desired_capabilities - HASH - Following options are accepted:
       Optional:
         'remote_server_addr' - <string> - IP or FQDN of the RC server machine
@@ -162,8 +165,13 @@ created when you use the find_* methods.
  Usage:
     my $driver = new Selenium::Remote::Driver;
     or
-    my $driver = new Selenium::Remote::Driver('browser_name' => '10.37.129.2',
+    my $driver = new Selenium::Remote::Driver('browser_name' => 'firefox',
                                               'platform' => 'MAC')
+    or
+    my $driver = new Selenium::Remote::Driver('remote_server_addr' => '10.10.1.1',
+                                              'port' => '2222',
+                                              auto_close => 0
+                                              )
 
 =cut
 
@@ -262,7 +270,7 @@ sub new_session {
     Retrieve the capabilities of the specified session.
 
  Output:
-    'cmd_return' will contain a hash of all the capabilities.
+    HASH of all the capabilities.
 
  Usage:
     my $capab = $driver->get_capabilities();
@@ -328,7 +336,7 @@ sub quit {
     Retrieve the current window handle.
 
  Output:
-    String - the window handle
+    STRING - the window handle
 
  Usage:
     print $driver->get_current_window_handle();
@@ -347,7 +355,7 @@ sub get_current_window_handle {
     Retrieve the list of window handles used in the session.
 
  Output:
-    Array of string - list of the window handles
+    ARRAY of STRING - list of the window handles
 
  Usage:
     print Dumper($driver->get_current_window_handles());
@@ -366,7 +374,7 @@ sub get_window_handles {
     Retrieve the url of the current page
 
  Output:
-    String - url
+    STRING - url
 
  Usage:
     print $driver->get_current_url();
@@ -385,7 +393,7 @@ sub get_current_url {
     Navigate to a given url. This is same as get() method.
     
  Input:
-    String - url
+    STRING - url
 
  Usage:
     $driver->navigate('http://www.google.com');
@@ -403,7 +411,7 @@ sub navigate {
     Navigate to a given url
     
  Input:
-    String - url
+    STRING - url
 
  Usage:
     $driver->get('http://www.google.com');
@@ -423,7 +431,7 @@ sub get {
     Get the current page title
 
  Output:
-    String - Page title
+    STRING - Page title
 
  Usage:
     print $driver->get_title();
@@ -452,7 +460,7 @@ sub go_back {
     return $self->_execute_command($res);
 }
 
-=head2 go_back
+=head2 go_forward
 
  Description:
     Equivalent to hitting the forward button on the browser.
@@ -483,6 +491,28 @@ sub refresh {
     my $res = { 'command' => 'goForward' };
     return $self->_execute_command($res);
 }
+
+=head2 execute_script
+
+ Description:
+    Inject a snippet of JavaScript into the page and return its result.
+    WebElements that should be passed to the script as an argument should be
+    specified in the arguments array as WebElement object. Likewise,
+    any WebElements in the script result will be returned as WebElement object.
+    
+ Input: 2 (1 optional)
+    Required:
+        STRING - Javascript to execute on the page
+    Optional:
+        ARRAY - list of arguments that need to be passed to the script.
+
+ Output:
+    {*} - Varied, depending on the type of result expected back from the script.
+
+ Usage:
+    $driver->switch_to_frame('frame_1');
+
+=cut
 
 sub execute_script {
     my ( $self, $script, @args ) = @_;
@@ -522,7 +552,7 @@ sub execute_script {
     Get a screenshot of the current page as a base64 encoded image.
 
  Output:
-    String - base64 encoded image
+    STRING - base64 encoded image
 
  Usage:
     print $driver->go_screenshot();
@@ -535,6 +565,22 @@ sub screenshot {
     return $self->_execute_command($res);
 }
 
+=head2 switch_to_frame
+
+ Description:
+    Change focus to another frame on the page. If the frame ID is null, the
+    server will switch to the page's default content.
+    
+ Input: 1
+    Required:
+        {STRING | NUMBER | NULL} - ID of the frame which can be one of the three
+                                   mentioned.
+
+ Usage:
+    $driver->switch_to_frame('frame_1');
+
+=cut
+
 sub switch_to_frame {
     my ( $self, $id ) = @_;
     my $json_null = JSON::null;
@@ -544,6 +590,22 @@ sub switch_to_frame {
     my $params = { 'id'      => $id };
     return $self->_execute_command( $res, $params );
 }
+
+=head2 switch_to_window
+
+ Description:
+    Change focus to another window. The window to change focus to may be
+    specified by its server assigned window handle, or by the value of its name
+    attribute.
+
+ Input: 1
+    Required:
+        STRING - Window handle or the Window name
+
+ Usage:
+    $driver->switch_to_window('MY Homepage');
+
+=cut
 
 sub switch_to_window {
     my ( $self, $name ) = @_;
@@ -562,7 +624,7 @@ sub switch_to_window {
     specific and not covered by the Driver.
 
  Output:
-    String - One of these: SLOW, MEDIUM, FAST
+    STRING - One of these: SLOW, MEDIUM, FAST
 
  Usage:
     print $driver->get_speed();
@@ -581,7 +643,7 @@ sub get_speed {
     Set the user input speed.
 
  Input:
-    String - One of these: SLOW, MEDIUM, FAST
+    STRING - One of these: SLOW, MEDIUM, FAST
 
  Usage:
     $driver->set_speed('MEDIUM');
@@ -598,11 +660,50 @@ sub set_speed {
     return $self->_execute_command( $res, $params );
 }
 
+=head2 get_all_cookies
+
+ Description:
+    Retrieve all cookies visible to the current page. Each cookie will be
+    returned as a HASH reference with the following keys & their value types:
+    
+    'name' - STRING
+    'value' - STRING
+    'path' - STRING
+    'domain' - STRING
+    'secure' - BOOLEAN
+
+ Output:
+    ARRAY of HASHES - list of all the cookie hashes
+
+ Usage:
+    print Dumper($driver->get_all_cookies());
+
+=cut
+
 sub get_all_cookies {
     my ($self) = @_;
     my $res = { 'command' => 'getAllCookies' };
     return $self->_execute_command($res);
 }
+
+=head2 add_cookie
+
+ Description:
+    Set a cookie on the domain.
+
+ Input: 5 (1 optional)
+    Required:
+        'name' - STRING
+        'value' - STRING
+        'path' - STRING
+        'domain' - STRING
+    Optional:
+        'secure' - BOOLEAN - default is false.
+
+ Usage:
+    $driver->add_cookie('foo', 'bar', '/', '.google.com', 0)
+
+=cut
 
 sub add_cookie {
     my ( $self, $name, $value, $path, $domain, $secure ) = @_;
@@ -633,11 +734,36 @@ sub add_cookie {
     return $self->_execute_command( $res, $params );
 }
 
+=head2 delete_all_cookies
+
+ Description:
+    Delete all cookies visible to the current page.
+
+ Usage:
+    $driver->delete_all_cookies();
+
+=cut
+
 sub delete_all_cookies {
     my ($self) = @_;
     my $res = { 'command' => 'deleteAllCookies' };
     return $self->_execute_command($res);
 }
+
+=head2 delete_cookie_named
+
+ Description:
+    Delete the cookie with the given name. This command will be a no-op if there
+    is no such cookie visible to the current page.
+
+ Input: 1
+    Required:
+        STRING - name of cookie to delete
+
+ Usage:
+    $driver->delete_cookie_named('foo');
+
+=cut
 
 sub delete_cookie_named {
     my ( $self, $cookie_name ) = @_;
@@ -648,11 +774,47 @@ sub delete_cookie_named {
     return $self->_execute_command($res);
 }
 
+=head2 get_page_source
+
+ Description:
+    Get the current page source.
+
+ Output:
+    STRING - The page source.
+
+ Usage:
+    print $driver->get_page_source();
+
+=cut
+
 sub get_page_source {
     my ($self) = @_;
     my $res = { 'command' => 'getPageSource' };
     return $self->_execute_command($res);
 }
+
+=head2 find_element
+
+ Description:
+    Search for an element on the page, starting from the document root. The
+    located element will be returned as a WebElement object.
+
+ Input: 2 (1 optional)
+    Required:
+        STRING - The search target.
+    Optional:
+        STRING - Locator scheme to use to search the element, available schemes:
+                 {class, class_name, css, id, link, link_text, partial_link_text,
+                  tag_name, name, xpath}
+                 Defaults to 'xpath'.
+
+ Output:
+    Selenium::Remote::WebElement - WebElement Object
+    
+ Usage:
+    $driver->find_element("//input[\@name='q']");
+
+=cut
 
 sub find_element {
     my ( $self, $query, $method ) = @_;
@@ -679,6 +841,29 @@ sub find_element {
     }
     return $ret;
 }
+
+=head2 find_elements
+
+ Description:
+    Search for multiple elements on the page, starting from the document root.
+    The located elements will be returned as an array of WebElement object.
+
+ Input: 2 (1 optional)
+    Required:
+        STRING - The search target.
+    Optional:
+        STRING - Locator scheme to use to search the element, available schemes:
+                 {class, class_name, css, id, link, link_text, partial_link_text,
+                  tag_name, name, xpath}
+                 Defaults to 'xpath'.
+
+ Output:
+    ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects
+    
+ Usage:
+    $driver->find_elements("//input");
+
+=cut
 
 sub find_elements {
     my ( $self, $query, $method ) = @_;
@@ -713,6 +898,32 @@ sub find_elements {
     return $ret;
 }
 
+=head2 find_child_element
+
+ Description:
+    Search for an element on the page, starting from the identified element. The
+    located element will be returned as a WebElement object.
+
+ Input: 3 (1 optional)
+    Required:
+        Selenium::Remote::WebElement - WebElement object from where you want to
+                                       start searching.
+        STRING - The search target.
+    Optional:
+        STRING - Locator scheme to use to search the element, available schemes:
+                 {class, class_name, css, id, link, link_text, partial_link_text,
+                  tag_name, name, xpath}
+                 Defaults to 'xpath'.
+
+ Output:
+    Selenium::Remote::WebElement - WebElement Object
+    
+ Usage:
+    my $elem1 = $driver->find_element("//select[\@name='ned']");
+    my $child = $driver->find_child_element($elem1, "//option[\@value='es_ar']");
+
+=cut
+
 sub find_child_element {
     my ( $self, $elem, $query, $method ) = @_;
     my $ret;
@@ -738,6 +949,33 @@ sub find_child_element {
     }
     return $ret;
 }
+
+=head2 find_child_elements
+
+ Description:
+    Search for multiple element on the page, starting from the identified
+    element. The located elements will be returned as an array of WebElement
+    objects.
+
+ Input: 3 (1 optional)
+    Required:
+        Selenium::Remote::WebElement - WebElement object from where you want to
+                                       start searching.
+        STRING - The search target.
+    Optional:
+        STRING - Locator scheme to use to search the element, available schemes:
+                 {class, class_name, css, id, link, link_text, partial_link_text,
+                  tag_name, name, xpath}
+                 Defaults to 'xpath'.
+
+ Output:
+    ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects.
+    
+ Usage:
+    my $elem1 = $driver->find_element("//select[\@name='ned']");
+    my $child = $driver->find_child_elements($elem1, "//option");
+
+=cut
 
 sub find_child_elements {
     my ( $self, $elem, $query, $method ) = @_;
@@ -773,12 +1011,27 @@ sub find_child_elements {
     return $ret;
 }
 
+=head2 get_active_element
+
+ Description:
+    Get the element on the page that currently has focus.. The located element
+    will be returned as a WebElement object.
+
+ Output:
+    Selenium::Remote::WebElement - WebElement Object
+    
+ Usage:
+    $driver->get_active_element();
+
+=cut
+
 sub get_active_element {
     my ($self) = @_;
     my $res = { 'command' => 'getActiveElement' };
     return $self->_execute_command($res);
 }
 
+# Not yet supported on the server
 sub describe_element {
     my ( $self, $element ) = @_;
 
@@ -789,6 +1042,24 @@ sub describe_element {
     #return $self->_execute_command($res);
     return "Not yet supported";
 }
+
+=head2 compare_elements
+
+ Description:
+    Test if two element IDs refer to the same DOM element.
+
+ Input: 2
+    Required:
+        Selenium::Remote::WebElement - WebElement Object
+        Selenium::Remote::WebElement - WebElement Object
+
+ Output:
+    BOOLEAN
+    
+ Usage:
+    $driver->compare_elements($elem_obj1, $elem_obj2);
+
+=cut
 
 sub compare_elements {
     my ($self, $elem1, $elem2) = @_;
@@ -812,11 +1083,11 @@ L<http://code.google.com/p/selenium/>.
 =head1 BUGS
 
 The Selenium issue tracking system is available online at
-L<http://code.google.com/p/selenium/issues/list>.
+L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
 =head1 AUTHOR
 
-Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
+Perl Bindings for Selenium Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
 
 =head1 LICENSE
 

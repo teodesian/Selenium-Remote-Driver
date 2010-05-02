@@ -258,11 +258,11 @@ L<http://code.google.com/p/selenium/>.
 =head1 BUGS
 
 The Selenium issue tracking system is available online at
-L<http://code.google.com/p/selenium/issues/list>.
+L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
 =head1 AUTHOR
 
-Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
+Perl Bindings for Selenium Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
 
 =head1 LICENSE
 
