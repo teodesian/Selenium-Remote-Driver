@@ -47,17 +47,80 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
 Selenium is a test tool that allows you to write
 automated web application UI tests in any programming language against
 any HTTP website using any mainstream JavaScript-enabled browser. This module is
-an implementation of the Perl Bindings (client) for the Remote driver that
-Selenium provides. You can find bindings for other languages at this location:
+an implementation of the client for the Remote driver that Selenium provides.
+You can find bindings for other languages at this location:
 
 L<http://code.google.com/p/selenium/>
 
-This module sends commands directly to the Server using simple HTTP requests.
-Using this module together with the Selenium Server, you can automatically
-control any supported browser.
+This module sends commands directly to the Server using HTTP. Using this module
+together with the Selenium Server, you can automatically control any supported
+browser. To use this module, you need to have already downloaded and started
+the Selenium Server (Selenium Server is a Java application).
 
-To use this module, you need to have already downloaded and started
-the Selenium Server.  (The Selenium Server is a Java application.)
+=cut
+
+=head1 USAGE (read this first)
+
+=head2 Server Response Hash
+
+Every method in this module returns either a string or a hash reference. The
+string usually means that it has received improper or not received any input.
+And that string explains what was wrong. This also means that driver has never
+sent any commands to the remote server.
+
+If the methods return a hash reference, that means the driver has sent a command
+to the remote server & it has received a response. The driver processes that
+response & creates a hash with specific keys & returns it back to the end user.
+We shall refer to this hash reference as B<Server Response Hash>. The keys are:
+
+=over
+
+=item cmd_status
+
+The value will either be 'OK' or 'NOTOK'. OK means that server successfully
+executed the command & NOTOK means that there was an error encountered on the
+server while executing the command. Check cmd_error for further details.
+
+=item cmd_return
+
+This hash key will contain the value returned from the server. It could be of
+any data type & each method's POD will list that information.
+
+=item cmd_error
+
+If there was an error on the server while executing the command, this key will
+be defined. The value will in turn contain information in a hash with 'stackTrace'
+as a key which lists the stack trace of the error encountered on the server &
+'error' which has human readable text of the actual error. It can also contain
+a 'screenshot' - a base64 encoded image if the server returns one.
+
+=item session_id
+
+Every successfull command will contain the session id of the current session
+against which the command was executed.
+
+=back
+
+So a rule of thumb while invoking methods on the driver is to check whether the
+return type is a hash or not. If it is a hash then check for the value of
+cmd_status & take necessary actions accordingly. All the method PODs will list
+what the cmd_return will contain as that is what an end user is mostly interested
+in.
+
+=head2 WebElement
+
+Selenium Webdriver represents all the HTML elements as WebElement, which is
+in turn represented by Selenium::Remote::WebElement module. So any method that
+deals with WebElements will return and/or expect WebElement object. The POD for
+that module describes all the methods that perform various actions on the
+WebElements like click, submit etc.
+
+To interact with any WebElement you have to first "find" it, read the POD for
+find_element or find_elements for further info. Once you find the required element
+then you can perform various actions. If you don't call find_* method first, all
+your further actions will fail for that element. Finally, just remember that you
+don't have to instantiate WebElement objects at all - they will be automatically
+created when you use the find_* methods.
 
 =cut
 
@@ -81,13 +144,17 @@ the Selenium Server.  (The Selenium Server is a Java application.)
         'platform' - <string> - desired platform:
                                 {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
         'javascript' - <boolean> - whether javascript should be supported
+        'auto_close' - <boolean> - whether driver should end session on remote
+                                   server on close.
         
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
+            'port'         => '4444'
             'browser_name' => 'firefox'
             'version'      => ''
             'platform'     => 'ANY'
             'javascript'   => 1
+            'auto_close'   => 1
 
  Output:
     Remote Driver object
@@ -149,8 +216,8 @@ sub DESTROY {
 }
 
 # This is an internal method used the Driver & is not supposed to be used by
-# end user. This method is used by Driver to set up all the parameters (url & JSON),
-# send commands & receive response from the server.
+# end user. This method is used by Driver to set up all the parameters
+# (url & JSON), send commands & receive processed response from the server.
 sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->{'session_id'};
@@ -195,7 +262,7 @@ sub new_session {
     Retrieve the capabilities of the specified session.
 
  Output:
-    A hash of all the values.
+    'cmd_return' will contain a hash of all the capabilities.
 
  Usage:
     my $capab = $driver->get_capabilities();
@@ -208,6 +275,28 @@ sub get_capabilities {
     my $res  = {'command' => 'getCapabilities'};
     return $self->_execute_command($res);
 }
+
+=head2 set_implicit_wait_timeout
+
+ Description:
+    Set the amount of time the driver should wait when searching for elements.
+    When searching for a single element, the driver will poll the page until
+    an element is found or the timeout expires, whichever occurs first.
+    When searching for multiple elements, the driver should poll the page until
+    at least one element is found or the timeout expires, at which point it
+    will return an empty list. If this method is never called, the driver will
+    default to an implicit wait of 0ms.
+ 
+ Input:
+    Time in milliseconds.
+
+ Output:
+    Server Response Hash with no data returned back from the server.
+
+ Usage:
+    $driver->set_implicit_wait_timeout(10);
+
+=cut
 
 sub set_implicit_wait_timeout {
     my ($self, $ms) = @_;
