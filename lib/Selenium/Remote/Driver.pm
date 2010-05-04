@@ -821,9 +821,9 @@ sub find_element {
     if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
-    my $using = ( defined $method ) ? $method : 'xpath';
+    my $using = ( defined $method ) ? FINDERS->{$method} : 'Xpath';
     my $ret;
-    if (exists FINDERS->{$using}) {
+    if (defined $using) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
