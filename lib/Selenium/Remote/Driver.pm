@@ -14,13 +14,13 @@ use constant FINDERS => {
         class             => 'ClassName',
         class_name        => 'ClassName',
         css               => 'CssSelector',
-        id                => 'Id',
+        id                => 'id',
         link              => 'LinkText',
         link_text         => 'LinkText',
-        name              => 'Name',
+        name              => 'name',
         partial_link_text => 'PartialLinkText',
         tag_name          => 'TagName',
-        xpath             => 'Xpath',
+        xpath             => 'xpath',
 };
 
 our $VERSION = "0.10";
@@ -821,7 +821,7 @@ sub find_element {
     if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
-    my $using = ( defined $method ) ? FINDERS->{$method} : 'Xpath';
+    my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
     my $ret;
     if (defined $using) {
         my $res = { 'command' => 'findElement' };
