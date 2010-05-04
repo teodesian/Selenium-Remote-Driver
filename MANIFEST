@@ -8,4 +8,5 @@ lib/Selenium/Remote/RemoteConnection.pm
 lib/Selenium/Remote/ErrorHandler.pm
 lib/Selenium/Remote/Commands.pm
 t/00-load.t
-t/01-driver.t
+t/01-driver-live.t
+t/http-server.pl

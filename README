@@ -7,12 +7,13 @@ This is a very early (read alpha) work of Perl Bindings for Selenium
 Selenium. Please use WWW::Selenium from CPAN if you're interested in
 1.0 bindings. 
 
-The wire protocol has changed for Selenium remote server since alpha1 & 
-this code is currently only going to work with alpha2 release of the server. 
+Bumped up the version to 0.10 and this should work with alpha4 release of
+Selenium 2.0. The unit tests provide some examples on how to invoke the Driver
+& use the module. As of this moment only live testing (i.e. no mocking) is
+implemented as the Selenium server itself is in alpha.
 
-Some of the code & most of the test suites are pretty much boiler 
-plate, so if you really want to play with bleeding edge code, download 
-the code & play with it.
+If you really want to play with bleeding edge code, download the code & play
+with it.
 
 INSTALLATION
 

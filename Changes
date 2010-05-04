@@ -1,8 +1,13 @@
 Revision history for Selenium-Remote-Driver
 
 0.10    5-2-2010
-        Implemented support for JSON wire protocol as of a4 release of
-        Selenium 2.0
+        - Implemented support for JSON wire protocol as of a4 release of
+        Selenium 2.0.
+        - The main Driver & WebElement modules are implemented & functional.
+        - Added unit tests for Driver. As of this moment only live testing is
+        supported as the server itself is alpha & mocking its behavior doesn't
+        help our cause.
+        - Added POD for Driver & WebElement
 0.01    2-21-2010
         First version, released on an unsuspecting world.
 
