@@ -1,10 +1,11 @@
-#!perl -T
+use strict;
 
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'Selenium::Remote::Driver' ) || print "Bail out!
-";
+    if ($^O eq 'MSWin32') {
+        BAIL_OUT 'Unit tests not supported yet, need to be on Mac on Linux with Firefox';
+    }
+    use_ok( 'Selenium::Remote::Driver' ) || print "Bail out!";
 }
 
-diag( "Testing Selenium::Remote::Driver $Selenium::Remote::Driver::VERSION, Perl $], $^X" );

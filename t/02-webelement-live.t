@@ -2,10 +2,20 @@ use strict;
 use warnings;
 
 use Test::More 'no_plan';
+use Net::Ping;
 use Data::Dumper;
 
 BEGIN {
-    use_ok( 'Selenium::Remote::Driver' ) || print "Can't load Driver, giving up.";
+    my $p = Net::Ping->new("tcp", 2);
+    $p->port_number(4444);
+    unless ($p->ping('localhost')) {
+        BAIL_OUT ("Selenium server is not running on localhost:4444");
+        exit;
+    }
+    unless (use_ok( 'Selenium::Remote::Driver')) {
+        BAIL_OUT ("Couldn't load Driver");
+        exit;
+    }
 }
 
 # Start our local http server
