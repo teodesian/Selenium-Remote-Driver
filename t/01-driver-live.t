@@ -96,6 +96,14 @@ FIND: {
         $ret = $driver->find_element('checky', 'name');
         $elem = $ret->{'cmd_return'};
         ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Name');
+        
+        $elem = ($driver->find_element('multi', 'id'))->{'cmd_return'};
+        $ret = $driver->find_child_element($elem, "/option");
+        ok($elem->isa('Selenium::Remote::WebElement'), 'Got child WebElement...');
+        $ret = $elem->get_value();
+        is($ret->{'cmd_return'}, 'Eggs', '...right child WebElement');
+        $ret = $driver->find_child_elements($elem, "//option[\@selected='selected']");
+        is(@{$ret->{'cmd_return'}}, 2, 'Got 2 WebElements');
       }
 
 
