@@ -11,16 +11,15 @@ use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 
 use constant FINDERS => {
-        class             => 'ClassName',
-        class_name        => 'ClassName',
-        css               => 'CssSelector',
-        id                => 'id',
-        link              => 'LinkText',
-        link_text         => 'LinkText',
-        name              => 'name',
-        partial_link_text => 'PartialLinkText',
-        tag_name          => 'TagName',
-        xpath             => 'xpath',
+      class             => 'class name',
+      class_name        => 'class name',
+      id                => 'id',
+      link              => 'link text',
+      link_text         => 'link text',
+      name              => 'name',
+      partial_link_text => 'partial link text',
+      tag_name          => 'tag name',
+      xpath             => 'xpath',
 };
 
 our $VERSION = "0.10";
