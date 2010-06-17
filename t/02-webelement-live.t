@@ -19,7 +19,15 @@ BEGIN {
 }
 
 # Start our local http server
-system("perl t/http-server.pl > /dev/null &");
+if ($^O eq 'MSWin32')
+{
+   system("start \"TEMP_HTTP_SERVER\" /MIN perl t/http-server.pl");
+}
+else
+{
+    system("perl t/http-server.pl > /dev/null &");
+}
+
 
 my $driver = new Selenium::Remote::Driver(browser_name => 'firefox');
 my $website = 'http://localhost:63636';
@@ -83,4 +91,11 @@ QUIT: {
       }
 
 # Kill our HTTP Server
-`ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
+if ($^O eq 'MSWin32')
+{
+   system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
+}
+else
+{
+    `ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
+}
