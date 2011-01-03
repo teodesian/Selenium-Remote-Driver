@@ -55,7 +55,7 @@ WINDOW: {
             $ret = $driver->get_window_handles();
             is(ref $ret->{'cmd_return'}, 'ARRAY', 'Received all window handles');
             $ret = $driver->get_page_source();
-            ok($ret->{'cmd_return'} =~ m/^<html>/i, 'Received page source');
+            ok($ret->{'cmd_return'} =~ m/^<html/i, 'Received page source');
             $ret = $driver->get_speed();
             ok($ret->{'cmd_return'} =~ m/[SLOW|MEDIUM|FAST]/i, 'Got speed...');
             $ret = $driver->set_speed('FAST');
@@ -120,7 +120,7 @@ FIND: {
         $ret = $elem->get_value();
         is($ret->{'cmd_return'}, 'Eggs', '...right child WebElement');
         $ret = $driver->find_child_elements($elem, "//option[\@selected='selected']");
-        is(@{$ret->{'cmd_return'}}, 2, 'Got 2 WebElements');
+        is(@{$ret->{'cmd_return'}}, 4, 'Got 4 WebElements');
       }
 
 
