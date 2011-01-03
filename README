@@ -1,19 +1,16 @@
-*** NOTE: This is not yet ready for end user to use ****
+*** NOTE: Most of the JSON Wire Protocol http://code.google.com/p/selenium/wiki/JsonWireProtocol
+*** 	  has been implemented. This is still beta quality code.
 
 Perl Bindings for Selenium 2.0 Remote Driver
 
-This is a very early (read alpha) work of Perl Bindings for Selenium 
-2.0 bindings. This binding will not work with the 1.0 version of 
-Selenium. Please use WWW::Selenium from CPAN if you're interested in
-1.0 bindings. 
+This is a Perl Binding for Selenium 2.0 Remote Driver, which you should download
+from http://code.google.com/p/selenium; look for selenium-server-standalone.jar.
+This binding will not work with the 1.0 version of Selenium. Please use
+WWW::Selenium from CPAN if you're interested in 1.0 bindings. 
 
-Bumped up the version to 0.10 and this should work with alpha4 release of
+Bumped up the version to 0.10 and this should work with beta1 release of
 Selenium 2.0. The unit tests provide some examples on how to invoke the Driver
-& use the module. As of this moment only live testing (i.e. no mocking) is
-implemented as the Selenium server itself is in alpha.
-
-If you really want to play with bleeding edge code, download the code & play
-with it.
+& use the module.
 
 INSTALLATION
 
