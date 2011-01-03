@@ -28,20 +28,9 @@ perldoc command.
 
     perldoc Selenium::Remote::Driver
 
-You can also look for information at:
-
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Selenium-Remote-Driver
-
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Selenium-Remote-Driver
-
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Selenium-Remote-Driver
-
-    Search CPAN
-        http://search.cpan.org/dist/Selenium-Remote-Driver/
-
+Please file all bugs for this module at:
+    
+	https://github.com/aivaturi/Selenium-Remote-Driver/issues
 
 LICENSE AND COPYRIGHT
 
