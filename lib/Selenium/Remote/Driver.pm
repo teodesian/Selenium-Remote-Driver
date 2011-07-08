@@ -572,11 +572,11 @@ sub execute_script {
             }
         }
         
-        my $params = {'args' => @args};
+        my $params = {'script' => $script, 'args' => [@args]};
         my $ret = $self->_execute_command($res, $params);
         
         # replace any ELEMENTS with WebElement
-        if (exists $ret->{'cmd_return'}->{'ELEMENT'}) {
+        if (ref($ret) and (ref($ret->{'cmd_return'}) eq 'HASH') and exists $ret->{'cmd_return'}->{'ELEMENT'}) {
             $ret->{'cmd_return'} =
                 new Selenium::Remote::WebElement(
                                         $ret->{'cmd_return'}->{ELEMENT}, $self);
