@@ -519,6 +519,21 @@ sub refresh {
     return $self->_execute_command($res);
 }
 
+=head2 javascript
+
+ Description:
+    returns true if javascript is enabled in the driver.
+
+ Usage:
+    if ($driver->javascript) { ...; }
+
+=cut
+
+sub javascript {
+    my $self = shift;
+    return $self->{javascript} == JSON::true;
+}
+
 =head2 execute_script
 
  Description:
