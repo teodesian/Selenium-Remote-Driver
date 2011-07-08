@@ -263,6 +263,34 @@ sub new_session {
     }
 }
 
+=head2 mouse_move_to_location
+
+ Description:
+    Move the mouse by an offset of the specificed element. If no
+    element is specified, the move is relative to the current mouse
+    cursor. If an element is provided but no offset, the mouse will be
+    moved to the center of the element. If the element is not visible,
+    it will be scrolled into view.
+
+ Output:
+    STRING - 
+
+ Usage:
+    # element - the element to move to. If not specified or is null, the offset is relative to current position of the mouse.
+    # xoffset - X offset to move to, relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.
+    # yoffset - Y offset to move to, relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.
+
+    print $driver->mouse_move_to_location(element => e, xoffset => x, yoffset => y);
+
+=cut
+
+sub mouse_move_to_location {
+    my ($self, %params) = @_;
+    $params{element} = $params{element}{id} if exists $params{element};
+    my $res = { 'command' => 'mouseMoveToLocation' };
+    return $self->_execute_command($res, \%params);
+}
+
 =head2 get_capabilities
 
  Description:
