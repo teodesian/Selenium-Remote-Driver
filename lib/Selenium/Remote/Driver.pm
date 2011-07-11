@@ -148,7 +148,8 @@ created when you use the find_* methods.
         'javascript' - <boolean> - whether javascript should be supported
         'auto_close' - <boolean> - whether driver should end session on remote
                                    server on close.
-        
+        'extra_capabilities' - HASH of extra capabilities
+
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
             'port'         => '4444'
@@ -165,13 +166,17 @@ created when you use the find_* methods.
     my $driver = new Selenium::Remote::Driver;
     or
     my $driver = new Selenium::Remote::Driver('browser_name' => 'firefox',
-                                              'platform' => 'MAC')
+                                              'platform' => 'MAC');
     or
     my $driver = new Selenium::Remote::Driver('remote_server_addr' => '10.10.1.1',
                                               'port' => '2222',
                                               auto_close => 0
-                                              )
-
+                                              );
+    or
+    my $driver = new Selenium::Remote::Driver('browser_name'       => 'chrome',
+                                              'platform'           => 'VISTA',
+                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],},
+                                              );
 =cut
 
 sub new {
@@ -208,7 +213,7 @@ sub new {
     $self->{remote_conn} =
       new Selenium::Remote::RemoteConnection( $self->{remote_server_addr},
         $self->{port} );
-    $self->new_session();
+    $self->new_session(delete $args{extra_capabilities});
 
     if ( !( defined $self->{session_id} ) ) {
         croak "Could not establish a session with the remote server\n";
@@ -242,14 +247,16 @@ sub _execute_command {
 # A method that is used by the Driver itself. It'll be called to set the
 # desired capabilities on the server.
 sub new_session {
-    my $self = shift;
+    my ($self, $extra_capabilities) = @_;
+    $extra_capabilities ||= {};
     my $args = {
         'desiredCapabilities' => {
             'browserName'       => $self->{browser_name},
             'platform'          => $self->{platform},
             'javascriptEnabled' => $self->{javascript},
             'version'           => $self->{version},
-        }
+            %$extra_capabilities,
+        },
     };
     my $resp =
       $self->{remote_conn}
