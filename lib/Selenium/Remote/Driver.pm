@@ -596,15 +596,15 @@ sub execute_script {
         my $ret = $self->_execute_command($res, $params);
         
         # replace any ELEMENTS with WebElement
-        if (ref($ret) and (ref($ret->{'cmd_return'}) eq 'HASH') and exists $ret->{'cmd_return'}->{'ELEMENT'}) {
-            $ret->{'cmd_return'} =
+        if (ref($ret) and (ref($ret) eq 'HASH') and exists $ret->{'ELEMENT'}) {
+            $ret =
                 new Selenium::Remote::WebElement(
-                                        $ret->{'cmd_return'}->{ELEMENT}, $self);
+                                        $ret->{ELEMENT}, $self);
         }
         return $ret;
     }
     else {
-        return 'Javascript is not enabled on remote driver instance.';
+        croak 'Javascript is not enabled on remote driver instance.';
     }
 }
 
@@ -925,31 +925,22 @@ sub find_elements {
         return 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? $method : 'xpath';
-    my $ret;
     if (exists FINDERS->{$using}) {
         my $res = { 'command' => 'findElements' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
+        my $elem_obj_arr;
+        my $i = 0;
+        foreach (@$ret_data) {
+            $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+            $i++;
         }
-        else {
-            my $elem_obj_arr;
-            my $i = 0;
-            my $elem_arr = $ret_data->{'cmd_return'};
-            foreach (@$elem_arr) {
-                $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
-                $i++;
-            }
-            $ret_data->{'cmd_return'} = $elem_obj_arr;
-            $ret = $ret_data;
-        }
+        return $elem_obj_arr;
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-    return $ret;
 }
 
 =head2 find_child_element
@@ -980,7 +971,6 @@ sub find_elements {
 
 sub find_child_element {
     my ( $self, $elem, $query, $method ) = @_;
-    my $ret;
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         return "Missing parameters";
     }
@@ -989,19 +979,12 @@ sub find_child_element {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
-        }
-        else {
-            $ret_data->{'cmd_return'} = new Selenium::Remote::WebElement($ret_data->{'cmd_return'}->{ELEMENT}, $self);
-            $ret = $ret_data;
-        }
+        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-    return $ret;
 }
 
 =head2 find_child_elements
@@ -1033,7 +1016,6 @@ sub find_child_element {
 
 sub find_child_elements {
     my ( $self, $elem, $query, $method ) = @_;
-    my $ret;
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         return "Missing parameters";
     }
@@ -1042,27 +1024,18 @@ sub find_child_elements {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
+        my $elem_obj_arr;
+        my $i = 0;
+        foreach (@$ret_data) {
+            $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+            $i++;
         }
-        else {
-            my $elem_obj_arr;
-            my $i = 0;
-            my $elem_arr = $ret_data->{'cmd_return'};
-            foreach (@$elem_arr) {
-                $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
-                $i++;
-            }
-            $ret_data->{'cmd_return'} = $elem_obj_arr;
-            $ret = $ret_data;
-        }
+        return $elem_obj_arr;
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-
-    return $ret;
 }
 
 =head2 get_active_element
