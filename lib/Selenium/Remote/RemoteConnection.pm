@@ -76,7 +76,7 @@ sub _process_response {
     }
     else {
         my $decoded_json = undef; 
-        if ($response->message ne 'No Content') {
+        if (($response->message ne 'No Content') && ($response->content ne '')) {
             $decoded_json = $json->allow_nonref(1)->utf8(1)->decode($response->content);
             $data->{'sessionId'} = $decoded_json->{'sessionId'};
         }

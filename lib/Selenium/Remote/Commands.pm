@@ -209,6 +209,10 @@ sub new {
                'method' => 'POST',
                'url' => "session/:sessionId/element/:id/hover"
         },
+        'mouseMoveToLocation' => {
+               'method' => 'POST',
+               'url' => "session/:sessionId/moveto"
+        },
         #'setVisible' => {
         #               'method' => 'POST',
         #               'url' => "session/:sessionId/visible"

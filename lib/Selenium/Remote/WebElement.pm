@@ -101,23 +101,16 @@ sub submit {
         {ARRAY | STRING} - Array of strings or a string.
 
  Usage:
-    my @arr_str = ['abcd'];
-    $elem->send_keys(@arr_str);
+    $elem->send_keys('abcd', 'efg');
+    $elem->send_keys('hijk');
 
 =cut
 
 sub send_keys {
-    my ($self, $string) = @_;
+    my ($self, @strings) = @_;
     my $res = { 'command' => 'sendKeysToElement', 'id' => $self->{id} };
-    my @arr_str;
-    if (ref $string ne 'ARRAY') {
-        $arr_str[0] = $string;
-    }
-    else {
-        @arr_str = $string;
-    }
     my $params = {
-        'value' => @arr_str
+        'value' => \@strings,
     };
     return $driver->_execute_command($res, $params);
 }

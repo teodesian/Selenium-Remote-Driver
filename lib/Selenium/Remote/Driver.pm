@@ -148,7 +148,8 @@ created when you use the find_* methods.
         'javascript' - <boolean> - whether javascript should be supported
         'auto_close' - <boolean> - whether driver should end session on remote
                                    server on close.
-        
+        'extra_capabilities' - HASH of extra capabilities
+
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
             'port'         => '4444'
@@ -165,13 +166,17 @@ created when you use the find_* methods.
     my $driver = new Selenium::Remote::Driver;
     or
     my $driver = new Selenium::Remote::Driver('browser_name' => 'firefox',
-                                              'platform' => 'MAC')
+                                              'platform' => 'MAC');
     or
     my $driver = new Selenium::Remote::Driver('remote_server_addr' => '10.10.1.1',
                                               'port' => '2222',
                                               auto_close => 0
-                                              )
-
+                                              );
+    or
+    my $driver = new Selenium::Remote::Driver('browser_name'       => 'chrome',
+                                              'platform'           => 'VISTA',
+                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],},
+                                              );
 =cut
 
 sub new {
@@ -208,7 +213,7 @@ sub new {
     $self->{remote_conn} =
       new Selenium::Remote::RemoteConnection( $self->{remote_server_addr},
         $self->{port} );
-    $self->new_session();
+    $self->new_session(delete $args{extra_capabilities});
 
     if ( !( defined $self->{session_id} ) ) {
         croak "Could not establish a session with the remote server\n";
@@ -232,6 +237,24 @@ sub _execute_command {
     if ($resource) {
         my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
+        if(ref($resp) eq 'HASH') {
+            if($resp->{cmd_status} eq 'OK') {
+               return $resp->{cmd_return};
+            } else {
+               my $msg = "Error while executing command";
+               if($resp->{cmd_error}) {
+                 $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
+               } else {
+                   if(ref($resp->{cmd_return}) eq 'HASH') {
+                     $msg .= ": $resp->{cmd_return}->{error}->{msg}" 
+                       if $resp->{cmd_return}->{error}->{msg};
+                   } else {
+                     $msg .= ": $resp->{cmd_return}";
+                   }
+               }
+               croak $msg;
+            }
+        }
         return $resp;
     }
     else {
@@ -242,14 +265,16 @@ sub _execute_command {
 # A method that is used by the Driver itself. It'll be called to set the
 # desired capabilities on the server.
 sub new_session {
-    my $self = shift;
+    my ($self, $extra_capabilities) = @_;
+    $extra_capabilities ||= {};
     my $args = {
         'desiredCapabilities' => {
             'browserName'       => $self->{browser_name},
             'platform'          => $self->{platform},
             'javascriptEnabled' => $self->{javascript},
             'version'           => $self->{version},
-        }
+            %$extra_capabilities,
+        },
     };
     my $resp =
       $self->{remote_conn}
@@ -261,6 +286,34 @@ sub new_session {
     else {
         croak "Could not create new session";
     }
+}
+
+=head2 mouse_move_to_location
+
+ Description:
+    Move the mouse by an offset of the specificed element. If no
+    element is specified, the move is relative to the current mouse
+    cursor. If an element is provided but no offset, the mouse will be
+    moved to the center of the element. If the element is not visible,
+    it will be scrolled into view.
+
+ Output:
+    STRING - 
+
+ Usage:
+    # element - the element to move to. If not specified or is null, the offset is relative to current position of the mouse.
+    # xoffset - X offset to move to, relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.
+    # yoffset - Y offset to move to, relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.
+
+    print $driver->mouse_move_to_location(element => e, xoffset => x, yoffset => y);
+
+=cut
+
+sub mouse_move_to_location {
+    my ($self, %params) = @_;
+    $params{element} = $params{element}{id} if exists $params{element};
+    my $res = { 'command' => 'mouseMoveToLocation' };
+    return $self->_execute_command($res, \%params);
 }
 
 =head2 get_capabilities
@@ -491,6 +544,21 @@ sub refresh {
     return $self->_execute_command($res);
 }
 
+=head2 javascript
+
+ Description:
+    returns true if javascript is enabled in the driver.
+
+ Usage:
+    if ($driver->javascript) { ...; }
+
+=cut
+
+sub javascript {
+    my $self = shift;
+    return $self->{javascript} == JSON::true;
+}
+
 =head2 execute_script
 
  Description:
@@ -529,19 +597,19 @@ sub execute_script {
             }
         }
         
-        my $params = {'args' => @args};
+        my $params = {'script' => $script, 'args' => [@args]};
         my $ret = $self->_execute_command($res, $params);
         
         # replace any ELEMENTS with WebElement
-        if (exists $ret->{'cmd_return'}->{'ELEMENT'}) {
-            $ret->{'cmd_return'} =
+        if (ref($ret) and (ref($ret) eq 'HASH') and exists $ret->{'ELEMENT'}) {
+            $ret =
                 new Selenium::Remote::WebElement(
-                                        $ret->{'cmd_return'}->{ELEMENT}, $self);
+                                        $ret->{ELEMENT}, $self);
         }
         return $ret;
     }
     else {
-        return 'Javascript is not enabled on remote driver instance.';
+        croak 'Javascript is not enabled on remote driver instance.';
     }
 }
 
@@ -821,24 +889,16 @@ sub find_element {
         return 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
-    my $ret;
     if (defined $using) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
-        }
-        else {
-            $ret_data->{'cmd_return'} = new Selenium::Remote::WebElement($ret_data->{'cmd_return'}->{ELEMENT}, $self);
-            $ret = $ret_data;
-        }
+        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-    return $ret;
 }
 
 =head2 find_elements
@@ -870,31 +930,22 @@ sub find_elements {
         return 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? $method : 'xpath';
-    my $ret;
     if (exists FINDERS->{$using}) {
         my $res = { 'command' => 'findElements' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
+        my $elem_obj_arr;
+        my $i = 0;
+        foreach (@$ret_data) {
+            $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+            $i++;
         }
-        else {
-            my $elem_obj_arr;
-            my $i = 0;
-            my $elem_arr = $ret_data->{'cmd_return'};
-            foreach (@$elem_arr) {
-                $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
-                $i++;
-            }
-            $ret_data->{'cmd_return'} = $elem_obj_arr;
-            $ret = $ret_data;
-        }
+        return $elem_obj_arr;
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-    return $ret;
 }
 
 =head2 find_child_element
@@ -925,7 +976,6 @@ sub find_elements {
 
 sub find_child_element {
     my ( $self, $elem, $query, $method ) = @_;
-    my $ret;
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         return "Missing parameters";
     }
@@ -934,19 +984,12 @@ sub find_child_element {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
-        }
-        else {
-            $ret_data->{'cmd_return'} = new Selenium::Remote::WebElement($ret_data->{'cmd_return'}->{ELEMENT}, $self);
-            $ret = $ret_data;
-        }
+        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-    return $ret;
 }
 
 =head2 find_child_elements
@@ -978,7 +1021,6 @@ sub find_child_element {
 
 sub find_child_elements {
     my ( $self, $elem, $query, $method ) = @_;
-    my $ret;
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         return "Missing parameters";
     }
@@ -987,27 +1029,18 @@ sub find_child_elements {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
+        my $elem_obj_arr;
+        my $i = 0;
+        foreach (@$ret_data) {
+            $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+            $i++;
         }
-        else {
-            my $elem_obj_arr;
-            my $i = 0;
-            my $elem_arr = $ret_data->{'cmd_return'};
-            foreach (@$elem_arr) {
-                $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
-                $i++;
-            }
-            $ret_data->{'cmd_return'} = $elem_obj_arr;
-            $ret = $ret_data;
-        }
+        return $elem_obj_arr;
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-
-    return $ret;
 }
 
 =head2 get_active_element
