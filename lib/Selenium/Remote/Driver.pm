@@ -245,7 +245,12 @@ sub _execute_command {
                if($resp->{cmd_error}) {
                  $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
                } else {
-                   $msg .= ": $resp->{cmd_return}";
+                   if(ref($resp->{cmd_return}) eq 'HASH') {
+                     $msg .= ": $resp->{cmd_return}->{error}->{msg}" 
+                       if $resp->{cmd_return}->{error}->{msg};
+                   } else {
+                     $msg .= ": $resp->{cmd_return}";
+                   }
                }
                croak $msg;
             }
