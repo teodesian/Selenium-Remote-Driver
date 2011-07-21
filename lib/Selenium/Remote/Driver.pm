@@ -884,24 +884,16 @@ sub find_element {
         return 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
-    my $ret;
     if (defined $using) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );
-        if (defined $ret_data->{'cmd_error'}) {
-            $ret = $ret_data;
-        }
-        else {
-            $ret_data->{'cmd_return'} = new Selenium::Remote::WebElement($ret_data->{'cmd_return'}->{ELEMENT}, $self);
-            $ret = $ret_data;
-        }
+        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
     }
     else {
-        $ret = "Bad method, expected - class, class_name, css, id, link,
+        croak "Bad method, expected - class, class_name, css, id, link,
                 link_text, partial_link_text, name, tag_name, xpath";
     }
-    return $ret;
 }
 
 =head2 find_elements
