@@ -56,15 +56,12 @@ WINDOW: {
             is(ref $ret, 'ARRAY', 'Received all window handles');
             $ret = $driver->get_page_source();
             ok($ret =~ m/^<html/i, 'Received page source');
-            #$ret = $driver->get_speed();
-            #ok($ret =~ m/[SLOW|MEDIUM|FAST]/i, 'Got speed...');
-            #$ret = $driver->set_speed('FAST');
-            #is($ret, 'OK', 'Setting speed to FAST...');
-            #$ret = $driver->get_speed();
-            #is($ret, 'FAST', '...confirmed set_speed()');
+            eval {$driver->set_implicit_wait_timeout(20001);};
+            ok(!$@,"Set implicit wait timeout");
+            eval {$driver->set_implicit_wait_timeout(0);};
+            ok(!$@,"Reset implicit wait timeout");
             $ret = $driver->get("$website/frameset.html");
             $ret = $driver->switch_to_frame('second');
-            pass('Setting speed to FAST...');
         }
 
 COOKIES: {
