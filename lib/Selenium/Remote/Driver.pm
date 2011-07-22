@@ -175,7 +175,7 @@ created when you use the find_* methods.
     or
     my $driver = new Selenium::Remote::Driver('browser_name'       => 'chrome',
                                               'platform'           => 'VISTA',
-                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],},
+                                              'extra_capabilities' => {"chrome.switches" => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],},
                                               );
 =cut
 
@@ -224,7 +224,26 @@ sub new {
 
 sub DESTROY {
     my ($self) = @_;
-    $self->quit() if ($self->{auto_close} && defined $self->{session_id});
+    return unless ($self->{auto_close} && defined $self->{session_id});
+    # Implement quit in-line since we can't count on contained objects being extant
+    # Otherwise we would get:
+    # (in cleanup) Can't call method "get_params" on an undefined value ... during global destruction.
+    my $method = 'DELETE';
+    my $content = '';
+    my $url = 'session/' . $self->{session_id};
+    my $fullurl =
+            "http://"
+          . $self->{remote_server_addr} . ":"
+          . $self->{port}
+          . "/wd/hub/$url";
+    require LWP::UserAgent;
+    my $ua = LWP::UserAgent->new;
+    my $header =
+        HTTP::Headers->new(Content_Type => 'application/json; charset=utf-8');
+    $header->header('Accept' => 'application/json');
+    my $request = HTTP::Request->new($method, $fullurl, $header, $content);
+    my $response = $ua->request($request);
+    $self->{session_id} = undef;
 }
 
 # This is an internal method used the Driver & is not supposed to be used by
