@@ -4,10 +4,6 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-# This is the already instantiated Driver object, which will be passed to the
-# constructor when this class is instantiated.
-my $driver;
-
 =head1 NAME
 
 Selenium::Remote::WebElement - Representation of an HTML Element used by Selenium Remote Driver
@@ -31,12 +27,17 @@ various element related operations can be carried out.
 
 sub new {
     my ($class, $id, $parent) = @_;
-    $driver = $parent;
     my $self = {
         id => $id,
+        driver => $parent,
     };
     bless $self, $class or die "Can't bless $class: $!";
     return $self;
+}
+
+sub _execute_command {
+    my ($self) = shift;
+    return $self->{driver}->_execute_command(@_);
 }
 
 =head2 click
@@ -52,7 +53,7 @@ sub new {
 sub click {
     my ($self) = @_;
     my $res = { 'command' => 'clickElement', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_value
@@ -71,7 +72,7 @@ sub click {
 sub get_value {
     my ($self) = @_;
     my $res = { 'command' => 'getElementValue', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 submit
@@ -88,7 +89,7 @@ sub get_value {
 sub submit {
     my ($self) = @_;
     my $res = { 'command' => 'submitElement', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 send_keys
@@ -112,7 +113,7 @@ sub send_keys {
     my $params = {
         'value' => \@strings,
     };
-    return $driver->_execute_command($res, $params);
+    return $self->_execute_command($res, $params);
 }
 
 =head2 is_selected
@@ -132,7 +133,7 @@ sub send_keys {
 sub is_selected {
     my ($self) = @_;
     my $res = { 'command' => 'isElementSelected', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 set_selected
@@ -148,7 +149,7 @@ sub is_selected {
 sub set_selected {
     my ($self) = @_;
     my $res = { 'command' => 'setElementSelected', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 toggle
@@ -168,7 +169,7 @@ sub set_selected {
 sub toggle {
     my ($self) = @_;
     my $res = { 'command' => 'toggleElement', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 is_enabled
@@ -187,7 +188,7 @@ sub toggle {
 sub is_enabled {
     my ($self) = @_;
     my $res = { 'command' => 'isElementEnabled', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_element_location
@@ -207,7 +208,7 @@ sub is_enabled {
 sub get_element_location {
     my ($self) = @_;
     my $res = { 'command' => 'getElementLocation', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_element_location_in_view
@@ -230,7 +231,7 @@ sub get_element_location {
 sub get_element_location_in_view {
     my ($self) = @_;
     my $res = { 'command' => 'getElementLocationInView', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_tag_name
@@ -249,7 +250,7 @@ sub get_element_location_in_view {
 sub get_tag_name {
     my ($self) = @_;
     my $res = { 'command' => 'getElementTagName', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 clear
@@ -265,7 +266,7 @@ sub get_tag_name {
 sub clear {
     my ($self) = @_;
     my $res = { 'command' => 'clearElement', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_attribute
@@ -294,7 +295,7 @@ sub get_attribute {
                'id' => $self->{id},
                'name' => $attr_name,
                };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 is_displayed
@@ -313,7 +314,7 @@ sub get_attribute {
 sub is_displayed {
     my ($self) = @_;
     my $res = { 'command' => 'isElementDisplayed', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 drag
@@ -342,7 +343,7 @@ sub drag {
         'x' => $x,
         'y' => $y,
     };
-    return $driver->_execute_command($res, $params);
+    return $self->_execute_command($res, $params);
 }
 
 =head2 get_size
@@ -362,7 +363,7 @@ sub drag {
 sub get_size {
     my ($self) = @_;
     my $res = { 'command' => 'getElementSize', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_text
@@ -381,7 +382,7 @@ sub get_size {
 sub get_text {
     my ($self) = @_;
     my $res = { 'command' => 'getElementText', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 get_css_attribute
@@ -412,7 +413,7 @@ sub get_css_attribute {
                'id' => $self->{id},
                'property_name' => $attr_name,
                };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 =head2 hover
@@ -428,7 +429,7 @@ sub get_css_attribute {
 sub hover {
     my ($self) = @_;
     my $res = { 'command' => 'hoverOverElement', 'id' => $self->{id} };
-    return $driver->_execute_command($res);
+    return $self->_execute_command($res);
 }
 
 
