@@ -1,8 +1,12 @@
+#!/usr/bin/perl
 use Selenium::Remote::Driver;
 
-#my $driver = new Selenium::Remote::Driver;
-my $driver = new Selenium::Remote::Driver(browser_name => 'internet explorer',
-                                          platform => 'WINDOWS');
+my $driver = Selenium::Remote::Driver->new;
 $driver->get("http://www.google.com");
-print $driver->get_title();
+my $element = $driver->find_element('q','name');
+$element->send_keys("Hello WebDriver!");
+$element->submit;
+
+print $driver->get_title() . "\n";
+
 $driver->quit();
