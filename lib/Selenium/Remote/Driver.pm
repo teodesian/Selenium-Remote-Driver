@@ -13,6 +13,7 @@ use Selenium::Remote::WebElement;
 use constant FINDERS => {
       class             => 'class name',
       class_name        => 'class name',
+      css               => 'css selector',
       id                => 'id',
       link              => 'link text',
       link_text         => 'link text',
@@ -715,6 +716,10 @@ sub get_speed {
  Usage:
     $driver->set_speed('MEDIUM');
 
+ Note: This function is a no-op in WebDriver (?). See
+       https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion and
+       http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
+
 =cut
 
 sub set_speed {
@@ -929,8 +934,8 @@ sub find_elements {
     if ( not defined $query ) {
         return 'Search string to find element not provided.';
     }
-    my $using = ( defined $method ) ? $method : 'xpath';
-    if (exists FINDERS->{$using}) {
+    my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
+    if (defined $using) {
         my $res = { 'command' => 'findElements' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = $self->_execute_command( $res, $params );

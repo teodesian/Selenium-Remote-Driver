@@ -1,5 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
+07/21/11 - PM
+
+Fixed bug in Commands.pm: definition of setImplicitWaitTimeout
+Added note about set_speed: a no-op for WebDriver, should be deprecated?
+Fixed bug in Driver.pm: missing 'css' entry in FINDERS
+Fixed bug in Driver.pm::find_elements: set up $using correctly
+
 0.10    5-2-2010
         - Implemented support for JSON wire protocol as of a4 release of
         Selenium 2.0.
