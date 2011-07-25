@@ -8,6 +8,10 @@ sub new {
     
     # http://code.google.com/p/selenium/wiki/JsonWireProtocol
     my $self = {
+        'status'     => {
+                          'method' => 'GET',
+                          'url'    => 'status'
+        },
         'newSession' => {
                           'method' => 'POST',
                           'url'    => 'session'
@@ -67,14 +71,6 @@ sub new {
         'switchToWindow' => {
              'method' => 'POST',
              'url' => "session/:sessionId/window"
-        },
-        'getSpeed' => {
-                        'method' => 'GET',
-                        'url' => "session/:sessionId/speed"
-        },
-        'setSpeed' => {
-                        'method' => 'POST',
-                        'url' => "session/:sessionId/speed"
         },
         'getAllCookies' => {
                         'method' => 'GET',

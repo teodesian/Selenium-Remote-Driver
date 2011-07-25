@@ -289,6 +289,27 @@ sub new_session {
     }
 }
 
+=head2 status
+
+  Description:
+    Query the server's current status. All server implementations
+    should return two basic objects describing the server's current
+    platform and when the server was built.
+
+  Output:
+    Hash ref
+
+  Usage:
+    print Dumper $driver->status;
+
+=cut
+
+sub status {
+    my ($self) = @_;
+    my $res = { 'command' => 'status' };
+    return $self->_execute_command($res);
+}
+
 =head2 mouse_move_to_location
 
  Description:
