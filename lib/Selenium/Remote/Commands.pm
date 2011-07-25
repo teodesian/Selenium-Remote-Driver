@@ -60,6 +60,10 @@ sub new {
                        'method' => 'POST',
                        'url' => "session/:sessionId/execute"
         },
+        'executeAsyncScript' => {
+                       'method' => 'POST',
+                       'url' => "session/:sessionId/execute_async"
+        },
         'screenshot' => {
                     'method' => 'GET',
                     'url' => "session/:sessionId/screenshot"

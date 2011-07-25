@@ -581,14 +581,19 @@ sub javascript {
     return $self->{javascript} == JSON::true;
 }
 
-=head2 execute_script
+=head2 execute_async_script
 
  Description:
-    Inject a snippet of JavaScript into the page and return its result.
-    WebElements that should be passed to the script as an argument should be
-    specified in the arguments array as WebElement object. Likewise,
-    any WebElements in the script result will be returned as WebElement object.
-    
+    Inject a snippet of JavaScript into the page for execution in the context
+    of the currently selected frame. The executed script is assumed to be
+    asynchronous and must signal that is done by invoking the provided
+    callback, which is always provided as the final argument to the function.
+    The value to this callback will be returned to the client.
+
+    Asynchronous script commands may not span page loads. If an unload event
+    is fired while waiting for a script result, an error should be returned
+    to the client.
+
  Input: 2 (1 optional)
     Required:
         STRING - Javascript to execute on the page
@@ -599,7 +604,76 @@ sub javascript {
     {*} - Varied, depending on the type of result expected back from the script.
 
  Usage:
-    $driver->switch_to_frame('frame_1');
+    my $script = q{
+        var arg1 = arguments[0];
+        var callback = arguments[arguments.length-1];
+        var elem = window.document.findElementById(arg1);
+        callback(elem,arg1);
+    };
+    my $callback = q{return arguments;};
+    my ($elem,$id) = $driver->execute_async_script($script,'myid',$callback);
+    print "id: $id\n";
+    $elem->click;
+
+=cut
+
+sub execute_async_script {
+    my ( $self, $script, @args ) = @_;
+    if ($self->javascript) {
+        if ( not defined $script ) {
+            return 'No script provided';
+        }
+        my $res  = { 'command'    => 'executeAsyncScript' };
+
+        # Check the args array if the elem obj is provided & replace it with
+        # JSON representation
+        for (my $i=0; $i<@args; $i++) {
+            if (ref $args[$i] eq 'Selenium::Remote::WebElement') {
+                $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
+            }
+        }
+
+        my $params = {'script' => $script, 'args' => \@args};
+        my $ret = $self->_execute_command($res, $params);
+
+        # replace any ELEMENTS with WebElement
+        if (ref($ret) and (ref($ret) eq 'HASH') and exists $ret->{'ELEMENT'}) {
+            $ret =
+                new Selenium::Remote::WebElement(
+                                        $ret->{ELEMENT}, $self);
+        }
+        return $ret;
+    }
+    else {
+        croak 'Javascript is not enabled on remote driver instance.';
+    }
+}
+
+=head2 execute_script
+
+ Description:
+    Inject a snippet of JavaScript into the page and return its result.
+    WebElements that should be passed to the script as an argument should be
+    specified in the arguments array as WebElement object. Likewise,
+    any WebElements in the script result will be returned as WebElement object.
+
+ Input: 2 (1 optional)
+    Required:
+        STRING - Javascript to execute on the page
+    Optional:
+        ARRAY - list of arguments that need to be passed to the script.
+
+ Output:
+    {*} - Varied, depending on the type of result expected back from the script.
+
+ Usage:
+    my $script = q{
+        var arg1 = arguments[0];
+        var elem = window.document.findElementById(arg1);
+        return elem;
+    };
+    my $elem = $driver->execute_script($script,'myid');
+    $elem->click;
 
 =cut
 

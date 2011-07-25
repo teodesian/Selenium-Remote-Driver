@@ -117,6 +117,27 @@ FIND: {
         is(@{$ret}, 4, 'Got 4 WebElements');
       }
 
+EXECUTE: {
+        my $script = q{
+          var arg1 = arguments[0];
+          var elem = window.document.getElementById(arg1);
+          return elem;
+        };
+        my $elem = $driver->execute_script($script,'checky');
+        ok($elem->isa('Selenium::Remote::WebElement'), 'Executed script');
+        is($elem->get_attribute('id'),'checky','Execute found proper element');
+        $script = q{
+          var arg1 = arguments[0];
+          var callback = arguments[arguments.length-1];
+          var elem = window.document.getElementById(arg1);
+          callback(elem);
+        };
+        my $callback = q{return arguments[0];};
+        $elem = $driver->execute_async_script($script,'multi',$callback);
+        ok($elem->isa('Selenium::Remote::WebElement'),'Executed async script');
+        is($elem->get_attribute('id'),'multi','Async found proper element');
+}
+
 
 QUIT: {
         $ret = $driver->quit();
