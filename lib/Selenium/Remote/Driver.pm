@@ -608,11 +608,10 @@ sub javascript {
         var arg1 = arguments[0];
         var callback = arguments[arguments.length-1];
         var elem = window.document.findElementById(arg1);
-        callback(elem,arg1);
+        callback(elem);
     };
-    my $callback = q{return arguments;};
-    my ($elem,$id) = $driver->execute_async_script($script,'myid',$callback);
-    print "id: $id\n";
+    my $callback = q{return arguments[0];};
+    my $elem = $driver->execute_async_script($script,'myid',$callback);
     $elem->click;
 
 =cut
