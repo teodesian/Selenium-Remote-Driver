@@ -9,6 +9,8 @@ lib/Selenium/Remote/ErrorHandler.pm
 lib/Selenium/Remote/Commands.pm
 t/00-load.t
 t/01-driver-live.t
+t/02-webelement-live.t
+t/03-spec-coverage.t
 t/http-server.pl
 inc/Module/AutoInstall.pm
 inc/Module/Install/AutoInstall.pm
@@ -23,13 +25,10 @@ inc/Module/Install/WriteAll.pm
 inc/Module/Install.pm
 driver-example.pl
 ide-plugin.js
-ignore.txt
 .project
 .includepath
 MANIFEST.SKIP
-t/02-webelement-live.t
 t/manifest.t
-t/pod-coverage.t
 t/pod.t
 t/selenium-test-server.pl
 t/www/404.html
