@@ -195,6 +195,7 @@ sub new {
         remote_conn        => undef,
         commands           => $ress,
         auto_close         => 1, # by default we will close remote session on DESTROY
+        pid                => $$,
     };
     bless $self, $class or die "Can't bless $class: $!";
 
@@ -225,6 +226,7 @@ sub new {
 
 sub DESTROY {
     my ($self) = @_;
+    return if $$ != $self->{pid};
     $self->quit() if ($self->{auto_close} && defined $self->{session_id});
 }
 
