@@ -283,6 +283,24 @@ sub get_attribute {
     return $self->_execute_command($res);
 }
 
+=head2 get_value
+
+ Description:
+    Query for the value of an element, as determined by its value attribute.
+
+ Output:
+    {STRING | NULL} The element's value, or null if it doesn't have a value attribute.
+
+ Usage:
+    $elem->get_value();
+
+=cut
+
+sub get_value {
+    my ($self) = @_;
+    return $self->get_attribute('value');
+}
+
 =head2 is_displayed
 
  Description:
