@@ -727,6 +727,25 @@ sub screenshot {
     return $self->_execute_command($res);
 }
 
+=head2 available_engines
+
+ Description:
+    List all available engines on the machine. To use an engine, it has to be present in this list.
+
+ Output:
+    {Array.<string>} A list of available engines
+
+ Usage:
+    print Dumper $driver->available_engines;
+
+=cut
+
+sub available_engines {
+    my ($self) = @_;
+    my $res = { 'command' => 'availableEngines' };
+    return $self->_execute_command($res);
+}
+
 =head2 switch_to_frame
 
  Description:
@@ -1172,6 +1191,40 @@ sub describe_element {
     #my $res = {'command' => 'desribeElement', 'name' => $element};
     #return $self->_execute_command($res);
     return "Not yet supported";
+}
+
+=head2 send_modifier
+
+ Description:
+    Send an event to the active element to depress or release a modifier key.
+
+  Input: 2
+    Required:
+      value - String - The modifier key event to be sent. This key must be one 'Ctrl','Shift','Alt',' or 'Command'/'Meta' as defined by the send keys command
+      isdown - Boolean/String - Whether to generate a key down or key up
+
+ Usage:
+    $driver->send_modifier('Alt','down');
+    $elem->send_keys('c');
+    $driver->send_modifier('Alt','up');
+
+    or
+
+    $driver->send_modifier('Alt',1);
+    $elem->send_keys('c');
+    $driver->send_modifier('Alt',0);
+
+=cut
+
+sub send_modifier {
+  my ($self,$modifier,$isdown) = @_;
+  if($isdown =~ /(down|up)/) {
+    $isdown = $isdown =~ /down/ ? 1:0;
+  }
+  my $res = {'command' => 'sendModifier'};
+  my $params = {value => $modifier,
+                isdown => $isdown};
+  return $self->_execute_command($res,$params);
 }
 
 =head2 compare_elements

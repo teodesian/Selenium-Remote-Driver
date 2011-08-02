@@ -68,6 +68,10 @@ sub new {
                     'method' => 'GET',
                     'url' => "session/:sessionId/screenshot"
         },
+        'availableEngines' => {
+                    'method' => 'GET',
+                    'url' => "session/:sessionId/ime/available_engines"
+        },
         'switchToFrame' => {
                 'method' => 'POST',
                 'url' => "session/:sessionId/frame"
@@ -113,7 +117,7 @@ sub new {
                 'url' => "session/:sessionId/element/active"
         },
         'describeElement' => {
-                'method' => 'POST',
+                'method' => 'GET',
                 'url' => "session/:sessionId/element/:id"
         },
         'findChildElement' => {
@@ -139,6 +143,10 @@ sub new {
         'sendKeysToElement' => {
                'method' => 'POST',
                'url' => "session/:sessionId/element/:id/value"
+        },
+        'sendModifier' => {
+               'method' => 'POST',
+               'url' => "session/:sessionId/modifier"
         },
         'isElementSelected' => {
             'method' => 'GET',

@@ -69,6 +69,26 @@ INPUT: {
             };
        }
 
+MODIFIER: {
+            $driver->get("$website/metakeys.html");
+            $elem = $driver->find_element('metainput','id');
+            eval {
+              $driver->send_modifier('Alt','down');
+              $elem->send_keys('c');
+              $driver->send_modifier('Alt','up');
+            };
+            if($@) {
+              TODO: {
+                local $TODO = "modifier keys broken case 1993 and 1427";
+                fail "sent modifier keys";
+              }
+            } else {
+              $elem = $driver->find_element('metaoutput','id');
+              like($elem->get_value,qr/18/,"sent modifier keys");
+              note $elem->get_value;
+            }
+}
+
 IMAGES: {
             $driver->get("$website/dragAndDropTest.html");
             $elem = $driver->find_element('test1', 'id');

@@ -40,6 +40,15 @@ CHECK_DRIVER: {
                 is($ret->{'browserName'}, 'firefox', 'Right capabilities');
               }
 
+IME: {
+    SKIP: {
+    eval {$driver->available_engines;};
+    if($@) {
+      skip "ime not available on this system",3;
+    }
+    };
+}
+
 LOAD_PAGE: {
                 $driver->get("$website/index.html");
                 pass('Loaded home page');
