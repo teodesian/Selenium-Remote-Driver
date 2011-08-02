@@ -1,5 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
+07/26/11 - PM
+
+Removed WebElement::get_value: has been removed from WebDriver API
+Marked as deprecated: WebElement::set_selected and WebElement::toggle
+
 07/21/11 - PM
 
 Fixed bug in Commands.pm: definition of setImplicitWaitTimeout
