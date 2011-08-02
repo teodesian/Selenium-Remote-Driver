@@ -27,7 +27,6 @@ my $todo_list = {
   'POST session/:sessionId/alert_text'           => 1,
   'POST session/:sessionId/buttondown'           => 1,
   'POST session/:sessionId/accept_alert'         => 1,
-  'GET status'                                   => 1,
   'GET session/:sessionId/ime/activated'         => 1,
   'POST session/:sessionId/dismiss_alert'        => 1,
   'POST session/:sessionId/orientation'          => 1,

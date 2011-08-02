@@ -38,6 +38,10 @@ CHECK_DRIVER: {
                 ok(defined $driver->{'session_id'}, 'Established session on remote server');
                 $ret = $driver->get_capabilities;
                 is($ret->{'browserName'}, 'firefox', 'Right capabilities');
+                my $status = $driver->status;
+                ok($status->{build}->{version},"Got status build.version");
+                ok($status->{build}->{revision},"Got status build.revision");
+                ok($status->{build}->{time},"Got status build.time");
               }
 
 IME: {
