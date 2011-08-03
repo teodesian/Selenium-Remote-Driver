@@ -56,25 +56,6 @@ sub click {
     return $self->_execute_command($res);
 }
 
-=head2 get_value
-
- Description:
-    Query for the value of an element, as determined by its value attribute.
-
- Output:
-    {STRING | NULL} The element's value, or null if it does'nt have a value attribute.
-
- Usage:
-    $elem->get_value();
-
-=cut
-
-sub get_value {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementValue', 'id' => $self->{id} };
-    return $self->_execute_command($res);
-}
-
 =head2 submit
 
  Description:
@@ -144,6 +125,8 @@ sub is_selected {
  Usage:
     $elem->set_selected();
 
+ Note: DEPRECATED -- use click instead
+
 =cut
 
 sub set_selected {
@@ -163,6 +146,8 @@ sub set_selected {
 
  Usage:
     $elem->toggle();
+
+ Note: DEPRECATED -- use click instead
 
 =cut
 
@@ -296,6 +281,24 @@ sub get_attribute {
                'name' => $attr_name,
                };
     return $self->_execute_command($res);
+}
+
+=head2 get_value
+
+ Description:
+    Query for the value of an element, as determined by its value attribute.
+
+ Output:
+    {STRING | NULL} The element's value, or null if it doesn't have a value attribute.
+
+ Usage:
+    $elem->get_value();
+
+=cut
+
+sub get_value {
+    my ($self) = @_;
+    return $self->get_attribute('value');
 }
 
 =head2 is_displayed
