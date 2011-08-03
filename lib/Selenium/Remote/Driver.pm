@@ -1017,7 +1017,7 @@ sub find_element {
         if($@) {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
-            $@ = "$1: $query,$method";
+            $@ = "$1: $query,$using";
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
@@ -1068,7 +1068,7 @@ sub find_elements {
          if($@) {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
-            $@ = "$1: $query,$method";
+            $@ = "$1: $query,$using";
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
@@ -1128,7 +1128,7 @@ sub find_child_element {
         if($@) {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
-            $@ = "$1: $query,$method";
+            $@ = "$1: $query,$using";
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
@@ -1183,7 +1183,7 @@ sub find_child_elements {
         if($@) {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
-            $@ = "$1: $query,$method";
+            $@ = "$1: $query,$using";
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
