@@ -5,6 +5,7 @@ use warnings;
 use Data::Dumper;
 
 use Carp qw(croak);
+use vars qw(@CARP_NOT);
 
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
@@ -249,7 +250,7 @@ sub _execute_command {
                  $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
                } else {
                    if(ref($resp->{cmd_return}) eq 'HASH') {
-                     $msg .= ": $resp->{cmd_return}->{error}->{msg}" 
+                     $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                        if $resp->{cmd_return}->{error}->{msg};
                    } else {
                      $msg .= ": $resp->{cmd_return}";
@@ -1012,7 +1013,17 @@ sub find_element {
     if (defined $using) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = $self->_execute_command( $res, $params );
+        my $ret_data = eval { $self->_execute_command( $res, $params ); };
+        if($@) {
+          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$method";
+            croak $@;
+          } else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+          }
+        }
         return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
     }
     else {
@@ -1053,7 +1064,17 @@ sub find_elements {
     if (defined $using) {
         my $res = { 'command' => 'findElements' };
         my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = $self->_execute_command( $res, $params );
+        my $ret_data = eval {$self->_execute_command( $res, $params );};
+         if($@) {
+          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$method";
+            croak $@;
+          } else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+          }
+        }
         my $elem_obj_arr;
         my $i = 0;
         foreach (@$ret_data) {
@@ -1103,7 +1124,17 @@ sub find_child_element {
     if (exists FINDERS->{$using}) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
         my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = $self->_execute_command( $res, $params );
+        my $ret_data = eval {$self->_execute_command( $res, $params );};
+        if($@) {
+          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$method";
+            croak $@;
+          } else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+          }
+        }
         return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
     }
     else {
@@ -1148,7 +1179,17 @@ sub find_child_elements {
     if (exists FINDERS->{$using}) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
         my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = $self->_execute_command( $res, $params );
+        my $ret_data = eval {$self->_execute_command( $res, $params );};
+        if($@) {
+          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$method";
+            croak $@;
+          } else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+          }
+        }
         my $elem_obj_arr;
         my $i = 0;
         foreach (@$ret_data) {
