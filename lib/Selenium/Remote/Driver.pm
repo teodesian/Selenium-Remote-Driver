@@ -4,8 +4,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-use Carp qw(croak);
-use vars qw(@CARP_NOT);
+use Carp;
+our @CARP_NOT;
 
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
@@ -1018,6 +1018,7 @@ sub find_element {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
             $@ = "$1: $query,$using";
+            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
@@ -1069,6 +1070,7 @@ sub find_elements {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
             $@ = "$1: $query,$using";
+            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
@@ -1129,6 +1131,7 @@ sub find_child_element {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
             $@ = "$1: $query,$using";
+            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
@@ -1184,6 +1187,7 @@ sub find_child_elements {
           if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
             # give details on what element wasn't found
             $@ = "$1: $query,$using";
+            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
             croak $@;
           } else {
             # re throw if the exception wasn't what we expected
