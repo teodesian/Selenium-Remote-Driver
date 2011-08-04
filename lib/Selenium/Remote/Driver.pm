@@ -390,6 +390,28 @@ sub set_implicit_wait_timeout {
     return $self->_execute_command($res, $params);
 }
 
+=head2 close
+
+ Description:
+    Close the current window.
+
+ Usage:
+    $driver->close();
+ or
+    #close a popup window
+    my $handles = $driver->get_window_handles;
+    $driver->switch_to_window($handles->[1]);
+    $driver->close();
+    $driver->switch_to_window($handles->[0]);
+
+=cut
+
+sub close {
+  my $self = shift;
+  my $res = { 'command' => 'close' };
+  $self->_execute_command($res);
+}
+
 =head2 quit
 
  Description:
@@ -426,7 +448,7 @@ sub get_current_window_handle {
     return $self->_execute_command($res);
 }
 
-=head2 get_current_window_handles
+=head2 get_window_handles
 
  Description:
     Retrieve the list of window handles used in the session.
@@ -435,7 +457,13 @@ sub get_current_window_handle {
     ARRAY of STRING - list of the window handles
 
  Usage:
-    print Dumper($driver->get_current_window_handles());
+    print Dumper $driver->get_window_handles;
+ or
+    # get popup, close, then back
+    my $handles = $driver->get_window_handles;
+    $driver->switch_to_window($handles->[1]);
+    $driver->close;
+    $driver->switch_to_window($handles->[0]);
 
 =cut
 
@@ -754,7 +782,7 @@ sub available_engines {
  Description:
     Change focus to another frame on the page. If the frame ID is null, the
     server will switch to the page's default content.
-    
+
  Input: 1
     Required:
         {STRING | NUMBER | NULL} - ID of the frame which can be one of the three
@@ -788,6 +816,12 @@ sub switch_to_frame {
 
  Usage:
     $driver->switch_to_window('MY Homepage');
+ or
+    # close a popup window and switch back
+    my $handles = $driver->get_window_handles;
+    $driver->switch_to_window($handles->[1]);
+    $driver->close;
+    $driver->switch_to_window($handles->[0]);
 
 =cut
 
