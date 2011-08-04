@@ -713,7 +713,14 @@ sub execute_script {
     STRING - base64 encoded image
 
  Usage:
-    print $driver->go_screenshot();
+    print $driver->screenshot();
+ or
+    require MIME::Base64;
+    open(FH,'>','screenshot.png');
+    binmode FH;
+    my $png_base64 = $driver->screenshot();
+    print FH MIME::Base64::decode_base64($png_base64);
+    close FH;
 
 =cut
 
