@@ -34,7 +34,7 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
 =head1 SYNOPSIS
 
     use Selenium::Remote::Driver;
-    
+
     my $driver = new Selenium::Remote::Driver;
     $driver->get('http://www.google.com');
     print $driver->get_title();
@@ -61,54 +61,20 @@ the Selenium Server (Selenium Server is a Java application).
 
 =head1 USAGE (read this first)
 
-=head2 Server Response Hash
+=head2 Remote Driver Response
 
-Every method in this module returns either a string or a hash reference. The
-string usually means that it has received improper or not received any input.
-And that string explains what was wrong. This also means that driver has never
-sent any commands to the remote server.
-
-If the methods return a hash reference, that means the driver has sent a command
-to the remote server & it has received a response. The driver processes that
-response & creates a hash with specific keys & returns it back to the end user.
-We shall refer to this hash reference as B<Server Response Hash>. The keys are:
-
-=over
-
-=item cmd_status
-
-The value will either be 'OK' or 'NOTOK'. OK means that server successfully
-executed the command & NOTOK means that there was an error encountered on the
-server while executing the command. Check cmd_error for further details.
-
-=item cmd_return
-
-This hash key will contain the value returned from the server. It could be of
-any data type & each method's POD will list that information.
-
-=item cmd_error
-
-If there was an error on the server while executing the command, this key will
-be defined. The value will in turn contain information in a hash with 'stackTrace'
-as a key which lists the stack trace of the error encountered on the server &
-'error' which has human readable text of the actual error. It can also contain
-a 'screenshot' - a base64 encoded image if the server returns one.
-
-=item session_id
-
-Every successfull command will contain the session id of the current session
-against which the command was executed.
+Selenium::Remote::Driver uses the L<JsonWireProtocol|http://code.google.com/p/selenium/wiki/JsonWireProtocol> to communicate with the
+Selenium Server. If an error occurs while executing the command then the server
+sends back an HTTP error code with a JSON encoded reponse that indicates the
+precise L<Response Error Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>. The module will then croak with the error message
+associated with this code. If no error occurred, then the subroutine called will
+return the value sent back from the server (if a return value was sent).
 
 =back
 
-So a rule of thumb while invoking methods on the driver is to check whether the
-return type is a hash or not. If it is a hash then check for the value of
-cmd_status & take necessary actions accordingly. All the method PODs will list
-what the cmd_return will contain as that is what an end user is mostly interested
-in. Also, for some of the commands, server does not return any thing back. And
-Server Response Hash will contain a generic string stating that server didn't
-return any thing back. But if cmd_status value is 'OK', then you can safely
-assume that command executed successfully on the server.
+So a rule of thumb while invoking methods on the driver is if the method did not
+croak when called, then you can safely assume the command was successful even if
+nothing was returned by the method.
 
 =head2 WebElement
 
