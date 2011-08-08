@@ -71,8 +71,6 @@ precise L<Response Error Code|http://code.google.com/p/selenium/wiki/JsonWirePro
 associated with this code. If no error occurred, then the subroutine called will
 return the value sent back from the server (if a return value was sent).
 
-=back
-
 So a rule of thumb while invoking methods on the driver is if the method did not
 croak when called, then you can safely assume the command was successful even if
 nothing was returned by the method.
