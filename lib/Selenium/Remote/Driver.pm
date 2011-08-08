@@ -592,7 +592,7 @@ sub go_forward {
 
 sub refresh {
     my $self = shift;
-    my $res = { 'command' => 'goForward' };
+    my $res = { 'command' => 'refresh' };
     return $self->_execute_command($res);
 }
 
@@ -991,7 +991,7 @@ sub delete_cookie_named {
     if ( not defined $cookie_name ) {
         return "Cookie name not provided";
     }
-    my $res = { 'command' => 'deleteAllCookies', 'name' => $cookie_name };
+    my $res = { 'command' => 'deleteCookieNamed', 'name' => $cookie_name };
     return $self->_execute_command($res);
 }
 
