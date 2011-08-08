@@ -120,7 +120,7 @@ FIND: {
         ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Id');
         $elem = $driver->find_element('checky', 'name');
         ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Name');
-        
+
         $elem = $driver->find_element('multi', 'id');
         $elem = $driver->find_child_element($elem, "option");
         ok($elem->isa('Selenium::Remote::WebElement'), 'Got child WebElement...');
@@ -128,6 +128,14 @@ FIND: {
         is($ret, 'Eggs', '...right child WebElement');
         $ret = $driver->find_child_elements($elem, "//option[\@selected='selected']");
         is(@{$ret}, 4, 'Got 4 WebElements');
+        my $expected_err = "An element could not be located on the page using the "
+         . "given search parameters: "
+         . "element_that_doesnt_exist,id"
+        # the following needs to always be right before the eval
+         . " at " . __FILE__ . " line " . (__LINE__+1);
+        eval { $driver->find_element("element_that_doesnt_exist","id"); };
+        chomp $@;
+        is($@,$expected_err,"find_element croaks properly");
       }
 
 EXECUTE: {
@@ -150,7 +158,6 @@ EXECUTE: {
         ok($elem->isa('Selenium::Remote::WebElement'),'Executed async script');
         is($elem->get_attribute('id'),'multi','Async found proper element');
 }
-
 
 QUIT: {
         $ret = $driver->quit();
