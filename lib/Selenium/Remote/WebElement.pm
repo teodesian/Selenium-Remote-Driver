@@ -435,6 +435,20 @@ sub hover {
     return $self->_execute_command($res);
 }
 
+=head2 describe
+
+ Description:
+    Describe the identified element
+
+ Usage:
+    $elem->describe();
+
+=cut
+sub describe {
+    my ($self) = @_;
+    my $res = { 'command' => 'describeElement', 'id' => $self->{id} };
+    return $self->_execute_command($res);
+}
 
 1;
 
