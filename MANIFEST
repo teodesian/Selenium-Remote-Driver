@@ -11,6 +11,7 @@ t/00-load.t
 t/01-driver-live.t
 t/02-webelement-live.t
 t/03-spec-coverage.t
+t/04-commands-implemented.t
 t/http-server.pl
 inc/Module/AutoInstall.pm
 inc/Module/Install/AutoInstall.pm
