@@ -136,10 +136,6 @@ sub new {
               'method' => 'POST',
               'url' => "session/:sessionId/element/:id/submit"
         },
-        'getElementValue' => {
-               'method' => 'GET',
-               'url' => "session/:sessionId/element/:id/value"
-        },
         'sendKeysToElement' => {
                'method' => 'POST',
                'url' => "session/:sessionId/element/:id/value"
