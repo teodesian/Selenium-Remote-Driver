@@ -177,6 +177,7 @@ ALERT: {
         eval {$driver->dismiss_alert;};
         ok(!$@,"dismissed confirm");
         is($driver->get_alert_text,'false',"dismissed confirmed correct");
+        $driver->accept_alert;
         $driver->find_element("confirm",'id')->click;
         eval {$driver->accept_alert;};
         ok(!$@,"accepted confirm");
