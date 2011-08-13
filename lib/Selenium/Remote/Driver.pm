@@ -294,14 +294,16 @@ sub get_alert_text {
 }
 
 =head2 send_keys_to_alert
+
 Synonymous with send_keys_to_prompt
+
 =cut
 
 sub send_keys_to_alert {
   return shift->send_keys_to_prompt(@_);
 }
 
-=head2
+=head2 send_keys_to_prompt
 
  Description:
     Sends keystrokes to a JavaScript prompt() dialog.
@@ -325,7 +327,7 @@ sub send_keys_to_prompt {
   return $self->_execute_command($res,$params);
 }
 
-=head2
+=head2 accept_alert
 
  Description:
     Accepts the currently displayed alert dialog.  Usually, this is
@@ -342,7 +344,7 @@ sub accept_alert {
   return $self->_execute_command($res);
 }
 
-=head2
+=head2 dismiss_alert
 
  Description:
     Dismisses the currently displayed alert dialog. For comfirm()
