@@ -391,6 +391,16 @@ sub mouse_move_to_location {
     return $self->_execute_command($res, \%params);
 }
 
+=head2 move_to
+
+Synonymous with mouse_move_to_location
+
+=cut
+
+sub move_to {
+    return shift->mouse_move_to_location(@_);
+}
+
 =head2 get_capabilities
 
  Description:
@@ -1392,6 +1402,91 @@ sub compare_elements {
     return $self->_execute_command($res);
 }
 
+=head2 click
+
+ Description:
+    Click any mouse button (at the coordinates set by the last moveto command).
+
+ Input:
+    button - any one of 'LEFT'/0 'MIDDLE'/1 'RIGHT'/2
+             defaults to 'LEFT'
+
+ Usage:
+    $driver->click('LEFT');
+    $driver->click(1); #MIDDLE
+    $driver->click('RIGHT');
+    $driver->click;  #Defaults to left
+
+=cut
+
+sub click {
+  my ($self,$button) = @_;
+  my $button_enum = {LEFT=>0,MIDDLE=>1,RIGHT=>2};
+  if(defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i) {
+    $button = $button_enum->{uc $1};
+  } elsif(defined $button && $button =~ /(0|1|2)/) {
+    $button = $1;
+  } else {
+    $button = 0;
+  }
+  my $res = { 'command' => 'click' };
+  my $params = { 'button' => $button };
+  return $self->_execute_command($res,$button);
+}
+
+=head2 double_click
+
+ Description:
+    Double-clicks at the current mouse coordinates (set by moveto).
+
+ Usage:
+    $driver->double_click;
+
+=cut
+
+sub double_click {
+  my ($self) = @_;
+  my $res = { 'command' => 'doubleClick' };
+  return $self->_execute_command($res);
+}
+
+=head2 button_down
+
+ Description:
+    Click and hold the left mouse button (at the coordinates set by the
+    last moveto command). Note that the next mouse-related command that
+    should follow is buttondown . Any other mouse command (such as click
+    or another call to buttondown) will yield undefined behaviour.
+
+ Usage:
+    $self->button_down;
+
+=cut
+
+sub button_down {
+  my ($self) = @_;
+  my $res = { 'command' => 'buttonDown' };
+  return $self->_execute_command($res);
+}
+
+=head2 button_up
+
+ Description:
+    Releases the mouse button previously held (where the mouse is
+    currently at). Must be called once for every buttondown command
+    issued. See the note in click and buttondown about implications of
+    out-of-order commands.
+
+ Usage:
+    $self->button_up;
+
+=cut
+
+sub button_up {
+  my ($self) = @_;
+  my $res = { 'command' => 'buttonUp' };
+  return $self->_execute_command($res);
+}
 
 1;
 

@@ -233,6 +233,22 @@ sub new {
                'method' => 'POST',
                'url'    => 'session/:sessionId/dismiss_alert'
         },
+        'click' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/click'
+        },
+        'doubleClick' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/doubleclick'
+        },
+        'buttonDown' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/buttondown'
+        },
+        'buttonUp' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/buttonup'
+        },
         #'setVisible' => {
         #               'method' => 'POST',
         #               'url' => "session/:sessionId/visible"
