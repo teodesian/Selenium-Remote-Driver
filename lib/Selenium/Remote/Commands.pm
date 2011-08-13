@@ -217,6 +217,22 @@ sub new {
                'method' => 'POST',
                'url' => "session/:sessionId/moveto"
         },
+        'getAlertText' => {
+               'method' => 'GET',
+               'url'    => 'session/:sessionId/alert_text'
+        },
+        'sendKeysToPrompt' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/alert_text'
+        },
+        'acceptAlert' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/accept_alert'
+        },
+        'dismissAlert' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/dismiss_alert'
+        },
         #'setVisible' => {
         #               'method' => 'POST',
         #               'url' => "session/:sessionId/visible"

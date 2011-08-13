@@ -159,6 +159,31 @@ EXECUTE: {
         is($elem->get_attribute('id'),'multi','Async found proper element');
 }
 
+ALERT: {
+        $driver->get("$website/alerts.html");
+        $driver->find_element("alert",'id')->click;
+        is($driver->get_alert_text,'cheese','alert text match');
+        eval {$driver->dismiss_alert;};
+        ok(!$@,"dismissed alert");
+        $driver->find_element("prompt",'id')->click;
+        is($driver->get_alert_text,'Enter your name','prompt text match');
+        $driver->send_keys_to_prompt("Larry Wall");
+        eval {$driver->accept_alert;};
+        ok(!$@,"accepted prompt");
+        is($driver->get_alert_text,'Larry Wall','keys sent to prompt');
+        $driver->dismiss_alert;
+        $driver->find_element("confirm",'id')->click;
+        is($driver->get_alert_text,"Are you sure?",'confirm text match');
+        eval {$driver->dismiss_alert;};
+        ok(!$@,"dismissed confirm");
+        is($driver->get_alert_text,'false',"dismissed confirmed correct");
+        $driver->find_element("confirm",'id')->click;
+        eval {$driver->accept_alert;};
+        ok(!$@,"accepted confirm");
+        is($driver->get_alert_text,'true',"accept confirm correct");
+        $driver->accept_alert;
+}
+
 QUIT: {
         $ret = $driver->quit();
         ok((not defined $driver->{'session_id'}), 'Killed the remote session');

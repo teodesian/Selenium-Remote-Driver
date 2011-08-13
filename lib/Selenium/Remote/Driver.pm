@@ -277,6 +277,90 @@ sub status {
     return $self->_execute_command($res);
 }
 
+=head2 get_alert_text
+
+ Description:
+    Gets the text of the currently displayed JavaScript alert(), confirm()
+    or prompt() dialog.
+
+ Example
+    my $string = $driver->get_alert_text;
+
+=cut
+sub get_alert_text {
+  my ($self) = @_;
+  my $res = { 'command' => 'getAlertText' };
+  return $self->_execute_command($res);
+}
+
+=head2 send_keys_to_alert
+Synonymous with send_keys_to_prompt
+=cut
+
+sub send_keys_to_alert {
+  return shift->send_keys_to_prompt(@_);
+}
+
+=head2
+
+ Description:
+    Sends keystrokes to a JavaScript prompt() dialog.
+
+ Input:
+    {string} keys to send
+
+ Example:
+    $driver->send_keys_to_prompt('hello world');
+  or
+    ok($driver->get_alert_text eq 'Please Input your name','prompt appears');
+    $driver->send_keys_to_alert("Larry Wall");
+    $driver->accept_alert;
+
+=cut
+
+sub send_keys_to_prompt {
+  my ($self,$keys) = @_;
+  my $res = { 'command' => 'sendKeysToPrompt' };
+  my $params = { 'text' => $keys };
+  return $self->_execute_command($res,$params);
+}
+
+=head2
+
+ Description:
+    Accepts the currently displayed alert dialog.  Usually, this is
+    equivalent to clicking the 'OK' button in the dialog.
+
+ Example:
+    $driver->accept_alert;
+
+=cut
+
+sub accept_alert {
+  my ($self) = @_;
+  my $res = { 'command' => 'acceptAlert' };
+  return $self->_execute_command($res);
+}
+
+=head2
+
+ Description:
+    Dismisses the currently displayed alert dialog. For comfirm()
+    and prompt() dialogs, this is equivalent to clicking the
+    'Cancel' button. For alert() dialogs, this is equivalent to
+    clicking the 'OK' button.
+
+ Example:
+    $driver->dismiss_alert;
+
+=cut
+
+sub dismiss_alert {
+  my ($self) = @_;
+  my $res = { 'command' => 'dismissAlert' };
+  return $self->_execute_command($res);
+}
+
 =head2 mouse_move_to_location
 
  Description:
