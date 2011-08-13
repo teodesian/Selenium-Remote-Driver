@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
 use Net::Ping;
 use Data::Dumper;
 
@@ -9,7 +9,7 @@ BEGIN {
     my $p = Net::Ping->new("tcp", 2);
     $p->port_number(4444);
     unless ($p->ping('localhost')) {
-        BAIL_OUT ("Selenium server is not running on localhost:4444");
+        plan skip_all => "Selenium server is not running on localhost:4444";
         exit;
     }
     unless (use_ok( 'Selenium::Remote::Driver')) {
@@ -125,3 +125,5 @@ else
 {
     `ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
 }
+
+done_testing;
