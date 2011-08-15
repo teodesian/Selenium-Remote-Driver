@@ -1184,7 +1184,7 @@ sub find_elements {
             $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
             $i++;
         }
-        return $elem_obj_arr;
+        return wantarray?@{$elem_obj_arr}:$elem_obj_arr;
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1301,7 +1301,7 @@ sub find_child_elements {
             $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
             $i++;
         }
-        return $elem_obj_arr;
+        return wantarray?@{$elem_obj_arr}:$elem_obj_arr;
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
