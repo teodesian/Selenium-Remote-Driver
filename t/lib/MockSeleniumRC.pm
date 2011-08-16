@@ -24,7 +24,7 @@ sub load_recording {
 
 sub register {
   my $record = shift;
-  $record = 1 if !defined $record;
+  $record = 0 if !defined $record;
   my $file = shift;
   my $self = {record => $record,
               req_index => 0,
