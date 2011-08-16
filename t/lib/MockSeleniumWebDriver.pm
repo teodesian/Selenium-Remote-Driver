@@ -1,11 +1,11 @@
-package t::lib::MockSeleniumRC;
+package t::lib::MockSeleniumWebDriver;
 use strict;
 use warnings;
 
 use LWP::Protocol::PSGI;
 use JSON;
 
-our $MockSeleniumRCObj;
+our $MockSeleniumWebDriverObj;
 
 sub save_recording {
   my ($self) = @_;
@@ -38,13 +38,13 @@ sub register {
   } else {
     $self->load_recording;
   }
-  LWP::Protocol::PSGI->register(\&t::lib::MockSeleniumRC::psgi_app);
-  $MockSeleniumRCObj = $self;
+  LWP::Protocol::PSGI->register(\&t::lib::MockSeleniumWebDriver::psgi_app);
+  $MockSeleniumWebDriverObj = $self;
 }
 
 sub psgi_app {
   my $env = shift;
-  my $self = $MockSeleniumRCObj;
+  my $self = $MockSeleniumWebDriverObj;
   my $uri =
       $env->{'psgi.url_scheme'} . '://'
     . $env->{SERVER_NAME} . ':'

@@ -4,7 +4,7 @@ use warnings;
 
 use Test::More;
 use Data::Dumper;
-use t::lib::MockSeleniumRC;
+use t::lib::MockSeleniumWebDriver;
 
 use_ok('Selenium::Remote::Driver');
 
@@ -22,7 +22,7 @@ if ($^O eq 'MSWin32' && $ENV{RELEASE_TESTING})
 my $website = 'http://localhost:63636';
 
 my $record = $ENV{RELEASE_TESTING};
-t::lib::MockSeleniumRC::register($record,'t/mock-recordings/05-driver-mock-recording.json');
+t::lib::MockSeleniumWebDriver::register($record,'t/mock-recordings/05-driver-mock-recording.json');
 
 my $driver = Selenium::Remote::Driver->new;
 isa_ok($driver,'Selenium::Remote::Driver');

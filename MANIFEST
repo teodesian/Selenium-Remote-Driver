@@ -15,7 +15,7 @@ t/04-commands-implemented.t
 t/05-driver-mock.t
 t/mock-recordings/05-driver-mock-recording.json
 t/http-server.pl
-t/lib/MockSeleniumRC.pm
+t/lib/MockSeleniumWebDriver.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
