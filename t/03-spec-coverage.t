@@ -9,11 +9,12 @@ unless($ENV{RELEASE_TESTING}) {
 }
 
 eval {use LWP::Simple;};
-skip_all("need LWP::Simple") if $@;
+plan skip_all => "need LWP::Simple" if $@;
 use Selenium::Remote::Commands;
 
 my $uri  = "http://selenium.googlecode.com/svn/wiki/JsonWireProtocol.wiki";
 my $data = get($uri);
+plan skip_all => "need internet connection to run spec test" if !$data;
 
 my $todo_list = {
   'GET session/:sessionId/orientation'           => 1,
