@@ -7,6 +7,7 @@ license  'perl';
 
 build_requires 'Test::More';
 build_requires 'LWP::UserAgent';
+build_requires 'LWP::Protocol::PSGI';
 build_requires 'HTTP::Headers';
 build_requires 'HTTP::Request';
 build_requires 'Carp';
