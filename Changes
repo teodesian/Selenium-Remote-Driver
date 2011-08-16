@@ -1,16 +1,47 @@
 Revision history for Selenium-Remote-Driver
 
-07/26/11 - PM
+0.11   8-16-2011
+  This is quite a large list for this release and will be
+  the first cpan release. The later releases will hopefully 
+  happen often and won't be quite as large.
 
-Removed WebElement::get_value: has been removed from WebDriver API
-Marked as deprecated: WebElement::set_selected and WebElement::toggle
+        - subroutine calls carp when an error occurs or when
+          an element cannot be found
+        - if an element cannot be found, carp should tell you
+          which line in your local script where the element was
+          not found
+        - added the following driver api calls
+           click,double_click,button_down,button_up,close,status,
+           send_modifier,execute_script,execute_async_script
 
-07/21/11 - PM
+        - fixed the following api calls
+           refresh,delete_cookie_named
+        - $element->get_value is deprecated...
+           subroutine now points to get_attribute('value')
+        - added the following element api calls
+           describe
+        - added initial IDE plugin for the Selenium-IDE
+           (this is based off the Rspec webdriver ide plugin)
 
-Fixed bug in Commands.pm: definition of setImplicitWaitTimeout
-Added note about set_speed: a no-op for WebDriver, should be deprecated?
-Fixed bug in Driver.pm: missing 'css' entry in FINDERS
-Fixed bug in Driver.pm::find_elements: set up $using correctly
+        - Added "extra_capabilities" named argument to the driver
+        - make send_keys accept one or more string argument
+        - added javascript method to driver
+           (thanks Phil Kania!)
+
+        - fixed issue: check for empty string before trying to decode
+        - fixed issue: if script using the module ever forked, the
+          driver would call quit whenever that fork was closed
+        - fixed issue: Marked as deprecated: WebElement::set_selected
+          and WebElement::toggle
+        - fixed issue: global $driver variable in WebElement caused the
+          remote connection to be destroyed before the driver was able
+          to call quit()
+
+        - fixed issues:
+          - improper definition of setImplicitWaitTimeout
+          - Driver.pm: missing 'css' entry in FINDERS
+          - Driver.pm::find_elements: set up $using correctly
+            (thanks Phil Mitchell!)
 
 0.10    5-2-2010
         - Implemented support for JSON wire protocol as of a4 release of

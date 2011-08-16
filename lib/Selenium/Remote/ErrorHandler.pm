@@ -99,13 +99,17 @@ L<http://code.google.com/p/selenium/>.
 The Selenium issue tracking system is available online at
 L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
+=head1 CURRENT MAINTAINER
+
+Gordon Child C<< <gchild@gordonchild.com> >>
+
 =head1 AUTHOR
 
-Perl Bindings for Remote Driver by Aditya Ivaturi <ivaturi@gmail.com>
+Perl Bindings for Remote Driver by Aditya Ivaturi C<< <ivaturi@gmail.com> >>
 
 =head1 LICENSE
 
-Copyright (c) 2010 Aditya Ivaturi
+Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
