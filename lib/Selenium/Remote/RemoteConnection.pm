@@ -21,15 +21,13 @@ sub new {
                  port               => $port,
     };
     bless $self, $class or die "Can't bless $class: $!";
-    
-    # Try connecting to the Selenium RC port
-    my $p = Net::Ping->new("tcp", 2);
-    $p->port_number($self->{'port'});
-    croak "Selenium RC server is not responding\n"
-            unless $p->ping($self->{'remote_server_addr'});
-    undef($p);
-    
-    return $self;
+    my $status = eval {$self->request('GET','status');};
+    croak "Could not connect to SeleniumRC" if($@);
+    if($status->{cmd_status} eq 'OK') {
+      return $self;
+    } else {
+      croak "Selenium server did not return proper status";
+    }
 }
 
 # This request method is tailored for Selenium RC server
