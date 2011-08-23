@@ -27,6 +27,10 @@ BEGIN {
 
 my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
 my $mock_file = '02-webelement-mock-'.$^O.'.json';
+if (!$record && !(-e "t/mock-recordings/$mock_file"))
+{
+   plan skip_all => "Mocking of tests is not been enabled for this platform";
+}
 t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
 # Start our local http server
