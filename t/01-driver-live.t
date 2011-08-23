@@ -6,24 +6,35 @@ use Net::Ping;
 use Data::Dumper;
 
 BEGIN {
-   my $p = Net::Ping->new("tcp", 2);
-    $p->port_number(4444);
-    unless ($p->ping('localhost')) {
-        plan skip_all => "Selenium server is not running on localhost:4444";
-        exit;
-    }
-    unless (use_ok( 'Selenium::Remote::Driver')) {
-        BAIL_OUT ("Couldn't load Driver");
-        exit;
-    }
+   unless (use_ok( 'Selenium::Remote::Driver'))
+   {
+      BAIL_OUT ("Couldn't load Driver");
+      exit;
+   }
+   
+   if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))
+   {
+      use t::lib::MockSeleniumWebDriver;
+      my $p = Net::Ping->new("tcp", 2);
+      $p->port_number(4444);
+      unless ($p->ping('localhost')) {
+         plan skip_all => "Selenium server is not running on localhost:4444";
+         exit;
+      }
+      warn "\n\nRecording...\n\n";
+   }
 }
 
+my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
+my $mock_file = '01-driver-mock-'.$^O.'.json';
+t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
+
 # Start our local http server
-if ($^O eq 'MSWin32')
+if ($^O eq 'MSWin32' && $record)
 {
    system("start \"TEMP_HTTP_SERVER\" /MIN perl t/http-server.pl");
 }
-else
+elsif ($record)
 {
     system("perl t/http-server.pl > /dev/null &");
 }
@@ -191,11 +202,11 @@ QUIT: {
       }
 
 # Kill our HTTP Server
-if ($^O eq 'MSWin32')
+if ($^O eq 'MSWin32' && $record)
 {
    system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
 }
-else
+elsif ($record)
 {
     `ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
 }
