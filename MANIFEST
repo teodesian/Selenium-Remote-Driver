@@ -8,11 +8,10 @@ lib/Selenium/Remote/RemoteConnection.pm
 lib/Selenium/Remote/ErrorHandler.pm
 lib/Selenium/Remote/Commands.pm
 t/00-load.t
-t/01-driver-live.t
-t/02-webelement-live.t
+t/01-driver.t
+t/02-webelement.t
 t/03-spec-coverage.t
 t/04-commands-implemented.t
-t/05-driver-mock.t
 t/mock-recordings/05-driver-mock-recording.json
 t/http-server.pl
 t/lib/MockSeleniumWebDriver.pm
@@ -34,7 +33,6 @@ ide-plugin.js
 MANIFEST.SKIP
 t/manifest.t
 t/pod.t
-t/selenium-test-server.pl
 t/www/404.html
 t/www/alerts.html
 t/www/cookies.html
