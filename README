@@ -18,7 +18,19 @@ To install this module, run the following commands:
 	make
 	make test
 	make install
-	
+
+UNIT TESTS
+
+This module uses LWP::Protocol::PSGI to facilitate unit tests. LWP::Protocol::PSGI
+overrides the LWP HTTP/HTTPS & this allows us to "mock" the interaction with
+WebDriver Server. In regular instances you should be running the tests against
+the mocked recording, which are stored in t/mock-recordings. If you want to run
+the tests live against the WebDriver server, set an environment variable
+WD_MOCKING_RECORD to 1. This will force the unit tests to run tests against the
+WebDriver server & also save the traffic (request/response) in t/mock-recordings.
+Either reset the environment variable or set it to 0 to revert to mocking the
+traffic. 
+
 SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
