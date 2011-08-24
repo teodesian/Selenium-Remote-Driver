@@ -26,7 +26,12 @@ BEGIN {
 }
 
 my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $mock_file = '01-driver-mock-'.$^O.'.json';
+my $os  = $^O;
+if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/)
+{
+   $os = 'linux';
+}
+my $mock_file = "01-driver-mock-$os.json";
 if (!$record && !(-e "t/mock-recordings/$mock_file"))
 {
    plan skip_all => "Mocking of tests is not been enabled for this platform";
