@@ -24,6 +24,9 @@ my $todo_list = {
   'POST session/:sessionId/ime/activate'         => 1,
   'GET session/:sessionId/ime/active_engine'     => 1,
   'GET session/:sessionId/ime/available_engines' => 1,
+  'POST session/:sessionId/touch/click'          => 1,
+  'POST session/:sessionId/touch/down'           => 1,
+  'POST session/:sessionId/touch/up'             => 1,
 };
 my @lines = split(/\n/, $data);
 my @methods;
