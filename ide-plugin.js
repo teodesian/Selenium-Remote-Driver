@@ -48,7 +48,7 @@ Equals.prototype.toString = function() {
 };
 
 Equals.prototype.assert = function() {
-  return "(" + this.e2.toString() + ").should == " + this.e1.toString();
+  return "is(" + this.e2.toString() + "," + this.e1.toString() + ")";
 };
 
 Equals.prototype.verify = function() {
@@ -60,7 +60,7 @@ NotEquals.prototype.toString = function() {
 };
 
 NotEquals.prototype.assert = function() {
-  return "(" + this.e2.toString() + ").should_not == " + this.e1.toString();
+  return "isnt(" + this.e2.toString() + "," + this.e1.toString() + ")";
 };
 
 NotEquals.prototype.verify = function() {
@@ -68,12 +68,16 @@ NotEquals.prototype.verify = function() {
 };
 
 function joinExpression(expression) {
-  return expression.toString() + ".join(\",\")";
+  return "join(\",\"," + expression.toString() + ")";
 }
 
 function statement(expression) {
   expression.noBraces = true;
-  return expression.toString();
+  var s = expression.toString();
+  if(s.length == 0) {
+    return null;
+  }
+  return s + ';';
 }
 
 function assignToVariable(type, variable, expression) {
@@ -94,23 +98,23 @@ function tryCatch(tryStatement, catchStatement, exception) {
 
 function assertTrue(expression) {
   var exp = expression.toString();
-  var r = exp.match(/^(.+)\.([0-9A-Za-z_]+)\?$/);
-  if (r && r.length == 3) {
-    return r[1] + ".should be_" + r[2];
-  } else {
-    return exp + ".should be_true";
-  }
+  //var r = exp.match(/^(.+)\.([0-9A-Za-z_]+)\?$/);
+  //if (r && r.length == 3) {
+  //  return "ok(" + r[1] + ".should be_" + r[2];
+  //} else {
+    return "ok(" + exp + ")";
+  //}
 }
 
 function assertFalse(expression) {
   //return expression.invert().toString() + ".should be_false";
   var exp = expression.toString();
-  var r = exp.match(/^(.+)\.([0-9A-Za-z_]+)\?$/);
-  if (r && r.length == 3) {
-    return r[1] + ".should_not be_" + r[2];
-  } else {
-    return exp + ".should be_false";
-  }
+  //var r = exp.match(/^(.+)\.([0-9A-Za-z_]+)\?$/);
+  //if (r && r.length == 3) {
+  //  return r[1] + ".should_not be_" + r[2];
+  //} else {
+    return "ok(!" + exp + ")";
+  //}
 }
 
 function verify(statement) {
@@ -144,7 +148,7 @@ RegexpMatch.prototype.toString = function() {
 };
 
 RegexpMatch.prototype.assert = function() {
-  return this.expression + ".should =~ " + this.patternAsRegEx();
+  return "like(qr" + this.patternAsRegEx() + "," + this.expression + ")";
 };
 
 RegexpMatch.prototype.verify = function() {
@@ -160,7 +164,7 @@ RegexpNotMatch.prototype.toString = function() {
 };
 
 RegexpNotMatch.prototype.assert = function() {
-  return this.expression + ".should_not =~ " + this.patternAsRegEx();
+  return "unlike(qr" + this.patternAsRegEx() + "," + this.expression + ")";
 };
 
 RegexpNotMatch.prototype.verify = function() {
@@ -180,11 +184,11 @@ function assertOrVerifyFailure(line, isAssert) {
 }
 
 function pause(milliseconds) {
-  return "sleep " + (parseInt(milliseconds) / 1000) + ";";
+  return "sleep " + (parseInt(milliseconds) / 1000);
 }
 
 function echo(message) {
-  return "print " + xlateArgument(message) + ";";
+  return "note " + xlateArgument(message);
 }
 
 function formatComment(comment) {
@@ -270,9 +274,9 @@ this.configForm =
         '</menupopup></menulist>' +
         '<checkbox id="options_showSelenese" label="Show Selenese"/>';
 
-this.name = "Perl-Webdriver";
-this.testcaseExtension = ".pl";
-this.suiteExtension = ".pl";
+this.name = "Perl Test::More(WebDriver)";
+this.testcaseExtension = ".t";
+this.suiteExtension = ".t";
 this.webdriver = true;
 
 WDAPI.Driver = function() {
@@ -280,7 +284,7 @@ WDAPI.Driver = function() {
 };
 
 WDAPI.Driver.searchContext = function(locatorType, locator) {
-  var locatorString = xlateArgument(locator);
+  var locatorString = xlateArgument(locator).replace(/([@%$])/,"\\$1");
   switch (locatorType) {
     case 'xpath':
       return locatorString + ', "xpath"';
@@ -299,11 +303,11 @@ WDAPI.Driver.searchContext = function(locatorType, locator) {
 };
 
 WDAPI.Driver.prototype.back = function() {
-  return this.ref + "->navigate->back;";
+  return this.ref + "->navigate->back";
 };
 
 WDAPI.Driver.prototype.close = function() {
-  return this.ref + "->close;";
+  return this.ref + "->close";
 };
 
 WDAPI.Driver.prototype.findElement = function(locatorType, locator) {
@@ -311,59 +315,63 @@ WDAPI.Driver.prototype.findElement = function(locatorType, locator) {
 };
 
 WDAPI.Driver.prototype.findElements = function(locatorType, locator) {
-  return new WDAPI.ElementList(this.ref + "->find_elements(" + WDAPI.Driver.searchContext(locatorType, locator) + ");");
+  return new WDAPI.ElementList(this.ref + "->find_elements(" + WDAPI.Driver.searchContext(locatorType, locator) + ")");
 };
 
 WDAPI.Driver.prototype.getCurrentUrl = function() {
-  return this.ref + "->current_url;";
+  return this.ref + "->get_current_url";
 };
 
 WDAPI.Driver.prototype.get = function(url) {
-  return this.ref + "->get(" + url + ");";
+  return this.ref + "->get(" + url + ")";
 };
 
 WDAPI.Driver.prototype.getTitle = function() {
-  return this.ref + "->title;";
+  return this.ref + "->title";
 };
 
 WDAPI.Driver.prototype.refresh = function() {
-  return this.ref + "->navigate->refresh;";
+  return this.ref + "->refresh";
 };
+
+WDAPI.Driver.prototype.frame = function(locator) {
+  return this.ref + "->switch_to_frame(" + xlateArgument(locator) + ")";
+}
 
 WDAPI.Element = function(ref) {
   this.ref = ref;
 };
 
 WDAPI.Element.prototype.clear = function() {
-  return this.ref + "->clear;";
+  return this.ref + "->clear";
 };
 
 WDAPI.Element.prototype.click = function() {
-  return this.ref + "->click;";
+  return this.ref + "->click";
 };
 
 WDAPI.Element.prototype.getAttribute = function(attributeName) {
-  return this.ref + "->attribute(" + xlateArgument(attributeName) + ");";
+  return this.ref + "->attribute(" + xlateArgument(attributeName) + ")";
 };
 
 WDAPI.Element.prototype.getText = function() {
-  return this.ref + "->text;";
+  return this.ref + "->text";
 };
 
 WDAPI.Element.prototype.isDisplayed = function() {
-  return this.ref + "->is_displayed;";
+  return this.ref + "->is_displayed";
 };
 
 WDAPI.Element.prototype.isSelected = function() {
-  return this.ref + "->is_selected;";
+  return this.ref + "->is_selected";
 };
 
 WDAPI.Element.prototype.sendKeys = function(text) {
-  return this.ref + "->send_keys(" + xlateArgument(text) + ");";
+  return this.ref + "->send_keys(" + xlateArgument(text) + ")";
 };
 
 WDAPI.Element.prototype.submit = function() {
-  return this.ref + "->submit;";
+  return this.ref + "->submit";
 };
 
 WDAPI.ElementList = function(ref) {
@@ -375,11 +383,11 @@ WDAPI.ElementList.prototype.getItem = function(index) {
 };
 
 WDAPI.ElementList.prototype.getSize = function() {
-  return this.ref + "->size;";
+  return this.ref + "->size";
 };
 
 WDAPI.ElementList.prototype.isEmpty = function() {
-  return this.ref + "->is_empty;";
+  return this.ref + "->is_empty";
 };
 
 
@@ -387,5 +395,5 @@ WDAPI.Utils = function() {
 };
 
 WDAPI.Utils.isElementPresent = function(how, what) {
-  return "element_present?(:" + how + ", " + xlateArgument(what) + ")";
+  return this.ref + "->is_element_present(" + xlateArgument(what) + ", \"" + how + "\")";
 };
