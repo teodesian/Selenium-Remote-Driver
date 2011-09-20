@@ -3,7 +3,7 @@ use inc::Module::Install;
 name     'Selenium-Remote-Driver';
 all_from 'lib/Selenium/Remote/Driver.pm';
 author   q{"Aditya Ivaturi" <"ivaturi@gmail.com">};
-license  'perl';
+license  'apache';
 
 build_requires 'LWP::Protocol::PSGI';
 build_requires 'Test::More';
