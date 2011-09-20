@@ -14,6 +14,13 @@ build_requires 'Carp';
 build_requires 'JSON';
 build_requires 'Net::Ping';
 
+resources 'bugtracker' => 'https://github.com/aivaturi/Selenium-Remote-Driver/issues';
+resources 'repository' => {
+    type => 'git',
+    url => 'git://github.com/aivaturi/Selenium-Remote-Driver.git',
+    web => 'https://github.com/aivaturi/Selenium-Remote-Driver',
+};
+
 auto_install;
 
 WriteAll;
