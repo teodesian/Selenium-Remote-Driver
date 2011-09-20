@@ -1,5 +1,15 @@
 Revision history for Selenium-Remote-Driver
 
+0.12   9-20-2011
+        - Tests now use mock recordings for each major os
+          this will be expanded to include different versions
+          of selenium
+        - added module metadata so bug tracking and repository
+          info will appear on metacpan (Thanks Tom Hukins!)
+        - Fixed issue with find_child_element(s) which caused
+          search methods which had 2+ words to fail
+          ("css selector","class name","tag name", etc)
+
 0.11   8-16-2011
   This is quite a large list for this release and will be
   the first cpan release. The later releases will hopefully 
