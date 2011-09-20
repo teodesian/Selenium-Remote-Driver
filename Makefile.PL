@@ -5,14 +5,14 @@ all_from 'lib/Selenium/Remote/Driver.pm';
 author   q{"Aditya Ivaturi" <"ivaturi@gmail.com">};
 license  'perl';
 
-build_requires 'Test::More';
-build_requires 'LWP::UserAgent';
 build_requires 'LWP::Protocol::PSGI';
-build_requires 'HTTP::Headers';
-build_requires 'HTTP::Request';
-build_requires 'Carp';
-build_requires 'JSON';
-build_requires 'Net::Ping';
+build_requires 'Test::More';
+requires 'LWP::UserAgent';
+requires 'HTTP::Headers';
+requires 'HTTP::Request';
+requires 'Carp';
+requires 'JSON';
+requires 'Net::Ping';
 
 resources 'bugtracker' => 'https://github.com/aivaturi/Selenium-Remote-Driver/issues';
 resources 'repository' => {
