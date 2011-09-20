@@ -2,7 +2,6 @@ package Selenium::Remote::Driver;
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 use Carp;
 our @CARP_NOT;

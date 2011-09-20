@@ -9,7 +9,6 @@ use HTTP::Request;
 use Net::Ping;
 use Carp qw(croak);
 use JSON;
-use Data::Dumper;
 
 use Selenium::Remote::ErrorHandler;
 

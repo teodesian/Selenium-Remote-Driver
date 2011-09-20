@@ -2,7 +2,6 @@ package Selenium::Remote::WebElement;
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 =head1 NAME
 
