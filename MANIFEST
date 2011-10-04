@@ -1,6 +1,7 @@
 Changes
 MANIFEST
 Makefile.PL
+META.yml
 README
 lib/Selenium/Remote/Driver.pm
 lib/Selenium/Remote/WebElement.pm
