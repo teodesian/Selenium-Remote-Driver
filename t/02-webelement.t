@@ -57,6 +57,7 @@ LINK: {
         $driver->get("$website/formPage.html");
         $driver->find_element("//a[\@href='/index.html']")->click;
         pass('Click Link...');
+        isa_ok($driver->get_active_element,"Selenium::Remote::WebElement","get_active_element");
         $ret = $driver->get_title();
         is($ret, 'Hello WebDriver', 'Verify clicked link.');
         $driver->go_back();

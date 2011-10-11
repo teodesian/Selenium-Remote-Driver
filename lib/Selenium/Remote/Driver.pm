@@ -1325,7 +1325,12 @@ sub find_child_elements {
 sub get_active_element {
     my ($self) = @_;
     my $res = { 'command' => 'getActiveElement' };
-    return $self->_execute_command($res);
+    my $ret_data = eval { $self->_execute_command( $res ); };
+    if($@) {
+      carp $@;
+    }
+    return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
+
 }
 
 # Not yet supported on the server
