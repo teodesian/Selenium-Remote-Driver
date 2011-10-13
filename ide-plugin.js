@@ -48,7 +48,7 @@ Equals.prototype.toString = function() {
 };
 
 Equals.prototype.assert = function() {
-  return "is(" + this.e2.toString() + "," + this.e1.toString() + ")";
+  return "is(" + this.e2.toString() + "," + this.e1.toString() + ");";
 };
 
 Equals.prototype.verify = function() {
@@ -355,7 +355,7 @@ WDAPI.Element.prototype.getAttribute = function(attributeName) {
 };
 
 WDAPI.Element.prototype.getText = function() {
-  return this.ref + "->text";
+  return this.ref + "->get_text";
 };
 
 WDAPI.Element.prototype.isDisplayed = function() {
