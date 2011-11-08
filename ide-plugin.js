@@ -327,7 +327,7 @@ WDAPI.Driver.prototype.get = function(url) {
 };
 
 WDAPI.Driver.prototype.getTitle = function() {
-  return this.ref + "->title";
+  return this.ref + "->get_title";
 };
 
 WDAPI.Driver.prototype.refresh = function() {
