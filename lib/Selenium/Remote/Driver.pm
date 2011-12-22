@@ -1201,7 +1201,11 @@ sub find_elements {
     Required:
         Selenium::Remote::WebElement - WebElement object from where you want to
                                        start searching.
-        STRING - The search target.
+        STRING - The search target. (Do not use a double whack('//')
+                 in an xpath to search for a child element
+                 ex: '//option[@id="something"]'
+                 instead use a dot whack ('./')
+                 ex: './option[@id="something"]'
     Optional:
         STRING - Locator scheme to use to search the element, available schemes:
                  {class, class_name, css, id, link, link_text, partial_link_text,
@@ -1213,7 +1217,8 @@ sub find_elements {
     
  Usage:
     my $elem1 = $driver->find_element("//select[\@name='ned']");
-    my $child = $driver->find_child_element($elem1, "//option[\@value='es_ar']");
+    # note the usage of ./ when searching for a child element instead of //
+    my $child = $driver->find_child_element($elem1, "./option[\@value='es_ar']");
 
 =cut
 
