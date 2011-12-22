@@ -1435,7 +1435,7 @@ sub click {
   }
   my $res = { 'command' => 'click' };
   my $params = { 'button' => $button };
-  return $self->_execute_command($res,$button);
+  return $self->_execute_command($res,$params);
 }
 
 =head2 double_click

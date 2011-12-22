@@ -205,6 +205,14 @@ ALERT: {
         $driver->accept_alert;
 }
 
+CLICK: {
+        $driver->get("$website/formPage.html");
+        my $elem = $driver->find_element("//input[\@id='checky']");
+        $driver->move_to(element=>$elem);
+        $driver->click;
+        is($elem->get_attribute('checked'),'true',"checkbox is checked");
+}
+
 QUIT: {
         $ret = $driver->quit();
         ok((not defined $driver->{'session_id'}), 'Killed the remote session');
