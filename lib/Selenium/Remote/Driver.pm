@@ -532,6 +532,54 @@ sub get_window_handles {
     return $self->_execute_command($res);
 }
 
+=head2 get_window_size
+
+ Description:
+    Retrieve the window size
+ 
+ Input:
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Output:
+    HASH - containing keys 'height' & 'width'
+
+ Usage:
+    my $window_size = $driver->get_window_size();
+    print $window_size->{'height'}, $window_size->('width');
+
+=cut
+
+sub get_window_size {
+    my ( $self, $window ) = @_;
+    $window = (defined $window)?$window:'current';
+    my $res = { 'command' => 'getWindowSize', 'window_handle' => $window };
+    return $self->_execute_command($res);
+}
+
+=head2 get_window_position
+
+ Description:
+    Retrieve the window position
+ 
+ Input:
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Output:
+    HASH - containing keys 'x' & 'y'
+
+ Usage:
+    my $window_size = $driver->get_window_position();
+    print $window_size->{'x'}, $window_size->('y');
+
+=cut
+
+sub get_window_position {
+    my ( $self, $window ) = @_;
+    $window = (defined $window)?$window:'current';
+    my $res = { 'command' => 'getWindowPosition', 'window_handle' => $window };
+    return $self->_execute_command($res);
+}
+
 =head2 get_current_url
 
  Description:
@@ -946,6 +994,60 @@ sub set_speed {
     my $res    = { 'command' => 'setSpeed' };
     my $params = { 'speed'   => $speed };
     return $self->_execute_command( $res, $params );
+}
+
+=head2 set_window_position
+
+ Description:
+    Set the position (on screen) where you want your browser to be displayed.
+
+ Input:
+    INT - x co-ordinate
+    INT - y co-ordinate
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Usage:
+    $driver->set_window_position(50, 50);
+
+=cut
+
+sub set_window_position {
+    my ( $self, $x, $y, $window ) = @_;
+    $window = (defined $window)?$window:'current';
+    if (not defined $x and not defined $y)
+    {
+        return "X & Y co-ordinates are required";
+    }
+    my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
+    my $params = { 'x' => $x, 'y' => $y };
+    return $self->_execute_command($res, $params);
+}
+
+=head2 set_window_size
+
+ Description:
+    Set the size of the browser window
+
+ Input:
+    INT - height of the window
+    INT - width of the window
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Usage:
+    $driver->set_window_size(640, 480);
+
+=cut
+
+sub set_window_size {
+    my ( $self, $height, $width, $window ) = @_;
+    $window = (defined $window)?$window:'current';
+    if (not defined $height and not defined $width)
+    {
+        return "height & width of browser are required";
+    }
+    my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
+    my $params = { 'height' => $height, 'width' => $width };
+    return $self->_execute_command($res, $params);
 }
 
 =head2 get_all_cookies

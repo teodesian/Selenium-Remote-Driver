@@ -36,6 +36,22 @@ sub new {
                 'method' => 'GET',
                 'url' => "session/:sessionId/window_handles"
         },
+        'getWindowSize' => {
+                'method' => 'GET',
+                'url' => "session/:sessionId/window/:windowHandle/size"
+        },
+        'getWindowPosition' => {
+                'method' => 'GET',
+                'url' => "session/:sessionId/window/:windowHandle/position"
+        },
+        'setWindowSize' => {
+                'method' => 'POST',
+                'url' => "session/:sessionId/window/:windowHandle/size"
+        },
+        'setWindowPosition' => {
+                'method' => 'POST',
+                'url' => "session/:sessionId/window/:windowHandle/position"
+        },
         'getCurrentUrl' => {
                            'method' => 'GET',
                            'url' => "session/:sessionId/url"
@@ -279,6 +295,7 @@ sub get_params {
     $url =~ s/:name/$args->{'name'}/;
     $url =~ s/:propertyName/$args->{'property_name'}/;
     $url =~ s/:other/$args->{'other'}/;
+    $url =~ s/:windowHandle/$args->{'window_handle'}/;
 
     $data->{'method'} = $self->{$command}->{'method'};
     $data->{'url'}    = $url;
