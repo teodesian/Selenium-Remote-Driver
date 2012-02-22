@@ -87,6 +87,16 @@ WINDOW: {
             ok($ret =~ m/^{.*}$/, 'Proper window handle received');
             $ret = $driver->get_window_handles();
             is(ref $ret, 'ARRAY', 'Received all window handles');
+            $ret = $driver->set_window_position(100,100);
+            is($ret, 1, 'Set the window position to 100, 100');
+            $ret = $driver->get_window_position();
+            is ($ret->{'x'}, 100, 'Got the right X Co-ordinate');
+            is ($ret->{'y'}, 100, 'Got the right Y Co-ordinate');
+            $ret = $driver->set_window_size(640, 480);
+            is($ret, 1, 'Set the window size to 640x480');
+            $ret = $driver->get_window_size();
+            is ($ret->{'height'}, 640, 'Got the right height');
+            is ($ret->{'width'}, 480, 'Got the right width');
             $ret = $driver->get_page_source();
             ok($ret =~ m/^<html/i, 'Received page source');
             eval {$driver->set_implicit_wait_timeout(20001);};
