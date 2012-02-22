@@ -48,7 +48,7 @@ Equals.prototype.toString = function() {
 };
 
 Equals.prototype.assert = function() {
-  return "is(" + this.e2.toString() + "," + this.e1.toString() + ")";
+  return statement("is(" + this.e2.toString() + "," + this.e1.toString() + ")");
 };
 
 Equals.prototype.verify = function() {
@@ -60,7 +60,7 @@ NotEquals.prototype.toString = function() {
 };
 
 NotEquals.prototype.assert = function() {
-  return "isnt(" + this.e2.toString() + "," + this.e1.toString() + ")";
+  return statement("isnt(" + this.e2.toString() + "," + this.e1.toString() + ")");
 };
 
 NotEquals.prototype.verify = function() {
@@ -102,7 +102,7 @@ function assertTrue(expression) {
   //if (r && r.length == 3) {
   //  return "ok(" + r[1] + ".should be_" + r[2];
   //} else {
-    return "ok(" + exp + ")";
+    return statement("ok(" + exp + ")");
   //}
 }
 
@@ -113,12 +113,12 @@ function assertFalse(expression) {
   //if (r && r.length == 3) {
   //  return r[1] + ".should_not be_" + r[2];
   //} else {
-    return "ok(!" + exp + ")";
+    return statement("ok(!" + exp + ")");
   //}
 }
 
-function verify(statement) {
-  return "verify { " + statement + " }";
+function verify(stmt) {
+  return stmt;
 }
 
 function verifyTrue(expression) {
@@ -148,7 +148,7 @@ RegexpMatch.prototype.toString = function() {
 };
 
 RegexpMatch.prototype.assert = function() {
-  return "like(qr" + this.patternAsRegEx() + "," + this.expression + ")";
+  return statement("like(qr" + this.patternAsRegEx() + "," + this.expression + ")");
 };
 
 RegexpMatch.prototype.verify = function() {
@@ -164,7 +164,7 @@ RegexpNotMatch.prototype.toString = function() {
 };
 
 RegexpNotMatch.prototype.assert = function() {
-  return "unlike(qr" + this.patternAsRegEx() + "," + this.expression + ")";
+  return statement("unlike(qr" + this.patternAsRegEx() + "," + this.expression + ")");
 };
 
 RegexpNotMatch.prototype.verify = function() {
@@ -327,7 +327,7 @@ WDAPI.Driver.prototype.get = function(url) {
 };
 
 WDAPI.Driver.prototype.getTitle = function() {
-  return this.ref + "->title";
+  return this.ref + "->get_title";
 };
 
 WDAPI.Driver.prototype.refresh = function() {
@@ -355,7 +355,7 @@ WDAPI.Element.prototype.getAttribute = function(attributeName) {
 };
 
 WDAPI.Element.prototype.getText = function() {
-  return this.ref + "->text";
+  return this.ref + "->get_text";
 };
 
 WDAPI.Element.prototype.isDisplayed = function() {

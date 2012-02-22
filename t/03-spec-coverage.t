@@ -27,6 +27,12 @@ my $todo_list = {
   'POST session/:sessionId/touch/click'          => 1,
   'POST session/:sessionId/touch/down'           => 1,
   'POST session/:sessionId/touch/up'             => 1,
+  'GET sessions'                                 => 1,
+  'POST session/:sessionId/window/:windowHandle/size' => 1,
+  'GET session/:sessionId/window/:windowHandle/size'  => 1,
+  'POST session/:sessionId/window/:windowHandle/position' => 1,
+  'GET session/:sessionId/window/:windowHandle/position'  => 1,
+  'POST session/:sessionId/keys'                          => 1,
 };
 my @lines = split(/\n/, $data);
 my @methods;
