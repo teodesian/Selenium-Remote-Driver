@@ -1006,6 +1006,9 @@ sub set_speed {
     INT - y co-ordinate
     STRING - <optional> - window handle (default is 'current' window)
 
+ Output:
+    BOOLEAN - Success or failure
+
  Usage:
     $driver->set_window_position(50, 50);
 
@@ -1014,13 +1017,16 @@ sub set_speed {
 sub set_window_position {
     my ( $self, $x, $y, $window ) = @_;
     $window = (defined $window)?$window:'current';
-    if (not defined $x and not defined $y)
-    {
+    if (not defined $x and not defined $y){
         return "X & Y co-ordinates are required";
     }
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
-    return $self->_execute_command($res, $params);
+    my $ret = $self->_execute_command($res, $params);
+    if ($ret =~ m/204/g) {
+        return 1;
+    }
+    else { return 0; }
 }
 
 =head2 set_window_size
@@ -1032,6 +1038,9 @@ sub set_window_position {
     INT - height of the window
     INT - width of the window
     STRING - <optional> - window handle (default is 'current' window)
+ 
+ Output:
+    BOOLEAN - Success or failure
 
  Usage:
     $driver->set_window_size(640, 480);
@@ -1041,13 +1050,16 @@ sub set_window_position {
 sub set_window_size {
     my ( $self, $height, $width, $window ) = @_;
     $window = (defined $window)?$window:'current';
-    if (not defined $height and not defined $width)
-    {
+    if (not defined $height and not defined $width){
         return "height & width of browser are required";
     }
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
-    return $self->_execute_command($res, $params);
+    my $ret = $self->_execute_command($res, $params);
+    if ($ret =~ m/204/g) {
+        return 1;
+    }
+    else { return 0; }
 }
 
 =head2 get_all_cookies
