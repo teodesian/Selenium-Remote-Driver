@@ -75,7 +75,9 @@ sub submit {
 =head2 send_keys
 
  Description:
-    Send a sequence of key strokes to an element.
+    Send a sequence of key strokes to an element. If you want to send specific
+    Keyboard events, then use the WDKeys module along with theis method. See e.g.
+    for reference
 
  Input: 1
     Required:
@@ -84,6 +86,14 @@ sub submit {
  Usage:
     $elem->send_keys('abcd', 'efg');
     $elem->send_keys('hijk');
+    
+    or
+    
+    # include the WDKeys module
+    use Selenium::Remote::WDKeys;
+    .
+    .
+    $elem->send_keys(KEYS->{'space'}, KEYS->{'enter'});
 
 =cut
 
