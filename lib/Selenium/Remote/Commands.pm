@@ -20,6 +20,14 @@ sub new {
                           'method' => 'GET',
                           'url'    => 'session/:sessionId'
         },
+        'setTimeout' => {
+                        'method' => 'POST',
+                        'url'    => 'session/:sessionId/timeouts'
+        },
+        'setAsyncScriptTimeout' => {
+                        'method' => 'POST',
+                        'url'    => 'session/:sessionId/timeouts/async_script'
+        },
         'setImplicitWaitTimeout' => {
                         'method' => 'POST',
                         'url'    => 'session/:sessionId/timeouts/implicit_wait'
