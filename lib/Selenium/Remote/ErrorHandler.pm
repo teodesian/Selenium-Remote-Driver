@@ -44,6 +44,10 @@ use constant STATUS_CODE => {
             'code' => 'XPATH_LOOKUP_ERROR',
             'msg'  => 'An error occurred while searching for an element by XPath.',
          },
+    21 => {
+            'code' => 'Timeout',
+            'msg'  => 'An operation did not complete before its timeout expired.',
+         },
     23 => {
             'code' => 'NO_SUCH_WINDOW',
             'msg'  => 'A request to switch to a different window could not be satisfied because the window could not be found.',
@@ -55,6 +59,34 @@ use constant STATUS_CODE => {
     25 => {
             'code' => 'UNABLE_TO_SET_COOKIE',
             'msg'  => 'A request to set a cookie\'s value could not be satisfied.',
+         },
+    26 => {
+            'code' => 'UNEXPECTED_ALERT_OPEN',
+            'msg'  => 'A modal dialog was open, blocking this operation',
+         },
+    27 => {
+            'code' => 'NO_ALERT_OPEN_ERROR',
+            'msg'  => 'An attempt was made to operate on a modal dialog when one was not open.',
+         },
+    28 => {
+            'code' => 'SCRIPT_TIMEOUT',
+            'msg'  => 'A script did not complete before its timeout expired.',
+         },
+    29 => {
+            'code' => 'INVALID_ELEMENT_COORDINATES',
+            'msg'  => 'The coordinates provided to an interactions operation are invalid.',
+         },
+    30 => {
+            'code' => 'IME_NOT_AVAILABLE',
+            'msg'  => 'IME was not available.',
+         },
+    31 => {
+            'code' => 'IME_ENGINE_ACTIVATION_FAILED',
+            'msg'  => 'An IME engine could not be started.',
+         },
+    32 => {
+            'code' => 'INVALID_SELECTOR',
+            'msg'  => 'Argument was an invalid selector (e.g. XPath/CSS).',
          },
 };
 
