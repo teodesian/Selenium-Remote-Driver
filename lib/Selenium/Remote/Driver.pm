@@ -2,7 +2,6 @@ package Selenium::Remote::Driver;
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 use Carp;
 our @CARP_NOT;
@@ -202,11 +201,9 @@ sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->{'session_id'};
     my $resource = $self->{commands}->get_params($res);
-    print Dumper($resource);
     if ($resource) {
         my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
-        print Dumper($resp);
         if(ref($resp) eq 'HASH') {
             if($resp->{cmd_status} eq 'OK') {
                return $resp->{cmd_return};
