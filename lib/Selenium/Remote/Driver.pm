@@ -2,6 +2,7 @@ package Selenium::Remote::Driver;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 use Carp;
 our @CARP_NOT;
@@ -201,9 +202,11 @@ sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->{'session_id'};
     my $resource = $self->{commands}->get_params($res);
+    print Dumper($resource);
     if ($resource) {
         my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
+        print Dumper($resp);
         if(ref($resp) eq 'HASH') {
             if($resp->{cmd_status} eq 'OK') {
                return $resp->{cmd_return};
@@ -418,6 +421,33 @@ sub get_capabilities {
     my $self = shift;
     my $res  = {'command' => 'getCapabilities'};
     return $self->_execute_command($res);
+}
+
+=head2 set_timeout
+
+ Description:
+    Set the amount of time, in milliseconds, that asynchronous scripts executed
+    by execute_async_script() are permitted to run before they are
+    aborted and a |Timeout| error is returned to the client.
+ 
+ Input:
+    ms - <NUMBER> - The amount of time, in milliseconds, that time-limited
+            commands are permitted to run.
+
+ Usage:
+    $driver->set_async_script_timeout(1000);
+
+=cut
+
+sub set_async_script_timeout {
+    my ($self, $ms) = @_;
+    if (not defined $ms)
+    {
+        return "Expecting timeout in ms";
+    }
+    my $res  = {'command' => 'setAsyncScriptTimeout'};
+    my $params  = {'ms' => $ms};
+    return $self->_execute_command($res, $params);
 }
 
 =head2 set_implicit_wait_timeout
