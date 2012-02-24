@@ -1,8 +1,8 @@
 META.yml
 MYMETA.yml
-Makefile
+Makefile*
 blib
 pm_to_blib
 cover_db
 *.komodo*
-inc
+*.sublime*
