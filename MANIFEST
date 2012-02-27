@@ -33,8 +33,6 @@ inc/Module/Install/WriteAll.pm
 inc/Module/Install.pm
 driver-example.pl
 ide-plugin.js
-.project
-.includepath
 MANIFEST.SKIP
 t/manifest.t
 t/pod.t
