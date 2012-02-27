@@ -8,6 +8,7 @@ lib/Selenium/Remote/WebElement.pm
 lib/Selenium/Remote/RemoteConnection.pm
 lib/Selenium/Remote/ErrorHandler.pm
 lib/Selenium/Remote/Commands.pm
+lib/Selenium/Remote/WDKeys.pm
 t/00-load.t
 t/01-driver.t
 t/02-webelement.t
