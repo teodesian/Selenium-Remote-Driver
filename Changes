@@ -1,5 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
+0.13   2-8-2012
+        - Added support for key events in send_keys() method
+        - Added methods to get/set window position/size
+        - get_active_element() now returns a WebElement object
+        - Bunch of bug fixes & documentation fixes.
+
 0.12   9-20-2011
         - Tests now use mock recordings for each major os
           this will be expanded to include different versions
