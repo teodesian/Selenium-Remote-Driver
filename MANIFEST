@@ -18,6 +18,8 @@ t/mock-recordings/01-driver-mock-darwin.json
 t/mock-recordings/02-webelement-mock-darwin.json
 t/mock-recordings/01-driver-mock-MSWin32.json
 t/mock-recordings/02-webelement-mock-MSWin32.json
+t/mock-recordings/01-driver-mock-linux.json
+t/mock-recordings/02-webelement-mock-linux.json
 t/http-server.pl
 t/lib/MockSeleniumWebDriver.pm
 inc/Module/AutoInstall.pm
