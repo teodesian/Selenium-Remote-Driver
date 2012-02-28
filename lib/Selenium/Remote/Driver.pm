@@ -1474,18 +1474,6 @@ sub get_active_element {
     }
 }
 
-# Not yet supported on the server
-sub describe_element {
-    my ( $self, $element ) = @_;
-
-    #if (not defined $element) {
-    #    return "Element not provided";
-    #}
-    #my $res = {'command' => 'desribeElement', 'name' => $element};
-    #return $self->_execute_command($res);
-    return "Not yet supported";
-}
-
 =head2 send_modifier
 
  Description:
@@ -1647,10 +1635,6 @@ L<http://code.google.com/p/selenium/>.
 The Selenium issue tracking system is available online at
 L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
-=head1 CURRENT MAINTAINER
-
-Gordon Child C<< <gchild@gordonchild.com> >>
-
 =head1 AUTHOR
 
 Perl Bindings for Selenium Remote Driver by Aditya Ivaturi C<< <ivaturi@gmail.com> >>
@@ -1661,9 +1645,15 @@ The following people have contributed to this module. (Thanks!)
 
 =over 4
 
+=item * Gordon Child
+
 =item * Phil Kania
 
 =item * Phil Mitchell
+
+=item * Allen Lew
+
+=item * Tom Hukins
 
 =back
 
