@@ -286,10 +286,47 @@ sub status {
     my $string = $driver->get_alert_text;
 
 =cut
+
 sub get_alert_text {
   my ($self) = @_;
   my $res = { 'command' => 'getAlertText' };
   return $self->_execute_command($res);
+}
+
+=head2 send_keys_to_active_element
+
+ Description:
+    Send a sequence of key strokes to the active element. This command is
+    similar to the send keys command in every aspect except the implicit
+    termination: The modifiers are not released at the end of the call.
+    Rather, the state of the modifier keys is kept between calls, so mouse
+    interactions can be performed while modifier keys are depressed.
+
+ Input: 1
+    Required:
+        {ARRAY | STRING} - Array of strings or a string.
+
+ Usage:
+    $driver->send_keys_to_active_element('abcd', 'efg');
+    $driver->send_keys_to_active_element('hijk');
+    
+    or
+    
+    # include the WDKeys module
+    use Selenium::Remote::WDKeys;
+    .
+    .
+    $driver->send_keys_to_active_element(KEYS->{'space'}, KEYS->{'enter'});
+
+=cut
+
+sub send_keys_to_active_element {
+    my ($self, @strings) = @_;
+    my $res = { 'command' => 'sendKeysToActiveElement' };
+    my $params = {
+        'value' => \@strings,
+    };
+    return $self->_execute_command($res, $params);
 }
 
 =head2 send_keys_to_alert

@@ -164,6 +164,10 @@ sub new {
                'method' => 'POST',
                'url' => "session/:sessionId/element/:id/value"
         },
+        'sendKeysToActiveElement' => {
+               'method' => 'POST',
+               'url' => "session/:sessionId/keys"
+        },
         'sendModifier' => {
                'method' => 'POST',
                'url' => "session/:sessionId/modifier"
