@@ -897,17 +897,44 @@ sub execute_script {
         my $params = {'script' => $script, 'args' => [@args]};
         my $ret = $self->_execute_command($res, $params);
         
-        # replace any ELEMENTS with WebElement
-        if (ref($ret) and (ref($ret) eq 'HASH') and exists $ret->{'ELEMENT'}) {
-            $ret =
-                new Selenium::Remote::WebElement(
-                                        $ret->{ELEMENT}, $self);
-        }
-        return $ret;
+        return $self->_convert_to_webelement($ret);
     }
     else {
         croak 'Javascript is not enabled on remote driver instance.';
     }
+}
+
+# _convert_to_webelement
+# An internal method used to traverse a data structure
+# and convert any ELEMENTS with WebElements
+
+sub _convert_to_webelement {
+    my $self=shift;
+    my $ret=shift;
+
+    if (ref($ret) and (ref($ret) eq 'HASH')) {
+        if((keys %$ret==1) and exists $ret->{'ELEMENT'}) {
+            # replace an ELEMENT with WebElement
+            return
+              new Selenium::Remote::WebElement(
+                                               $ret->{ELEMENT}, $self);
+        }
+
+        my %hash;
+        foreach my $key (keys %$ret) {
+            $hash{$key}=$self->_convert_to_webelement($ret->{$key});
+        }
+        return \%hash;
+    }
+
+    if(ref($ret) and (ref($ret) eq 'ARRAY')) {
+        my @array=
+          map {$self->_convert_to_webelement($_)}
+            @$ret;
+        return \@array;
+    }
+
+    return $ret;
 }
 
 =head2 screenshot
