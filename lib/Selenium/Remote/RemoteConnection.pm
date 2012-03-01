@@ -9,6 +9,7 @@ use HTTP::Request;
 use Net::Ping;
 use Carp qw(croak);
 use JSON;
+use Data::Dumper;
 
 use Selenium::Remote::ErrorHandler;
 
@@ -22,10 +23,15 @@ sub new {
     bless $self, $class or die "Can't bless $class: $!";
     my $status = eval {$self->request('GET','status');};
     croak "Could not connect to SeleniumWebDriver" if($@);
+    if($status->{cmd_status} ne 'OK') {
+        # Could be grid, see if we can talk to it
+        $status = undef;
+        $status = $self->request('GET', 'grid/api/testsession');
+    }
     if($status->{cmd_status} eq 'OK') {
-      return $self;
+        return $self;
     } else {
-      croak "Selenium server did not return proper status";
+        croak "Selenium server did not return proper status";
     }
 }
 
@@ -38,6 +44,13 @@ sub request {
     # Construct full url.
     if ($url =~ m/^http/g) {
         $fullurl = $url;
+    }
+    elsif ($url =~ m/grid/g) {
+        $fullurl =
+            "http://"
+          . $self->{remote_server_addr} . ":"
+          . $self->{port}
+          . "/$url";
     }
     else {
         $fullurl =
