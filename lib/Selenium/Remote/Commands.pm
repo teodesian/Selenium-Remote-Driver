@@ -16,6 +16,10 @@ sub new {
                           'method' => 'POST',
                           'url'    => 'session'
         },
+        'getSessions' => {
+                          'method' => 'GET',
+                          'url'    => 'sessions'
+        },
         'getCapabilities' => {
                           'method' => 'GET',
                           'url'    => 'session/:sessionId'

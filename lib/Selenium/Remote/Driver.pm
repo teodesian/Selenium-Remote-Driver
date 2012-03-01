@@ -255,6 +255,29 @@ sub new_session {
     }
 }
 
+=head2 get_sessions
+
+  Description:
+    Returns a list of the currently active sessions. Each session will be
+    returned as an array of Hashes with the following keys:
+    
+    'id' : The session ID
+    'capabilities: An object describing session's capabilities
+
+  Output:
+    Array of Hashes
+
+  Usage:
+    print Dumper $driver->get_sessions();
+
+=cut
+
+sub get_sessions{
+    my ($self) = @_;
+    my $res = { 'command' => 'getSessions' };
+    return $self->_execute_command($res);
+}
+
 =head2 status
 
   Description:
