@@ -20,13 +20,6 @@ sub new {
                  port               => $port,
     };
     bless $self, $class or die "Can't bless $class: $!";
-    my $status = eval {$self->request('GET','status');};
-    croak "Could not connect to SeleniumWebDriver" if($@);
-    if($status->{cmd_status} eq 'OK') {
-      return $self;
-    } else {
-      croak "Selenium server did not return proper status";
-    }
 }
 
 # This request method is tailored for Selenium RC server
