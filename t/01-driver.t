@@ -189,7 +189,7 @@ EXECUTE: {
         isa_ok($elem, 'ARRAY', 'What we got back is an ARRAY ref');
         ok(scalar(@$elem), 'There are elements in our array ref');
         foreach my $element (@$elem) {
-            isa_ok($elem, 'Selenium::Remote::WebElement', 'Element was converted to a WebElement object');
+            isa_ok($element, 'Selenium::Remote::WebElement', 'Element was converted to a WebElement object');
         }
         $script = q{
           var arg1 = arguments[0];
