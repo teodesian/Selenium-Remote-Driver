@@ -1,5 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
+0.14   3-1-2012
+        - Added method send_keys_to_active_element() in driver
+        - Added method get_sessions()
+        - Fixed issue #11
+        - Fixed documentation from issue #21
+        
 0.13   2-8-2012
         - Added support for key events in send_keys() method
         - Added methods to get/set window position/size
