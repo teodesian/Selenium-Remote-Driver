@@ -1695,6 +1695,9 @@ __END__
 For more information about Selenium , visit the website at
 L<http://code.google.com/p/selenium/>.
 
+Also checkout project's wiki page at
+L<https://github.com/aivaturi/Selenium-Remote-Driver/wiki>.
+
 =head1 BUGS
 
 The Selenium issue tracking system is available online at
