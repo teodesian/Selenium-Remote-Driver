@@ -215,6 +215,8 @@ sub _execute_command {
                    if(ref($resp->{cmd_return}) eq 'HASH') {
                      $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                        if $resp->{cmd_return}->{error}->{msg};
+                     $msg .= ": $resp->{cmd_return}->{message}"
+                       if $resp->{cmd_return}->{message};
                    } else {
                      $msg .= ": $resp->{cmd_return}";
                    }

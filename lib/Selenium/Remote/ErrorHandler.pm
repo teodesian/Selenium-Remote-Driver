@@ -111,6 +111,7 @@ sub process_error {
     my $ret;
     $ret->{'stackTrace'} = $resp->{'value'}->{'stackTrace'};
     $ret->{'error'} = $self->STATUS_CODE->{$resp->{'status'}};
+    $ret->{'message'} = $resp->{'value'}->{'message'};
 
     return $ret;
 }
