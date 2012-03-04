@@ -165,7 +165,7 @@ FIND: {
          . " at " . __FILE__ . " line " . (__LINE__+1);
         eval { $driver->find_element("element_that_doesnt_exist","id"); };
         chomp $@;
-        is($@,$expected_err,"find_element croaks properly");
+        is($@,$expected_err.".","find_element croaks properly");
       }
 
 EXECUTE: {
