@@ -178,6 +178,20 @@ EXECUTE: {
         ok($elem->isa('Selenium::Remote::WebElement'), 'Executed script');
         is($elem->get_attribute('id'),'checky','Execute found proper element');
         $script = q{
+          var links = window.document.links
+          var length = links.length
+          var results = new Array(length)
+          while(length--) results[length] = links[length];
+          return results;
+        };
+        $elem = $driver->execute_script($script);
+        ok($elem, 'Got something back from execute_script');
+        isa_ok($elem, 'ARRAY', 'What we got back is an ARRAY ref');
+        ok(scalar(@$elem), 'There are elements in our array ref');
+        foreach my $element (@$elem) {
+            isa_ok($element, 'Selenium::Remote::WebElement', 'Element was converted to a WebElement object');
+        }
+        $script = q{
           var arg1 = arguments[0];
           var callback = arguments[arguments.length-1];
           var elem = window.document.getElementById(arg1);
