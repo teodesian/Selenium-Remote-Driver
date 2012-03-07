@@ -482,7 +482,7 @@ sub get_capabilities {
     return $self->_execute_command($res);
 }
 
-=head2 set_timeout
+=head2 set_async_script_timeout
 
  Description:
     Set the amount of time, in milliseconds, that asynchronous scripts executed
