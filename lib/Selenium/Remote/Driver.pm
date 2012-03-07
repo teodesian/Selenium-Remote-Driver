@@ -934,15 +934,12 @@ sub execute_script {
 # and convert any ELEMENTS with WebElements
 
 sub _convert_to_webelement {
-    my $self=shift;
-    my $ret=shift;
+    my ($self, $ret ) = @_;
 
     if (ref($ret) and (ref($ret) eq 'HASH')) {
         if((keys %$ret==1) and exists $ret->{'ELEMENT'}) {
             # replace an ELEMENT with WebElement
-            return
-              new Selenium::Remote::WebElement(
-                                               $ret->{ELEMENT}, $self);
+            return new Selenium::Remote::WebElement($ret->{ELEMENT}, $self);
         }
 
         my %hash;
@@ -953,9 +950,7 @@ sub _convert_to_webelement {
     }
 
     if(ref($ret) and (ref($ret) eq 'ARRAY')) {
-        my @array=
-          map {$self->_convert_to_webelement($_)}
-            @$ret;
+        my @array = map {$self->_convert_to_webelement($_)} @$ret;
         return \@array;
     }
 
