@@ -6,6 +6,7 @@ Revision history for Selenium-Remote-Driver
         - The error messages are now a little more descriptive in cases of
           "UNKNOWN ERROR".
         - Fixed the carp 1.25 related issue in tests.
+        - Added support for proxy configuration.
 
 0.14   3-1-2012
         - Added method send_keys_to_active_element() in driver
