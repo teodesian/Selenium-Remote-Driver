@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-0.15   3-8-2012
+0.15   3-12-2012
         - execute_script() can return web elements for data structures
           (arrays for .e.g.).
         - The error messages are now a little more descriptive in cases of
