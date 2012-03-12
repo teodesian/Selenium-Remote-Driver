@@ -101,7 +101,7 @@ created when you use the find_* methods.
     Constructor for Driver. It'll instantiate the object if it can communicate
     with the Selenium RC server.
 
- Input: 7 (all optional)
+ Input: (all optional)
     desired_capabilities - HASH - Following options are accepted:
       Optional:
         'remote_server_addr' - <string> - IP or FQDN of the RC server machine
@@ -111,10 +111,22 @@ created when you use the find_* methods.
         'platform' - <string> - desired platform:
                                 {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
         'javascript' - <boolean> - whether javascript should be supported
+        'accept_ssl_certs' - <boolean> - whether SSL certs should be accepted, default is true.
         'auto_close' - <boolean> - whether driver should end session on remote
                                    server on close.
         'extra_capabilities' - HASH of extra capabilities
-
+        'proxy' - HASH - Proxy configuration with the following keys:
+            'proxyType' - <string> - REQUIRED, Possible values are:
+                direct - A direct connection - no proxy in use,
+                manual - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
+                pac - Proxy autoconfiguration from a URL,
+                autodetect - proxy autodetection, probably with WPAD,
+                system - Use system settings
+            'proxyAutoconfigUrl' - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile.
+            'ftpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+            'httpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+            'sslProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+            
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
             'port'         => '4444'
@@ -142,6 +154,9 @@ created when you use the find_* methods.
                                               'platform'           => 'VISTA',
                                               'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],},
                                               );
+    or
+    my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
+    
 =cut
 
 sub new {
@@ -162,7 +177,8 @@ sub new {
         pid                => $$,
     };
     bless $self, $class or die "Can't bless $class: $!";
-
+    
+    # check for javascript 
     if ( defined $args{javascript} ) {
         if ( $args{javascript} ) {
             $self->{javascript} = JSON::true;
@@ -173,6 +189,31 @@ sub new {
     }
     else {
         $self->{javascript} = JSON::true;
+    }
+    
+    # check for acceptSslCerts
+    if ( defined $args{accept_ssl_certs} ) {
+        if ( $args{accept_ssl_certs} ) {
+            $self->{accept_ssl_certs} = JSON::true;
+        }
+        else {
+            $self->{accept_ssl_certs} = JSON::false;
+        }
+    }
+    else {
+        $self->{accept_ssl_certs} = JSON::true;
+    }
+    
+    # check for proxy
+    if ( defined $args{proxy} ) {
+        if ($args{proxy}{proxyType} eq 'pac') {
+            if (not defined $args{proxy}{proxyAutoconfigUrl}) {
+                croak "proxyAutoconfigUrl not provided\n";
+            } elsif (not ($args{proxy}{proxyAutoconfigUrl} =~ /^http/g)) {
+                croak "proxyAutoconfigUrl should be of format http://";
+            }
+        }
+        $self->{proxy} = $args{proxy};
     }
 
     # Connect to remote server & establish a new session
@@ -242,6 +283,8 @@ sub new_session {
             'platform'          => $self->{platform},
             'javascriptEnabled' => $self->{javascript},
             'version'           => $self->{version},
+            'acceptSslCerts'    => $self->{accept_ssl_certs},
+            'proxy'             => $self->{proxy},
             %$extra_capabilities,
         },
     };
