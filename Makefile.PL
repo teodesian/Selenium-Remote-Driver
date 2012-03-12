@@ -11,6 +11,7 @@ requires 'LWP::UserAgent';
 requires 'HTTP::Headers';
 requires 'HTTP::Request';
 requires 'Carp';
+test_requires 'Carp' => '1.25';
 requires 'JSON';
 requires 'Net::Ping';
 
