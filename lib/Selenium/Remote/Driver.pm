@@ -1049,25 +1049,34 @@ sub available_engines {
 
  Description:
     Change focus to another frame on the page. If the frame ID is null, the
-    server will switch to the page's default content.
+    server will switch to the page's default content. You can also switch to a
+    WebElement, for e.g. you can find an iframe using find_element & then
+    provide that as an input to this method. Also see e.g. 
 
  Input: 1
     Required:
-        {STRING | NUMBER | NULL} - ID of the frame which can be one of the three
+        {STRING | NUMBER | NULL | WebElement} - ID of the frame which can be one of the three
                                    mentioned.
 
  Usage:
     $driver->switch_to_frame('frame_1');
+    or
+    $driver->switch_to_frame($driver->find_element('iframe', 'tag_name'));
 
 =cut
 
 sub switch_to_frame {
     my ( $self, $id ) = @_;
     my $json_null = JSON::null;
+    my $params;
     $id = ( defined $id ) ? $id : $json_null;
 
     my $res    = { 'command' => 'switchToFrame' };
-    my $params = { 'id'      => $id };
+    if (ref $id eq 'Selenium::Remote::WebElement') {
+        $params = { 'id' => {'ELEMENT' => $id->{'id'}}};
+    } else {
+        $params = { 'id'      => $id };
+    }
     return $self->_execute_command( $res, $params );
 }
 
