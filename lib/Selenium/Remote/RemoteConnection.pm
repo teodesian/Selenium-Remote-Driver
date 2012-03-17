@@ -19,6 +19,7 @@ sub new {
     my $self = {
                  remote_server_addr => $remote_srvr,
                  port               => $port,
+                 debug              => 0,
     };
     bless $self, $class or die "Can't bless $class: $!";
     my $status = eval {$self->request('GET','status');};
@@ -62,8 +63,11 @@ sub request {
 
     if ((defined $params) && $params ne '') {
         my $json = new JSON;
+        $json->allow_blessed;
         $content = $json->allow_nonref->utf8->encode($params);
     }
+    
+    print "REQ: $url, $content\n" if $self->{debug};
 
     # HTTP request
     my $ua = LWP::UserAgent->new;
@@ -85,7 +89,8 @@ sub _process_response {
         return $self->request('GET', $response->header('location'));
     }
     else {
-        my $decoded_json = undef; 
+        my $decoded_json = undef;
+        print "RES: ".$response->decoded_content."\n\n" if $self->{debug};
         if (($response->message ne 'No Content') && ($response->content ne '')) {
             $decoded_json = $json->allow_nonref(1)->utf8(1)->decode($response->content);
             $data->{'sessionId'} = $decoded_json->{'sessionId'};

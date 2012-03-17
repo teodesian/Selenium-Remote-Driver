@@ -300,6 +300,38 @@ sub new_session {
     }
 }
 
+=head2 debug_on
+
+  Description:
+    Turns on debugging mode and the driver will print extra info like request
+    and response to stdout. Useful, when you want to see what is being sent to
+    the server & what response you are getting back.
+
+  Usage:
+    $driver->debug_on;
+
+=cut
+
+sub debug_on {
+    my ($self) = @_;
+    $self->{'remote_conn'}->{'debug'} = 1;
+}
+
+=head2 debug_off
+
+  Description:
+    Turns off the debugging mode.
+
+  Usage:
+    $driver->debug_off;
+
+=cut
+
+sub debug_off {
+    my ($self) = @_;
+    $self->{'remote_conn'}->{'debug'} = 0;
+}
+
 =head2 get_sessions
 
   Description:
