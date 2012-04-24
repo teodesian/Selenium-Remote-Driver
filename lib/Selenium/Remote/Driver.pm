@@ -557,6 +557,37 @@ sub get_capabilities {
     return $self->_execute_command($res);
 }
 
+=head2 set_timeout
+
+ Description:
+    Configure the amount of time that a particular type of operation can execute
+    for before they are aborted and a |Timeout| error is returned to the client.
+ 
+ Input:
+    type - <STRING> - The type of operation to set the timeout for.
+                      Valid values are:
+                      "script"    : for script timeouts,
+                      "implicit"  : for modifying the implicit wait timeout
+                      "page load" : for setting a page load timeout.
+    ms - <NUMBER> - The amount of time, in milliseconds, that time-limited
+            commands are permitted to run.
+
+ Usage:
+    $driver->set_timeout('script', 1000);
+
+=cut
+
+sub set_timeout {
+    my ($self, $type, $ms) = @_;
+    if (not defined $type or not defined $ms)
+    {
+        return "Expecting type & timeour in ms";
+    }
+    my $res = {'command' => 'setTimeout'};
+    my $params = {'type' => $type, 'ms' => $ms};
+    return $self->_execute_command($res, $params);
+}
+
 =head2 set_async_script_timeout
 
  Description:
