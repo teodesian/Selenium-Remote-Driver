@@ -214,6 +214,8 @@ sub new {
             }
         }
         $self->{proxy} = $args{proxy};
+    } else {
+        $self->{proxy} = { proxyType => 'direct' };
     }
 
     # Connect to remote server & establish a new session
