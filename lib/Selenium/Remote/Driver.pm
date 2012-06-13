@@ -1349,7 +1349,7 @@ sub add_cookie {
     my $res        = { 'command' => 'addCookie' };
     my $json_false = JSON::false;
     my $json_true  = JSON::true;
-    $secure = ( defined $secure ) ? $json_true : $json_false;
+    $secure = ( defined $secure && $secure ) ? $json_true : $json_false;
 
     my $params = {
         'cookie' => {
