@@ -11,7 +11,7 @@ BEGIN {
       BAIL_OUT ("Couldn't load Driver");
       exit;
    }
-   
+
    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))
    {
       use t::lib::MockSeleniumWebDriver;
@@ -119,6 +119,7 @@ COOKIES: {
             pass('Adding cookie foo...');
             $ret = $driver->get_all_cookies();
             is(@{$ret}, 1, 'foo cookie added.');
+            is($ret->[0]{'secure'}, "false", 'foo cookie insecure.');
             $ret = $driver->delete_cookie_named('foo');
             pass('Deleting cookie foo...');
             $ret = $driver->get_all_cookies();
@@ -245,4 +246,3 @@ elsif ($record)
 }
 
 done_testing;
-
