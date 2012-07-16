@@ -14,6 +14,8 @@ requires 'Carp';
 test_requires 'Carp' => '1.25';
 requires 'JSON';
 requires 'Net::Ping';
+requires 'MIME::Base64';
+requires 'IO::Compress::Zip';
 
 resources 'bugtracker' => 'https://github.com/aivaturi/Selenium-Remote-Driver/issues';
 resources 'repository' => {
