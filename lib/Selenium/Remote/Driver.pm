@@ -214,8 +214,6 @@ sub new {
             }
         }
         $self->{proxy} = $args{proxy};
-    } else {
-        $self->{proxy} = { proxyType => 'direct' };
     }
 
     # Connect to remote server & establish a new session
@@ -286,10 +284,14 @@ sub new_session {
             'javascriptEnabled' => $self->{javascript},
             'version'           => $self->{version},
             'acceptSslCerts'    => $self->{accept_ssl_certs},
-            'proxy'             => $self->{proxy},
             %$extra_capabilities,
         },
     };
+    
+    if (defined $self->{proxy}) {
+        $args->{desiredCapabilities}->{proxy} = $self->{proxy};
+    }
+    
     my $resp =
       $self->{remote_conn}
       ->request( $self->{commands}->{'newSession'}->{'method'},
