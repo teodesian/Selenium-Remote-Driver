@@ -281,6 +281,10 @@ sub new {
                'method' => 'POST',
                'url'    => 'session/:sessionId/buttonup'
         },
+        'uploadFile' => {
+               'method' => 'POST',
+               'url'    => 'session/:sessionId/file'
+        },
         #'setVisible' => {
         #               'method' => 'POST',
         #               'url' => "session/:sessionId/visible"

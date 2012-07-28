@@ -6,6 +6,9 @@ use warnings;
 use Carp;
 our @CARP_NOT;
 
+use MIME::Base64;
+use IO::Compress::Zip qw(zip $ZipError) ;
+
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
@@ -1827,6 +1830,36 @@ sub button_up {
   my ($self) = @_;
   my $res = { 'command' => 'buttonUp' };
   return $self->_execute_command($res);
+}
+
+=head2 upload_file
+
+ Description: 
+    Upload a file from the local machine to the selenium server
+    machine. That file then can be used for testing file upload on web
+    forms. Returns the remote-server's path to the file.
+
+ Usage:
+    my $remote_fname = $driver->upload_file( $fname );
+    my $element = $driver->find_element( '//input[@id="file"]' );
+    $element->send_keys( $remote_fname );
+
+=cut
+
+# this method duplicates upload() method in the
+# org.openqa.selenium.remote.RemoteWebElement java class.
+
+sub upload_file {
+    my ($self, $filename) = @_;
+    if (not -r $filename) { die "upload_file: no such file: $filename"; }
+    my $string = "";                         # buffer
+    zip $filename => \$string
+        or die "zip failed: $ZipError\n";    # compress the file into string
+    my $res = { 'command' => 'uploadFile' }; # /session/:SessionId/file
+    my $params = {
+        file => encode_base64($string)       # base64-encoded string
+    };
+    return $self->_execute_command($res, $params);
 }
 
 1;
