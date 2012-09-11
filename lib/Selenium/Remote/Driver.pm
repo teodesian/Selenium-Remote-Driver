@@ -590,7 +590,7 @@ sub set_timeout {
     my ($self, $type, $ms) = @_;
     if (not defined $type or not defined $ms)
     {
-        return "Expecting type & timeour in ms";
+        croak "Expecting type & timeout in ms";
     }
     my $res = {'command' => 'setTimeout'};
     my $params = {'type' => $type, 'ms' => $ms};
@@ -617,7 +617,7 @@ sub set_async_script_timeout {
     my ($self, $ms) = @_;
     if (not defined $ms)
     {
-        return "Expecting timeout in ms";
+        croak "Expecting timeout in ms";
     }
     my $res  = {'command' => 'setAsyncScriptTimeout'};
     my $params  = {'ms' => $ms};
@@ -962,7 +962,7 @@ sub execute_async_script {
     my ( $self, $script, @args ) = @_;
     if ($self->javascript) {
         if ( not defined $script ) {
-            return 'No script provided';
+            croak 'No script provided';
         }
         my $res  = { 'command'    => 'executeAsyncScript' };
 
@@ -1022,7 +1022,7 @@ sub execute_script {
     my ( $self, $script, @args ) = @_;
     if ($self->javascript) {
         if ( not defined $script ) {
-            return 'No script provided';
+            croak 'No script provided';
         }
         my $res  = { 'command'    => 'executeScript' };
 
@@ -1253,7 +1253,7 @@ sub set_window_position {
     my ( $self, $x, $y, $window ) = @_;
     $window = (defined $window)?$window:'current';
     if (not defined $x and not defined $y){
-        return "X & Y co-ordinates are required";
+        croak "X & Y co-ordinates are required";
     }
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
@@ -1286,7 +1286,7 @@ sub set_window_size {
     my ( $self, $height, $width, $window ) = @_;
     $window = (defined $window)?$window:'current';
     if (not defined $height and not defined $width){
-        return "height & width of browser are required";
+        croak "height & width of browser are required";
     }
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
@@ -1350,7 +1350,7 @@ sub add_cookie {
         || ( not defined $path )
         || ( not defined $domain ) )
     {
-        return "Missing parameters";
+        croak "Missing parameters";
     }
 
     my $res        = { 'command' => 'addCookie' };
@@ -1405,7 +1405,7 @@ sub delete_all_cookies {
 sub delete_cookie_named {
     my ( $self, $cookie_name ) = @_;
     if ( not defined $cookie_name ) {
-        return "Cookie name not provided";
+        croak "Cookie name not provided";
     }
     my $res = { 'command' => 'deleteCookieNamed', 'name' => $cookie_name };
     return $self->_execute_command($res);
@@ -1456,7 +1456,7 @@ sub get_page_source {
 sub find_element {
     my ( $self, $query, $method ) = @_;
     if ( not defined $query ) {
-        return 'Search string to find element not provided.';
+        croak 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
     if (defined $using) {
@@ -1508,7 +1508,7 @@ sub find_element {
 sub find_elements {
     my ( $self, $query, $method ) = @_;
     if ( not defined $query ) {
-        return 'Search string to find element not provided.';
+        croak 'Search string to find element not provided.';
     }
     my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
     if (defined $using) {
@@ -1574,7 +1574,7 @@ sub find_elements {
 sub find_child_element {
     my ( $self, $elem, $query, $method ) = @_;
     if ( ( not defined $elem ) || ( not defined $query ) ) {
-        return "Missing parameters";
+        croak "Missing parameters";
     }
     my $using = ( defined $method ) ? $method : 'xpath';
     if (exists FINDERS->{$using}) {
@@ -1630,7 +1630,7 @@ sub find_child_element {
 sub find_child_elements {
     my ( $self, $elem, $query, $method ) = @_;
     if ( ( not defined $elem ) || ( not defined $query ) ) {
-        return "Missing parameters";
+        croak "Missing parameters";
     }
     my $using = ( defined $method ) ? $method : 'xpath';
     if (exists FINDERS->{$using}) {
