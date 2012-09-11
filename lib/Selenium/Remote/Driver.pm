@@ -129,7 +129,7 @@ created when you use the find_* methods.
             'ftpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'httpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'sslProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            
+
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
             'port'         => '4444'
@@ -155,11 +155,13 @@ created when you use the find_* methods.
     or
     my $driver = new Selenium::Remote::Driver('browser_name'       => 'chrome',
                                               'platform'           => 'VISTA',
-                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],},
+                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],
+                                              							'chrome.prefs' => {'download.default_directory' =>'/home/user/tmp', 'download.prompt_for_download' =>1 }
+                                              							},
                                               );
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
-    
+
 =cut
 
 sub new {
@@ -180,8 +182,8 @@ sub new {
         pid                => $$,
     };
     bless $self, $class or die "Can't bless $class: $!";
-    
-    # check for javascript 
+
+    # check for javascript
     if ( defined $args{javascript} ) {
         if ( $args{javascript} ) {
             $self->{javascript} = JSON::true;
@@ -193,7 +195,7 @@ sub new {
     else {
         $self->{javascript} = JSON::true;
     }
-    
+
     # check for acceptSslCerts
     if ( defined $args{accept_ssl_certs} ) {
         if ( $args{accept_ssl_certs} ) {
@@ -206,7 +208,7 @@ sub new {
     else {
         $self->{accept_ssl_certs} = JSON::true;
     }
-    
+
     # check for proxy
     if ( defined $args{proxy} ) {
         if ($args{proxy}{proxyType} eq 'pac') {
@@ -290,11 +292,11 @@ sub new_session {
             %$extra_capabilities,
         },
     };
-    
+
     if (defined $self->{proxy}) {
         $args->{desiredCapabilities}->{proxy} = $self->{proxy};
     }
-    
+
     my $resp =
       $self->{remote_conn}
       ->request( $self->{commands}->{'newSession'}->{'method'},
@@ -344,7 +346,7 @@ sub debug_off {
   Description:
     Returns a list of the currently active sessions. Each session will be
     returned as an array of Hashes with the following keys:
-    
+
     'id' : The session ID
     'capabilities: An object describing session's capabilities
 
@@ -416,9 +418,9 @@ sub get_alert_text {
  Usage:
     $driver->send_keys_to_active_element('abcd', 'efg');
     $driver->send_keys_to_active_element('hijk');
-    
+
     or
-    
+
     # include the WDKeys module
     use Selenium::Remote::WDKeys;
     .
@@ -516,7 +518,7 @@ sub dismiss_alert {
     it will be scrolled into view.
 
  Output:
-    STRING - 
+    STRING -
 
  Usage:
     # element - the element to move to. If not specified or is null, the offset is relative to current position of the mouse.
@@ -569,7 +571,7 @@ sub get_capabilities {
  Description:
     Configure the amount of time that a particular type of operation can execute
     for before they are aborted and a |Timeout| error is returned to the client.
- 
+
  Input:
     type - <STRING> - The type of operation to set the timeout for.
                       Valid values are:
@@ -601,7 +603,7 @@ sub set_timeout {
     Set the amount of time, in milliseconds, that asynchronous scripts executed
     by execute_async_script() are permitted to run before they are
     aborted and a |Timeout| error is returned to the client.
- 
+
  Input:
     ms - <NUMBER> - The amount of time, in milliseconds, that time-limited
             commands are permitted to run.
@@ -632,7 +634,7 @@ sub set_async_script_timeout {
     at least one element is found or the timeout expires, at which point it
     will return an empty list. If this method is never called, the driver will
     default to an implicit wait of 0ms.
- 
+
  Input:
     Time in milliseconds.
 
@@ -738,7 +740,7 @@ sub get_window_handles {
 
  Description:
     Retrieve the window size
- 
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -762,7 +764,7 @@ sub get_window_size {
 
  Description:
     Retrieve the window position
- 
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -805,7 +807,7 @@ sub get_current_url {
 
  Description:
     Navigate to a given url. This is same as get() method.
-    
+
  Input:
     STRING - url
 
@@ -823,7 +825,7 @@ sub navigate {
 
  Description:
     Navigate to a given url
-    
+
  Input:
     STRING - url
 
@@ -1023,7 +1025,7 @@ sub execute_script {
             return 'No script provided';
         }
         my $res  = { 'command'    => 'executeScript' };
-        
+
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
         for (my $i=0; $i<@args; $i++) {
@@ -1031,10 +1033,10 @@ sub execute_script {
                 $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
             }
         }
-        
+
         my $params = {'script' => $script, 'args' => [@args]};
         my $ret = $self->_execute_command($res, $params);
-        
+
         return $self->_convert_to_webelement($ret);
     }
     else {
@@ -1121,7 +1123,7 @@ sub available_engines {
     Change focus to another frame on the page. If the frame ID is null, the
     server will switch to the page's default content. You can also switch to a
     WebElement, for e.g. you can find an iframe using find_element & then
-    provide that as an input to this method. Also see e.g. 
+    provide that as an input to this method. Also see e.g.
 
  Input: 1
     Required:
@@ -1271,7 +1273,7 @@ sub set_window_position {
     INT - height of the window
     INT - width of the window
     STRING - <optional> - window handle (default is 'current' window)
- 
+
  Output:
     BOOLEAN - Success or failure
 
@@ -1300,7 +1302,7 @@ sub set_window_size {
  Description:
     Retrieve all cookies visible to the current page. Each cookie will be
     returned as a HASH reference with the following keys & their value types:
-    
+
     'name' - STRING
     'value' - STRING
     'path' - STRING
@@ -1445,7 +1447,7 @@ sub get_page_source {
 
  Output:
     Selenium::Remote::WebElement - WebElement Object
-    
+
  Usage:
     $driver->find_element("//input[\@name='q']");
 
@@ -1497,7 +1499,7 @@ sub find_element {
 
  Output:
     ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects
-    
+
  Usage:
     $driver->find_elements("//input");
 
@@ -1561,7 +1563,7 @@ sub find_elements {
 
  Output:
     Selenium::Remote::WebElement - WebElement Object
-    
+
  Usage:
     my $elem1 = $driver->find_element("//select[\@name='ned']");
     # note the usage of ./ when searching for a child element instead of //
@@ -1618,7 +1620,7 @@ sub find_child_element {
 
  Output:
     ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects.
-    
+
  Usage:
     my $elem1 = $driver->find_element("//select[\@name='ned']");
     my $child = $driver->find_child_elements($elem1, "//option");
@@ -1668,7 +1670,7 @@ sub find_child_elements {
 
  Output:
     Selenium::Remote::WebElement - WebElement Object
-    
+
  Usage:
     $driver->get_active_element();
 
@@ -1731,7 +1733,7 @@ sub send_modifier {
 
  Output:
     BOOLEAN
-    
+
  Usage:
     $driver->compare_elements($elem_obj1, $elem_obj2);
 
@@ -1834,7 +1836,7 @@ sub button_up {
 
 =head2 upload_file
 
- Description: 
+ Description:
     Upload a file from the local machine to the selenium server
     machine. That file then can be used for testing file upload on web
     forms. Returns the remote-server's path to the file.
