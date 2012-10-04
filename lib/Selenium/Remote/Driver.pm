@@ -175,6 +175,7 @@ sub new {
         platform           => delete $args{platform}           || 'ANY',
         port               => delete $args{port}               || '4444',
         version            => delete $args{version}            || '',
+        application_name   => delete $args{application_name}   || undef,
         session_id         => undef,
         remote_conn        => undef,
         commands           => $ress,
@@ -289,6 +290,7 @@ sub new_session {
             'javascriptEnabled' => $self->{javascript},
             'version'           => $self->{version},
             'acceptSslCerts'    => $self->{accept_ssl_certs},
+            'applicationName'   => $self->{application_name},
             %$extra_capabilities,
         },
     };
