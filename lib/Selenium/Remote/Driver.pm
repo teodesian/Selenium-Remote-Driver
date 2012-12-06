@@ -1526,7 +1526,7 @@ sub find_elements {
             die $@;
           }
         }
-        my $elem_obj_arr;
+        my $elem_obj_arr = [];
         my $i = 0;
         foreach (@$ret_data) {
             $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
