@@ -100,6 +100,7 @@ sub submit {
 sub send_keys {
     my ($self, @strings) = @_;
     my $res = { 'command' => 'sendKeysToElement', 'id' => $self->{id} };
+    map { $_ .= "" } @strings;
     my $params = {
         'value' => \@strings,
     };
