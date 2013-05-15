@@ -27,8 +27,6 @@ use constant FINDERS => {
 
 Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
 
-=cut
-
 =head1 SYNOPSIS
 
     use Selenium::Remote::Driver;
@@ -37,8 +35,6 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
     $driver->get('http://www.google.com');
     print $driver->get_title();
     $driver->quit();
-
-=cut
 
 =head1 DESCRIPTION
 
@@ -54,8 +50,6 @@ This module sends commands directly to the Server using HTTP. Using this module
 together with the Selenium Server, you can automatically control any supported
 browser. To use this module, you need to have already downloaded and started
 the Selenium Server (Selenium Server is a Java application).
-
-=cut
 
 =head1 USAGE (read this first)
 
@@ -87,11 +81,7 @@ your further actions will fail for that element. Finally, just remember that you
 don't have to instantiate WebElement objects at all - they will be automatically
 created when you use the find_* methods.
 
-=cut
-
 =head1 FUNCTIONS
-
-=cut
 
 =head2 new
 
@@ -154,7 +144,7 @@ created when you use the find_* methods.
                                               );
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
-    
+
 =cut
 
 sub new {
@@ -244,13 +234,13 @@ sub _execute_command {
         my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
         if(ref($resp) eq 'HASH') {
-            if($resp->{cmd_status} eq 'OK') {
+            if($resp->{cmd_status} && $resp->{cmd_status} eq 'OK') {
                return $resp->{cmd_return};
             } else {
                my $msg = "Error while executing command";
                if($resp->{cmd_error}) {
                  $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
-               } else {
+               } elsif ($resp->{cmd_return}) {
                    if(ref($resp->{cmd_return}) eq 'HASH') {
                      $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                        if $resp->{cmd_return}->{error}->{msg};
@@ -294,7 +284,9 @@ sub new_session {
         $self->{session_id} = $resp->{'sessionId'};
     }
     else {
-        croak "Could not create new session";
+        my $error = 'Could not create new session';
+        $error .= ": $resp->{cmd_return}" if defined $resp->{cmd_return};
+        croak $error;
     }
 }
 
