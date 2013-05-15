@@ -27,8 +27,6 @@ use constant FINDERS => {
 
 Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
 
-=cut
-
 =head1 SYNOPSIS
 
     use Selenium::Remote::Driver;
@@ -37,8 +35,6 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
     $driver->get('http://www.google.com');
     print $driver->get_title();
     $driver->quit();
-
-=cut
 
 =head1 DESCRIPTION
 
@@ -54,8 +50,6 @@ This module sends commands directly to the Server using HTTP. Using this module
 together with the Selenium Server, you can automatically control any supported
 browser. To use this module, you need to have already downloaded and started
 the Selenium Server (Selenium Server is a Java application).
-
-=cut
 
 =head1 USAGE (read this first)
 
@@ -87,11 +81,7 @@ your further actions will fail for that element. Finally, just remember that you
 don't have to instantiate WebElement objects at all - they will be automatically
 created when you use the find_* methods.
 
-=cut
-
 =head1 FUNCTIONS
-
-=cut
 
 =head2 new
 
@@ -154,7 +144,7 @@ created when you use the find_* methods.
                                               );
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
-    
+
 =cut
 
 sub new {
