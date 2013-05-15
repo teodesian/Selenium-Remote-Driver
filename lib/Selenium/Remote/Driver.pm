@@ -234,14 +234,14 @@ sub _execute_command {
         my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
         if(ref($resp) eq 'HASH') {
-            if($resp->{cmd_status} eq 'OK') {
+            if($resp->{cmd_status} && $resp->{cmd_status} eq 'OK') {
                return $resp->{cmd_return};
             } else {
                my $msg = "Error while executing command";
                if($resp->{cmd_error}) {
                  $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
                } else {
-                   if(ref($resp->{cmd_return}) eq 'HASH') {
+                   if($resp->{cmd_return} && ref($resp->{cmd_return}) eq 'HASH') {
                      $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                        if $resp->{cmd_return}->{error}->{msg};
                      $msg .= ": $resp->{cmd_return}->{message}"
