@@ -92,7 +92,7 @@ sub _process_response {
         my $decoded_json = undef;
         print "RES: ".$response->decoded_content."\n\n" if $self->{debug};
         if (($response->message ne 'No Content') && ($response->content ne '')) {
-            if ($response->content =~ m/^<html>/i) {
+            if ($response->content_type !~ m/json/i) {
                 $data->{'cmd_return'} = 'Server returned error message '.$response->content.' instead of data';
                 return $data;
             }
