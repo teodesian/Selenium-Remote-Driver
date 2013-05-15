@@ -240,8 +240,8 @@ sub _execute_command {
                my $msg = "Error while executing command";
                if($resp->{cmd_error}) {
                  $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
-               } else {
-                   if($resp->{cmd_return} && ref($resp->{cmd_return}) eq 'HASH') {
+               } elsif ($resp->{cmd_return}) {
+                   if(ref($resp->{cmd_return}) eq 'HASH') {
                      $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                        if $resp->{cmd_return}->{error}->{msg};
                      $msg .= ": $resp->{cmd_return}->{message}"
