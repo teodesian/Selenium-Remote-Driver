@@ -284,7 +284,9 @@ sub new_session {
         $self->{session_id} = $resp->{'sessionId'};
     }
     else {
-        croak "Could not create new session";
+        my $error = 'Could not create new session';
+        $error .= ": $resp->{cmd_return}" if defined $resp->{cmd_return};
+        croak $error;
     }
 }
 
