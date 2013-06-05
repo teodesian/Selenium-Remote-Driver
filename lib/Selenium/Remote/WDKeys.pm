@@ -1,5 +1,18 @@
 package Selenium::Remote::WDKeys;
 
+=head1 NAME
+
+Selenium::Remote::WDKeys - Representation of keystrokes used by Selenium::Remote::WebDriver
+
+=cut
+
+=head1 DESCRIPTION
+
+The constant KEYS is defined here.
+
+=cut
+
+
 use strict;
 use warnings;
 

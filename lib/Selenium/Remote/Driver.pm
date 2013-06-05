@@ -26,7 +26,7 @@ use constant FINDERS => {
       xpath             => 'xpath',
 };
 
-our $VERSION = "0.15";
+our $VERSION = "0.17";
 
 =head1 NAME
 
@@ -129,6 +129,7 @@ created when you use the find_* methods.
             'ftpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'httpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'sslProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
 
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
@@ -251,13 +252,13 @@ sub _execute_command {
         my $resp = $self->{remote_conn}
           ->request( $resource->{'method'}, $resource->{'url'}, $params );
         if(ref($resp) eq 'HASH') {
-            if($resp->{cmd_status} eq 'OK') {
+            if($resp->{cmd_status} && $resp->{cmd_status} eq 'OK') {
                return $resp->{cmd_return};
             } else {
                my $msg = "Error while executing command";
                if($resp->{cmd_error}) {
                  $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
-               } else {
+               } elsif ($resp->{cmd_return}) {
                    if(ref($resp->{cmd_return}) eq 'HASH') {
                      $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                        if $resp->{cmd_return}->{error}->{msg};
@@ -305,7 +306,9 @@ sub new_session {
         $self->{session_id} = $resp->{'sessionId'};
     }
     else {
-        croak "Could not create new session";
+        my $error = 'Could not create new session';
+        $error .= ": $resp->{cmd_return}" if defined $resp->{cmd_return};
+        croak $error;
     }
 }
 
@@ -1777,7 +1780,7 @@ sub click {
   }
   my $res = { 'command' => 'click' };
   my $params = { 'button' => $button };
-  return $self->_execute_command($res,$button);
+  return $self->_execute_command($res,$params);
 }
 
 =head2 double_click
