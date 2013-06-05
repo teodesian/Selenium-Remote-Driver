@@ -135,9 +135,15 @@ sub _process_response {
 
 __END__
 
+=pod
+
+=head1 NAME
+
+Selenium::Remote::RemoteConnection - Connect to a selenium server
+
 =head1 SEE ALSO
 
-For more information about Selenium , visit the website at
+For more information about Selenium, visit the website at
 L<http://code.google.com/p/selenium/>.
 
 =head1 BUGS
@@ -147,7 +153,7 @@ L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
 =head1 CURRENT MAINTAINER
 
-Gordon Child C<< <gchild@gordonchild.com> >>
+Charles Howes C<< <chowes@cpan.org> >>
 
 =head1 AUTHOR
 

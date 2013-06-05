@@ -121,6 +121,12 @@ sub process_error {
 
 __END__
 
+=pod
+
+=head1 NAME
+
+Selenium::Remote::ErrorHandler - Error handler for Selenium::Remote::Driver
+
 =head1 SEE ALSO
 
 For more information about Selenium , visit the website at
@@ -133,7 +139,7 @@ L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
 =head1 CURRENT MAINTAINER
 
-Gordon Child C<< <gchild@gordonchild.com> >>
+Charles Howes C<< <chowes@cpan.org> >>
 
 =head1 AUTHOR
 

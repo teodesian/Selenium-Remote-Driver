@@ -48,7 +48,7 @@ for my $line (@lines) {
 my $commands = Selenium::Remote::Commands->new;
 SOURCE_COMMAND: for my $method_source (@methods) {
   my $command = "$method_source->{method} $method_source->{path}";
-  my $msg     = "find $command";
+  my $msg     = "Looking for '$command'";
   for my $method_local (values %{$commands}) {
     if (  $method_local->{url} eq $method_source->{path}
       and $method_local->{method} eq $method_source->{method}) {
@@ -59,6 +59,11 @@ SOURCE_COMMAND: for my $method_source (@methods) {
 TODO: {
     local $TODO = "need to create command" if $todo_list->{$command};
     fail($msg);
+    diag("Add this to lib/Selenium/Remote/Commands.pm:
+        '$method_source->{path}'     => {
+                          'method' => '$method_source->{method}',
+                          'url'    => '$method_source->{path}'
+        },\n");
   }
 }
 

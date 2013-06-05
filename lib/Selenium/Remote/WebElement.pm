@@ -474,7 +474,7 @@ L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
 
 =head1 CURRENT MAINTAINER
 
-Gordon Child C<< <gchild@gordonchild.com> >>
+Charles Howes C<< <chowes@cpan.org> >>
 
 =head1 AUTHOR
 

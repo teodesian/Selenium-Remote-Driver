@@ -26,8 +26,6 @@ use constant FINDERS => {
       xpath             => 'xpath',
 };
 
-our $VERSION = "0.17";
-
 =head1 NAME
 
 Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
@@ -1894,13 +1892,15 @@ The following people have contributed to this module. (Thanks!)
 
 =over 4
 
+=item * Allen Lew
+
+=item * Charles Howes
+
 =item * Gordon Child
 
 =item * Phil Kania
 
 =item * Phil Mitchell
-
-=item * Allen Lew
 
 =item * Tom Hukins
 
