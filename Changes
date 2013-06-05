@@ -1,5 +1,15 @@
 Revision history for Selenium-Remote-Driver
 
+0.17   6-4-2013
+        - Second build with DistZilla, now with distzilla branch merged into master.
+        - Changelog updated
+        - Handle non-json responses better
+        - Small bugs fixed
+
+0.16   4-11-2013
+        - New maintainer and beginning CPAN artist: Charles Howes <chowes@cpan.org>
+        - First build with DistZilla (using distzilla branch from git repository, somewhat stale)
+
 0.15   3-12-2012
         - execute_script() can return web elements for data structures
           (arrays for .e.g.).
