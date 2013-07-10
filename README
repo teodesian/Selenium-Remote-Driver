@@ -3,12 +3,13 @@
 
 Perl Bindings for Selenium 2.0 Remote WebDriver
 
-This is a Perl Binding for Selenium 2.0 Remote WebDriver, which you should download
-from http://code.google.com/p/selenium; look for selenium-server-standalone.jar.
-This binding will not work with the 1.0 version of Selenium. Please use
-WWW::Selenium from CPAN if you're interested in 1.0 bindings. 
+This is a Perl Binding for Selenium 2.0 Remote WebDriver, which you
+should download from http://code.google.com/p/selenium; look for
+selenium-server-standalone.jar.  This binding will not work with the
+1.0 version of Selenium. Please use WWW::Selenium from CPAN if you're
+interested in 1.0 bindings.
 
-The unit tests provide varioud examples on how to invoke & use the module.
+The unit tests provide various examples on how to invoke & use the module.
 
 INSTALLATION
 
@@ -21,15 +22,16 @@ To install this module, run the following commands:
 
 UNIT TESTS
 
-This module uses LWP::Protocol::PSGI to facilitate unit tests. LWP::Protocol::PSGI
-overrides the LWP HTTP/HTTPS & this allows us to "mock" the interaction with
-WebDriver Server. In regular instances you should be running the tests against
-the mocked recording, which are stored in t/mock-recordings. If you want to run
-the tests live against the WebDriver server, set an environment variable
-WD_MOCKING_RECORD to 1. This will force the unit tests to run tests against the
-WebDriver server & also save the traffic (request/response) in t/mock-recordings.
-Either reset the environment variable or set it to 0 to revert to mocking the
-traffic. 
+This module uses LWP::Protocol::PSGI to facilitate unit
+tests. LWP::Protocol::PSGI overrides the LWP HTTP/HTTPS & this allows
+us to "mock" the interaction with WebDriver Server. In regular instances
+you should be running the tests against the mocked recording, which are
+stored in t/mock-recordings. If you want to run the tests live against
+the WebDriver server, set an environment variable WD_MOCKING_RECORD to
+1. This will force the unit tests to run tests against the WebDriver
+server & also save the traffic (request/response) in t/mock-recordings.
+Either reset the environment variable or set it to 0 to revert to mocking
+the traffic.
 
 SUPPORT AND DOCUMENTATION
 
