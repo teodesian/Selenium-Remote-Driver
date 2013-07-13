@@ -2,6 +2,7 @@ package Selenium::Remote::Driver;
 
 use strict;
 use warnings;
+use 5.006; use v5.10.0; # See http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
 
 use Carp;
 our @CARP_NOT;
