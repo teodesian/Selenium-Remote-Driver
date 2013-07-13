@@ -1,14 +1,49 @@
 Revision history for Selenium-Remote-Driver
 
-0.17   6-4-2013
+0.17   7-13-2013
         - Second build with DistZilla, now with distzilla branch merged into master.
-        - Changelog updated
-        - Handle non-json responses better
-        - Small bugs fixed
+        - commit db99a00: Dave Rolsky: Fix broken use of =cut
+        - commit 505232b: Dave Rolsky: Changed indentation of commit 0d78dbe
+        - commit f042929: Dave Rolsky: Check for content_type not being json
+        - commit 0e7ad05: Dave Rolsky: Include error message from
+                          server when we can't create a session
+        - commit aba915e: Dave Rolsky: Don't assume response
+                          structure, avoid undef warnings
+        - commit 6e34634: Dave Rolsky: Move cmd_return check up a
+                          little higher to simplify the code
+        - commit b6e79c1: Mucking about trying to create 0.17
+        - commit 81a6ffe: Merged branch 'dist-zilla'
+        - commit 45bcea2: Updated Changes file for version 0.16 and 0.17
+        - commit b28b61e: Changed maintainer information
+        - commit b28b61e: Improved DistZilla configuration
+        - commit b28b61e: Improved 03-spec-coverage test
+        - commit b6b2cdb: Improved 03-spec-coverage test, skip some methods
+        - commit 61ae784: Reformatted README to 80 columns, fixed a typo.
 
 0.16   4-11-2013
         - New maintainer and beginning CPAN artist: Charles Howes <chowes@cpan.org>
         - First build with DistZilla (using distzilla branch from git repository, somewhat stale)
+        - commit 338872f: Deleted MANIFEST, MANIFEST.SKIP, Makefile.PL
+        - commit 338872f: Changed README
+        - commit 338872f: Created dist.ini for Distzilla
+        - commit 338872f: Added 'uploadFile' to Commands.pm
+        - commit 338872f: Forced stringification of arguments in send_keys,
+          https://github.com/aivaturi/Selenium-Remote-Driver/issues/52
+        - commit 338872f: Removed check for secure cookie in t/01-driver.t
+        - commit 338872f: Updated
+             t/mock-recordings/01-driver-mock-MSWin32.json
+             t/mock-recordings/01-driver-mock-darwin.json
+             t/mock-recordings/01-driver-mock-linux.json
+             t/mock-recordings/02-webelement-mock-MSWin32.json
+             t/mock-recordings/02-webelement-mock-darwin.json
+             t/mock-recordings/02-webelement-mock-linux.json
+        - commit 0d78dbe: Show error message from server
+          https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
+        - commit dadb329: Click wasn't working due to typo
+          https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
+        - commit b992873: Added Pod headers to WDKeys.pm
+        - commit d30e31e: Bumped version number to 0.16 in dist.ini
+        - commit 6936c64: Stripped CR from end of lines everywhere
 
 0.15   3-12-2012
         - execute_script() can return web elements for data structures
