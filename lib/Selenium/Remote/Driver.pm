@@ -116,6 +116,8 @@ created when you use the find_* methods.
         'accept_ssl_certs' - <boolean> - whether SSL certs should be accepted, default is true.
         'auto_close' - <boolean> - whether driver should end session on remote
                                    server on close.
+        'default_finder' - <string> - choose default finder used for find_element*
+                                      {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'extra_capabilities' - HASH of extra capabilities
         'proxy' - HASH - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
@@ -161,6 +163,8 @@ created when you use the find_* methods.
                                               );
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
+    or
+    my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
 =cut
 
@@ -170,16 +174,17 @@ sub new {
 
     # Set the defaults if user doesn't send any
     my $self = {
-        remote_server_addr => delete $args{remote_server_addr} || 'localhost',
-        browser_name       => delete $args{browser_name}       || 'firefox',
-        platform           => delete $args{platform}           || 'ANY',
-        port               => delete $args{port}               || '4444',
-        version            => delete $args{version}            || '',
+        remote_server_addr => delete $args{remote_server_addr}        || 'localhost',
+        browser_name       => delete $args{browser_name}              || 'firefox',
+        platform           => delete $args{platform}                  || 'ANY',
+        port               => delete $args{port}                      || '4444',
+        version            => delete $args{version}                   || '',
+        default_finder     => FINDERS->{delete $args{default_finder}} || 'xpath',
         session_id         => undef,
         remote_conn        => undef,
         commands           => $ress,
         auto_close         => 1, # by default we will close remote session on DESTROY
-        pid                => $$,
+        pid                => $$
     };
     bless $self, $class or die "Can't bless $class: $!";
 
@@ -1445,7 +1450,7 @@ sub get_page_source {
         STRING - Locator scheme to use to search the element, available schemes:
                  {class, class_name, css, id, link, link_text, partial_link_text,
                   tag_name, name, xpath}
-                 Defaults to 'xpath'.
+                 Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
     Selenium::Remote::WebElement - WebElement Object
@@ -1460,7 +1465,7 @@ sub find_element {
     if ( not defined $query ) {
         croak 'Search string to find element not provided.';
     }
-    my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
+    my $using = ( defined $method ) ? FINDERS->{$method} : $self->{default_finder};
     if (defined $using) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
@@ -1497,7 +1502,7 @@ sub find_element {
         STRING - Locator scheme to use to search the element, available schemes:
                  {class, class_name, css, id, link, link_text, partial_link_text,
                   tag_name, name, xpath}
-                 Defaults to 'xpath'.
+                 Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
     ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects
@@ -1512,7 +1517,9 @@ sub find_elements {
     if ( not defined $query ) {
         croak 'Search string to find element not provided.';
     }
-    my $using = ( defined $method ) ? FINDERS->{$method} : 'xpath';
+
+    my $using = ( defined $method ) ? FINDERS->{$method} : $self->{default_finder};
+
     if (defined $using) {
         my $res = { 'command' => 'findElements' };
         my $params = { 'using' => $using, 'value' => $query };
@@ -1528,13 +1535,11 @@ sub find_elements {
             die $@;
           }
         }
-        my $elem_obj_arr;
-        my $i = 0;
+        my @elem_obj_arr = ();
         foreach (@$ret_data) {
-            $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
-            $i++;
+          push(@elem_obj_arr, new Selenium::Remote::WebElement($_->{ELEMENT}, $self));
         }
-        return wantarray?@{$elem_obj_arr}:$elem_obj_arr;
+        return @elem_obj_arr;
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1561,7 +1566,7 @@ sub find_elements {
         STRING - Locator scheme to use to search the element, available schemes:
                  {class, class_name, css, id, link, link_text, partial_link_text,
                   tag_name, name, xpath}
-                 Defaults to 'xpath'.
+                 Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
     Selenium::Remote::WebElement - WebElement Object
@@ -1578,7 +1583,7 @@ sub find_child_element {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : 'xpath';
+    my $using = ( defined $method ) ? $method : $self->{default_finder};
     if (exists FINDERS->{$using}) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
         my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
@@ -1618,7 +1623,7 @@ sub find_child_element {
         STRING - Locator scheme to use to search the element, available schemes:
                  {class, class_name, css, id, link, link_text, partial_link_text,
                   tag_name, name, xpath}
-                 Defaults to 'xpath'.
+                 Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
     ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects.
@@ -1634,7 +1639,7 @@ sub find_child_elements {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : 'xpath';
+    my $using = ( defined $method ) ? $method : $self->{default_finder};
     if (exists FINDERS->{$using}) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
         my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
