@@ -3,6 +3,8 @@ package Selenium::Remote::WebElement;
 use strict;
 use warnings;
 
+use Carp qw(croak);
+
 =head1 NAME
 
 Selenium::Remote::WebElement - Representation of an HTML Element used by Selenium Remote Driver
@@ -284,7 +286,7 @@ sub clear {
 sub get_attribute {
     my ($self, $attr_name) = @_;
     if (not defined $attr_name) {
-        return 'Attribute name not provided';
+        croak 'Attribute name not provided';
     }
     my $res = {'command' => 'getElementAttribute',
                'id' => $self->{id},
@@ -349,7 +351,7 @@ sub is_displayed {
 sub drag {
     my ($self, $x, $y) = @_;
     if ((not defined $x) || (not defined $y)){
-        return 'X & Y pixel coordinates not provided';
+        croak 'X & Y pixel coordinates not provided';
     }
     my $res = {'command' => 'dragElement','id' => $self->{id}};
     my $params = {
@@ -420,7 +422,7 @@ sub get_text {
 sub get_css_attribute {
     my ($self, $attr_name) = @_;
     if (not defined $attr_name) {
-        return 'CSS attribute name not provided';
+        croak 'CSS attribute name not provided';
     }
     my $res = {'command' => 'getElementValueOfCssProperty',
                'id' => $self->{id},
