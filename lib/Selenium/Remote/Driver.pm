@@ -1803,7 +1803,7 @@ sub double_click {
  Description:
     Click and hold the left mouse button (at the coordinates set by the
     last moveto command). Note that the next mouse-related command that
-    should follow is buttondown . Any other mouse command (such as click
+    should follow is buttonup . Any other mouse command (such as click
     or another call to buttondown) will yield undefined behaviour.
 
  Usage:
