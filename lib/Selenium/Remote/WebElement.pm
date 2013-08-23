@@ -431,21 +431,6 @@ sub get_css_attribute {
     return $self->_execute_command($res);
 }
 
-=head2 hover
-
- Description:
-    Move the mouse over an element.
-
- Usage:
-    $elem->hover();
-
-=cut
-
-sub hover {
-    my ($self) = @_;
-    return $self->{driver}->move_to( element => $self );
-}
-
 =head2 describe
 
  Description:

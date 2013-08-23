@@ -241,10 +241,6 @@ sub new {
             'method' => 'GET',
             'url' => "session/:sessionId/element/:id/css/:propertyName"
         },
-        'hoverOverElement' => {
-               'method' => 'POST',
-               'url' => "session/:sessionId/element/:id/hover"
-        },
         'mouseMoveToLocation' => {
                'method' => 'POST',
                'url' => "session/:sessionId/moveto"
