@@ -53,6 +53,15 @@ my $website = 'http://localhost:63636';
 my $ret;
 
 CHECK_DRIVER: {
+                AUTO_CLOSE: {
+                              my $autoCloseDriver = new Selenium::Remote::Driver(browser_name => 'firefox',
+                                                                                 auto_close => 0);
+                              is($autoCloseDriver->{'auto_close'}, '0', 'auto_close gets set when passed in');
+                              $autoCloseDriver->DESTROY();
+                              ok($autoCloseDriver->{'session_id'}, 'auto_close keeps browser open after DESTROY');
+                              $autoCloseDriver->quit();
+                            }
+
                 ok(defined $driver, 'Object loaded fine...');
                 ok($driver->isa('Selenium::Remote::Driver'), '...and of right type');
                 ok(defined $driver->{'session_id'}, 'Established session on remote server');
@@ -62,6 +71,7 @@ CHECK_DRIVER: {
                 ok($status->{build}->{version},"Got status build.version");
                 ok($status->{build}->{revision},"Got status build.revision");
                 ok($status->{build}->{time},"Got status build.time");
+                is($driver->{'auto_close'}, '1', 'auto_close still defaults to 1');
               }
 
 IME: {
