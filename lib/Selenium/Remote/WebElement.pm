@@ -443,8 +443,7 @@ sub get_css_attribute {
 
 sub hover {
     my ($self) = @_;
-    my $res = { 'command' => 'hoverOverElement', 'id' => $self->{id} };
-    return $self->_execute_command($res);
+    return $self->{driver}->move_to( element => $self );
 }
 
 =head2 describe
