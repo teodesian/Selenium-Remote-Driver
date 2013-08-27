@@ -663,6 +663,23 @@ sub set_implicit_wait_timeout {
     return $self->_execute_command($res, $params);
 }
 
+=head2 pause
+
+ Description:
+    Pause execution for a specified interval of milliseconds.
+
+ Usage:
+    $driver->pause(10000);  # 10 second delay
+    $driver->pause();       #  1 second delay default
+
+=cut
+
+sub pause {
+  my $self = shift;
+  my $timeout = (shift // 1000) / 1000;
+  select(undef, undef, undef, $timeout); # Fractional-second sleep
+}
+
 =head2 close
 
  Description:

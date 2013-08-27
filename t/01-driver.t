@@ -230,6 +230,14 @@ ALERT: {
         $driver->accept_alert;
 }
 
+PAUSE: {
+       my $starttime=time();
+       $driver->pause();
+       my $endtime=time();
+       ok($starttime <= $endtime-1,"starttime <= endtime+1"); # Slept at least 1 second
+       ok($starttime >= $endtime-2,"starttime >= endtime-2"); # Slept at most 2 seconds
+}
+
 QUIT: {
         $ret = $driver->quit();
         ok((not defined $driver->{'session_id'}), 'Killed the remote session');
