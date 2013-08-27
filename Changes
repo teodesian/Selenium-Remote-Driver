@@ -1,4 +1,15 @@
 Revision history for Selenium-Remote-Driver
+0.18   7-26-2013
+        - Explained why the code does 'use 5.006; use v5.10.0;', and it's not pretty.
+           The short version: before perl 5.006, the v-string 'v5.10.0' would not be understood.
+           The page http://www.dagolden.com/index.php/369/version-numbers-should-be-boring/
+           explains it in much more detail than I can.
+           Fortunately, it boils down to this: http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
+        - Added the change from mach-mme-stst that lets you set the default finder to something besides xpath.
+           https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
+        - Added a pause() function, that sleeps for the given number of milliseconds, just like
+          Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
+
 
 0.17   7-13-2013
         - Second build with DistZilla, now with distzilla branch merged into master.
