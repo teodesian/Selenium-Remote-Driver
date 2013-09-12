@@ -1895,6 +1895,57 @@ sub upload_file {
     return $self->_execute_command($res, $params);
 }
 
+=head2 get_text
+
+ Description:
+    Get the text of a particular element. Wrapper around L<find_element()>
+
+ Usage:
+    $text = $driver->get_text("//div[\@name='q']");
+
+=cut
+
+sub get_text {
+    my $self = shift;
+    return $self->find_element(@_)->get_text();
+}
+
+=head2 get_body
+
+ Description:
+    Get the current text for the whole body. If you want the entire raw HTML instead,
+    See L<get_page_source>.
+
+ Usage:
+    $body_text = $driver->get_body();
+
+=cut
+
+sub get_body {
+    my $self = shift;
+    return $self->get_text('//body');
+}
+
+=head2 get_path
+
+ Description:
+     Get the path part of the current browser location.
+
+ Usage:
+     $path = $driver->get_path();
+
+=cut
+
+sub get_path {
+    my $self = shift;
+    my $location = $self->get_current_url;
+    $location =~ s/\?.*//; # strip of query params
+    $location =~ s/#.*//; # strip of anchors
+    $location =~ s#^https?://[^/]+##; # strip off host
+    return $location;
+}
+
+
 1;
 
 __END__

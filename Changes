@@ -20,6 +20,12 @@ Revision history for Selenium-Remote-Driver
         - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
           This could be used to add testing methods or functionality for WebElements.  
 
+        - New shortcut methods absorbed from Test::WebDriver:
+
+          get_text() Returns the text for a particular element.
+          get_body() Returns the text for the whole body.
+          get_path() Returns the path part of the current URL.
+
         [DOCUMENTATION]
         - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
 
