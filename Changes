@@ -9,6 +9,7 @@ Revision history for Selenium-Remote-Driver
            https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
         - Added a pause() function, that sleeps for the given number of milliseconds, just like
           Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
+        - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
 
 
 0.17   7-13-2013
@@ -34,6 +35,7 @@ Revision history for Selenium-Remote-Driver
 0.16   4-11-2013
         - New maintainer and beginning CPAN artist: Charles Howes <chowes@cpan.org>
         - First build with DistZilla (using distzilla branch from git repository, somewhat stale)
+        - Added debug_on() and debug_off() methods.
         - commit 338872f: Deleted MANIFEST, MANIFEST.SKIP, Makefile.PL
         - commit 338872f: Changed README
         - commit 338872f: Created dist.ini for Distzilla
