@@ -109,40 +109,36 @@ created when you use the find_* methods.
  Input: (all optional)
     desired_capabilities - HASH - Following options are accepted:
       Optional:
-        'remote_server_addr' - <string> - IP or FQDN of the RC server machine
-        'browser_name' - <string> - desired browser string:
-                      {iphone|firefox|internet explorer|htmlunit|iphone|chrome}
-        'version' - <string> - desired browser version number
-        'platform' - <string> - desired platform:
-                                {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
-        'javascript' - <boolean> - whether javascript should be supported
-        'accept_ssl_certs' - <boolean> - whether SSL certs should be accepted, default is true.
-        'auto_close' - <boolean> - whether driver should end session on remote
-                                   server on close.
-        'default_finder' - <string> - choose default finder used for find_element*
-                                      {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
-        'extra_capabilities' - HASH of extra capabilities
-        'proxy' - HASH - Proxy configuration with the following keys:
+        'remote_server_addr'   - <string>   - IP or FQDN of the RC server machine
+        'browser_name'         - <string>   - desired browser string: {iphone|firefox|internet explorer|htmlunit|iphone|chrome}
+        'version'              - <string>   - desired browser version number
+        'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
+        'javascript'           - <boolean>  - whether javascript should be supported
+        'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
+        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
+        'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+        'extra_capabilities'   - HASH of extra capabilities
+        'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
-                direct - A direct connection - no proxy in use,
-                manual - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
-                pac - Proxy autoconfiguration from a URL,
+                direct     - A direct connection                                                                    - no proxy in use,
+                manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
+                pac        - Proxy autoconfiguration from a URL,
                 autodetect - proxy autodetection, probably with WPAD,
-                system - Use system settings
+                system     - Use system settings
             'proxyAutoconfigUrl' - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile.
-            'ftpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            'httpProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            'sslProxy' - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+            'ftpProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+            'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+            'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
 
 
         If no values are provided, then these defaults will be assumed:
             'remote_server_addr' => 'localhost'
-            'port'         => '4444'
-            'browser_name' => 'firefox'
-            'version'      => ''
-            'platform'     => 'ANY'
-            'javascript'   => 1
-            'auto_close'   => 1
+            'port'               => '4444'
+            'browser_name'       => 'firefox'
+            'version'            => ''
+            'platform'           => 'ANY'
+            'javascript'         => 1
+            'auto_close'         => 1
 
  Output:
     Remote Driver object
