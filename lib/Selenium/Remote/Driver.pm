@@ -1928,6 +1928,8 @@ The following people have contributed to this module. (Thanks!)
 
 =item * Gordon Child
 
+=item * Mark Stosberg
+
 =item * Phil Kania
 
 =item * Phil Mitchell
