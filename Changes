@@ -12,10 +12,13 @@ Revision history for Selenium-Remote-Driver
         - Added a pause() function, that sleeps for the given number of milliseconds, just like
           Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
 
-        - new() now accepts a 'default_finder' option to allow to you change the default finder, which
+        - new() now accepts a 'default_finder' option to allow you to change the default finder, which
           is currently 'xpath'. This will be of interest to those who prefer CSS-style selectors,
           such as jQuery uses.
            https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
+
+        - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
+          This could be used to add testing methods or functionality for WebElements.  
 
         [DOCUMENTATION]
         - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.

@@ -12,7 +12,7 @@ our @CARP_NOT;
 
 use MIME::Base64;
 use IO::Compress::Zip qw(zip $ZipError) ;
-
+use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
@@ -82,7 +82,7 @@ nothing was returned by the method.
 =head2 WebElement
 
 Selenium Webdriver represents all the HTML elements as WebElement, which is
-in turn represented by Selenium::Remote::WebElement module. So any method that
+in turn represented by L<Selenium::Remote::WebElement> module. So any method that
 deals with WebElements will return and/or expect WebElement object. The POD for
 that module describes all the methods that perform various actions on the
 WebElements like click, submit etc.
@@ -93,6 +93,13 @@ then you can perform various actions. If you don't call find_* method first, all
 your further actions will fail for that element. Finally, just remember that you
 don't have to instantiate WebElement objects at all - they will be automatically
 created when you use the find_* methods.
+
+A sub-class of Selenium::Remote::WebElement may be used instead of Selenium::Remote::WebElement,
+by providing that class name as an option the constructor:
+
+   my $driver = Selenium::Remote::Driver->new( webelement_class => ... );
+
+For example, a testing-subclass may extend the web-element object with testing methods.
 
 =cut
 
@@ -118,6 +125,7 @@ created when you use the find_* methods.
         'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'extra_capabilities'   - HASH of extra capabilities
+        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class. 
         'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
                 direct     - A direct connection                                                                    - no proxy in use,
@@ -178,6 +186,7 @@ sub new {
         platform           => delete $args{platform}                  || 'ANY',
         port               => delete $args{port}                      || '4444',
         version            => delete $args{version}                   || '',
+        webelement_class   => delete $args{webelement_class}          || "Selenium::Remote::WebElement",
         default_finder     => FINDERS->{delete $args{default_finder}  || 'xpath'},
         session_id         => undef,
         remote_conn        => undef,
@@ -992,7 +1001,7 @@ sub execute_async_script {
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
         for (my $i=0; $i<@args; $i++) {
-            if (ref $args[$i] eq 'Selenium::Remote::WebElement') {
+            if (Scalar::Util::blessed($args[$i]) and $args[$i]->isa('Selenium::Remote::WebElement')) {
                 $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
             }
         }
@@ -1002,9 +1011,7 @@ sub execute_async_script {
 
         # replace any ELEMENTS with WebElement
         if (ref($ret) and (ref($ret) eq 'HASH') and exists $ret->{'ELEMENT'}) {
-            $ret =
-                new Selenium::Remote::WebElement(
-                                        $ret->{ELEMENT}, $self);
+            $ret = $self->{webelement_class}->new($ret->{ELEMENT}, $self);
         }
         return $ret;
     }
@@ -1052,7 +1059,7 @@ sub execute_script {
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
         for (my $i=0; $i<@args; $i++) {
-            if (ref $args[$i] eq 'Selenium::Remote::WebElement') {
+            if (Scalar::Util::blessed($args[$i]) and $args[$i]->isa('Selenium::Remote::WebElement')) {
                 $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
             }
         }
@@ -1077,7 +1084,7 @@ sub _convert_to_webelement {
     if (ref($ret) and (ref($ret) eq 'HASH')) {
         if((keys %$ret==1) and exists $ret->{'ELEMENT'}) {
             # replace an ELEMENT with WebElement
-            return new Selenium::Remote::WebElement($ret->{ELEMENT}, $self);
+            return $self->{webelement_class}->new($ret->{ELEMENT}, $self);
         }
 
         my %hash;
@@ -1167,7 +1174,7 @@ sub switch_to_frame {
     $id = ( defined $id ) ? $id : $json_null;
 
     my $res    = { 'command' => 'switchToFrame' };
-    if (ref $id eq 'Selenium::Remote::WebElement') {
+    if (ref $id eq $self->{webelement_class}) {
         $params = { 'id' => {'ELEMENT' => $id->{'id'}}};
     } else {
         $params = { 'id'      => $id };
@@ -1470,6 +1477,7 @@ sub get_page_source {
 
  Output:
     Selenium::Remote::WebElement - WebElement Object
+        (This could be a subclass of L<Selenium::Remote::WebElement> if C<webelement_class> was set.
 
  Usage:
     $driver->find_element("//input[\@name='q']");
@@ -1497,7 +1505,7 @@ sub find_element {
             die $@;
           }
         }
-        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
+        return $self->{webelement_class}->new($ret_data->{ELEMENT}, $self);
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1521,7 +1529,7 @@ sub find_element {
                  Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
-    ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects
+    ARRAY of WebElement Objects
 
  Usage:
     $driver->find_elements("//input");
@@ -1553,7 +1561,7 @@ sub find_elements {
         }
         my @elem_obj_arr = ();
         foreach (@$ret_data) {
-          push(@elem_obj_arr, new Selenium::Remote::WebElement($_->{ELEMENT}, $self));
+          push(@elem_obj_arr, $self->{webelement_class}->new($_->{ELEMENT}, $self));
         }
         return @elem_obj_arr;
     }
@@ -1585,7 +1593,7 @@ sub find_elements {
                  Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
-    Selenium::Remote::WebElement - WebElement Object
+    WebElement Object
 
  Usage:
     my $elem1 = $driver->find_element("//select[\@name='ned']");
@@ -1615,7 +1623,7 @@ sub find_child_element {
             die $@;
           }
         }
-        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
+        return $self->{webelement_class}->new($ret_data->{ELEMENT}, $self);
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1642,7 +1650,7 @@ sub find_child_element {
                  Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
-    ARRAY of Selenium::Remote::WebElement - Array of WebElement Objects.
+    ARRAY of WebElement Objects.
 
  Usage:
     my $elem1 = $driver->find_element("//select[\@name='ned']");
@@ -1674,7 +1682,7 @@ sub find_child_elements {
         my $elem_obj_arr;
         my $i = 0;
         foreach (@$ret_data) {
-            $elem_obj_arr->[$i] = new Selenium::Remote::WebElement($_->{ELEMENT}, $self);
+            $elem_obj_arr->[$i] = $self->{webelement_class}->new($_->{ELEMENT}, $self);
             $i++;
         }
         return wantarray?@{$elem_obj_arr}:$elem_obj_arr;
@@ -1692,7 +1700,7 @@ sub find_child_elements {
     will be returned as a WebElement object.
 
  Output:
-    Selenium::Remote::WebElement - WebElement Object
+    WebElement Object
 
  Usage:
     $driver->get_active_element();
@@ -1706,7 +1714,7 @@ sub get_active_element {
     if ($@) {
         croak $@;
     } else {
-        return new Selenium::Remote::WebElement($ret_data->{ELEMENT}, $self);
+        return $self->{webelement_class}->new($ret_data->{ELEMENT}, $self);
     }
 }
 
