@@ -1,5 +1,13 @@
 Revision history for Selenium-Remote-Driver
 0.18   7-26-2013
+        [THINGS THAT MIGHT BREAK YOUR CODE]
+        - We now 'croak' instead of returning error strings in a number of
+          cases where invalid method calls were made. This should make
+          debugging easier in some cases, and is more aligned with our
+          documentation which already stated that we would croak on errors.
+          Still, your code may depend on the old behavior.
+          https://github.com/aivaturi/Selenium-Remote-Driver/commit/7cdf3dce0fcaa48a883d045368c094351754e85a
+
         [NEW FEATURES]
         - Added a pause() function, that sleeps for the given number of milliseconds, just like
           Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
