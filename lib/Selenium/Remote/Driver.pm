@@ -40,7 +40,7 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
 
     use Selenium::Remote::Driver;
 
-    my $driver = new Selenium::Remote::Driver;
+    my $driver = Selenium::Remote::Driver->new;
     $driver->get('http://www.google.com');
     print $driver->get_title();
     $driver->quit();
@@ -148,17 +148,17 @@ created when you use the find_* methods.
     Remote Driver object
 
  Usage:
-    my $driver = new Selenium::Remote::Driver;
+    my $driver = Selenium::Remote::Driver->new;
     or
-    my $driver = new Selenium::Remote::Driver('browser_name' => 'firefox',
+    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
                                               'platform' => 'MAC');
     or
-    my $driver = new Selenium::Remote::Driver('remote_server_addr' => '10.10.1.1',
+    my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
                                               'port' => '2222',
                                               auto_close => 0
                                               );
     or
-    my $driver = new Selenium::Remote::Driver('browser_name'       => 'chrome',
+    my $driver = Selenium::Remote::Driver->new('browser_name'       => 'chrome',
                                               'platform'           => 'VISTA',
                                               'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],
                                               							'chrome.prefs' => {'download.default_directory' =>'/home/user/tmp', 'download.prompt_for_download' =>1 }
