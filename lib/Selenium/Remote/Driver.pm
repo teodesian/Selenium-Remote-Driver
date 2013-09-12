@@ -169,7 +169,7 @@ created when you use the find_* methods.
 
 sub new {
     my ( $class, %args ) = @_;
-    my $ress = new Selenium::Remote::Commands;
+    my $ress = Selenium::Remote::Commands->new;
 
     # Set the defaults if user doesn't send any
     my $self = {
@@ -227,7 +227,7 @@ sub new {
 
     # Connect to remote server & establish a new session
     $self->{remote_conn} =
-      new Selenium::Remote::RemoteConnection( $self->{remote_server_addr},
+      Selenium::Remote::RemoteConnection->new( $self->{remote_server_addr},
         $self->{port} );
     $self->new_session(delete $args{extra_capabilities});
 
