@@ -26,10 +26,16 @@ Revision history for Selenium-Remote-Driver
           get_body() Returns the text for the whole body.
           get_path() Returns the path part of the current URL.
 
+        - New short method to save a screenshot to a file: $driver->capture_screenshot($filename).
+          The name was chosen for compatibility with a WWW::Selenium method of the same name.  
+
         [DOCUMENTATION]
         - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
 
         [INTERNALS]
+        - MIME::Base64 is now only loaded if it used for a file upload or taking a screenshot.
+          This will create a minor speed-up for common cases which don't use these features.
+
         - Explained why the code does 'use 5.006; use v5.10.0;', and it's not pretty.
            The short version: before perl 5.006, the v-string 'v5.10.0' would not be understood.
            The page http://www.dagolden.com/index.php/369/version-numbers-should-be-boring/

@@ -10,7 +10,6 @@ use 5.006; use v5.10.0;  # Before 5.006, v5.10.0 would not be understood.
 use Carp;
 our @CARP_NOT;
 
-use MIME::Base64;
 use IO::Compress::Zip qw(zip $ZipError) ;
 use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
@@ -1112,13 +1111,8 @@ sub _convert_to_webelement {
 
  Usage:
     print $driver->screenshot();
- or
-    require MIME::Base64;
-    open(FH,'>','screenshot.png');
-    binmode FH;
-    my $png_base64 = $driver->screenshot();
-    print FH MIME::Base64::decode_base64($png_base64);
-    close FH;
+
+To conveniently write the screenshot to a file, see L<capture_screenshot()>.
 
 =cut
 
@@ -1127,6 +1121,33 @@ sub screenshot {
     my $res = { 'command' => 'screenshot' };
     return $self->_execute_command($res);
 }
+
+=head2 capture_screenshot
+
+ Description:
+    Capture a screenshot and save as a PNG to provided file name.
+    (The method is compatible with the WWW::Selenium method fo the same name)
+
+ Output:
+    TRUE - (Screenshot is written to file)
+
+ Usage:
+    $driver->capture_screenshot($filename);
+
+=cut
+
+sub capture_screenshot {
+    my ($self, $filename) = @_;
+    croak '$filename is required' unless $filename;
+
+    require MIME::Base64;
+    open(my $fh,'>',$filename);
+    binmode $fh;
+    print $fh MIME::Base64::decode_base64($self->screenshot());
+    CORE::close $fh;
+    return 1;
+}
+
 
 =head2 available_engines
 
@@ -1889,6 +1910,8 @@ sub upload_file {
     zip $filename => \$string
         or die "zip failed: $ZipError\n";    # compress the file into string
     my $res = { 'command' => 'uploadFile' }; # /session/:SessionId/file
+    require MIME::Base64;
+
     my $params = {
         file => encode_base64($string)       # base64-encoded string
     };
