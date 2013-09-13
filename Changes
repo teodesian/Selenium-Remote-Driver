@@ -8,6 +8,10 @@ Revision history for Selenium-Remote-Driver
           Still, your code may depend on the old behavior.
           https://github.com/aivaturi/Selenium-Remote-Driver/commit/7cdf3dce0fcaa48a883d045368c094351754e85a
 
+        - The hover() method on the WebElement has been removed. This is not in the JSON Wire protocol,
+          and the same functionality is avialable with the Driver object's move_to() method.
+          https://github.com/aivaturi/Selenium-Remote-Driver/pull/77
+
         [NEW FEATURES]
         - Added a pause() function, that sleeps for the given number of milliseconds, just like
           Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
