@@ -983,8 +983,7 @@ sub javascript {
         var elem = window.document.findElementById(arg1);
         callback(elem);
     };
-    my $callback = q{return arguments[0];};
-    my $elem = $driver->execute_async_script($script,'myid',$callback);
+    my $elem = $driver->execute_async_script($script,'myid');
     $elem->click;
 
 =cut
