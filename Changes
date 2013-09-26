@@ -1,4 +1,5 @@
 Revision history for Selenium-Remote-Driver
+
 0.18   7-26-2013
         [THINGS THAT MIGHT BREAK YOUR CODE]
         - We now 'croak' instead of returning error strings in a number of
@@ -13,6 +14,13 @@ Revision history for Selenium-Remote-Driver
           https://github.com/aivaturi/Selenium-Remote-Driver/pull/77
 
         [NEW FEATURES]
+        - Merged Test::WebDriver into this distribution as Test::Selenium::Remote::Driver.
+          Several updates to it are included since the last release. (Mark Stosberg)   
+
+        - Added and started using Test::Selenium::Remote::WebElement. This a
+          sub-class of Selenium::Remote::WebElement. This allows testing
+          methods on the "WebElement" object as well as main '$driver' object.
+
         - Added a pause() function, that sleeps for the given number of milliseconds, just like
           Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
 
@@ -24,7 +32,7 @@ Revision history for Selenium-Remote-Driver
         - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
           This could be used to add testing methods or functionality for WebElements.  
 
-        - New shortcut methods absorbed from Test::WebDriver:
+        - Shortcut methods absorbed from Test::WebDriver into Selenium::Remote::Driver:
 
           get_text() Returns the text for a particular element.
           get_body() Returns the text for the whole body.
@@ -32,6 +40,39 @@ Revision history for Selenium-Remote-Driver
 
         - New short method to save a screenshot to a file: $driver->capture_screenshot($filename).
           The name was chosen for compatibility with a WWW::Selenium method of the same name.  
+
+        - Removed 'get_location()' as an alias in Test::Selenium::Remote::Driver. 
+          Please use the more specific 'get_current_url()' instead.
+          It's a more specific name that matches the Selenium API method name.
+
+        - Adding text checking methods to Test::Selenium::Remote::Driver
+
+            # Run regex's against the entire page source
+            content_like()
+            content_unlike()
+
+            # Run regex's against just the "text" of the page
+            text_like()
+            text_unlike()
+
+            # Check page source for strings
+            content_contains()
+            content_lacks()
+
+            # Check text of page for strings
+            text_contains()
+            text_lacks()
+
+          The names are intentionally the same as their Test::WWW::Mechanize
+          counterparts.  However, these methods may take an arrayref of regular
+          expressions for improved performance when you want to run multiple
+          tests against the same page.
+
+          Normally Selenium::Remote::Driver would make an HTTP request to the
+          driven browser for each content check. By using an arrayref for
+          multiple checks of the same page, you can avoid the extra HTTP
+          requests and speed up your tests. (Mark Stosberg)
+
 
         [DOCUMENTATION]
         - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
@@ -46,7 +87,7 @@ Revision history for Selenium-Remote-Driver
            explains it in much more detail than I can.
            Fortunately, it boils down to this: http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
 
-
+        - Added Test::LongString as a dependency to support the new content checking methods.
 
 0.17   7-13-2013
         - Second build with DistZilla, now with distzilla branch merged into master.
