@@ -134,7 +134,7 @@ sub error_callback {
 
 =head2 new ( %opts )
 
-This will create a new Test::Selenium::Remote::Driver object, which subclasses 
+This will create a new Test::Selenium::Remote::Driver object, which subclasses
 L<Selenium::Remote::Driver>.  This subclass provides useful testing
 functions.  It is modeled on L<Test::WWW::Selenium>.
 
@@ -188,6 +188,86 @@ sub server_is_running {
     return;
 
 }
+
+=head1 Testing Methods
+
+The following testing methods are available. For
+more documentation, see the related test methods in L<Selenium::Remote::Driver>
+(And feel free to submit a patch to flesh out the documentation for these here).
+
+    alert_text_is
+    alert_text_isnt
+    alert_text_like
+    alert_text_unlike
+
+    current_window_handle_is
+    current_window_handle_isnt
+    current_window_handle_like
+    current_window_handle_unlike
+
+    window_handles_is
+    window_handles_isnt
+    window_handles_like
+    window_handles_unlike
+
+    window_size_is
+    window_size_isnt
+    window_size_like
+    window_size_unlike
+
+    window_position_is
+    window_position_isnt
+    window_position_like
+    window_position_unlike
+
+    current_url_is
+    current_url_isnt
+    current_url_like
+    current_url_unlike
+
+    title_is
+    title_isnt
+    title_like
+    title_unlike
+
+
+    active_element_is
+    active_element_isnt
+    active_element_like
+    active_element_unlike
+
+    # Basically the same as 'content_like()', but content_like() supports multiple regex's.
+    page_source_is
+    page_source_isnt
+    page_source_like
+    page_source_unlike
+
+    send_keys_to_active_element_ok
+    send_keys_to_alert_ok
+    send_keys_to_prompt_ok
+    send_modifier_ok
+
+    accept_alert_ok
+    dismiss_alert_ok
+
+    move_mouse_to_location_ok
+    move_to_ok
+
+    get_ok
+    go_back_ok
+    go_forward_ok
+    add_cookie_ok
+    get_page_source_ok
+
+    find_element_ok
+    find_elements_ok
+    find_child_element_ok
+    find_child_elements_ok
+
+    compare_elements_ok
+
+    click_ok
+    double_click_ok
 
 =head2 $twd->content_like( $regex [, $desc ] )
 
