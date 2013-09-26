@@ -100,11 +100,14 @@ by providing that class name as an option the constructor:
 
 For example, a testing-subclass may extend the web-element object with testing methods.
 
-=cut
+=head1 TESTING
+
+If are writing automated tests using this module, make sure you also see
+L<Test::Selenium::Remote::Driver> which is also included in this distribution.
+It includes convenience testing methods for many of the selenum methods
+available here.
 
 =head1 FUNCTIONS
-
-=cut
 
 =head2 new
 
