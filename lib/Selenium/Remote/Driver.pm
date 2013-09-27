@@ -162,7 +162,7 @@ available here.
     or
     my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
                                               'port' => '2222',
-                                              'auto_close' => 0
+                                              auto_close => 0
                                               );
     or
     my $driver = Selenium::Remote::Driver->new('browser_name'       => 'chrome',
@@ -177,7 +177,7 @@ available here.
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
     or
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new();
-    $profile->add_extension('www/redisplay.xpi');
+    $profile->add_extension('t/www/redisplay.xpi');
     my $driver = Selenium::Remote::Driver->new('firefox_profile' => $profile);
 
 =cut

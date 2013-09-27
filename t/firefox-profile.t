@@ -36,7 +36,7 @@ if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/)
 {
     $os = 'linux';
 }
-my $mock_file = "05-firefox-profile-mock-$os.json";
+my $mock_file = "firefox-profile-mock-$os.json";
 if (!$record && !(-e "t/mock-recordings/$mock_file"))
 {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
@@ -92,8 +92,7 @@ PREFERENCES_FORMATTING: {
 
     $profile->set_preference(%$prefs);
 
-    foreach (keys %$prefs)
-    {
+    foreach (keys %$prefs) {
         cmp_ok($profile->get_preference($_), "eq", $expected{$_},
                "$_ preference is formatted properly");
     }
@@ -114,8 +113,7 @@ PREFERENCES_FORMATTING: {
     close ($fh);
     my $userjs = join('', @file);
 
-    foreach (keys %expected)
-    {
+    foreach (keys %expected) {
         cmp_ok($userjs, "=~", qr/$expected{$_}\);/,
                "$_ preference is formatted properly");
     }
