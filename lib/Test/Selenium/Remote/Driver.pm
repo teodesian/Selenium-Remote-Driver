@@ -142,6 +142,7 @@ functions.  It is modeled on L<Test::WWW::Selenium>.
 
 Environment vars can be used to specify options to pass to
 L<Selenium::Remote::Driver>. ENV vars are prefixed with C<TWD_>.
+( After the old fork name, "Test::WebDriver" )
 
 Set the Selenium server address with C<$TWD_HOST> and C<$TWD_PORT>.
 
