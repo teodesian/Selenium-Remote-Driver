@@ -415,10 +415,10 @@ sub content_unlike {
 }
 
 
-=head2 $twd->text_like( $regex [, $desc ] )
+=head2 $twd->body_text_like( $regex [, $desc ] )
 
-   $twd->text_like( $regex [, $desc ] )
-   $twd->text_like( [$regex_1, $regex_2] [, $desc ] )
+   $twd->body_text_like( $regex [, $desc ] )
+   $twd->body_text_like( [$regex_1, $regex_2] [, $desc ] )
 
 Tells if the text of the page (as returned by C<< get_body() >>)  matches
 I<$regex>. If an arrayref of regex's are provided, one 'test' is run for each
@@ -431,7 +431,7 @@ To also match the HTML see, C<< content_unlike() >>.
 
 =cut
 
-sub text_like {
+sub body_text_like {
     my $self = shift;
     my $regex = shift;
     my $desc = shift;
@@ -452,10 +452,10 @@ sub text_like {
     }
 }
 
-=head2 $twd->text_unlike( $regex [, $desc ] )
+=head2 $twd->body_text_unlike( $regex [, $desc ] )
 
-   $twd->text_unlike( $regex [, $desc ] )
-   $twd->text_unlike( [$regex_1, $regex_2] [, $desc ] )
+   $twd->body_text_unlike( $regex [, $desc ] )
+   $twd->body_text_unlike( [$regex_1, $regex_2] [, $desc ] )
 
 Tells if the text of the page (as returned by C<< get_body() >>)
  does NOT match I<$regex>. If an arrayref of regex's
@@ -469,7 +469,7 @@ To also match the HTML see, C<< content_unlike() >>.
 
 =cut
 
-sub text_unlike {
+sub body_text_unlike {
     my $self = shift;
     my $regex = shift;
     my $desc = shift;
@@ -563,10 +563,10 @@ sub content_lacks {
 }
 
 
-=head2 $twd->text_contains( $str [, $desc ] )
+=head2 $twd->body_text_contains( $str [, $desc ] )
 
-   $twd->text_contains( $str [, $desc ] )
-   $twd->text_contains( [$str_1, $str_2] [, $desc ] )
+   $twd->body_text_contains( $str [, $desc ] )
+   $twd->body_text_contains( [$str_1, $str_2] [, $desc ] )
 
 Tells if the text of the page (as returned by C<< get_body() >>) contains
 I<$str>. If an arrayref of strings are provided, one 'test' is run for each
@@ -579,7 +579,7 @@ To also match the HTML see, C<< content_uncontains() >>.
 
 =cut
 
-sub text_contains {
+sub body_text_contains {
     my $self = shift;
     my $str = shift;
     my $desc = shift;
@@ -600,10 +600,10 @@ sub text_contains {
     }
 }
 
-=head2 $twd->text_lacks( $str [, $desc ] )
+=head2 $twd->body_text_lacks( $str [, $desc ] )
 
-   $twd->text_lacks( $str [, $desc ] )
-   $twd->text_lacks( [$str_1, $str_2] [, $desc ] )
+   $twd->body_text_lacks( $str [, $desc ] )
+   $twd->body_text_lacks( [$str_1, $str_2] [, $desc ] )
 
 Tells if the text of the page (as returned by C<< get_body() >>)
  does NOT contain I<$str>. If an arrayref of strings
@@ -617,7 +617,7 @@ To also match the HTML see, C<< content_lacks() >>.
 
 =cut
 
-sub text_lacks {
+sub body_text_lacks {
     my $self = shift;
     my $str = shift;
     my $desc = shift;

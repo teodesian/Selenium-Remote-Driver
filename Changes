@@ -62,16 +62,16 @@ Revision history for Selenium-Remote-Driver
             content_unlike()
 
             # Run regex's against just the "text" of the page
-            text_like()
-            text_unlike()
+            body_text_like()
+            body_text_unlike()
 
             # Check page source for strings
             content_contains()
             content_lacks()
 
             # Check text of page for strings
-            text_contains()
-            text_lacks()
+            body_text_contains()
+            body_text_lacks()
 
           The names are intentionally the same as their Test::WWW::Mechanize
           counterparts.  However, these methods may take an arrayref of regular
