@@ -84,7 +84,9 @@ sub AUTOLOAD {
 
         # make a subroutine for ok() around the selenium command
         $sub = sub {
-            my( $self, $arg1, $arg2, $name ) = @_;
+            my $self = shift;
+            my $name = pop;
+            my ($arg1, $arg2) = @_;
             if ($self->{default_names} and !defined $name) {
                 $name = $cmd;
                 $name .= ", $arg1" if defined $arg1;
