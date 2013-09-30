@@ -16,29 +16,26 @@ our %comparator = (
     unlike => 'unlike',
 );
 
-# These commands don't require a locator
-# grep item lib/WWW/Selenium.pm | grep sel | grep \(\) | grep get
-our %no_locator = map { $_ => 1 }
-                qw( send_keys speed alert confirmation prompt location title
-                    body_text all_buttons all_links all_fields
-                    mouse_speed all_window_ids all_window_names
-                    all_window_titles html_source cookie absolute_location );
+our %one_arg = map { $_ => 1 } qw(
+    get_attribute
+    send_keys
 
-sub no_locator {
-    my $self   = shift;
-    my $method = shift;
-    return $no_locator{$method};
-}
- 
-our %one_arg = map { $_ => 1 } qw(send_keys);
-
+);
 sub one_arg {
     my $self   = shift;
     my $method = shift;
     return $one_arg{$method};
 }
 
-our %no_arg = map { $_ => 1 } qw(click clear);
+our %no_arg = map { $_ => 1 } qw(
+    clear
+    click
+    get_value
+    get_tag_name
+    is_enabled
+    is_selected
+    submit
+    );
 
 sub no_arg {
     my $self   = shift;
@@ -46,7 +43,7 @@ sub no_arg {
     return $no_arg{$method};
 }
 
-our %no_return = map { $_ => 1 } qw(send_keys click clear);
+our %no_return = map { $_ => 1 } qw(send_keys click clear submit);
 
 sub no_return {
     my $self   = shift;
@@ -62,41 +59,17 @@ sub AUTOLOAD {
  
     my $sub;
     if ($name =~ /(\w+)_(is|isnt|like|unlike)$/i) {
-        my $getter = $1;
+        my $getter = "get_$1";
         my $comparator = $comparator{lc $2};
  
-        # make a subroutine that will call Test::Builder's test methods
-        # with selenium data from the getter
-        if ($self->no_locator($1)) {
-            $sub = sub {
-                my( $self, $str, $name ) = @_;
-                diag "Test::Selenium::Remote::Driver running $getter (@_[1..$#_])"
-                    if $self->{verbose};
-                $name = "$getter, '$str'"
-                    if $self->{default_names} and !defined $name;
-                no strict 'refs';
-                my $rc = $Test->$comparator( $self->$getter, $str, $name );
-                if (!$rc && $self->error_callback) {
-                    &{$self->error_callback}( $name, $self );
-                }
-                return $rc;
-            };
-        }
-        else {
-            $sub = sub {
-                my( $self, $locator, $str, $name ) = @_;
-                diag "Test::Selenium::Remote::Driver running $getter (@_[1..$#_])"
-                    if $self->{verbose};
-                $name = "$getter, $locator, '$str'"
-                    if $self->{default_names} and !defined $name;
-                no strict 'refs';
-                my $rc = $Test->$comparator( $self->$getter($locator), $str, $name );
-                if (!$rc && $self->error_callback) {
-                    &{$self->error_callback}( $name, $self );
-                }
-        return $rc;
-            };
-        }
+        $sub = sub {
+            my( $self, $str, $name ) = @_;
+            # There is no verbose option currently
+            #diag "Test::Selenium::Remote::WebElement running $getter (@_[1..$#_])" if $self->{verbose};
+            $name = "$getter, '$str'" if !defined $name;
+            no strict 'refs';
+            return $Test->$comparator( $self->$getter, $str, $name );
+        };
     }
     elsif ($name =~ /(\w+?)_?ok$/i) {
         my $cmd = $1;
@@ -118,13 +91,13 @@ sub AUTOLOAD {
                 $name = $_[3];
             }
 
-            if ($self->{default_names} and !defined $name) {
+            if (!defined $name) {
                 $name = $cmd;
                 $name .= ", $arg1" if defined $arg1;
                 $name .= ", $arg2" if defined $arg2;
             }
-            diag "Test::Selenium::Remote::Driver running $cmd (@_[1..$#_])"
-                    if $self->{verbose};
+            # There is no verbose option currently
+            # diag "Test::Selenium::Remote::WebElement running $cmd (@_[1..$#_])" if $self->{verbose};
  
             local $Test::Builder::Level = $Test::Builder::Level + 1;
             my $rc = '';
@@ -147,9 +120,6 @@ sub AUTOLOAD {
             else {
                 $rc = ok( $rc, $name );
             }
-            if (!$rc && $self->error_callback) {
-                &{$self->error_callback}( $name, $self );
-            }
             return $rc;
         };
     }
@@ -161,8 +131,8 @@ sub AUTOLOAD {
         goto &$AUTOLOAD;
     }
     else {
-        # try to pass through to Selenium::Remote::Driver
-        my $sel = 'Selenium::Remote::Driver';
+        # try to pass through to Selenium::Remote::WebElement
+        my $sel = 'Selenium::Remote::WebElement';
         my $sub = "${sel}::${name}";
         goto &$sub if exists &$sub;
         my ($package, $filename, $line) = caller;
@@ -172,29 +142,68 @@ sub AUTOLOAD {
     }
 }
 
-sub error_callback {
-    my ($self, $cb) = @_;
-    if (defined($cb)) {
-        $self->{error_callback} = $cb;
-    }
-    return $self->{error_callback};
-}
-
-sub value_is_ok {
-    my $self = shift;
-    my $txt_compare = shift;
-    my $desc = shift;
-
-    return(is($self->get_value(), $txt_compare, $desc));
-}
-
-sub type_ok {
-    my $e = shift;
-    my $text = shift;
-    my $desc = shift;
-
-    $e->send_keys_ok($text, $desc);
-    $e->value_is_ok($text, $desc);
-}
-
 1;
+
+__END__
+
+=head1 NAME
+
+Test::Selenium::Remote::WebElement
+
+=head1 DESCRIPTION
+
+A sub-class of L<Selenium::Remote::WebElement>, with several test-specific method additions.
+
+=head1 METHODS
+
+All methods from L<Selenium::Remote::WebElement> are available through this
+module, as well as the following test-specific methods. All test names are optional.
+
+  tag_name_is($match_str,$test_name);
+  tag_name_isnt($match_str,$test_name);
+  tag_name_like($match_re,$test_name);
+  tag_name_unlike($match_re,$test_name);
+
+  value_is($match_str,$test_name);
+  value_isnt($match_str,$test_name);
+  value_like($match_re,$test_name);
+  value_unlike($match_re,$test_name);
+
+  clear_ok($test_name);
+  click_ok($test_name);
+  submit_ok($test_name);
+  is_selected_ok($test_name);
+  is_enabled_ok($test_name);
+  is_displayed_ok($test_name);
+
+  attribute_is($attr_name,$match_str,$test_name); # TODO
+  attribute_isnt($attr_name,$match_str,$test_name); # TODO
+  attribute_like($attr_name,$match_re,$test_name); # TODO
+  attribute_unlike($attr_name,$match_re,$test_name); # TODO
+
+  css_attribute_is($attr_name,$match_str,$test_name); # TODO
+  css_attribute_isnt($attr_name,$match_str,$test_name); # TODO
+  css_attribute_like($attr_name,$match_re,$test_name); # TODO
+  css_attribute_unlike($attr_name,$match_re,$test_name); # TODO
+
+  send_keys_ok() # TODO
+  element_location_is([x,y]) # TODO
+  element_location_in_view_is([x,y]) # TODO
+
+=head1 AUTHORS
+
+=over 4
+
+=item *
+
+Created by: Mark Stosberg <mark@stosberg.org>, but inspired by
+ L<Test::WWW::Selenium> and its authors.
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2013 Mark Stosberg
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
