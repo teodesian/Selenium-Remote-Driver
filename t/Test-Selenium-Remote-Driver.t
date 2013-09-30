@@ -80,6 +80,30 @@ my $element = Test::Selenium::Remote::WebElement->new(
     );
 }
 
+# find_no_element_ok
+{
+    $successful_driver->mock('find_element', sub { die } );
+    check_tests(
+      sub { 
+          my $rc = $successful_driver->find_no_element_ok('BOOM', 'find_no_element_ok works, expecting to find nothing.');
+          is($rc,1,'returns true');
+      },
+      [
+          {
+            ok => 1,
+            name => "find_no_element_ok works, expecting to find nothing.",
+            diag => "",
+          },
+          {
+            ok => 1,
+            name => "returns true",
+            diag => "",
+          },
+      ]
+    );
+
+}
+
 
 
 done_testing();

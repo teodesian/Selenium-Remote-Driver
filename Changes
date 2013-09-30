@@ -22,6 +22,11 @@ Revision history for Selenium-Remote-Driver
           to figure out the magic effects of AUTOLOAD on the methods in the parent
           class. (Mark Stosberg)
 
+        - Added type_ok() to Test::Selenium::Remote::Driver, similar to the method by the same name
+          from Test::WWW::Mechanize (Mark Stosberg)
+
+        - Added find_no_element_ok() to Test::Selenium::Remote::Driver (Mark Stosberg)
+
         - Added and started using Test::Selenium::Remote::WebElement. This a
           sub-class of Selenium::Remote::WebElement. This allows testing
           methods on the "WebElement" object as well as main '$driver' object.

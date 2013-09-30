@@ -288,10 +288,61 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
     click_ok
     double_click_ok
 
+=head2 $twd->type_ok($search_target, $keys, [, $desc ]);
+
+   $twd->type_ok( $search_target, $keys [, $desc ] );
+
+Use L<Selenium::Remote::Driver/find_element> to resolve the C<$search_target>
+to a web element, and then type C<$keys> into it, providing an optional test
+label.
+
+Currently, other finders besides the default are not supported for C<type_ok()>.
+
+=cut
+
+sub type_ok {
+   my $self = shift;
+   my $locator = shift;
+   my $keys = shift;
+   my $desc = shift;
+   return $self->find_element($locator)->send_keys_ok($keys,$desc);
+}
+
+
 =head2 $twd->find_element_ok($search_target [, $desc ]);
 
    $twd->find_element_ok( $search_target [, $desc ] );
 
+Returns true if C<$search_target> is successfully found on the page. L<$search_target>
+is passed to L<Selenium::Remote::Driver/find_element> using the C<default_finder>. See
+there for more details on the format. Currently, other finders besides the default are not supported
+for C<find_element_ok()>.
+
+=cut
+
+# Eventually, it would be nice to support other finds like Test::WWW::Selenium does, like this:
+# 'xpath=//foo', or 'css=.foo', etc.
+
+=head2 $twd->find_no_element_ok($search_target [, $desc ]);
+
+   $twd->find_no_element_ok( $search_target [, $desc ] );
+
+Returns true if C<$search_target> is I<not> found on the page. L<$search_target>
+is passed to L<Selenium::Remote::Driver/find_element> using the C<default_finder>. See
+there for more details on the format. Currently, other finders besides the default are not supported
+for C<find_no_element_ok()>.
+
+=cut
+
+sub find_no_element_ok {
+    my $self = shift;
+    my $search_target = shift;
+    my $desc = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level +1;
+    eval { $self->find_element($search_target) };
+    ok((defined $@),$desc);
+}
 
 =head2 $twd->content_like( $regex [, $desc ] )
 
