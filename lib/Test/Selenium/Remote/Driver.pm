@@ -134,6 +134,20 @@ sub error_callback {
     return $self->{error_callback};
 }
 
+=head1 NAME
+
+Test::Selenium::Remote::Driver
+
+=head1 DESCRIPTION
+
+A subclass of L<Selenium::Remote::Driver>.  which provides useful testing
+functions.
+
+This is an I<experimental> addition to the Selenium::Remote::Driver
+distribution, and some interfaces may change.
+
+=head1 Methods
+
 =head2 new ( %opts )
 
 This will create a new Test::Selenium::Remote::Driver object, which subclasses
@@ -262,7 +276,9 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
     add_cookie_ok
     get_page_source_ok
 
-    find_element_ok
+    find_element_ok($search_target)
+    find_element_ok($search_target)
+
     find_elements_ok
     find_child_element_ok
     find_child_elements_ok
@@ -271,6 +287,11 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
 
     click_ok
     double_click_ok
+
+=head2 $twd->find_element_ok($search_target [, $desc ]);
+
+   $twd->find_element_ok( $search_target [, $desc ] );
+
 
 =head2 $twd->content_like( $regex [, $desc ] )
 

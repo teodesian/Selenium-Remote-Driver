@@ -154,6 +154,9 @@ Test::Selenium::Remote::WebElement
 
 A sub-class of L<Selenium::Remote::WebElement>, with several test-specific method additions.
 
+This is an I<experimental> addition to the Selenium::Remote::Driver
+distribution, and some interfaces may change.
+
 =head1 METHODS
 
 All methods from L<Selenium::Remote::WebElement> are available through this
