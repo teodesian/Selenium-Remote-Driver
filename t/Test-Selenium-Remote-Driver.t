@@ -37,16 +37,48 @@ my $element = Test::Selenium::Remote::WebElement->new(
 );
 
 
-$successful_driver->mock('find_element', sub { $element } );
+# find_element_ok
+{
+    $successful_driver->mock('find_element', sub { $element } );
+    check_tests(
+      sub { 
+          my $rc = $successful_driver->find_element_ok('q', 'find_element_ok works');
+          is($rc,1,'returns true');
+      },
+      [
+          {
+            ok => 1,
+            name => "find_element_ok works",
+            diag => "",
+          },
+          {
+            ok => 1,
+            name => "returns true",
+            diag => "",
+          },
+      ]
+    );
 
-check_tests(
-  sub { $successful_driver->find_element_ok('q', 'find_element_ok works'); },
-  {
-    ok => 1,
-    name => "find_element_ok works",
-    diag => "",
-  }
-);
+    $successful_driver->mock('find_element', sub { 0 } );
+    check_tests(
+      sub { 
+          my $rc = $successful_driver->find_element_ok('q', 'find_element_ok works, falsey test');
+          is($rc,0,'returns false');
+      },
+      [
+          {
+            ok => 0,
+            name => "find_element_ok works, falsey test",
+            diag => "",
+          },
+          {
+            ok => 1,
+            name => "returns false",
+            diag => "",
+          },
+      ]
+    );
+}
 
 
 
