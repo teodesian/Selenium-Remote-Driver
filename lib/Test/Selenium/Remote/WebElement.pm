@@ -176,6 +176,9 @@ module, as well as the following test-specific methods. All test names are optio
   is_enabled_ok($test_name);
   is_displayed_ok($test_name);
 
+  send_keys_ok($str)
+  send_keys_ok($str,$test_name)
+
   attribute_is($attr_name,$match_str,$test_name); # TODO
   attribute_isnt($attr_name,$match_str,$test_name); # TODO
   attribute_like($attr_name,$match_re,$test_name); # TODO
@@ -186,7 +189,6 @@ module, as well as the following test-specific methods. All test names are optio
   css_attribute_like($attr_name,$match_re,$test_name); # TODO
   css_attribute_unlike($attr_name,$match_re,$test_name); # TODO
 
-  send_keys_ok() # TODO
   element_location_is([x,y]) # TODO
   element_location_in_view_is([x,y]) # TODO
 
