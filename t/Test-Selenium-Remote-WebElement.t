@@ -21,6 +21,7 @@ $successful_element->set_true(qw/
 
 $successful_element->set_list('get_tag_name','iframe');
 $successful_element->set_list('get_value','my_value');
+$successful_element->set_list('get_text','my_text');
 
 # Given input 'foo' to 'get_attribute', return 'my_foo';
 $successful_element->mock('get_attribute',sub { 'my_'.$_[1] } );
@@ -169,6 +170,45 @@ check_test(
       {
         ok => 1,
         name => "value doesn't match BOOM",
+        diag => "",
+      }
+    );
+}
+
+# text_*
+{
+    check_test(
+      sub { $successful_element->text_is('my_text','Got an my_text value?') },
+      {
+        ok => 1,
+        name => "Got an my_text value?",
+        diag => "",
+      }
+    );
+
+    check_test(
+      sub { $successful_element->text_isnt('BOOM','Not BOOM.') },
+      {
+        ok => 1,
+        name => "Not BOOM.",
+        diag => "",
+      }
+    );
+
+    check_test(
+      sub { $successful_element->text_like(qr/tex/,'Matches my_text value?') },
+      {
+        ok => 1,
+        name => "Matches my_text value?",
+        diag => "",
+      }
+    );
+
+    check_test(
+      sub { $successful_element->text_unlike(qr/BOOM/,"text doesn't match BOOM") },
+      {
+        ok => 1,
+        name => "text doesn't match BOOM",
         diag => "",
       }
     );

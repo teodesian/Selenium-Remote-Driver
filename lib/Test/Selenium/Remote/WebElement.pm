@@ -30,6 +30,7 @@ sub one_arg {
 our %no_arg = map { $_ => 1 } qw(
     clear
     click
+    get_text
     get_value
     get_tag_name
     is_enabled
@@ -161,6 +162,11 @@ distribution, and some interfaces may change.
 
 All methods from L<Selenium::Remote::WebElement> are available through this
 module, as well as the following test-specific methods. All test names are optional.
+
+  text_is($match_str,$test_name);
+  text_isnt($match_str,$test_name);
+  text_like($match_re,$test_name);
+  text_unlike($match_re,$test_name);
 
   tag_name_is($match_str,$test_name);
   tag_name_isnt($match_str,$test_name);
