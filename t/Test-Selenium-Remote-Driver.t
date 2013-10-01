@@ -96,7 +96,7 @@ my $element = Test::Selenium::Remote::WebElement->new(
           },
           {
             ok => 1,
-            name => "returns true",
+            name => "returns false",
             diag => "",
           },
       ]

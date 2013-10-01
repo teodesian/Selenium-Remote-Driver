@@ -267,8 +267,8 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
     accept_alert_ok
     dismiss_alert_ok
 
-    move_mouse_to_location_ok
-    move_to_ok
+    move_mouse_to_location_ok # TODO
+    move_to_ok # TODO
 
     get_ok
     go_back_ok
@@ -288,9 +288,9 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
     click_ok
     double_click_ok
 
-=head2 $twd->type_ok($search_target, $keys, [, $desc ]);
+=head2 $twd->type_element_ok($search_target, $keys, [, $desc ]);
 
-   $twd->type_ok( $search_target, $keys [, $desc ] );
+   $twd->type_element_ok( $search_target, $keys [, $desc ] );
 
 Use L<Selenium::Remote::Driver/find_element> to resolve the C<$search_target>
 to a web element, and then type C<$keys> into it, providing an optional test
@@ -300,7 +300,7 @@ Currently, other finders besides the default are not supported for C<type_ok()>.
 
 =cut
 
-sub type_ok {
+sub type_element_ok {
    my $self = shift;
    my $locator = shift;
    my $keys = shift;
@@ -638,7 +638,79 @@ sub body_text_lacks {
     }
 }
 
+=head2 $twd->element_text_is($search_target,$expected_text [,$desc]);
 
+    $twd->element_text_is($search_target,$expected_text [,$desc]);
+
+=cut
+
+sub element_text_is {
+    my ($self,$search_target,$expected,$desc) = @_;
+    return $self->find_element($search_target)->text_is($expected,$desc);
+}
+
+=head2 $twd->element_value_is($search_target,$expected_value [,$desc]);
+
+    $twd->element_value_is($search_target,$expected_value [,$desc]);
+
+=cut
+
+sub element_value_is {
+    my ($self,$search_target,$expected,$desc) = @_;
+    return $self->find_element($search_target)->value_is($expected,$desc);
+}
+
+=head2 $twd->click_element_ok($search_target [,$desc]);
+
+    $twd->click_element_ok($search_target [,$desc]);
+
+Find an element and then click on it.
+
+=cut
+
+sub click_element_ok {
+    my ($self,$search_target,$desc) = @_;
+    return $self->find_element($search_target)->click_ok($desc);
+}
+
+=head2 $twd->clear_element_ok($search_target [,$desc]);
+
+    $twd->clear_element_ok($search_target [,$desc]);
+
+Find an element and then clear on it.
+
+=cut
+
+sub clear_element_ok {
+    my ($self,$search_target,$desc) = @_;
+    return $self->find_element($search_target)->clear_ok($desc);
+}
+
+=head2 $twd->is_element_displayed_ok($search_target [,$desc]);
+
+    $twd->is_element_displayed_ok($search_target [,$desc]);
+
+Find an element and check to confirm that it is displayed. (visible)
+
+=cut
+
+sub is_element_displayed_ok {
+    my ($self,$search_target,$desc) = @_;
+    return $self->find_element($search_target)->is_displayed_ok($desc);
+}
+
+=head2 $twd->is_element_enabled_ok($search_target [,$desc]);
+
+    $twd->is_element_enabled_ok($search_target [,$desc]);
+
+Find an element and check to confirm that it is enabled. 
+
+=cut
+
+sub is_element_enabled_ok {
+    my ($self,$search_target,$desc) = @_;
+    return $self->find_element($search_target)->is_enabled_ok($desc);
+}
 
 1;
 
@@ -666,11 +738,13 @@ Created by: Luke Closs <lukec@cpan.org>, but inspired by
 
 =head1 CONTRIBUTORS
 
-This work was sponsored by Prime Radiant, Inc. Mark Stosberg <mark@stosberg.com> also contributed.
+Test::WebDriver work was sponsored by Prime Radiant, Inc.
+Mark Stosberg <mark@stosberg.com> forked it as Test::Selenium::Remote::Driver
+and significantly expanded it.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2012 Prime Radiant, Inc.
+Parts Copyright (c) 2012 Prime Radiant, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

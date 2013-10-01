@@ -25,7 +25,17 @@ Revision history for Selenium-Remote-Driver
         - Added type_ok() to Test::Selenium::Remote::Driver, similar to the method by the same name
           from Test::WWW::Mechanize (Mark Stosberg)
 
-        - Added find_no_element_ok() to Test::Selenium::Remote::Driver (Mark Stosberg)
+        - Added several methods to Test::Selenium::Remote::Driver that allow you to find
+          an WebElement and test against in a single command. (Mark Stosberg)
+          The test methods for WebElements include:
+
+             type_element_ok   - find an element and type into it.
+             element_text_is   - find an element and check the text.
+             element_value_is  - find an element and check the value.
+             click_element_ok  - find an element and click on it. 
+             clear_element_ok  - find an element and clear it.
+             is_element_displayed_ok - find an element and check to see if it's displayed.
+             is_element_enabled_ok - find an element and check to see if it's enabled.
 
         - Added and started using Test::Selenium::Remote::WebElement. This a
           sub-class of Selenium::Remote::WebElement. This allows testing
