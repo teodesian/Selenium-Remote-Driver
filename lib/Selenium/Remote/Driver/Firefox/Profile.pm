@@ -109,7 +109,7 @@ sub _write_preferences {
     open (my $fh, ">>", $userjs)
         or croak "Cannot open $userjs for writing preferences: $!";
 
-    foreach (keys $self->{user_prefs}) {
+    foreach (keys %{$self->{user_prefs}}) {
         print $fh 'user_pref("' . $_ . '", ' . $self->get_preference($_) . ');' . "\n";
     }
     close ($fh);
