@@ -193,7 +193,7 @@ sub new {
         session_id         => undef,
         remote_conn        => undef,
         commands           => $ress,
-        auto_close         => 1, # by default we will close remote session on DESTROY
+        auto_close         => delete $args{auto_close}                || 1, # by default we will close remote session on DESTROY
         pid                => $$
     };
     bless $self, $class or die "Can't bless $class: $!";
