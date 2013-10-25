@@ -178,7 +178,7 @@ sub new {
         session_id         => undef,
         remote_conn        => undef,
         commands           => $ress,
-        auto_close         => defined $args{auto_close} ? delete $args{auto_close} : 1,
+        auto_close         => delete $args{auto_close} // 1,
         pid                => $$,
     };
     bless $self, $class or die "Can't bless $class: $!";
