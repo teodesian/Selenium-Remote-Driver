@@ -1,8 +1,6 @@
 package Selenium::Remote::WebElement;
 
-use strict;
-use warnings;
-
+use Moo;
 use Carp qw(croak);
 
 =head1 NAME
@@ -26,19 +24,18 @@ various element related operations can be carried out.
 
 =cut
 
-sub new {
-    my ($class, $id, $parent) = @_;
-    my $self = {
-        id => $id,
-        driver => $parent,
-    };
-    bless $self, $class or die "Can't bless $class: $!";
-    return $self;
-}
+has 'id' => (
+    is => 'rw',
+);
+
+has 'driver' => (
+    is => 'rw',
+);
+
 
 sub _execute_command {
     my ($self) = shift;
-    return $self->{driver}->_execute_command(@_);
+    return $self->driver->_execute_command(@_);
 }
 
 =head2 click
@@ -100,13 +97,13 @@ sub submit {
 =cut
 
 sub send_keys {
-    my ($self, @strings) = @_;
+    my ( $self, @strings ) = @_;
     my $res = { 'command' => 'sendKeysToElement', 'id' => $self->{id} };
     map { $_ .= "" } @strings;
     my $params = {
         'value' => \@strings,
     };
-    return $self->_execute_command($res, $params);
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 is_selected
@@ -284,14 +281,15 @@ sub clear {
 =cut
 
 sub get_attribute {
-    my ($self, $attr_name) = @_;
-    if (not defined $attr_name) {
+    my ( $self, $attr_name ) = @_;
+    if ( not defined $attr_name ) {
         croak 'Attribute name not provided';
     }
-    my $res = {'command' => 'getElementAttribute',
-               'id' => $self->{id},
-               'name' => $attr_name,
-               };
+    my $res = {
+        'command' => 'getElementAttribute',
+        'id'      => $self->{id},
+        'name'    => $attr_name,
+    };
     return $self->_execute_command($res);
 }
 
@@ -349,16 +347,16 @@ sub is_displayed {
 =cut
 
 sub drag {
-    my ($self, $x, $y) = @_;
-    if ((not defined $x) || (not defined $y)){
+    my ( $self, $x, $y ) = @_;
+    if ( ( not defined $x ) || ( not defined $y ) ) {
         croak 'X & Y pixel coordinates not provided';
     }
-    my $res = {'command' => 'dragElement','id' => $self->{id}};
+    my $res = { 'command' => 'dragElement', 'id' => $self->{id} };
     my $params = {
         'x' => $x,
         'y' => $y,
     };
-    return $self->_execute_command($res, $params);
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 get_size
@@ -420,14 +418,15 @@ sub get_text {
 =cut
 
 sub get_css_attribute {
-    my ($self, $attr_name) = @_;
-    if (not defined $attr_name) {
+    my ( $self, $attr_name ) = @_;
+    if ( not defined $attr_name ) {
         croak 'CSS attribute name not provided';
     }
-    my $res = {'command' => 'getElementValueOfCssProperty',
-               'id' => $self->{id},
-               'property_name' => $attr_name,
-               };
+    my $res = {
+        'command'       => 'getElementValueOfCssProperty',
+        'id'            => $self->{id},
+        'property_name' => $attr_name,
+    };
     return $self->_execute_command($res);
 }
 
@@ -440,6 +439,7 @@ sub get_css_attribute {
     $elem->describe();
 
 =cut
+
 sub describe {
     my ($self) = @_;
     my $res = { 'command' => 'describeElement', 'id' => $self->{id} };
@@ -481,3 +481,5 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+480:	hit eof while in pod documentation (no =cut seen)
+	this can cause trouble with some pod utilities
