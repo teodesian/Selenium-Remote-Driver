@@ -1,8 +1,10 @@
 package Selenium::Remote::Driver;
+use Moo;
+use Try::Tiny;
 
-use strict;
-use warnings;
-use 5.006; use v5.10.0;  # Before 5.006, v5.10.0 would not be understood.
+use 5.006;
+use v5.10.0;    # Before 5.006, v5.10.0 would not be understood.
+
 # See http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
 # and http://www.dagolden.com/index.php/369/version-numbers-should-be-boring/
 # for details.
@@ -10,23 +12,23 @@ use 5.006; use v5.10.0;  # Before 5.006, v5.10.0 would not be understood.
 use Carp;
 our @CARP_NOT;
 
-use IO::Compress::Zip qw(zip $ZipError) ;
+use IO::Compress::Zip qw(zip $ZipError);
 use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 
 use constant FINDERS => {
-      class             => 'class name',
-      class_name        => 'class name',
-      css               => 'css selector',
-      id                => 'id',
-      link              => 'link text',
-      link_text         => 'link text',
-      name              => 'name',
-      partial_link_text => 'partial link text',
-      tag_name          => 'tag name',
-      xpath             => 'xpath',
+    class             => 'class name',
+    class_name        => 'class name',
+    css               => 'css selector',
+    id                => 'id',
+    link              => 'link text',
+    link_text         => 'link text',
+    name              => 'name',
+    partial_link_text => 'partial link text',
+    tag_name          => 'tag name',
+    xpath             => 'xpath',
 };
 
 =head1 NAME
@@ -177,82 +179,121 @@ available here.
 
 =cut
 
-sub new {
-    my ( $class, %args ) = @_;
-    my $ress = Selenium::Remote::Commands->new;
+has 'remote_server_addr' => (
+    is      => 'rw',
+    default => sub {'localhost'},
+);
 
-    # Set the defaults if user doesn't send any
-    my $self = {
-        remote_server_addr => delete $args{remote_server_addr}        || 'localhost',
-        browser_name       => delete $args{browser_name}              || 'firefox',
-        platform           => delete $args{platform}                  || 'ANY',
-        port               => delete $args{port}                      || '4444',
-        version            => delete $args{version}                   || '',
-        webelement_class   => delete $args{webelement_class}          || "Selenium::Remote::WebElement",
-        default_finder     => FINDERS->{delete $args{default_finder}  || 'xpath'},
-        session_id         => undef,
-        remote_conn        => undef,
-        commands           => $ress,
-        auto_close         => 1, # by default we will close remote session on DESTROY
-        pid                => $$
-    };
-    bless $self, $class or die "Can't bless $class: $!";
+has 'browser_name' => (
+    is      => 'rw',
+    default => sub {'firefox'},
+);
 
-    # check for javascript
-    if ( defined $args{javascript} ) {
-        if ( $args{javascript} ) {
-            $self->{javascript} = JSON::true;
-        }
-        else {
-            $self->{javascript} = JSON::false;
-        }
-    }
-    else {
-        $self->{javascript} = JSON::true;
-    }
+has 'platform' => (
+    is      => 'rw',
+    default => sub {'ANY'},
+);
 
-    # check for acceptSslCerts
-    if ( defined $args{accept_ssl_certs} ) {
-        if ( $args{accept_ssl_certs} ) {
-            $self->{accept_ssl_certs} = JSON::true;
-        }
-        else {
-            $self->{accept_ssl_certs} = JSON::false;
-        }
-    }
-    else {
-        $self->{accept_ssl_certs} = JSON::true;
-    }
+has 'port' => (
+    is      => 'rw',
+    default => sub {'4444'},
+);
 
-    # check for proxy
-    if ( defined $args{proxy} ) {
-        if ($args{proxy}{proxyType} eq 'pac') {
-            if (not defined $args{proxy}{proxyAutoconfigUrl}) {
+has 'version' => (
+    is      => 'rw',
+    default => sub {''},
+);
+
+has 'webelement_class' => (
+    is      => 'rw',
+    default => sub {'Selenium::Remote::WebElement'},
+);
+
+
+has 'default_finder' => (
+    is      => 'rw',
+    coerce  => sub { FINDERS->{ $_[0] } },
+    default => sub {'xpath'},
+);
+
+has 'session_id' => (
+    is      => 'rw',
+    default => sub {undef},
+);
+
+has 'remote_conn' => (
+    is      => 'lazy',
+    builder => sub {
+        my $self = shift;
+        return Selenium::Remote::RemoteConnection->new(
+            remote_server_addr => $self->remote_server_addr,
+            port               => $self->port
+        );
+    },
+);
+
+has 'commands' => (
+    is      => 'lazy',
+    builder => sub { return Selenium::Remote::Commands->new; },
+);
+
+has 'auto_close' => (
+    is      => 'rw',
+    default => sub {1},
+);
+
+has 'pid' => (
+    is      => 'lazy',
+    builder => sub { return $$ }
+);
+
+has 'javascript' => (
+    is     => 'rw',
+    coerce => sub { $_[0] ? JSON::true : JSON::false },
+    default => sub { return JSON::true }
+);
+
+has 'accept_ssl_certs' => (
+    is     => 'rw',
+    coerce => sub { $_[0] ? JSON::true : JSON::false },
+    default => sub { return JSON::true }
+);
+
+has 'proxy' => (
+    is     => 'rw',
+    coerce => sub {
+        my $proxy = $_[0];
+        if ( $proxy->{proxyType} eq 'pac' ) {
+            if ( not defined $proxy->{proxyAutoconfigUrl} ) {
                 croak "proxyAutoconfigUrl not provided\n";
-            } elsif (not ($args{proxy}{proxyAutoconfigUrl} =~ /^http/g)) {
+            }
+            elsif ( not( $proxy->{proxyAutoconfigUrl} =~ /^http/g ) ) {
                 croak "proxyAutoconfigUrl should be of format http://";
             }
         }
-        $self->{proxy} = $args{proxy};
-    }
+    },
+);
+
+has 'extra_capabilities' => (
+    is      => 'rw',
+    default => sub { {} },
+);
+
+sub BUILD {
+    my $self = shift;
 
     # Connect to remote server & establish a new session
-    $self->{remote_conn} =
-      Selenium::Remote::RemoteConnection->new( remote_server_addr => $self->{remote_server_addr},
-        port => $self->{port} );
-    $self->new_session(delete $args{extra_capabilities});
+    $self->new_session( $self->extra_capabilities );
 
-    if ( !( defined $self->{session_id} ) ) {
+    if ( !( defined $self->session_id ) ) {
         croak "Could not establish a session with the remote server\n";
     }
-
-    return $self;
 }
 
 sub DESTROY {
     my ($self) = @_;
-    return if $$ != $self->{pid};
-    $self->quit() if ($self->{auto_close} && defined $self->{session_id});
+    return if $$ != $self->pid;
+    $self->quit() if ( $self->auto_close && defined $self->session_id );
 }
 
 # This is an internal method used the Driver & is not supposed to be used by
@@ -260,29 +301,33 @@ sub DESTROY {
 # (url & JSON), send commands & receive processed response from the server.
 sub _execute_command {
     my ( $self, $res, $params ) = @_;
-    $res->{'session_id'} = $self->{'session_id'};
-    my $resource = $self->{commands}->get_params($res);
+    $res->{'session_id'} = $self->session_id;
+    my $resource = $self->commands->get_params($res);
     if ($resource) {
-        my $resp = $self->{remote_conn}
-          ->request( $resource->{'method'}, $resource->{'url'}, $params );
-        if(ref($resp) eq 'HASH') {
-            if($resp->{cmd_status} && $resp->{cmd_status} eq 'OK') {
-               return $resp->{cmd_return};
-            } else {
-               my $msg = "Error while executing command";
-               if($resp->{cmd_error}) {
-                 $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
-               } elsif ($resp->{cmd_return}) {
-                   if(ref($resp->{cmd_return}) eq 'HASH') {
-                     $msg .= ": $resp->{cmd_return}->{error}->{msg}"
-                       if $resp->{cmd_return}->{error}->{msg};
-                     $msg .= ": $resp->{cmd_return}->{message}"
-                       if $resp->{cmd_return}->{message};
-                   } else {
-                     $msg .= ": $resp->{cmd_return}";
-                   }
-               }
-               croak $msg;
+        my $resp =
+          $self->remote_conn->request( $resource->{'method'},
+            $resource->{'url'}, $params );
+        if ( ref($resp) eq 'HASH' ) {
+            if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
+                return $resp->{cmd_return};
+            }
+            else {
+                my $msg = "Error while executing command";
+                if ( $resp->{cmd_error} ) {
+                    $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
+                }
+                elsif ( $resp->{cmd_return} ) {
+                    if ( ref( $resp->{cmd_return} ) eq 'HASH' ) {
+                        $msg .= ": $resp->{cmd_return}->{error}->{msg}"
+                          if $resp->{cmd_return}->{error}->{msg};
+                        $msg .= ": $resp->{cmd_return}->{message}"
+                          if $resp->{cmd_return}->{message};
+                    }
+                    else {
+                        $msg .= ": $resp->{cmd_return}";
+                    }
+                }
+                croak $msg;
             }
         }
         return $resp;
@@ -295,31 +340,31 @@ sub _execute_command {
 # A method that is used by the Driver itself. It'll be called to set the
 # desired capabilities on the server.
 sub new_session {
-    my ($self, $extra_capabilities) = @_;
+    my ( $self, $extra_capabilities ) = @_;
     $extra_capabilities ||= {};
     my $args = {
         'desiredCapabilities' => {
-            'browserName'       => $self->{browser_name},
-            'platform'          => $self->{platform},
-            'javascriptEnabled' => $self->{javascript},
-            'version'           => $self->{version},
-            'acceptSslCerts'    => $self->{accept_ssl_certs},
+            'browserName'       => $self->browser_name,
+            'platform'          => $self->platform,
+            'javascriptEnabled' => $self->javascript,
+            'version'           => $self->version,
+            'acceptSslCerts'    => $self->accept_ssl_certs,
             %$extra_capabilities,
         },
     };
 
-    if (defined $self->{proxy}) {
-        $args->{desiredCapabilities}->{proxy} = $self->{proxy};
+    if ( defined $self->proxy ) {
+        $args->{desiredCapabilities}->{proxy} = $self->proxy;
     }
 
     # command => 'newSession' to fool the tests of commands implemented
-    # TODO: rewrite the testing better, this is so fragile. 
-    my $resp =
-      $self->{remote_conn}
-      ->request( $self->{commands}->get_method('newSession'),
-        $self->{commands}->get_url('newSession'), $args, );
+    # TODO: rewrite the testing better, this is so fragile.
+    my $resp = $self->remote_conn->request(
+        $self->commands->get_method('newSession'),
+        $self->commands->get_url('newSession'), $args,
+    );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
-        $self->{session_id} = $resp->{'sessionId'};
+        $self->session_id( $resp->{'sessionId'} );
     }
     else {
         my $error = 'Could not create new session';
@@ -342,7 +387,7 @@ sub new_session {
 
 sub debug_on {
     my ($self) = @_;
-    $self->{'remote_conn'}->{'debug'} = 1;
+    $self->remote_conn->debug(1);
 }
 
 =head2 debug_off
@@ -357,7 +402,7 @@ sub debug_on {
 
 sub debug_off {
     my ($self) = @_;
-    $self->{'remote_conn'}->{'debug'} = 0;
+    $self->remote_conn->debug(0);
 }
 
 =head2 get_sessions
@@ -377,7 +422,7 @@ sub debug_off {
 
 =cut
 
-sub get_sessions{
+sub get_sessions {
     my ($self) = @_;
     my $res = { 'command' => 'getSessions' };
     return $self->_execute_command($res);
@@ -416,9 +461,9 @@ sub status {
 =cut
 
 sub get_alert_text {
-  my ($self) = @_;
-  my $res = { 'command' => 'getAlertText' };
-  return $self->_execute_command($res);
+    my ($self) = @_;
+    my $res = { 'command' => 'getAlertText' };
+    return $self->_execute_command($res);
 }
 
 =head2 send_keys_to_active_element
@@ -449,12 +494,12 @@ sub get_alert_text {
 =cut
 
 sub send_keys_to_active_element {
-    my ($self, @strings) = @_;
+    my ( $self, @strings ) = @_;
     my $res = { 'command' => 'sendKeysToActiveElement' };
     my $params = {
         'value' => \@strings,
     };
-    return $self->_execute_command($res, $params);
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 send_keys_to_alert
@@ -464,7 +509,7 @@ Synonymous with send_keys_to_prompt
 =cut
 
 sub send_keys_to_alert {
-  return shift->send_keys_to_prompt(@_);
+    return shift->send_keys_to_prompt(@_);
 }
 
 =head2 send_keys_to_prompt
@@ -485,10 +530,10 @@ sub send_keys_to_alert {
 =cut
 
 sub send_keys_to_prompt {
-  my ($self,$keys) = @_;
-  my $res = { 'command' => 'sendKeysToPrompt' };
-  my $params = { 'text' => $keys };
-  return $self->_execute_command($res,$params);
+    my ( $self, $keys ) = @_;
+    my $res    = { 'command' => 'sendKeysToPrompt' };
+    my $params = { 'text'    => $keys };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 accept_alert
@@ -503,9 +548,9 @@ sub send_keys_to_prompt {
 =cut
 
 sub accept_alert {
-  my ($self) = @_;
-  my $res = { 'command' => 'acceptAlert' };
-  return $self->_execute_command($res);
+    my ($self) = @_;
+    my $res = { 'command' => 'acceptAlert' };
+    return $self->_execute_command($res);
 }
 
 =head2 dismiss_alert
@@ -522,9 +567,9 @@ sub accept_alert {
 =cut
 
 sub dismiss_alert {
-  my ($self) = @_;
-  my $res = { 'command' => 'dismissAlert' };
-  return $self->_execute_command($res);
+    my ($self) = @_;
+    my $res = { 'command' => 'dismissAlert' };
+    return $self->_execute_command($res);
 }
 
 =head2 mouse_move_to_location
@@ -549,10 +594,10 @@ sub dismiss_alert {
 =cut
 
 sub mouse_move_to_location {
-    my ($self, %params) = @_;
+    my ( $self, %params ) = @_;
     $params{element} = $params{element}{id} if exists $params{element};
     my $res = { 'command' => 'mouseMoveToLocation' };
-    return $self->_execute_command($res, \%params);
+    return $self->_execute_command( $res, \%params );
 }
 
 =head2 move_to
@@ -581,7 +626,7 @@ sub move_to {
 
 sub get_capabilities {
     my $self = shift;
-    my $res  = {'command' => 'getCapabilities'};
+    my $res = { 'command' => 'getCapabilities' };
     return $self->_execute_command($res);
 }
 
@@ -606,14 +651,13 @@ sub get_capabilities {
 =cut
 
 sub set_timeout {
-    my ($self, $type, $ms) = @_;
-    if (not defined $type or not defined $ms)
-    {
+    my ( $self, $type, $ms ) = @_;
+    if ( not defined $type or not defined $ms ) {
         croak "Expecting type & timeout in ms";
     }
-    my $res = {'command' => 'setTimeout'};
-    my $params = {'type' => $type, 'ms' => $ms};
-    return $self->_execute_command($res, $params);
+    my $res = { 'command' => 'setTimeout' };
+    my $params = { 'type' => $type, 'ms' => $ms };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 set_async_script_timeout
@@ -633,14 +677,13 @@ sub set_timeout {
 =cut
 
 sub set_async_script_timeout {
-    my ($self, $ms) = @_;
-    if (not defined $ms)
-    {
+    my ( $self, $ms ) = @_;
+    if ( not defined $ms ) {
         croak "Expecting timeout in ms";
     }
-    my $res  = {'command' => 'setAsyncScriptTimeout'};
-    my $params  = {'ms' => $ms};
-    return $self->_execute_command($res, $params);
+    my $res    = { 'command' => 'setAsyncScriptTimeout' };
+    my $params = { 'ms'      => $ms };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 set_implicit_wait_timeout
@@ -666,10 +709,10 @@ sub set_async_script_timeout {
 =cut
 
 sub set_implicit_wait_timeout {
-    my ($self, $ms) = @_;
-    my $res  = {'command' => 'setImplicitWaitTimeout'};
-    my $params  = {'ms' => $ms};
-    return $self->_execute_command($res, $params);
+    my ( $self, $ms ) = @_;
+    my $res    = { 'command' => 'setImplicitWaitTimeout' };
+    my $params = { 'ms'      => $ms };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 pause
@@ -684,9 +727,9 @@ sub set_implicit_wait_timeout {
 =cut
 
 sub pause {
-  my $self = shift;
-  my $timeout = (shift // 1000) / 1000;
-  select(undef, undef, undef, $timeout); # Fractional-second sleep
+    my $self = shift;
+    my $timeout = ( shift // 1000 ) / 1000;
+    select( undef, undef, undef, $timeout );    # Fractional-second sleep
 }
 
 =head2 close
@@ -706,9 +749,9 @@ sub pause {
 =cut
 
 sub close {
-  my $self = shift;
-  my $res = { 'command' => 'close' };
-  $self->_execute_command($res);
+    my $self = shift;
+    my $res = { 'command' => 'close' };
+    $self->_execute_command($res);
 }
 
 =head2 quit
@@ -725,7 +768,7 @@ sub quit {
     my $self = shift;
     my $res = { 'command' => 'quit' };
     $self->_execute_command($res);
-    $self->{session_id} = undef;
+    $self->session_id(undef);
 }
 
 =head2 get_current_window_handle
@@ -791,7 +834,7 @@ sub get_window_handles {
 
 sub get_window_size {
     my ( $self, $window ) = @_;
-    $window = (defined $window)?$window:'current';
+    $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'getWindowSize', 'window_handle' => $window };
     return $self->_execute_command($res);
 }
@@ -815,7 +858,7 @@ sub get_window_size {
 
 sub get_window_position {
     my ( $self, $window ) = @_;
-    $window = (defined $window)?$window:'current';
+    $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'getWindowPosition', 'window_handle' => $window };
     return $self->_execute_command($res);
 }
@@ -950,13 +993,13 @@ sub refresh {
     returns true if javascript is enabled in the driver.
 
  Usage:
-    if ($driver->javascript) { ...; }
+    if ($driver->has_javascript) { ...; }
 
 =cut
 
-sub javascript {
+sub has_javascript {
     my $self = shift;
-    return $self->{javascript} == JSON::true;
+    return $self->javascript == JSON::true;
 }
 
 =head2 execute_async_script
@@ -996,26 +1039,32 @@ sub javascript {
 
 sub execute_async_script {
     my ( $self, $script, @args ) = @_;
-    if ($self->javascript) {
+    if ( $self->has_javascript ) {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res  = { 'command'    => 'executeAsyncScript' };
+        my $res = { 'command' => 'executeAsyncScript' };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
-        for (my $i=0; $i<@args; $i++) {
-            if (Scalar::Util::blessed($args[$i]) and $args[$i]->isa('Selenium::Remote::WebElement')) {
-                $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
+        for ( my $i = 0; $i < @args; $i++ ) {
+            if ( Scalar::Util::blessed( $args[$i] )
+                and $args[$i]->isa('Selenium::Remote::WebElement') )
+            {
+                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
             }
         }
 
-        my $params = {'script' => $script, 'args' => \@args};
-        my $ret = $self->_execute_command($res, $params);
+        my $params = { 'script' => $script, 'args' => \@args };
+        my $ret = $self->_execute_command( $res, $params );
 
         # replace any ELEMENTS with WebElement
-        if (ref($ret) and (ref($ret) eq 'HASH') and exists $ret->{'ELEMENT'}) {
-            $ret = $self->{webelement_class}->new(id => $ret->{ELEMENT}, driver => $self);
+        if (    ref($ret)
+            and ( ref($ret) eq 'HASH' )
+            and exists $ret->{'ELEMENT'} )
+        {
+            $ret = $self->webelement_class->new( id => $ret->{ELEMENT},
+                driver => $self );
         }
         return $ret;
     }
@@ -1054,22 +1103,24 @@ sub execute_async_script {
 
 sub execute_script {
     my ( $self, $script, @args ) = @_;
-    if ($self->javascript) {
+    if ( $self->has_javascript ) {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res  = { 'command'    => 'executeScript' };
+        my $res = { 'command' => 'executeScript' };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
-        for (my $i=0; $i<@args; $i++) {
-            if (Scalar::Util::blessed($args[$i]) and $args[$i]->isa('Selenium::Remote::WebElement')) {
-                $args[$i] = {'ELEMENT' => ($args[$i])->{id}};
+        for ( my $i = 0; $i < @args; $i++ ) {
+            if ( Scalar::Util::blessed( $args[$i] )
+                and $args[$i]->isa('Selenium::Remote::WebElement') )
+            {
+                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
             }
         }
 
-        my $params = {'script' => $script, 'args' => [@args]};
-        my $ret = $self->_execute_command($res, $params);
+        my $params = { 'script' => $script, 'args' => [@args] };
+        my $ret = $self->_execute_command( $res, $params );
 
         return $self->_convert_to_webelement($ret);
     }
@@ -1083,23 +1134,25 @@ sub execute_script {
 # and convert any ELEMENTS with WebElements
 
 sub _convert_to_webelement {
-    my ($self, $ret ) = @_;
+    my ( $self, $ret ) = @_;
 
-    if (ref($ret) and (ref($ret) eq 'HASH')) {
-        if((keys %$ret==1) and exists $ret->{'ELEMENT'}) {
+    if ( ref($ret) and ( ref($ret) eq 'HASH' ) ) {
+        if ( ( keys %$ret == 1 ) and exists $ret->{'ELEMENT'} ) {
+
             # replace an ELEMENT with WebElement
-            return $self->{webelement_class}->new(id => $ret->{ELEMENT}, driver => $self);
+            return $self->webelement_class->new( id => $ret->{ELEMENT},
+                driver => $self );
         }
 
         my %hash;
-        foreach my $key (keys %$ret) {
-            $hash{$key}=$self->_convert_to_webelement($ret->{$key});
+        foreach my $key ( keys %$ret ) {
+            $hash{$key} = $self->_convert_to_webelement( $ret->{$key} );
         }
         return \%hash;
     }
 
-    if(ref($ret) and (ref($ret) eq 'ARRAY')) {
-        my @array = map {$self->_convert_to_webelement($_)} @$ret;
+    if ( ref($ret) and ( ref($ret) eq 'ARRAY' ) ) {
+        my @array = map { $self->_convert_to_webelement($_) } @$ret;
         return \@array;
     }
 
@@ -1142,13 +1195,13 @@ sub screenshot {
 =cut
 
 sub capture_screenshot {
-    my ($self, $filename) = @_;
+    my ( $self, $filename ) = @_;
     croak '$filename is required' unless $filename;
 
     require MIME::Base64;
-    open(my $fh,'>',$filename);
+    open( my $fh, '>', $filename );
     binmode $fh;
-    print $fh MIME::Base64::decode_base64($self->screenshot());
+    print $fh MIME::Base64::decode_base64( $self->screenshot() );
     CORE::close $fh;
     return 1;
 }
@@ -1199,11 +1252,12 @@ sub switch_to_frame {
     my $params;
     $id = ( defined $id ) ? $id : $json_null;
 
-    my $res    = { 'command' => 'switchToFrame' };
-    if (ref $id eq $self->{webelement_class}) {
-        $params = { 'id' => {'ELEMENT' => $id->{'id'}}};
-    } else {
-        $params = { 'id'      => $id };
+    my $res = { 'command' => 'switchToFrame' };
+    if ( ref $id eq $self->webelement_class ) {
+        $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
+    }
+    else {
+        $params = { 'id' => $id };
     }
     return $self->_execute_command( $res, $params );
 }
@@ -1307,14 +1361,14 @@ sub set_speed {
 
 sub set_window_position {
     my ( $self, $x, $y, $window ) = @_;
-    $window = (defined $window)?$window:'current';
-    if (not defined $x and not defined $y){
+    $window = ( defined $window ) ? $window : 'current';
+    if ( not defined $x and not defined $y ) {
         croak "X & Y co-ordinates are required";
     }
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
-    my $ret = $self->_execute_command($res, $params);
-    if ($ret =~ m/204/g) {
+    my $ret = $self->_execute_command( $res, $params );
+    if ( $ret =~ m/204/g ) {
         return 1;
     }
     else { return 0; }
@@ -1340,14 +1394,14 @@ sub set_window_position {
 
 sub set_window_size {
     my ( $self, $height, $width, $window ) = @_;
-    $window = (defined $window)?$window:'current';
-    if (not defined $height and not defined $width){
+    $window = ( defined $window ) ? $window : 'current';
+    if ( not defined $height and not defined $width ) {
         croak "height & width of browser are required";
     }
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
-    my $ret = $self->_execute_command($res, $params);
-    if ($ret =~ m/204/g) {
+    my $ret = $self->_execute_command( $res, $params );
+    if ( $ret =~ m/204/g ) {
         return 1;
     }
     else { return 0; }
@@ -1515,23 +1569,29 @@ sub find_element {
     if ( not defined $query ) {
         croak 'Search string to find element not provided.';
     }
-    my $using = ( defined $method ) ? FINDERS->{$method} : $self->{default_finder};
-    if (defined $using) {
+    my $using =
+      ( defined $method ) ? FINDERS->{$method} : $self->default_finder;
+    if ( defined $using ) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if($@) {
-          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
-            # give details on what element wasn't found
-            $@ = "$1: $query,$using";
-            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
-            croak $@;
-          } else {
-            # re throw if the exception wasn't what we expected
-            die $@;
-          }
+        if ($@) {
+            if ( $@
+                =~ /(An element could not be located on the page using the given search parameters)/
+              )
+            {
+                # give details on what element wasn't found
+                $@ = "$1: $query,$using";
+                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+                croak $@;
+            }
+            else {
+                # re throw if the exception wasn't what we expected
+                die $@;
+            }
         }
-        return $self->{webelement_class}->new(id => $ret_data->{ELEMENT}, driver => $self);
+        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+            driver => $self );
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1568,26 +1628,36 @@ sub find_elements {
         croak 'Search string to find element not provided.';
     }
 
-    my $using = ( defined $method ) ? FINDERS->{$method} : $self->{default_finder};
+    my $using =
+      ( defined $method ) ? FINDERS->{$method} : $self->default_finder;
 
-    if (defined $using) {
+    if ( defined $using ) {
         my $res = { 'command' => 'findElements' };
         my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval {$self->_execute_command( $res, $params );};
-         if($@) {
-          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
-            # give details on what element wasn't found
-            $@ = "$1: $query,$using";
-            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
-            croak $@;
-          } else {
-            # re throw if the exception wasn't what we expected
-            die $@;
-          }
+        my $ret_data = eval { $self->_execute_command( $res, $params ); };
+        if ($@) {
+            if ( $@
+                =~ /(An element could not be located on the page using the given search parameters)/
+              )
+            {
+                # give details on what element wasn't found
+                $@ = "$1: $query,$using";
+                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+                croak $@;
+            }
+            else {
+                # re throw if the exception wasn't what we expected
+                die $@;
+            }
         }
         my @elem_obj_arr = ();
         foreach (@$ret_data) {
-          push(@elem_obj_arr, $self->{webelement_class}->new(id => $_->{ELEMENT}, driver => $self));
+            push(
+                @elem_obj_arr,
+                $self->webelement_class->new(
+                    id => $_->{ELEMENT}, driver => $self
+                )
+            );
         }
         return @elem_obj_arr;
     }
@@ -1633,23 +1703,28 @@ sub find_child_element {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : $self->{default_finder};
-    if (exists FINDERS->{$using}) {
+    my $using = ( defined $method ) ? $method : $self->default_finder;
+    if ( exists FINDERS->{$using} ) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
         my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
-        my $ret_data = eval {$self->_execute_command( $res, $params );};
-        if($@) {
-          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
-            # give details on what element wasn't found
-            $@ = "$1: $query,$using";
-            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
-            croak $@;
-          } else {
-            # re throw if the exception wasn't what we expected
-            die $@;
-          }
+        my $ret_data = eval { $self->_execute_command( $res, $params ); };
+        if ($@) {
+            if ( $@
+                =~ /(An element could not be located on the page using the given search parameters)/
+              )
+            {
+                # give details on what element wasn't found
+                $@ = "$1: $query,$using";
+                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+                croak $@;
+            }
+            else {
+                # re throw if the exception wasn't what we expected
+                die $@;
+            }
         }
-        return $self->{webelement_class}->new(id => $ret_data->{ELEMENT}, driver => $self);
+        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+            driver => $self );
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1689,29 +1764,35 @@ sub find_child_elements {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : $self->{default_finder};
-    if (exists FINDERS->{$using}) {
+    my $using = ( defined $method ) ? $method : $self->default_finder;
+    if ( exists FINDERS->{$using} ) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
         my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
-        my $ret_data = eval {$self->_execute_command( $res, $params );};
-        if($@) {
-          if($@ =~ /(An element could not be located on the page using the given search parameters)/) {
-            # give details on what element wasn't found
-            $@ = "$1: $query,$using";
-            local @CARP_NOT = ("Selenium::Remote::Driver",@CARP_NOT);
-            croak $@;
-          } else {
-            # re throw if the exception wasn't what we expected
-            die $@;
-          }
+        my $ret_data = eval { $self->_execute_command( $res, $params ); };
+        if ($@) {
+            if ( $@
+                =~ /(An element could not be located on the page using the given search parameters)/
+              )
+            {
+                # give details on what element wasn't found
+                $@ = "$1: $query,$using";
+                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+                croak $@;
+            }
+            else {
+                # re throw if the exception wasn't what we expected
+                die $@;
+            }
         }
         my $elem_obj_arr;
         my $i = 0;
         foreach (@$ret_data) {
-            $elem_obj_arr->[$i] = $self->{webelement_class}->new(id => $_->{ELEMENT}, driver => $self);
+            $elem_obj_arr->[$i] =
+              $self->webelement_class->new( id => $_->{ELEMENT},
+                driver => $self );
             $i++;
         }
-        return wantarray?@{$elem_obj_arr}:$elem_obj_arr;
+        return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
@@ -1739,8 +1820,10 @@ sub get_active_element {
     my $ret_data = eval { $self->_execute_command($res) };
     if ($@) {
         croak $@;
-    } else {
-        return $self->{webelement_class}->new(id => $ret_data->{ELEMENT}, driver => $self);
+    }
+    else {
+        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+            driver => $self );
     }
 }
 
@@ -1768,14 +1851,16 @@ sub get_active_element {
 =cut
 
 sub send_modifier {
-  my ($self,$modifier,$isdown) = @_;
-  if($isdown =~ /(down|up)/) {
-    $isdown = $isdown =~ /down/ ? 1:0;
-  }
-  my $res = {'command' => 'sendModifier'};
-  my $params = {value => $modifier,
-                isdown => $isdown};
-  return $self->_execute_command($res,$params);
+    my ( $self, $modifier, $isdown ) = @_;
+    if ( $isdown =~ /(down|up)/ ) {
+        $isdown = $isdown =~ /down/ ? 1 : 0;
+    }
+    my $res = { 'command' => 'sendModifier' };
+    my $params = {
+        value  => $modifier,
+        isdown => $isdown
+    };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 compare_elements
@@ -1797,11 +1882,12 @@ sub send_modifier {
 =cut
 
 sub compare_elements {
-    my ($self, $elem1, $elem2) = @_;
-    my $res = { 'command' => 'elementEquals',
-                'id' => $elem1->{id},
-                'other' => $elem2->{id}
-              };
+    my ( $self, $elem1, $elem2 ) = @_;
+    my $res = {
+        'command' => 'elementEquals',
+        'id'      => $elem1->{id},
+        'other'   => $elem2->{id}
+    };
     return $self->_execute_command($res);
 }
 
@@ -1823,18 +1909,20 @@ sub compare_elements {
 =cut
 
 sub click {
-  my ($self,$button) = @_;
-  my $button_enum = {LEFT=>0,MIDDLE=>1,RIGHT=>2};
-  if(defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i) {
-    $button = $button_enum->{uc $1};
-  } elsif(defined $button && $button =~ /(0|1|2)/) {
-    $button = $1;
-  } else {
-    $button = 0;
-  }
-  my $res = { 'command' => 'click' };
-  my $params = { 'button' => $button };
-  return $self->_execute_command($res,$params);
+    my ( $self, $button ) = @_;
+    my $button_enum = { LEFT => 0, MIDDLE => 1, RIGHT => 2 };
+    if ( defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i ) {
+        $button = $button_enum->{ uc $1 };
+    }
+    elsif ( defined $button && $button =~ /(0|1|2)/ ) {
+        $button = $1;
+    }
+    else {
+        $button = 0;
+    }
+    my $res    = { 'command' => 'click' };
+    my $params = { 'button'  => $button };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 double_click
@@ -1848,9 +1936,9 @@ sub click {
 =cut
 
 sub double_click {
-  my ($self) = @_;
-  my $res = { 'command' => 'doubleClick' };
-  return $self->_execute_command($res);
+    my ($self) = @_;
+    my $res = { 'command' => 'doubleClick' };
+    return $self->_execute_command($res);
 }
 
 =head2 button_down
@@ -1867,9 +1955,9 @@ sub double_click {
 =cut
 
 sub button_down {
-  my ($self) = @_;
-  my $res = { 'command' => 'buttonDown' };
-  return $self->_execute_command($res);
+    my ($self) = @_;
+    my $res = { 'command' => 'buttonDown' };
+    return $self->_execute_command($res);
 }
 
 =head2 button_up
@@ -1886,9 +1974,9 @@ sub button_down {
 =cut
 
 sub button_up {
-  my ($self) = @_;
-  my $res = { 'command' => 'buttonUp' };
-  return $self->_execute_command($res);
+    my ($self) = @_;
+    my $res = { 'command' => 'buttonUp' };
+    return $self->_execute_command($res);
 }
 
 =head2 upload_file
@@ -1909,18 +1997,18 @@ sub button_up {
 # org.openqa.selenium.remote.RemoteWebElement java class.
 
 sub upload_file {
-    my ($self, $filename) = @_;
-    if (not -r $filename) { die "upload_file: no such file: $filename"; }
-    my $string = "";                         # buffer
+    my ( $self, $filename ) = @_;
+    if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
+    my $string = "";    # buffer
     zip $filename => \$string
-        or die "zip failed: $ZipError\n";    # compress the file into string
-    my $res = { 'command' => 'uploadFile' }; # /session/:SessionId/file
+      or die "zip failed: $ZipError\n";    # compress the file into string
+    my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
     require MIME::Base64;
 
     my $params = {
-        file => encode_base64($string)       # base64-encoded string
+        file => encode_base64($string)          # base64-encoded string
     };
-    return $self->_execute_command($res, $params);
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 get_text
@@ -1965,11 +2053,11 @@ sub get_body {
 =cut
 
 sub get_path {
-    my $self = shift;
+    my $self     = shift;
     my $location = $self->get_current_url;
-    $location =~ s/\?.*//; # strip of query params
-    $location =~ s/#.*//; # strip of anchors
-    $location =~ s#^https?://[^/]+##; # strip off host
+    $location =~ s/\?.*//;               # strip of query params
+    $location =~ s/#.*//;                # strip of anchors
+    $location =~ s#^https?://[^/]+##;    # strip off host
     return $location;
 }
 
