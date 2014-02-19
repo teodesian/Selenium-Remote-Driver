@@ -83,6 +83,8 @@ sub AUTOLOAD {
         my $cmd = $1;
 
         # make a subroutine for ok() around the selenium command
+        # TODO: fix the thing for get_ok, it won't work as its arg get
+        # pop'd in $name (so the call to get has no args => end of game)
         $sub = sub {
             my $self = shift;
             my $name = pop;

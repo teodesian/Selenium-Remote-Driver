@@ -186,11 +186,13 @@ has 'remote_server_addr' => (
 
 has 'browser_name' => (
     is      => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : 'firefox' )},
     default => sub {'firefox'},
 );
 
 has 'platform' => (
     is      => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : 'ANY' )},
     default => sub {'ANY'},
 );
 
@@ -239,6 +241,7 @@ has 'commands' => (
 
 has 'auto_close' => (
     is      => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : 1 )},
     default => sub {1},
 );
 
