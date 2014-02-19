@@ -312,10 +312,12 @@ sub new_session {
         $args->{desiredCapabilities}->{proxy} = $self->{proxy};
     }
 
+    # command => 'newSession' to fool the tests of commands implemented
+    # TODO: rewrite the testing better, this is so fragile. 
     my $resp =
       $self->{remote_conn}
-      ->request( $self->{commands}->{'newSession'}->{'method'},
-        $self->{commands}->{'newSession'}->{'url'}, $args, );
+      ->request( $self->{commands}->get_method('newSession'),
+        $self->{commands}->get_url('newSession'), $args, );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
         $self->{session_id} = $resp->{'sessionId'};
     }

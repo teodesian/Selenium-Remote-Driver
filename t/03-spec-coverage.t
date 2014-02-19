@@ -63,7 +63,7 @@ for my $line (@lines) {
     push @methods, $method;
   }
 }
-my $commands = Selenium::Remote::Commands->new;
+my $commands = Selenium::Remote::Commands->new->get_cmds;
 SOURCE_COMMAND: for my $method_source (@methods) {
   my $command = "$method_source->{method} $method_source->{path}";
   my $msg     = "Looking for '$command'";
