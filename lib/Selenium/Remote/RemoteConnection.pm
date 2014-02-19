@@ -1,8 +1,6 @@
 package Selenium::Remote::RemoteConnection;
-
-use strict;
-use warnings;
-
+use Moo; 
+use Try::Tiny;
 use LWP::UserAgent;
 use HTTP::Headers;
 use HTTP::Request;
@@ -10,31 +8,45 @@ use Net::Ping;
 use Carp qw(croak);
 use JSON;
 use Data::Dumper;
-
 use Selenium::Remote::ErrorHandler;
 
-sub new {
-    my ($class, $remote_srvr, $port) = @_;
-    
-    my $self = {
-                 remote_server_addr => $remote_srvr,
-                 port               => $port,
-                 debug              => 0,
+has 'remote_server_addr' => ( 
+    is => 'rw', 
+); 
+
+has 'port' => ( 
+    is => 'rw', 
+);
+
+has 'debug' => ( 
+    is => 'rw', 
+    default => sub { 0 } 
+);
+
+has 'ua' => ( 
+    is => 'lazy', 
+    builder => sub { return LWP::UserAgent->new; }
+);
+ 
+sub BUILD { 
+    my $self = shift; 
+    my $status; 
+    try { 
+      $status = $self->request('GET','status');
+    } 
+    catch { 
+        croak "Could not connect to SeleniumWebDriver: $_" ;
     };
-    bless $self, $class or die "Can't bless $class: $!";
-    my $status = eval {$self->request('GET','status');};
-    croak "Could not connect to SeleniumWebDriver" if($@);
     if($status->{cmd_status} ne 'OK') {
         # Could be grid, see if we can talk to it
         $status = undef;
         $status = $self->request('GET', 'grid/api/testsession');
     }
-    if($status->{cmd_status} eq 'OK') {
-        return $self;
-    } else {
+    unless ($status->{cmd_status} eq 'OK') {
         croak "Selenium server did not return proper status";
     }
 }
+
 
 # This request method is tailored for Selenium RC server
 sub request {
@@ -49,15 +61,15 @@ sub request {
     elsif ($url =~ m/grid/g) {
         $fullurl =
             "http://"
-          . $self->{remote_server_addr} . ":"
-          . $self->{port}
+          . $self->remote_server_addr . ":"
+          . $self->port
           . "/$url";
     }
     else {
         $fullurl =
             "http://"
-          . $self->{remote_server_addr} . ":"
-          . $self->{port}
+          . $self->remote_server_addr . ":"
+          . $self->port
           . "/wd/hub/$url";
     }
 
@@ -67,15 +79,14 @@ sub request {
         $content = $json->allow_nonref->utf8->encode($params);
     }
     
-    print "REQ: $url, $content\n" if $self->{debug};
+    print "REQ: $url, $content\n" if $self->debug;
 
     # HTTP request
-    my $ua = LWP::UserAgent->new;
     my $header =
       HTTP::Headers->new(Content_Type => 'application/json; charset=utf-8');
     $header->header('Accept' => 'application/json');
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
-    my $response = $ua->request($request);
+    my $response = $self->ua->request($request);
 
     return $self->_process_response($response);
 }
@@ -90,7 +101,7 @@ sub _process_response {
     }
     else {
         my $decoded_json = undef;
-        print "RES: ".$response->decoded_content."\n\n" if $self->{debug};
+        print "RES: ".$response->decoded_content."\n\n" if $self->debug;
         if (($response->message ne 'No Content') && ($response->content ne '')) {
             if ($response->content_type !~ m/json/i) {
                 $data->{'cmd_return'} = 'Server returned error message '.$response->content.' instead of data';
