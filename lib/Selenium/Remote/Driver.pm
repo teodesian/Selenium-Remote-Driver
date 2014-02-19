@@ -238,8 +238,8 @@ sub new {
 
     # Connect to remote server & establish a new session
     $self->{remote_conn} =
-      Selenium::Remote::RemoteConnection->new( $self->{remote_server_addr},
-        $self->{port} );
+      Selenium::Remote::RemoteConnection->new( remote_server_addr => $self->{remote_server_addr},
+        port => $self->{port} );
     $self->new_session(delete $args{extra_capabilities});
 
     if ( !( defined $self->{session_id} ) ) {
