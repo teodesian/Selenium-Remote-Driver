@@ -30,13 +30,10 @@ has 'id' => (
 
 has 'driver' => (
     is => 'rw',
+    handles => [qw(_execute_command)],
 );
 
 
-sub _execute_command {
-    my ($self) = shift;
-    return $self->driver->_execute_command(@_);
-}
 
 =head2 click
 
