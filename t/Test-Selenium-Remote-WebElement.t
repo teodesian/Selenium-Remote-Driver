@@ -28,77 +28,77 @@ $successful_element->mock( 'get_text',     sub {"my_text\nis fantastic"} );
 # Given input 'foo' to 'get_attribute', return 'my_foo';
 $successful_element->mock( 'get_attribute', sub { 'my_' . $_[1] } );
 
-# check_test(
-#   sub { $successful_element->clear_ok },
-#   {
-#     ok => 1,
-#     name => "clear... no return value",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->clear_ok },
+  {
+    ok => 1,
+    name => "clear",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->clear_ok('test_name') },
-#   {
-#     ok => 1,
-#     name => "test_name... no return value",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->clear_ok('test_name') },
+  {
+    ok => 1,
+    name => "test_name",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->click_ok },
-#   {
-#     ok => 1,
-#     name => "click... no return value",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->click_ok },
+  {
+    ok => 1,
+    name => "click",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->submit_ok },
-#   {
-#     ok => 1,
-#     name => "submit... no return value",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->submit_ok },
+  {
+    ok => 1,
+    name => "submit",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->is_selected_ok },
-#   {
-#     ok => 1,
-#     name => "is_selected",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->is_selected_ok },
+  {
+    ok => 1,
+    name => "is_selected",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->is_enabled_ok },
-#   {
-#     ok => 1,
-#     name => "is_enabled",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->is_enabled_ok },
+  {
+    ok => 1,
+    name => "is_enabled",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->is_displayed_ok },
-#   {
-#     ok => 1,
-#     name => "is_displayed",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->is_displayed_ok },
+  {
+    ok => 1,
+    name => "is_displayed",
+    diag => "",
+  }
+);
 
-# check_test(
-#   sub { $successful_element->send_keys_ok('Hello World', 'I sent keys') },
-#   {
-#     ok => 1,
-#     name => "I sent keys... no return value",
-#     diag => "",
-#   }
-# );
+check_test(
+  sub { $successful_element->send_keys_ok('Hello World', 'I sent keys') },
+  {
+    ok => 1,
+    name => "I sent keys",
+    diag => "",
+  }
+);
 
 # tag_name_*
 {
@@ -229,14 +229,9 @@ $successful_element->mock( 'get_attribute', sub { 'my_' . $_[1] } );
             diag => "",
         }
     );
-}
 
-#  attribute_is($attr_name,$match_str,$test_name);
-#  attribute_isnt($attr_name,$match_str,$test_name);
-#  attribute_like($attr_name,$match_re,$test_name);
-#  attribute_unlike($attr_name,$match_re,$test_name);
-{
-    local $TODO = 'not implemented yet.';
+}
+{ 
     check_test(
         sub {
             $successful_element->attribute_is( 'foo', 'my_foo',
@@ -248,7 +243,41 @@ $successful_element->mock( 'get_attribute', sub { 'my_' . $_[1] } );
         }
     );
 
+    check_test(
+        sub {
+            $successful_element->attribute_isnt( 'foo', 'not_foo',
+                'attribute_is not_foo' );
+        },
+        {   ok   => 1,
+            name => "attribute_is not_foo",
+            diag => "",
+        }
+    );
+
+    check_test(
+        sub {
+            $successful_element->attribute_like( 'foo',qr/foo/,
+                'Matches my_attribute' );
+        },
+        {   ok   => 1,
+            name => "Matches my_attribute",
+            diag => "",
+        }
+    );
+
+    check_test(
+        sub {
+            $successful_element->attribute_unlike( 'bar',qr/foo/,
+                "Attribute does not match foo" );
+        },
+        {   ok   => 1,
+            name => "Attribute does not match foo",
+            diag => "",
+        }
+    );
 }
+
+
 
 #  css_attribute_is($attr_name,$match_str,$test_name);
 #  css_attribute_isnt($attr_name,$match_str,$test_name);

@@ -2,85 +2,176 @@ package Test::Selenium::Remote::WebElement;
 use parent 'Selenium::Remote::WebElement';
 use Moo;
 use Test::Builder;
+use Try::Tiny;
 
 has _builder => (
     is      => 'lazy',
     builder => sub { return Test::Builder->new() },
-    handles => [qw/is_eq isnt_eq like unlike/],
+    handles => [qw/is_eq isnt_eq like unlike ok croak/],
 );
 
+sub has_args { 
+    my $self = shift; 
+    my $fun_name = shift; 
+    my $hash_fun_args = { 
+        'get_attribute' => 1,
+    };
+    return ($hash_fun_args->{$fun_name} // 0);
+}
 
-sub _check_main_method {
+
+sub _check_method {
     my $self           = shift;
     my $method         = shift;
     my $method_to_test = shift;
     $method = "get_$method";
-    my $rv = $self->$method();
+    my @args = @_;
+    my $rv;
+    try { 
+        my $num_of_args = $self->has_args($method);
+        my @r_args = splice (@args,0,$num_of_args);
+        $rv = $self->$method(@r_args);
+    }
+    catch { 
+        $self->croak($_);
+    };
+    # +2 because of the delegation on _builder
+    local $Test::Builder::Level = $Test::Builder::Level + 2;
+    return $self->$method_to_test( $rv, @args );
+}
+
+sub _check_ok { 
+    my $self = shift; 
+    my $meth = shift; 
+    my $test_name = pop // $meth;
+    my $rv;
+    try { 
+        $rv = $self->$meth(@_);
+    }
+    catch { 
+        $self->croak($_);
+    };
 
     # +2 because of the delegation on _builder
     local $Test::Builder::Level = $Test::Builder::Level + 2;
-    return $self->$method_to_test( $rv, @_ );
+    return $self->ok($rv,$test_name,@_);
 }
+
+sub clear_ok { 
+    my $self = shift;
+    return $self->_check_ok('clear',@_);
+}
+
+sub click_ok { 
+    my $self = shift;
+    return $self->_check_ok('click',@_);
+}
+
+sub submit_ok { 
+    my $self = shift;
+    return $self->_check_ok('submit',@_);
+}
+
+sub is_selected_ok { 
+    my $self = shift;
+    return $self->_check_ok('is_selected',@_);
+}
+
+sub is_enabled_ok { 
+    my $self = shift;
+    return $self->_check_ok('is_enabled',@_);
+}
+
+sub is_displayed_ok { 
+    my $self = shift;
+    return $self->_check_ok('is_displayed',@_);
+}
+
+sub send_keys_ok { 
+    my $self = shift;
+    return $self->_check_ok('send_keys',@_);
+}
+
 
 
 sub text_is {
     my $self = shift;
-    return $self->_check_main_method( 'text', 'is_eq', @_ );
+    return $self->_check_method( 'text', 'is_eq', @_ );
 }
 
 sub text_isnt {
     my $self = shift;
-    return $self->_check_main_method( 'text', 'isnt_eq', @_ );
+    return $self->_check_method( 'text', 'isnt_eq', @_ );
 }
 
 sub text_like {
     my $self = shift;
-    return $self->_check_main_method( 'text', 'like', @_ );
+    return $self->_check_method( 'text', 'like', @_ );
 }
 
 sub text_unlike {
     my $self = shift;
-    return $self->_check_main_method( 'text', 'unlike', @_ );
+    return $self->_check_method( 'text', 'unlike', @_ );
 }
 
 sub tag_name_is {
     my $self = shift;
-    return $self->_check_main_method( 'tag_name', 'is_eq', @_ );
+    return $self->_check_method( 'tag_name', 'is_eq', @_ );
 }
 
 sub tag_name_isnt {
     my $self = shift;
-    return $self->_check_main_method( 'tag_name', 'isnt_eq', @_ );
+    return $self->_check_method( 'tag_name', 'isnt_eq', @_ );
 }
 
 sub tag_name_like {
     my $self = shift;
-    return $self->_check_main_method( 'tag_name', 'like', @_ );
+    return $self->_check_method( 'tag_name', 'like', @_ );
 }
 
 sub tag_name_unlike {
     my $self = shift;
-    return $self->_check_main_method( 'tag_name', 'unlike', @_ );
+    return $self->_check_method( 'tag_name', 'unlike', @_ );
 }
 
 sub value_is {
     my $self = shift;
-    return $self->_check_main_method( 'value', 'is_eq', @_ );
+    return $self->_check_method( 'value', 'is_eq', @_ );
 }
 
 sub value_isnt {
     my $self = shift;
-    return $self->_check_main_method( 'value', 'isnt_eq', @_ );
+    return $self->_check_method( 'value', 'isnt_eq', @_ );
 }
 
 sub value_like {
     my $self = shift;
-    return $self->_check_main_method( 'value', 'like', @_ );
+    return $self->_check_method( 'value', 'like', @_ );
 }
 
 sub value_unlike {
     my $self = shift;
-    return $self->_check_main_method( 'value', 'unlike', @_ );
+    return $self->_check_method( 'value', 'unlike', @_ );
+}
+
+sub attribute_is {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'is_eq', @_ );
+}
+
+sub attribute_isnt {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'isnt_eq', @_ );
+}
+
+sub attribute_like {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'like', @_ );
+}
+
+sub attribute_unlike {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'unlike', @_ );
 }
 
 1;
