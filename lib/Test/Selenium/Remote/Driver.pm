@@ -87,7 +87,7 @@ sub AUTOLOAD {
         # pop'd in $name (so the call to get has no args => end of game)
         $sub = sub {
             my $self = shift;
-            my $name = pop;
+            my $name = (@_ > 1 ? pop @_ : $cmd);
             my ($arg1, $arg2) = @_;
             if ($self->{default_names} and !defined $name) {
                 $name = $cmd;

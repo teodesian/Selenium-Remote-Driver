@@ -12,7 +12,7 @@ unless ($host and $port) {
 my $t = Test::Selenium::Remote::Driver->new(
     remote_server_addr => $host, port => $port,
 );
-$t->get('http://www.google.com');
+$t->get_ok('http://www.google.com');
 $t->title_like(qr/Google/);
 $t->body_like(qr/Google/);
 
