@@ -181,6 +181,7 @@ available here.
 
 has 'remote_server_addr' => (
     is      => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : 'localhost' )},
     default => sub {'localhost'},
 );
 
@@ -198,6 +199,7 @@ has 'platform' => (
 
 has 'port' => (
     is      => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : '4444' )},
     default => sub {'4444'},
 );
 
