@@ -174,11 +174,11 @@ sub new {
 
     for my $opt (qw/remote_server_addr port browser_name version platform
                     javascript auto_close extra_capabilities/) {
-        $p{$opt} ||= $ENV{ 'TWD_' . uc($opt) };
+        $p{$opt} //= $ENV{ 'TWD_' . uc($opt) };
     }
-    $p{browser_name}       ||= $ENV{TWD_BROWSER}; # ykwim
-    $p{remote_server_addr} ||= $ENV{TWD_HOST};    # ykwim
-    $p{webelement_class}   ||= 'Test::Selenium::Remote::WebElement';
+    $p{browser_name}       //= $ENV{TWD_BROWSER}; # ykwim
+    $p{remote_server_addr} //= $ENV{TWD_HOST};    # ykwim
+    $p{webelement_class}   //= 'Test::Selenium::Remote::WebElement';
 
     my $self = $class->SUPER::new(%p);
     $self->{verbose} = $p{verbose};
