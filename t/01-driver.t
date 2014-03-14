@@ -198,8 +198,7 @@ EXECUTE: {
           var elem = window.document.getElementById(arg1);
           callback(elem);
         };
-        my $callback = q{return arguments[0];};
-        $elem = $driver->execute_async_script($script,'multi',$callback);
+        $elem = $driver->execute_async_script($script,'multi');
         ok($elem->isa('Selenium::Remote::WebElement'),'Executed async script');
         is($elem->get_attribute('id'),'multi','Async found proper element');
 }
