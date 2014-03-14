@@ -4,6 +4,7 @@ use warnings;
 
 use LWP::Protocol::PSGI;
 use JSON;
+use Storable;
 
 our $MockSeleniumWebDriverObj;
 
@@ -57,9 +58,14 @@ sub psgi_app {
   }
   my $req_index = \$self->{req_index};
   if (!$self->{record}) {
+    my $recordedContent = $self->{req_resp}->[$$req_index]->{request}->{content};
+    $recordedContent = $recordedContent eq "" ? $recordedContent : decode_json($recordedContent);
+    my $testingContent = $content eq "" ? $content : decode_json($content);
+
     if (  $self->{req_resp}->[$$req_index]->{request}->{verb} eq $env->{REQUEST_METHOD}
       and $self->{req_resp}->[$$req_index]->{request}->{uri} eq $uri
-      and $self->{req_resp}->[$$req_index]->{request}->{content} eq $content) {
+      and (   $self->{req_resp}->[$$req_index]->{request}->{content} eq $content
+           or deeply_equal($recordedContent, $testingContent)))  {
       return $self->{req_resp}->[$$req_index++]->{response};
     } else {
       die
@@ -90,6 +96,13 @@ sub psgi_app {
     push @{$self->{req_resp}}, {request => $request, response => $response};
     return $response;
   }
+}
+
+sub deeply_equal {
+  my ( $a_ref, $b_ref ) = @_;
+
+  local $Storable::canonical = 1;
+  return Storable::freeze( $a_ref ) eq Storable::freeze( $b_ref );
 }
 
 sub DESTROY {
