@@ -50,7 +50,10 @@ Revision history for Selenium-Remote-Driver
            https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
 
         - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
-          This could be used to add testing methods or functionality for WebElements.  
+          This could be used to add testing methods or functionality for WebElements.
+
+        - new() now accepts a 'firefox_profile' option to allow you to specify a customizable Firefox profile.
+          Currently, you can specify user preferences and use packed extensions in your custom profile.
 
         - Shortcut methods absorbed from Test::WebDriver into Selenium::Remote::Driver:
 
