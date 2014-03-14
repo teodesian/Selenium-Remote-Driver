@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+# TODO: find another way to do this checking, this is so fragile
 use Selenium::Remote::Commands;
 use Test::More;
 
@@ -9,7 +10,7 @@ unless($ENV{RELEASE_TESTING}) {
   plan(skip_all=>"Author tests not required for installation.");
 }
 
-my $comm = Selenium::Remote::Commands->new;
+my $comm = Selenium::Remote::Commands->new->get_cmds;
 for my $command (keys %{$comm}) {
   my $found_command = 0;
   for my $file (

@@ -83,9 +83,11 @@ sub AUTOLOAD {
         my $cmd = $1;
 
         # make a subroutine for ok() around the selenium command
+        # TODO: fix the thing for get_ok, it won't work as its arg get
+        # pop'd in $name (so the call to get has no args => end of game)
         $sub = sub {
             my $self = shift;
-            my $name = pop;
+            my $name = (@_ > 1 ? pop @_ : $cmd);
             my ($arg1, $arg2) = @_;
             if ($self->{default_names} and !defined $name) {
                 $name = $cmd;
@@ -172,11 +174,11 @@ sub new {
 
     for my $opt (qw/remote_server_addr port browser_name version platform
                     javascript auto_close extra_capabilities/) {
-        $p{$opt} ||= $ENV{ 'TWD_' . uc($opt) };
+        $p{$opt} //= $ENV{ 'TWD_' . uc($opt) };
     }
-    $p{browser_name}       ||= $ENV{TWD_BROWSER}; # ykwim
-    $p{remote_server_addr} ||= $ENV{TWD_HOST};    # ykwim
-    $p{webelement_class}   ||= 'Test::Selenium::Remote::WebElement';
+    $p{browser_name}       //= $ENV{TWD_BROWSER}; # ykwim
+    $p{remote_server_addr} //= $ENV{TWD_HOST};    # ykwim
+    $p{webelement_class}   //= 'Test::Selenium::Remote::WebElement';
 
     my $self = $class->SUPER::new(%p);
     $self->{verbose} = $p{verbose};

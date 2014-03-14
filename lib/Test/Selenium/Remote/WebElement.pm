@@ -1,146 +1,177 @@
 package Test::Selenium::Remote::WebElement;
 use parent 'Selenium::Remote::WebElement';
-
-use Test::More;
+use Moo;
 use Test::Builder;
- 
-our $AUTOLOAD;
+use Try::Tiny;
 
-our $Test = Test::Builder->new;
-$Test->exported_to(__PACKAGE__);
-
-our %comparator = (
-    is     => 'is_eq',
-    isnt   => 'isnt_eq',
-    like   => 'like',
-    unlike => 'unlike',
+has _builder => (
+    is      => 'lazy',
+    builder => sub { return Test::Builder->new() },
+    handles => [qw/is_eq isnt_eq like unlike ok croak/],
 );
 
-our %one_arg = map { $_ => 1 } qw(
-    get_attribute
-    send_keys
-
-);
-sub one_arg {
-    my $self   = shift;
-    my $method = shift;
-    return $one_arg{$method};
+sub has_args { 
+    my $self = shift; 
+    my $fun_name = shift; 
+    my $hash_fun_args = { 
+        'get_attribute' => 1,
+    };
+    return ($hash_fun_args->{$fun_name} // 0);
 }
 
-our %no_arg = map { $_ => 1 } qw(
-    clear
-    click
-    get_text
-    get_value
-    get_tag_name
-    is_enabled
-    is_selected
-    submit
-    );
 
-sub no_arg {
-    my $self   = shift;
-    my $method = shift;
-    return $no_arg{$method};
+sub _check_method {
+    my $self           = shift;
+    my $method         = shift;
+    my $method_to_test = shift;
+    $method = "get_$method";
+    my @args = @_;
+    my $rv;
+    try { 
+        my $num_of_args = $self->has_args($method);
+        my @r_args = splice (@args,0,$num_of_args);
+        $rv = $self->$method(@r_args);
+    }
+    catch { 
+        $self->croak($_);
+    };
+    # +2 because of the delegation on _builder
+    local $Test::Builder::Level = $Test::Builder::Level + 2;
+    return $self->$method_to_test( $rv, @args );
 }
 
-our %no_return = map { $_ => 1 } qw(send_keys click clear submit);
+sub _check_ok { 
+    my $self = shift; 
+    my $meth = shift; 
+    my $test_name = pop // $meth;
+    my $rv;
+    try { 
+        $rv = $self->$meth(@_);
+    }
+    catch { 
+        $self->croak($_);
+    };
 
-sub no_return {
-    my $self   = shift;
-    my $method = shift;
-    return $no_return{$method};
+    # +2 because of the delegation on _builder
+    local $Test::Builder::Level = $Test::Builder::Level + 2;
+    return $self->ok($rv,$test_name,@_);
 }
 
-sub AUTOLOAD {
-    my $name = $AUTOLOAD;
-    $name =~ s/.*:://;
-    return if $name eq 'DESTROY';
-    my $self = $_[0];
- 
-    my $sub;
-    if ($name =~ /(\w+)_(is|isnt|like|unlike)$/i) {
-        my $getter = "get_$1";
-        my $comparator = $comparator{lc $2};
- 
-        $sub = sub {
-            my( $self, $str, $name ) = @_;
-            # There is no verbose option currently
-            #diag "Test::Selenium::Remote::WebElement running $getter (@_[1..$#_])" if $self->{verbose};
-            $name = "$getter, '$str'" if !defined $name;
-            no strict 'refs';
-            return $Test->$comparator( $self->$getter, $str, $name );
-        };
-    }
-    elsif ($name =~ /(\w+?)_?ok$/i) {
-        my $cmd = $1;
- 
-        # make a subroutine for ok() around the selenium command
-        $sub = sub {
-            my( $self, $arg1, $arg2, $name );
-            $self = $_[0];
-            if ($self->no_arg($cmd)) {
-                $name = $_[1];
-            }
-            elsif ($self->one_arg($cmd)) {
-                $arg1 = $_[1];
-                $name = $_[2];
-            }
-            else {
-                $arg1 = $_[1];
-                $arg2 = $_[2];
-                $name = $_[3];
-            }
+sub clear_ok { 
+    my $self = shift;
+    return $self->_check_ok('clear',@_);
+}
 
-            if (!defined $name) {
-                $name = $cmd;
-                $name .= ", $arg1" if defined $arg1;
-                $name .= ", $arg2" if defined $arg2;
-            }
-            # There is no verbose option currently
-            # diag "Test::Selenium::Remote::WebElement running $cmd (@_[1..$#_])" if $self->{verbose};
- 
-            local $Test::Builder::Level = $Test::Builder::Level + 1;
-            my $rc = '';
-            eval { 
-                if ($self->no_arg($cmd)) {
-                    $rc = $self->$cmd();
-                }
-                elsif ($self->one_arg($cmd)) {
-                    $rc = $self->$cmd( $arg1 );
-                }
-                else {
-                    $rc = $self->$cmd( $arg1, $arg2 );
-                }
-            };
-            die $@ if $@ and $@ =~ /Can't locate object method/;
-            diag($@) if $@;
-            if ($self->no_return($cmd)) {
-                $rc = ok( 1, "$name... no return value" );
-            }
-            else {
-                $rc = ok( $rc, $name );
-            }
-            return $rc;
-        };
-    }
- 
-    # jump directly to the new subroutine, avoiding an extra frame stack
-    if ($sub) {
-        no strict 'refs';
-        *{$AUTOLOAD} = $sub;
-        goto &$AUTOLOAD;
-    }
-    else {
-        # try to pass through to Selenium::Remote::WebElement
-        my $sel = 'Selenium::Remote::WebElement';
-        my $sub = "${sel}::${name}";
-        goto &$sub if exists &$sub;
-        my ($package, $filename, $line) = caller;
-        die qq(Can't locate object method "$name" via package ")
-            . __PACKAGE__
-            . qq(" (also tried "$sel") at $filename line $line\n);
-    }
+sub click_ok { 
+    my $self = shift;
+    return $self->_check_ok('click',@_);
+}
+
+sub submit_ok { 
+    my $self = shift;
+    return $self->_check_ok('submit',@_);
+}
+
+sub is_selected_ok { 
+    my $self = shift;
+    return $self->_check_ok('is_selected',@_);
+}
+
+sub is_enabled_ok { 
+    my $self = shift;
+    return $self->_check_ok('is_enabled',@_);
+}
+
+sub is_displayed_ok { 
+    my $self = shift;
+    return $self->_check_ok('is_displayed',@_);
+}
+
+sub send_keys_ok { 
+    my $self = shift;
+    return $self->_check_ok('send_keys',@_);
+}
+
+
+
+sub text_is {
+    my $self = shift;
+    return $self->_check_method( 'text', 'is_eq', @_ );
+}
+
+sub text_isnt {
+    my $self = shift;
+    return $self->_check_method( 'text', 'isnt_eq', @_ );
+}
+
+sub text_like {
+    my $self = shift;
+    return $self->_check_method( 'text', 'like', @_ );
+}
+
+sub text_unlike {
+    my $self = shift;
+    return $self->_check_method( 'text', 'unlike', @_ );
+}
+
+sub tag_name_is {
+    my $self = shift;
+    return $self->_check_method( 'tag_name', 'is_eq', @_ );
+}
+
+sub tag_name_isnt {
+    my $self = shift;
+    return $self->_check_method( 'tag_name', 'isnt_eq', @_ );
+}
+
+sub tag_name_like {
+    my $self = shift;
+    return $self->_check_method( 'tag_name', 'like', @_ );
+}
+
+sub tag_name_unlike {
+    my $self = shift;
+    return $self->_check_method( 'tag_name', 'unlike', @_ );
+}
+
+sub value_is {
+    my $self = shift;
+    return $self->_check_method( 'value', 'is_eq', @_ );
+}
+
+sub value_isnt {
+    my $self = shift;
+    return $self->_check_method( 'value', 'isnt_eq', @_ );
+}
+
+sub value_like {
+    my $self = shift;
+    return $self->_check_method( 'value', 'like', @_ );
+}
+
+sub value_unlike {
+    my $self = shift;
+    return $self->_check_method( 'value', 'unlike', @_ );
+}
+
+sub attribute_is {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'is_eq', @_ );
+}
+
+sub attribute_isnt {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'isnt_eq', @_ );
+}
+
+sub attribute_like {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'like', @_ );
+}
+
+sub attribute_unlike {
+    my $self = shift;
+    return $self->_check_method( 'attribute', 'unlike', @_ );
 }
 
 1;
