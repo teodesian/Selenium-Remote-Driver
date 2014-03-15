@@ -1,27 +1,28 @@
 # Selenium::Remote::Driver
 
 [Selenium WebDriver][1] is an open source project that exposes an API
-for browser automation. Selenium::Remote::Driver is a set of
-Perl bindings to that API that allow you to write automated browser
-tests in Perl, taking advantage of Selenium's strong ecosystem.
+for browser automation, among other things. `Selenium::Remote::Driver`
+is a set of Perl bindings to that API that allow you to write
+automated browser tests in Perl, taking advantage of Selenium's strong
+ecosystem.
 
 [1]: https://code.google.com/p/selenium/
 
 ## Installation
 
-    cpanm Selenium::Remote::Driver
+    $ cpanm Selenium::Remote::Driver
 
-To install from this repository, clone the repo, get Dist::Zilla, and:
+To install from this repository, clone it, get `Dist::Zilla`, and:
 
-    dzil installdeps --missing | cpanm
-    dzil install
+    $ dzil installdeps --missing | cpanm
+    $ dzil install
 
 ## Usage
 
 You'll need a Remote WebDriver Server running somewhere. You can
 download a [selenium-standalone-server.jar][j] and run one locally, or
-you can point your job at Saucelabs and let them handle the Remote
-WebDriver.
+you can point your driver at [Saucelabs][s] and
+let them handle the it.
 
 ### Locally
 
@@ -33,37 +34,41 @@ WebDriver.
     $driver->quit();
 
 [j]: http://selenium-release.storage.googleapis.com/index.html
+[s]: https://saucelabs.com
 
 ## Unit Tests
 
-This module uses LWP::Protocol::PSGI to facilitate unit
-tests. LWP::Protocol::PSGI overrides the LWP HTTP/HTTPS & this allows
+This module uses `LWP::Protocol::PSGI` to facilitate unit
+tests. `LWP::Protocol::PSGI` overrides the LWP HTTP/HTTPS & this allows
 us to "mock" the interaction with WebDriver Server. In regular
 instances you should be running the tests against the mocked
 recording, which are stored in t/mock-recordings. If you want to run
 the tests live against the WebDriver server, set an environment
-variable WD_MOCKING_RECORD to 1. This will force the unit tests to run
+variable WD\_MOCKING\_RECORD to 1. This will force the unit tests to run
 tests against the WebDriver server & also save the traffic
-(request/response) in t/mock-recordings.  Either reset the environment
-variable or set it to 0 to revert to mocking the traffic.
+(request/response) in `t/mock-recordings`.
+
+There is a short script that will handle the environment variable and
+generate recordings for you:
+
+    $ perl t/bin/generate-recordings.pl
 
 ## Support and Documentation
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Selenium::Remote::Driver
-    perldoc Selenium::Remote::WebElement
+    $ perldoc Selenium::Remote::Driver
+    $ perldoc Selenium::Remote::WebElement
 
-Please file all bugs for this module at:
+Please file all bugs in the [Github issue tracker][issue].
 
-    https://github.com/gempesaw/Selenium-Remote-Driver/issues
+You can also find some supporting docs in the [Github Wiki][wiki].
 
-You can also find some supporting docs at:
+[issue]: https://github.com/gempesaw/Selenium-Remote-Driver/issues
+[wiki]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki
 
-    https://github.com/gempesaw/Selenium-Remote-Driver/wiki
-
-## LICENSE AND COPYRIGHT
+## License and Copyright
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
