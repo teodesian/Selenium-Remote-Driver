@@ -10,12 +10,16 @@ ecosystem.
 
 ## Installation
 
-    $ cpanm Selenium::Remote::Driver
+```bash
+$ cpanm Selenium::Remote::Driver
+```
 
 To install from this repository, clone it, get `Dist::Zilla`, and:
 
-    $ dzil installdeps --missing | cpanm
-    $ dzil install
+```bash
+$ dzil installdeps --missing | cpanm
+$ dzil install
+```
 
 ## Usage
 
@@ -26,12 +30,14 @@ let them handle the it.
 
 ### Locally
 
-    use Selenium::Remote::Driver;
+```perl
+use Selenium::Remote::Driver;
 
-    my $driver = Selenium::Remote::Driver->new;
-    $driver->get('http://www.google.com');
-    print $driver->get_title();
-    $driver->quit();
+my $driver = Selenium::Remote::Driver->new;
+$driver->get('http://www.google.com');
+print $driver->get_title();
+$driver->quit();
+```
 
 [j]: http://selenium-release.storage.googleapis.com/index.html
 [s]: https://saucelabs.com
@@ -51,15 +57,19 @@ tests against the WebDriver server & also save the traffic
 There is a short script that will handle the environment variable and
 generate recordings for you:
 
-    $ perl t/bin/generate-recordings.pl
+```bash
+$ perl t/bin/generate-recordings.pl
+```
 
 ## Support and Documentation
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    $ perldoc Selenium::Remote::Driver
-    $ perldoc Selenium::Remote::WebElement
+```bash
+$ perldoc Selenium::Remote::Driver
+$ perldoc Selenium::Remote::WebElement
+```
 
 Please file all bugs in the [Github issue tracker][issue].
 
