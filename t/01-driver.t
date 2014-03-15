@@ -119,7 +119,7 @@ COOKIES: {
             pass('Adding cookie foo...');
             $ret = $driver->get_all_cookies();
             is(@{$ret}, 1, 'foo cookie added.');
-            is($ret->[0]{'secure'}, "false", 'foo cookie insecure.');
+            is($ret->[0]{'secure'}, 0, 'foo cookie insecure.');
             $ret = $driver->delete_cookie_named('foo');
             pass('Deleting cookie foo...');
             $ret = $driver->get_all_cookies();

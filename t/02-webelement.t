@@ -11,7 +11,7 @@ BEGIN {
       BAIL_OUT ("Couldn't load Driver");
       exit;
    }
-   
+
    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))
    {
       use t::lib::MockSeleniumWebDriver;
@@ -74,18 +74,18 @@ INPUT: {
             is($ret, 'id', 'Get attribute @value');
             $ret = $elem->get_tag_name();
             is($ret, 'input', 'Get tag name');
-            
+
             $elem = $driver->find_element('checky', 'id');
             $ret = $elem->is_selected();
-            is($ret, 'false', 'Checkbox not selected');
+            is($ret, 0, 'Checkbox not selected');
             $ret = $elem->click();
             $ret = $elem->is_selected();
-            is($ret, 'true', 'Checkbox is selected');
+            is($ret, 1, 'Checkbox is selected');
             TODO: {
             local $TODO = "toggle doesn't appear to be working currently in selenium server";
             eval {$ret = $elem->toggle();};
             $ret = $elem->is_selected();
-            is($ret, 'false', 'Toggle & Checkbox is selected');
+            is($ret, 0, 'Toggle & Checkbox is selected');
             };
             note "describe return data has not yet been defined";
             ok($elem->describe,"describe returns data");
