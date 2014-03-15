@@ -38,16 +38,6 @@ if (!$record && !(-e "t/mock-recordings/$mock_file"))
 }
 t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
-# Start our local http server
-if ($^O eq 'MSWin32' && $record)
-{
-   system("start \"TEMP_HTTP_SERVER\" /MIN perl t/http-server.pl");
-}
-elsif ($record)
-{
-    system("perl t/http-server.pl > /dev/null &");
-}
-
 my $driver = new Selenium::Remote::Driver(browser_name => 'firefox');
 my $website = 'http://localhost:63636';
 my $ret;
@@ -135,15 +125,5 @@ QUIT: {
         $ret = $driver->quit();
         ok((not defined $driver->{'session_id'}), 'Killed the remote session');
       }
-
-# Kill our HTTP Server
-if ($^O eq 'MSWin32' && $record)
-{
-   system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
-}
-elsif ($record)
-{
-    `ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
-}
 
 done_testing;
