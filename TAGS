@@ -1,0 +1,205 @@
+
+driver-example.pl,24
+my $driver driver5,72
+
+lib/Selenium/Remote/Commands.pm,229
+package Selenium::Remote::Commands;1,0
+sub get_url Selenium::Remote::Commands::get_url295,10501
+sub get_method Selenium::Remote::Commands::get_method300,10598
+sub get_params Selenium::Remote::Commands::get_params306,10750
+
+lib/Selenium/Remote/Driver.pm,4728
+package Selenium::Remote::Driver;1,0
+sub BUILD Selenium::Remote::Driver::BUILD287,10696
+sub DESTROY Selenium::Remote::Driver::DESTROY298,10967
+sub _execute_command Selenium::Remote::Driver::_execute_command307,11334
+sub new_session Selenium::Remote::Driver::new_session347,12822
+sub debug_on Selenium::Remote::Driver::debug_on396,14358
+sub debug_off Selenium::Remote::Driver::debug_off411,14539
+sub get_sessions Selenium::Remote::Driver::get_sessions433,14963
+sub status Selenium::Remote::Driver::status454,15377
+sub get_alert_text Selenium::Remote::Driver::get_alert_text471,15692
+sub send_keys_to_active_element Selenium::Remote::Driver::send_keys_to_active_element504,16607
+sub send_keys_to_alert Selenium::Remote::Driver::send_keys_to_alert519,16914
+sub send_keys_to_prompt Selenium::Remote::Driver::send_keys_to_prompt540,17340
+sub accept_alert Selenium::Remote::Driver::accept_alert558,17753
+sub dismiss_alert Selenium::Remote::Driver::dismiss_alert577,18187
+sub mouse_move_to_location Selenium::Remote::Driver::mouse_move_to_location604,19232
+sub move_to Selenium::Remote::Driver::move_to617,19538
+sub get_capabilities Selenium::Remote::Driver::get_capabilities635,19827
+sub set_timeout Selenium::Remote::Driver::set_timeout661,20658
+sub set_async_script_timeout Selenium::Remote::Driver::set_async_script_timeout687,21410
+sub set_implicit_wait_timeout Selenium::Remote::Driver::set_implicit_wait_timeout719,22424
+sub pause Selenium::Remote::Driver::pause737,22845
+sub close Selenium::Remote::Driver::close759,23287
+sub quit Selenium::Remote::Driver::quit775,23509
+sub get_current_window_handle Selenium::Remote::Driver::get_current_window_handle795,23842
+sub get_window_handles Selenium::Remote::Driver::get_window_handles820,24418
+sub get_window_size Selenium::Remote::Driver::get_window_size843,24890
+sub get_window_position Selenium::Remote::Driver::get_window_position867,25445
+sub get_current_url Selenium::Remote::Driver::get_current_url887,25845
+sub navigate Selenium::Remote::Driver::navigate906,26162
+sub get Selenium::Remote::Driver::get924,26370
+sub get_title Selenium::Remote::Driver::get_title944,26691
+sub go_back Selenium::Remote::Driver::go_back960,26945
+sub go_forward Selenium::Remote::Driver::go_forward976,27204
+sub refresh Selenium::Remote::Driver::refresh992,27431
+sub has_javascript Selenium::Remote::Driver::has_javascript1008,27702
+sub execute_async_script Selenium::Remote::Driver::execute_async_script1047,28930
+sub execute_script Selenium::Remote::Driver::execute_script1111,30910
+sub _convert_to_webelement Selenium::Remote::Driver::_convert_to_webelement1143,31923
+sub screenshot Selenium::Remote::Driver::screenshot1184,32883
+sub capture_screenshot Selenium::Remote::Driver::capture_screenshot1204,33309
+sub available_engines Selenium::Remote::Driver::available_engines1230,33865
+sub switch_to_frame Selenium::Remote::Driver::switch_to_frame1256,34636
+sub switch_to_window Selenium::Remote::Driver::switch_to_window1294,35601
+sub get_speed Selenium::Remote::Driver::get_speed1318,36141
+sub set_speed Selenium::Remote::Driver::set_speed1341,36699
+sub set_window_position Selenium::Remote::Driver::set_window_position1369,37314
+sub set_window_size Selenium::Remote::Driver::set_window_size1402,38113
+sub get_all_cookies Selenium::Remote::Driver::get_all_cookies1437,39052
+sub add_cookie Selenium::Remote::Driver::add_cookie1462,39528
+sub delete_all_cookies Selenium::Remote::Driver::delete_all_cookies1501,40406
+sub delete_cookie_named Selenium::Remote::Driver::delete_cookie_named1522,40846
+sub get_page_source Selenium::Remote::Driver::get_page_source1544,41281
+sub find_element Selenium::Remote::Driver::find_element1574,42195
+sub find_elements Selenium::Remote::Driver::find_elements1632,44116
+sub find_child_element Selenium::Remote::Driver::find_child_element1708,46765
+sub find_child_elements Selenium::Remote::Driver::find_child_elements1769,48977
+sub get_active_element Selenium::Remote::Driver::get_active_element1824,50726
+sub send_modifier Selenium::Remote::Driver::send_modifier1860,51650
+sub compare_elements Selenium::Remote::Driver::compare_elements1891,52314
+sub click Selenium::Remote::Driver::click1918,52897
+sub double_click Selenium::Remote::Driver::double_click1945,53528
+sub button_down Selenium::Remote::Driver::button_down1964,54015
+sub button_up Selenium::Remote::Driver::button_up1983,54446
+sub upload_file Selenium::Remote::Driver::upload_file2006,55083
+sub get_text Selenium::Remote::Driver::get_text2031,55779
+sub get_body Selenium::Remote::Driver::get_body2047,56066
+sub get_path Selenium::Remote::Driver::get_path2062,56281
+
+lib/Selenium/Remote/ErrorHandler.pm,118
+package Selenium::Remote::ErrorHandler;1,0
+sub process_error Selenium::Remote::ErrorHandler::process_error115,4454
+
+lib/Selenium/Remote/RemoteConnection.pm,258
+package Selenium::Remote::RemoteConnection;1,0
+sub BUILD Selenium::Remote::RemoteConnection::BUILD31,461
+sub request Selenium::Remote::RemoteConnection::request52,1017
+sub _process_response Selenium::Remote::RemoteConnection::_process_response94,2099
+
+lib/Selenium/Remote/WDKeys.pm,38
+package Selenium::Remote::WDKeys;1,0
+
+lib/Selenium/Remote/WebElement.pm,1318
+package Selenium::Remote::WebElement;1,0
+sub click Selenium::Remote::WebElement::click48,894
+sub submit Selenium::Remote::WebElement::submit65,1229
+sub send_keys Selenium::Remote::WebElement::send_keys96,1902
+sub is_selected Selenium::Remote::WebElement::is_selected120,2412
+sub set_selected Selenium::Remote::WebElement::set_selected138,2769
+sub toggle Selenium::Remote::WebElement::toggle160,3235
+sub is_enabled Selenium::Remote::WebElement::is_enabled179,3565
+sub get_element_location Selenium::Remote::WebElement::get_element_location199,4003
+sub get_element_location_in_view Selenium::Remote::WebElement::get_element_location_in_view222,4618
+sub get_tag_name Selenium::Remote::WebElement::get_tag_name241,4986
+sub clear Selenium::Remote::WebElement::clear257,5262
+sub get_attribute Selenium::Remote::WebElement::get_attribute280,5719
+sub get_value Selenium::Remote::WebElement::get_value306,6284
+sub is_displayed Selenium::Remote::WebElement::is_displayed324,6558
+sub drag Selenium::Remote::WebElement::drag346,7052
+sub get_size Selenium::Remote::WebElement::get_size373,7643
+sub get_text Selenium::Remote::WebElement::get_text392,7951
+sub get_css_attribute Selenium::Remote::WebElement::get_css_attribute417,8555
+sub describe Selenium::Remote::WebElement::describe440,9015
+
+lib/Test/Selenium/Remote/Driver.pm,1817
+package Test::Selenium::Remote::Driver;3,26
+my $Test Test15,302
+my %comparator comparator18,367
+my $comparator_keys comparator_keys24,491
+my %no_locator no_locator27,583
+sub no_locator Test::Selenium::Remote::Driver::no_locator31,741
+sub AUTOLOAD Test::Selenium::Remote::Driver::AUTOLOAD37,842
+sub error_callback Test::Selenium::Remote::Driver::error_callback131,4297
+sub new Test::Selenium::Remote::Driver::new172,5411
+sub server_is_running Test::Selenium::Remote::Driver::server_is_running198,6194
+sub type_element_ok Test::Selenium::Remote::Driver::type_element_ok305,8512
+sub find_no_element_ok Test::Selenium::Remote::Driver::find_no_element_ok339,9674
+sub content_like Test::Selenium::Remote::Driver::content_like363,10336
+sub content_unlike Test::Selenium::Remote::Driver::content_unlike398,11343
+sub body_text_like Test::Selenium::Remote::Driver::body_text_like436,12439
+sub body_text_unlike Test::Selenium::Remote::Driver::body_text_unlike474,13516
+sub content_contains Test::Selenium::Remote::Driver::content_contains511,14509
+sub content_lacks Test::Selenium::Remote::Driver::content_lacks546,15499
+sub body_text_contains Test::Selenium::Remote::Driver::body_text_contains584,16571
+sub body_text_lacks Test::Selenium::Remote::Driver::body_text_lacks622,17632
+sub element_text_is Test::Selenium::Remote::Driver::element_text_is649,18319
+sub element_value_is Test::Selenium::Remote::Driver::element_value_is660,18619
+sub click_element_ok Test::Selenium::Remote::Driver::click_element_ok673,18928
+sub clear_element_ok Test::Selenium::Remote::Driver::clear_element_ok686,19217
+sub is_element_displayed_ok Test::Selenium::Remote::Driver::is_element_displayed_ok699,19551
+sub is_element_enabled_ok Test::Selenium::Remote::Driver::is_element_enabled_ok712,19884
+
+lib/Test/Selenium/Remote/WebElement.pm,1973
+package Test::Selenium::Remote::WebElement;1,0
+sub has_args Test::Selenium::Remote::WebElement::has_args13,285
+sub _check_method Test::Selenium::Remote::WebElement::_check_method23,466
+sub _check_ok Test::Selenium::Remote::WebElement::_check_ok43,1008
+sub clear_ok Test::Selenium::Remote::WebElement::clear_ok60,1365
+sub click_ok Test::Selenium::Remote::WebElement::click_ok65,1447
+sub submit_ok Test::Selenium::Remote::WebElement::submit_ok70,1529
+sub is_selected_ok Test::Selenium::Remote::WebElement::is_selected_ok75,1613
+sub is_enabled_ok Test::Selenium::Remote::WebElement::is_enabled_ok80,1707
+sub is_displayed_ok Test::Selenium::Remote::WebElement::is_displayed_ok85,1799
+sub send_keys_ok Test::Selenium::Remote::WebElement::send_keys_ok90,1895
+sub text_is Test::Selenium::Remote::WebElement::text_is97,1987
+sub text_isnt Test::Selenium::Remote::WebElement::text_isnt102,2082
+sub text_like Test::Selenium::Remote::WebElement::text_like107,2181
+sub text_unlike Test::Selenium::Remote::WebElement::text_unlike112,2277
+sub tag_name_is Test::Selenium::Remote::WebElement::tag_name_is117,2377
+sub tag_name_isnt Test::Selenium::Remote::WebElement::tag_name_isnt122,2480
+sub tag_name_like Test::Selenium::Remote::WebElement::tag_name_like127,2587
+sub tag_name_unlike Test::Selenium::Remote::WebElement::tag_name_unlike132,2691
+sub value_is Test::Selenium::Remote::WebElement::value_is137,2799
+sub value_isnt Test::Selenium::Remote::WebElement::value_isnt142,2896
+sub value_like Test::Selenium::Remote::WebElement::value_like147,2997
+sub value_unlike Test::Selenium::Remote::WebElement::value_unlike152,3095
+sub attribute_is Test::Selenium::Remote::WebElement::attribute_is157,3197
+sub attribute_isnt Test::Selenium::Remote::WebElement::attribute_isnt162,3302
+sub attribute_like Test::Selenium::Remote::WebElement::attribute_like167,3411
+sub attribute_unlike Test::Selenium::Remote::WebElement::attribute_unlike172,3517
+
+t/bin/generate-recordings.pl,82
+sub startServer main::startServer16,409
+sub killServer main::killServer24,605
+
+t/http-server.pl,62
+my $server server10,191
+my $server_root server_root17,326
+
+t/lib/MockSeleniumWebDriver.pm,371
+package t::lib::MockSeleniumWebDriver;1,0
+sub save_recording t::lib::MockSeleniumWebDriver::save_recording10,134
+sub load_recording t::lib::MockSeleniumWebDriver::load_recording17,270
+sub register t::lib::MockSeleniumWebDriver::register25,436
+sub psgi_app t::lib::MockSeleniumWebDriver::psgi_app45,933
+sub DESTROY t::lib::MockSeleniumWebDriver::DESTROY95,2583
+
+t/Test-Selenium-Remote-WebElement.t,0
+
+t/Test-Selenium-Remote-Driver.t,0
+
+t/Test-Selenium-Remote-Driver-google.t,0
+
+t/pod.t,0
+
+t/04-commands-implemented.t,0
+
+t/03-spec-coverage.t,0
+
+t/02-webelement.t,0
+
+t/01-driver.t,0
+
+t/00-load.t,0
