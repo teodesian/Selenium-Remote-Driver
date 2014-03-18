@@ -129,7 +129,7 @@ available here.
         'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'extra_capabilities'   - HASH of extra capabilities
-        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class. 
+        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
                 direct     - A direct connection                                                                    - no proxy in use,
@@ -169,8 +169,8 @@ available here.
     my $driver = Selenium::Remote::Driver->new('browser_name'       => 'chrome',
                                               'platform'           => 'VISTA',
                                               'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],
-                                              							'chrome.prefs' => {'download.default_directory' =>'/home/user/tmp', 'download.prompt_for_download' =>1 }
-                                              							},
+                                                                                                'chrome.prefs' => {'download.default_directory' =>'/home/user/tmp', 'download.prompt_for_download' =>1 }
+                                                                                                },
                                               );
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});

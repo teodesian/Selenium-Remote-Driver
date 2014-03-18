@@ -15,7 +15,7 @@ Revision history for Selenium-Remote-Driver
 
         [NEW FEATURES]
         - Merged Test::WebDriver into this distribution as Test::Selenium::Remote::Driver.
-          Several updates to it are included since the last release. (Mark Stosberg)   
+          Several updates to it are included since the last release. (Mark Stosberg)
 
         - The existence of most (or all?) key testing methods in
           Test::Selenium::Remote::Driver is now documented, rather than leaving it to users
@@ -32,7 +32,7 @@ Revision history for Selenium-Remote-Driver
              type_element_ok   - find an element and type into it.
              element_text_is   - find an element and check the text.
              element_value_is  - find an element and check the value.
-             click_element_ok  - find an element and click on it. 
+             click_element_ok  - find an element and click on it.
              clear_element_ok  - find an element and clear it.
              is_element_displayed_ok - find an element and check to see if it's displayed.
              is_element_enabled_ok - find an element and check to see if it's enabled.
@@ -50,7 +50,7 @@ Revision history for Selenium-Remote-Driver
            https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
 
         - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
-          This could be used to add testing methods or functionality for WebElements.  
+          This could be used to add testing methods or functionality for WebElements.
 
         - Shortcut methods absorbed from Test::WebDriver into Selenium::Remote::Driver:
 
@@ -59,9 +59,9 @@ Revision history for Selenium-Remote-Driver
           get_path() Returns the path part of the current URL.
 
         - New short method to save a screenshot to a file: $driver->capture_screenshot($filename).
-          The name was chosen for compatibility with a WWW::Selenium method of the same name.  
+          The name was chosen for compatibility with a WWW::Selenium method of the same name.
 
-        - Removed 'get_location()' as an alias in Test::Selenium::Remote::Driver. 
+        - Removed 'get_location()' as an alias in Test::Selenium::Remote::Driver.
           Please use the more specific 'get_current_url()' instead.
           It's a more specific name that matches the Selenium API method name.
 
@@ -168,7 +168,7 @@ Revision history for Selenium-Remote-Driver
         - Added method get_sessions()
         - Fixed issue #11
         - Fixed documentation from issue #21
-        
+
 0.13   2-8-2012
         - Added support for key events in send_keys() method
         - Added methods to get/set window position/size
@@ -187,7 +187,7 @@ Revision history for Selenium-Remote-Driver
 
 0.11   8-16-2011
   This is quite a large list for this release and will be
-  the first cpan release. The later releases will hopefully 
+  the first cpan release. The later releases will hopefully
   happen often and won't be quite as large.
 
         - subroutine calls carp when an error occurs or when
@@ -238,4 +238,3 @@ Revision history for Selenium-Remote-Driver
         - Added POD for Driver & WebElement
 0.01    2-21-2010
         First version, released on an unsuspecting world.
-

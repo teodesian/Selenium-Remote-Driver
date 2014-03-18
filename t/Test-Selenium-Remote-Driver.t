@@ -41,7 +41,7 @@ my $element = Test::Selenium::Remote::WebElement->new(
 {
     $successful_driver->mock('find_element', sub { $element } );
     check_tests(
-      sub { 
+      sub {
           my $rc = $successful_driver->find_element_ok('q', 'find_element_ok works');
           is($rc,1,'returns true');
       },
@@ -61,7 +61,7 @@ my $element = Test::Selenium::Remote::WebElement->new(
 
     $successful_driver->mock('find_element', sub { 0 } );
     check_tests(
-      sub { 
+      sub {
           my $rc = $successful_driver->find_element_ok('q', 'find_element_ok works, falsey test');
           is($rc,0,'returns false');
       },
@@ -84,7 +84,7 @@ my $element = Test::Selenium::Remote::WebElement->new(
 {
     $successful_driver->mock('find_element', sub { die } );
     check_tests(
-      sub { 
+      sub {
           my $rc = $successful_driver->find_no_element_ok('BOOM', 'find_no_element_ok works, expecting to find nothing.');
           is($rc,1,'returns true');
       },

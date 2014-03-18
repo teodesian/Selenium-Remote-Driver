@@ -10,31 +10,31 @@ use JSON;
 use Data::Dumper;
 use Selenium::Remote::ErrorHandler;
 
-has 'remote_server_addr' => ( 
-    is => 'rw', 
-); 
-
-has 'port' => ( 
-    is => 'rw', 
+has 'remote_server_addr' => (
+    is => 'rw',
 );
 
-has 'debug' => ( 
-    is => 'rw', 
-    default => sub { 0 } 
+has 'port' => (
+    is => 'rw',
 );
 
-has 'ua' => ( 
-    is => 'lazy', 
+has 'debug' => (
+    is => 'rw',
+    default => sub { 0 }
+);
+
+has 'ua' => (
+    is => 'lazy',
     builder => sub { return LWP::UserAgent->new; }
 );
- 
-sub BUILD { 
-    my $self = shift; 
-    my $status; 
-    try { 
+
+sub BUILD {
+    my $self = shift;
+    my $status;
+    try {
       $status = $self->request('GET','status');
-    } 
-    catch { 
+    }
+    catch {
         croak "Could not connect to SeleniumWebDriver: $_" ;
     };
     if($status->{cmd_status} ne 'OK') {
@@ -78,7 +78,7 @@ sub request {
         $json->allow_blessed;
         $content = $json->allow_nonref->utf8->encode($params);
     }
-    
+
     print "REQ: $url, $content\n" if $self->debug;
 
     # HTTP request
@@ -110,7 +110,7 @@ sub _process_response {
             $decoded_json = $json->allow_nonref(1)->utf8(1)->decode($response->content);
             $data->{'sessionId'} = $decoded_json->{'sessionId'};
         }
-        
+
         if ($response->is_error) {
             my $error_handler = new Selenium::Remote::ErrorHandler;
             $data->{'cmd_status'} = 'NOTOK';
@@ -118,7 +118,7 @@ sub _process_response {
                 $data->{'cmd_return'} = $error_handler->process_error($decoded_json);
             }
             else {
-                $data->{'cmd_return'} = 'Server returned error code '.$response->code.' and no data';          
+                $data->{'cmd_return'} = 'Server returned error code '.$response->code.' and no data';
             }
             return $data;
         }
@@ -128,7 +128,7 @@ sub _process_response {
                 $data->{'cmd_return'} = $decoded_json->{'value'};
             }
             else {
-                $data->{'cmd_return'} = 'Server returned status code '.$response->code.' but no data';          
+                $data->{'cmd_return'} = 'Server returned status code '.$response->code.' but no data';
             }
             return $data;
         }

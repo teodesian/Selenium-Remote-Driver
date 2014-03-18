@@ -10,10 +10,10 @@ has _builder => (
     handles => [qw/is_eq isnt_eq like unlike ok croak/],
 );
 
-sub has_args { 
-    my $self = shift; 
-    my $fun_name = shift; 
-    my $hash_fun_args = { 
+sub has_args {
+    my $self = shift;
+    my $fun_name = shift;
+    my $hash_fun_args = {
         'get_attribute' => 1,
     };
     return ($hash_fun_args->{$fun_name} // 0);
@@ -27,12 +27,12 @@ sub _check_method {
     $method = "get_$method";
     my @args = @_;
     my $rv;
-    try { 
+    try {
         my $num_of_args = $self->has_args($method);
         my @r_args = splice (@args,0,$num_of_args);
         $rv = $self->$method(@r_args);
     }
-    catch { 
+    catch {
         $self->croak($_);
     };
     # +2 because of the delegation on _builder
@@ -40,15 +40,15 @@ sub _check_method {
     return $self->$method_to_test( $rv, @args );
 }
 
-sub _check_ok { 
-    my $self = shift; 
-    my $meth = shift; 
+sub _check_ok {
+    my $self = shift;
+    my $meth = shift;
     my $test_name = pop // $meth;
     my $rv;
-    try { 
+    try {
         $rv = $self->$meth(@_);
     }
-    catch { 
+    catch {
         $self->croak($_);
     };
 
@@ -57,37 +57,37 @@ sub _check_ok {
     return $self->ok($rv,$test_name,@_);
 }
 
-sub clear_ok { 
+sub clear_ok {
     my $self = shift;
     return $self->_check_ok('clear',@_);
 }
 
-sub click_ok { 
+sub click_ok {
     my $self = shift;
     return $self->_check_ok('click',@_);
 }
 
-sub submit_ok { 
+sub submit_ok {
     my $self = shift;
     return $self->_check_ok('submit',@_);
 }
 
-sub is_selected_ok { 
+sub is_selected_ok {
     my $self = shift;
     return $self->_check_ok('is_selected',@_);
 }
 
-sub is_enabled_ok { 
+sub is_enabled_ok {
     my $self = shift;
     return $self->_check_ok('is_enabled',@_);
 }
 
-sub is_displayed_ok { 
+sub is_displayed_ok {
     my $self = shift;
     return $self->_check_ok('is_displayed',@_);
 }
 
-sub send_keys_ok { 
+sub send_keys_ok {
     my $self = shift;
     return $self->_check_ok('send_keys',@_);
 }

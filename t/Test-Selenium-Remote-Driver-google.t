@@ -8,7 +8,7 @@ unless ($host and $port) {
     exit 0;
 }
 
-# Try to find 
+# Try to find
 my $t = Test::Selenium::Remote::Driver->new(
     remote_server_addr => $host, port => $port,
 );

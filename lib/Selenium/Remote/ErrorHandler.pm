@@ -111,13 +111,13 @@ has STATUS_CODE => (
 
 # Instead of just returning the end user a server returned error code, we will
 # put a more human readable & usable error message & that is what this method
-# is going to do. 
+# is going to do.
 sub process_error {
     my ($self, $resp) = @_;
     # TODO: Handle screen if it sent back with the response. Either we could
     # let the end user handle it or we can save it an image file at a temp
-    # location & return the path. 
-    
+    # location & return the path.
+
     my $ret;
     $ret->{'stackTrace'} = $resp->{'value'}->{'stackTrace'};
     $ret->{'error'} = $self->STATUS_CODE->{$resp->{'status'}};

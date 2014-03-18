@@ -16,7 +16,7 @@ provides a mechanism to represent them as objects & perform various actions on
 the related elements. This module should not be instantiated directly by the end
 user. Selenium::Remote::Driver instantiates this module when required. Typically,
 the find_element method in Selenium::Remote::Driver returns this object on which
-various element related operations can be carried out. 
+various element related operations can be carried out.
 
 =cut
 
@@ -82,9 +82,9 @@ sub submit {
  Usage:
     $elem->send_keys('abcd', 'efg');
     $elem->send_keys('hijk');
-    
+
     or
-    
+
     # include the WDKeys module
     use Selenium::Remote::WDKeys;
     .
@@ -126,7 +126,7 @@ sub is_selected {
 =head2 set_selected
 
  Description:
-    Select an OPTION element, or an INPUT element of type checkbox or radiobutton. 
+    Select an OPTION element, or an INPUT element of type checkbox or radiobutton.
 
  Usage:
     $elem->set_selected();
@@ -146,7 +146,7 @@ sub set_selected {
  Description:
     Toggle whether an OPTION element, or an INPUT element of type checkbox or
     radiobutton is currently selected.
-    
+
  Output:
     BOOLEAN - Whether the element is selected after toggling its state.
 
@@ -167,7 +167,7 @@ sub toggle {
 
  Description:
     Determine if an element is currently enabled.
-    
+
  Output:
     BOOLEAN - Whether the element is enabled.
 
@@ -187,7 +187,7 @@ sub is_enabled {
  Description:
    Determine an element's location on the page. The point (0, 0) refers to the
    upper-left corner of the page.
-    
+
  Output:
     HASH - The X and Y coordinates for the element on the page.
 
@@ -207,10 +207,10 @@ sub get_element_location {
  Description:
     Determine an element's location on the screen once it has been scrolled
     into view.
-    
+
     Note: This is considered an internal command and should only be used to
     determine an element's location for correctly generating native events.
-    
+
  Output:
     {x:number, y:number} The X and Y coordinates for the element on the page.
 
@@ -229,7 +229,7 @@ sub get_element_location_in_view {
 
  Description:
     Query for an element's tag name.
-    
+
  Output:
     STRING - The element's tag name, as a lowercase string.
 
@@ -248,7 +248,7 @@ sub get_tag_name {
 
  Description:
     Clear a TEXTAREA or text INPUT element's value.
-    
+
  Usage:
     $elem->clear();
 
@@ -268,7 +268,7 @@ sub clear {
  Input: 1
     Required:
         STRING - name of the attribute of the element
-    
+
  Output:
     {STRING | NULL} The value of the attribute, or null if it is not set on the element.
 
@@ -312,7 +312,7 @@ sub get_value {
 
  Description:
     Determine if an element is currently displayed.
-    
+
  Output:
     BOOLEAN - Whether the element is displayed.
 
@@ -337,7 +337,7 @@ sub is_displayed {
     Required:
         NUMBER - X axis distance in pixels
         NUMBER - Y axis distance in pixels
-    
+
  Usage:
     $elem->drag(216,158);
 
@@ -364,7 +364,7 @@ sub drag {
 
  Output:
     HASH - The width and height of the element, in pixels.
-    
+
  Usage:
     $elem->get_size();
 
@@ -383,7 +383,7 @@ sub get_size {
 
  Output:
     STRING - innerText of an element
-    
+
  Usage:
     $elem->get_text();
 
@@ -408,7 +408,7 @@ sub get_text {
 
  Output:
     STRING - Value of the css attribute
-    
+
  Usage:
     $elem->get_css_attribute('background-color');
 
@@ -478,5 +478,5 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-480:	hit eof while in pod documentation (no =cut seen)
-	this can cause trouble with some pod utilities
+480:    hit eof while in pod documentation (no =cut seen)
+        this can cause trouble with some pod utilities

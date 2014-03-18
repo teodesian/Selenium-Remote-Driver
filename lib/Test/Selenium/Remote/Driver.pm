@@ -187,7 +187,7 @@ sub new {
 
 =head2 server_is_running( $host, $port )
 
-Returns true if a Selenium server is running.  The host and port 
+Returns true if a Selenium server is running.  The host and port
 parameters are optional, and default to C<localhost:4444>.
 
 Environment vars C<TWD_HOST> and C<TWD_PORT> can also be used to
@@ -705,7 +705,7 @@ sub is_element_displayed_ok {
 
     $twd->is_element_enabled_ok($search_target [,$desc]);
 
-Find an element and check to confirm that it is enabled. 
+Find an element and check to confirm that it is enabled.
 
 =cut
 
