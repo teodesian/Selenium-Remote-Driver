@@ -1,5 +1,6 @@
 package Selenium::Remote::ErrorHandler;
-use Moo; 
+
+use Moo;
 use Carp qw(croak);
 
 # We're going to handle only codes that are errors.

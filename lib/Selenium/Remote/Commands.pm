@@ -1,4 +1,5 @@
 package Selenium::Remote::Commands;
+
 use Moo;
 
 has '_cmds' => (

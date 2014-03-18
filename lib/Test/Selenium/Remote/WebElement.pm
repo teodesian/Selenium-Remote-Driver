@@ -1,4 +1,5 @@
 package Test::Selenium::Remote::WebElement;
+
 use parent 'Selenium::Remote::WebElement';
 use Moo;
 use Test::Builder;

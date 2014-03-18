@@ -1,5 +1,6 @@
 package Selenium::Remote::RemoteConnection;
-use Moo; 
+
+use Moo;
 use Try::Tiny;
 use LWP::UserAgent;
 use HTTP::Headers;

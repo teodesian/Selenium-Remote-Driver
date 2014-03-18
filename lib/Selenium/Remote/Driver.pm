@@ -1,4 +1,5 @@
 package Selenium::Remote::Driver;
+
 use Moo;
 use Try::Tiny;
 

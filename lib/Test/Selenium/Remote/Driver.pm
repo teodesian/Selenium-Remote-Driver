@@ -1,6 +1,7 @@
+package Test::Selenium::Remote::Driver;
+
 use strict;
 use warnings;
-package Test::Selenium::Remote::Driver;
 use parent  'Selenium::Remote::Driver';
 # ABSTRACT: Useful testing subclass for Selenium::Remote::Driver
 
