@@ -224,6 +224,24 @@ PAUSE: {
     ok($starttime >= $endtime-2,"starttime >= endtime-2"); # Slept at most 2 seconds
 }
 
+AUTO_CLOSE: {
+    my $stayOpen = Selenium::Remote::Driver->new(
+        browser_name => 'firefox',
+        auto_close => 0
+    );
+
+    $stayOpen->DESTROY();
+    ok(defined $stayOpen->{'session_id'}, 'auto close in init hash is respected');
+    $stayOpen->auto_close(1);
+    $stayOpen->DESTROY();
+    ok(!defined $stayOpen->{'session_id'}, 'true for auto close is still respected');
+
+    $driver->auto_close(0);
+    $driver->DESTROY();
+    ok(defined $driver->{'session_id'}, 'changing autoclose on the fly keeps the session open');
+    $driver->auto_close(1);
+}
+
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');
