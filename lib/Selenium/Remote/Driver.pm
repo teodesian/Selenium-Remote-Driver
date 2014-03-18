@@ -2077,12 +2077,12 @@ For more information about Selenium , visit the website at
 L<http://code.google.com/p/selenium/>.
 
 Also checkout project's wiki page at
-L<https://github.com/aivaturi/Selenium-Remote-Driver/wiki>.
+L<https://github.com/gempesaw/Selenium-Remote-Driver/wiki>.
 
 =head1 BUGS
 
 The Selenium issue tracking system is available online at
-L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
+L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
 
 =head1 AUTHOR
 
@@ -2094,19 +2094,21 @@ The following people have contributed to this module. (Thanks!)
 
 =over 4
 
-=item * Allen Lew
+=item * Gordon Child
+
+=item * Daniel Gempesaw
 
 =item * Charles Howes
 
-=item * Gordon Child
-
-=item * Mark Stosberg
+=item * Tom Hukins
 
 =item * Phil Kania
 
+=item * Allen Lew
+
 =item * Phil Mitchell
 
-=item * Tom Hukins
+=item * Mark Stosberg
 
 =back
 

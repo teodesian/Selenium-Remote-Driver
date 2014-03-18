@@ -453,11 +453,11 @@ L<http://code.google.com/p/selenium/>.
 =head1 BUGS
 
 The Selenium issue tracking system is available online at
-L<http://github.com/aivaturi/Selenium-Remote-Driver/issues>.
+L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
 
 =head1 CURRENT MAINTAINER
 
-Charles Howes C<< <chowes@cpan.org> >>
+Daniel Gempesaw C<< <gempesaw@gmail.com> >>
 
 =head1 AUTHOR
 

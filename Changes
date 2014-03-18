@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+0.1701  3-XX-2013
+        - New Github maintainer: Daniel Gempesaw <gempesaw@gmail.com>
+        - Version 0.18, with its plethora of changes below, never made it to CPAN.
+
 0.18   7-26-2013
         [THINGS THAT MIGHT BREAK YOUR CODE]
         - We now 'croak' instead of returning error strings in a number of
