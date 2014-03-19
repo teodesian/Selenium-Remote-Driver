@@ -3,6 +3,7 @@ use parent 'Selenium::Remote::WebElement';
 use Moo;
 use Test::Builder;
 use Try::Tiny;
+use Sub::Install;
 
 has _builder => (
     is      => 'lazy',
@@ -10,15 +11,37 @@ has _builder => (
     handles => [qw/is_eq isnt_eq like unlike ok croak/],
 );
 
-sub has_args { 
-    my $self = shift; 
-    my $fun_name = shift; 
-    my $hash_fun_args = { 
+# list of test functions to be built
+
+has _func_list => (
+    is      => 'lazy',
+    builder => sub {
+        return [
+            'clear_ok',     'click_ok',
+            'send_keys_ok', 'is_displayed_ok',
+            'is_enabled_ok', 'is_selected_ok', 'submit_ok',
+            'text_is',          'text_isnt',      'text_like',  'text_unlike',
+            'attribute_is',     'attribute_isnt', 'attribute_like',
+            'attribute_unlike', 'value_is',       'value_isnt', 'value_like',
+            'value_unlike', 'tag_name_is', 'tag_name_isnt', 'tag_name_like',
+            'tag_name_unlike'
+        ];
+    }
+);
+
+# helper so we could specify the num of args a method takes (if any)
+
+sub has_args {
+    my $self          = shift;
+    my $fun_name      = shift;
+    my $hash_fun_args = {
         'get_attribute' => 1,
     };
-    return ($hash_fun_args->{$fun_name} // 0);
+    return ( $hash_fun_args->{$fun_name} // 0 );
 }
 
+
+# main method for non ok tests
 
 sub _check_method {
     my $self           = shift;
@@ -27,152 +50,94 @@ sub _check_method {
     $method = "get_$method";
     my @args = @_;
     my $rv;
-    try { 
+    try {
         my $num_of_args = $self->has_args($method);
-        my @r_args = splice (@args,0,$num_of_args);
+        my @r_args = splice( @args, 0, $num_of_args );
         $rv = $self->$method(@r_args);
     }
-    catch { 
+    catch {
         $self->croak($_);
     };
+
     # +2 because of the delegation on _builder
     local $Test::Builder::Level = $Test::Builder::Level + 2;
     return $self->$method_to_test( $rv, @args );
 }
 
-sub _check_ok { 
-    my $self = shift; 
-    my $meth = shift; 
+# main method for _ok tests
+
+sub _check_ok {
+    my $self      = shift;
+    my $meth      = shift;
     my $test_name = pop // $meth;
     my $rv;
-    try { 
+    try {
         $rv = $self->$meth(@_);
     }
-    catch { 
+    catch {
         $self->croak($_);
     };
 
     # +2 because of the delegation on _builder
     local $Test::Builder::Level = $Test::Builder::Level + 2;
-    return $self->ok($rv,$test_name,@_);
+    return $self->ok( $rv, $test_name, @_ );
 }
 
-sub clear_ok { 
+
+# build the subs with the correct arg set
+
+sub _build_sub {
+    my $self      = shift;
+    my $meth_name = shift;
+    my @func_args;
+    my $comparators = {
+        is     => 'is_eq',
+        isnt   => 'isnt_eq',
+        like   => 'like',
+        unlike => 'unlike',
+    };
+    my @meth_elements = split( '_', $meth_name );
+    my $meth          = '_check_ok';
+    my $meth_comp     = pop @meth_elements;
+    if ( $meth_comp eq 'ok' ) {
+        push @func_args, join( '_', @meth_elements );
+    }
+    else {
+        if ( defined( $comparators->{$meth_comp} ) ) {
+            $meth = '_check_method';
+            push @func_args, join( '_', @meth_elements ),
+              $comparators->{$meth_comp};
+        }
+        else {
+            return sub {
+                my $self = shift;
+                $self->croak("Sub $meth_name could not be defined");
+              }
+        }
+    }
+
+    return sub {
+        my $self = shift;
+        $self->$meth( @func_args, @_ );
+    };
+
+}
+
+# install the test methods into the class namespace
+
+sub BUILD {
     my $self = shift;
-    return $self->_check_ok('clear',@_);
+    foreach my $method_name ( @{ $self->_func_list } ) {
+        my $sub = $self->_build_sub($method_name);
+        Sub::Install::install_sub(
+            {   code => $sub,
+                into => ref($self),
+                as   => $method_name
+            }
+        );
+    }
 }
 
-sub click_ok { 
-    my $self = shift;
-    return $self->_check_ok('click',@_);
-}
-
-sub submit_ok { 
-    my $self = shift;
-    return $self->_check_ok('submit',@_);
-}
-
-sub is_selected_ok { 
-    my $self = shift;
-    return $self->_check_ok('is_selected',@_);
-}
-
-sub is_enabled_ok { 
-    my $self = shift;
-    return $self->_check_ok('is_enabled',@_);
-}
-
-sub is_displayed_ok { 
-    my $self = shift;
-    return $self->_check_ok('is_displayed',@_);
-}
-
-sub send_keys_ok { 
-    my $self = shift;
-    return $self->_check_ok('send_keys',@_);
-}
-
-
-
-sub text_is {
-    my $self = shift;
-    return $self->_check_method( 'text', 'is_eq', @_ );
-}
-
-sub text_isnt {
-    my $self = shift;
-    return $self->_check_method( 'text', 'isnt_eq', @_ );
-}
-
-sub text_like {
-    my $self = shift;
-    return $self->_check_method( 'text', 'like', @_ );
-}
-
-sub text_unlike {
-    my $self = shift;
-    return $self->_check_method( 'text', 'unlike', @_ );
-}
-
-sub tag_name_is {
-    my $self = shift;
-    return $self->_check_method( 'tag_name', 'is_eq', @_ );
-}
-
-sub tag_name_isnt {
-    my $self = shift;
-    return $self->_check_method( 'tag_name', 'isnt_eq', @_ );
-}
-
-sub tag_name_like {
-    my $self = shift;
-    return $self->_check_method( 'tag_name', 'like', @_ );
-}
-
-sub tag_name_unlike {
-    my $self = shift;
-    return $self->_check_method( 'tag_name', 'unlike', @_ );
-}
-
-sub value_is {
-    my $self = shift;
-    return $self->_check_method( 'value', 'is_eq', @_ );
-}
-
-sub value_isnt {
-    my $self = shift;
-    return $self->_check_method( 'value', 'isnt_eq', @_ );
-}
-
-sub value_like {
-    my $self = shift;
-    return $self->_check_method( 'value', 'like', @_ );
-}
-
-sub value_unlike {
-    my $self = shift;
-    return $self->_check_method( 'value', 'unlike', @_ );
-}
-
-sub attribute_is {
-    my $self = shift;
-    return $self->_check_method( 'attribute', 'is_eq', @_ );
-}
-
-sub attribute_isnt {
-    my $self = shift;
-    return $self->_check_method( 'attribute', 'isnt_eq', @_ );
-}
-
-sub attribute_like {
-    my $self = shift;
-    return $self->_check_method( 'attribute', 'like', @_ );
-}
-
-sub attribute_unlike {
-    my $self = shift;
-    return $self->_check_method( 'attribute', 'unlike', @_ );
-}
 
 1;
 
@@ -219,10 +184,10 @@ module, as well as the following test-specific methods. All test names are optio
   send_keys_ok($str)
   send_keys_ok($str,$test_name)
 
-  attribute_is($attr_name,$match_str,$test_name); # TODO
-  attribute_isnt($attr_name,$match_str,$test_name); # TODO
-  attribute_like($attr_name,$match_re,$test_name); # TODO
-  attribute_unlike($attr_name,$match_re,$test_name); # TODO
+  attribute_is($attr_name,$match_str,$test_name); 
+  attribute_isnt($attr_name,$match_str,$test_name);
+  attribute_like($attr_name,$match_re,$test_name); 
+  attribute_unlike($attr_name,$match_re,$test_name);
 
   css_attribute_is($attr_name,$match_str,$test_name); # TODO
   css_attribute_isnt($attr_name,$match_str,$test_name); # TODO
