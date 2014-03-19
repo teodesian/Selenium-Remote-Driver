@@ -295,7 +295,7 @@ sub BUILD {
     }
 }
 
-sub DESTROY {
+sub DEMOLISH {
     my ($self) = @_;
     return if $$ != $self->pid;
     $self->quit() if ( $self->auto_close && defined $self->session_id );

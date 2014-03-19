@@ -1,9 +1,10 @@
 package Test::Selenium::Remote::WebElement;
-use parent 'Selenium::Remote::WebElement';
-use Moo;
+use Moo; 
+extends 'Selenium::Remote::WebElement';
 use Test::Builder;
 use Try::Tiny;
 use Sub::Install;
+use namespace::clean;
 
 has _builder => (
     is      => 'lazy',
@@ -129,12 +130,14 @@ sub BUILD {
     my $self = shift;
     foreach my $method_name ( @{ $self->_func_list } ) {
         my $sub = $self->_build_sub($method_name);
-        Sub::Install::install_sub(
-            {   code => $sub,
-                into => ref($self),
-                as   => $method_name
-            }
-        );
+        unless (defined($self->can($method_name))) { 
+            Sub::Install::install_sub(
+                {   code => $sub,
+                    into => ref($self),
+                    as   => $method_name
+                }
+            );
+        }
     }
 }
 
