@@ -33,8 +33,6 @@ sub _check_method {
         $self->croak($_);
     };
 
-    # +2 because of the delegation on _builder
-    local $Test::Builder::Level = $Test::Builder::Level + 2;
     return $self->$method_to_test( $rv, @args );
 }
 
@@ -54,9 +52,6 @@ sub _check_ok {
         $self->croak($_);
     };
 
-    # +2 because of the delegation on _builder
-    local $Test::Builder::Level = $Test::Builder::Level + 2;
-    $DB::single = 1;
     my $test_name = pop @args // $method;
     return $self->ok( $rv, $test_name);
 }
@@ -96,9 +91,17 @@ sub _build_sub {
 
     return sub {
         my $self = shift;
+        local $Test::Builder::Level = $Test::Builder::Level + 2;
         $self->$meth( @func_args, @_ );
     };
 
 }
 
 1;
+
+
+=head1 NAME
+
+Selenium::Remote::Role::DoesTesting - Role implementing the common logic used for testing
+
+=cut
