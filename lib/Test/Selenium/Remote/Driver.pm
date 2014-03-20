@@ -283,15 +283,14 @@ sub find_no_element_ok {
     my $self          = shift;
     my $search_target = shift;
     my $desc          = shift;
-    my $rv; 
+    my $rv = 0 ; 
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     try { 
         $self->find_element($search_target)
-    } finally { 
-        local $Test::Builder::Level = $Test::Builder::Level + 5;
-        # because when we find the element, $_ is likely to be undef
-        $rv =  $self->ok(  !defined( $_  ), $desc );
+    } catch { 
+        $rv = 1 if ($_);
     };
-    return $rv; 
+    return $self->ok($rv == 1,$desc); 
 }
 
 =head2 $twd->content_like( $regex [, $desc ] )
