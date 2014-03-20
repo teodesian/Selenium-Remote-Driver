@@ -1,5 +1,5 @@
 package Test::Selenium::Remote::WebElement;
-use Moo; 
+use Moo;
 extends 'Selenium::Remote::WebElement';
 use Test::Builder;
 use Try::Tiny;
@@ -129,8 +129,8 @@ sub _build_sub {
 sub BUILD {
     my $self = shift;
     foreach my $method_name ( @{ $self->_func_list } ) {
-        my $sub = $self->_build_sub($method_name);
-        unless (defined(__PACKAGE__->can($method_name))) { 
+        unless ( defined( __PACKAGE__->can($method_name) ) ) {
+            my $sub = $self->_build_sub($method_name);
             Sub::Install::install_sub(
                 {   code => $sub,
                     into => __PACKAGE__,
