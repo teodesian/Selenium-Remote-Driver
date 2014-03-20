@@ -283,13 +283,13 @@ sub find_no_element_ok {
     my $self          = shift;
     my $search_target = shift;
     my $desc          = shift;
-    my $rv = 1 ; 
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my $rv; 
     try { 
         $self->find_element($search_target)
-    } catch { 
-        local $Test::Builder::Level = $Test::Builder::Level + 2;
-        $rv =  $self->ok(  defined( $_ ), $desc );
+    } finally { 
+        local $Test::Builder::Level = $Test::Builder::Level + 5;
+        # because when we find the element, $_ is likely to be undef
+        $rv =  $self->ok(  !defined( $_  ), $desc );
     };
     return $rv; 
 }
