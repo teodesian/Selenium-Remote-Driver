@@ -130,10 +130,10 @@ sub BUILD {
     my $self = shift;
     foreach my $method_name ( @{ $self->_func_list } ) {
         my $sub = $self->_build_sub($method_name);
-        unless (defined($self->can($method_name))) { 
+        unless (defined(__PACKAGE__->can($method_name))) { 
             Sub::Install::install_sub(
                 {   code => $sub,
-                    into => ref($self),
+                    into => __PACKAGE__,
                     as   => $method_name
                 }
             );
