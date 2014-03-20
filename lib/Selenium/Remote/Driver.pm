@@ -284,14 +284,21 @@ has 'extra_capabilities' => (
     default => sub { {} },
 );
 
+has 'testing' => ( 
+    is => 'rw',
+    default => sub { 0 },
+);
+
 sub BUILD {
     my $self = shift;
+    # disable server connection when testing attribute is on
+    unless ($self->testing) { 
+        # Connect to remote server & establish a new session
+        $self->new_session( $self->extra_capabilities );
 
-    # Connect to remote server & establish a new session
-    $self->new_session( $self->extra_capabilities );
-
-    if ( !( defined $self->session_id ) ) {
-        croak "Could not establish a session with the remote server\n";
+        if ( !( defined $self->session_id ) ) {
+            croak "Could not establish a session with the remote server\n";
+        }
     }
 }
 
