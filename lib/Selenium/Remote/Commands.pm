@@ -1,5 +1,7 @@
 package Selenium::Remote::Commands;
 
+# ABSTRACT: Implement commands for Selenium::Remote::Driver
+
 use Moo;
 
 has '_cmds' => (
@@ -332,10 +334,6 @@ sub get_params {
 __END__
 
 =pod
-
-=head1 NAME
-
-Selenium::Remote::Commands - Implement commands for Selenium::Remote::Driver
 
 =head1 SEE ALSO
 

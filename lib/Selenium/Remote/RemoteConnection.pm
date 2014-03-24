@@ -1,5 +1,7 @@
 package Selenium::Remote::RemoteConnection;
 
+#ABSTRACT: Connect to a selenium server
+
 use Moo;
 use Try::Tiny;
 use LWP::UserAgent;
@@ -148,10 +150,6 @@ sub _process_response {
 __END__
 
 =pod
-
-=head1 NAME
-
-Selenium::Remote::RemoteConnection - Connect to a selenium server
 
 =head1 SEE ALSO
 

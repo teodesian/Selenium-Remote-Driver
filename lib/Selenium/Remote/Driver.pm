@@ -1,5 +1,7 @@
 package Selenium::Remote::Driver;
 
+# ABSTRACT: Perl Client for Selenium Remote Driver
+
 use Moo;
 use Try::Tiny;
 
@@ -31,12 +33,6 @@ use constant FINDERS => {
     tag_name          => 'tag name',
     xpath             => 'xpath',
 };
-
-=head1 NAME
-
-Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
-
-=cut
 
 =head1 SYNOPSIS
 

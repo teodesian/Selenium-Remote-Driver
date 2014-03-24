@@ -1,5 +1,7 @@
 package Selenium::Remote::ErrorHandler;
 
+# ABSTRACT: Error handler for Selenium::Remote::Driver
+
 use Moo;
 use Carp qw(croak);
 
@@ -133,10 +135,6 @@ sub process_error {
 __END__
 
 =pod
-
-=head1 NAME
-
-Selenium::Remote::ErrorHandler - Error handler for Selenium::Remote::Driver
 
 =head1 SEE ALSO
 

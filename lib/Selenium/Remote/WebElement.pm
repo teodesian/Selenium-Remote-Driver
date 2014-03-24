@@ -1,13 +1,9 @@
 package Selenium::Remote::WebElement;
 
+# ABSTRACT: Representation of an HTML Element used by Selenium Remote Driver
+
 use Moo;
 use Carp qw(croak);
-
-=head1 NAME
-
-Selenium::Remote::WebElement - Representation of an HTML Element used by Selenium Remote Driver
-
-=cut
 
 =head1 DESCRIPTION
 
