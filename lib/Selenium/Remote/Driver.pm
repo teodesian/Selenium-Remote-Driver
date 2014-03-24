@@ -2108,6 +2108,8 @@ The following people have contributed to this module. (Thanks!)
 
 =item * Phil Mitchell
 
+=item * Emmanuel Peroumalnaïk
+
 =item * Mark Stosberg
 
 =back
@@ -2115,6 +2117,7 @@ The following people have contributed to this module. (Thanks!)
 =head1 LICENSE
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
+Copyright (c) 2014      Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
