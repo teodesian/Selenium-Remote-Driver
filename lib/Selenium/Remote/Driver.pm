@@ -1237,6 +1237,29 @@ sub switch_to_window {
     return $self->_execute_command( $res, $params );
 }
 
+=head2 window_maximize
+
+ Description:
+    Maximize the current window
+
+ Input:
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Output:
+    HASH - containing keys 'x' & 'y'
+
+ Usage:
+    $driver->window_maximize();
+
+=cut
+
+sub window_maximize {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'setWindowMaximize', 'window_handle' => $window };
+    return $self->_execute_command($res);
+}
+
 =head2 get_speed
 
  Description:
@@ -1739,6 +1762,122 @@ sub get_active_element {
     } else {
         return $self->{webelement_class}->new($ret_data->{ELEMENT}, $self);
     }
+}
+
+=head2 get_cache_status
+
+ Description:
+    Get the status of the html5 application cache.
+
+ Usage:
+    print $driver->get_cache_status;
+
+=cut
+
+sub get_cache_status {
+    my ($self) = @_;
+    my $res = { 'command' => 'getCacheStatus' };
+    return $self->_execute_command($res);
+}
+
+=head2 set_location
+
+ Description:
+    Set the current geographic location.
+
+ Usage:
+    $driver->set_location(latitude => $lat, longitude=> $long, altitude=> $alt);
+
+=cut
+
+sub set_location {
+    my ( $self, %params ) = @_;
+    my $res = { 'command' => 'setLocation' };
+    return $self->_execute_command( $res, \%params );
+}
+
+=head2 get_location
+
+ Description:
+    Get the current geographic location.
+
+ Usage:
+    print $driver->get_location;
+
+=cut
+
+sub get_location {
+    my ($self) = @_;
+    my $res = { 'command' => 'getLocation' };
+    return $self->_execute_command($res);
+}
+
+
+=head2 get_log
+
+ Description:
+    Get the log for a given log type. Log buffer is reset after each request.
+
+ Usage:
+    $driver->get_log(type => $log_type );
+    # type : client , driver, browser ,server
+
+=cut
+
+sub get_log {
+    my ( $self, %params ) = @_;
+    my $res = { 'command' => 'getLog' };
+    return $self->_execute_command( $res, \%params );
+}
+
+=head2 get_log_types
+
+ Description:
+    Get available log types.  Returns: {Array.<object>} The list of log entries.
+
+ Usage:
+    print $driver->get_log_types;
+
+=cut
+
+sub get_log_types {
+    my ($self) = @_;
+    my $res = { 'command' => 'getLogTypes' };
+    return $self->_execute_command($res);
+}
+
+
+=head2 set_orientation
+
+ Description:
+    Set the browser orientation.
+
+ Usage:
+    $driver->set_orientation(orientation => $orientation  );
+    # orientation : LANDSCAPE|PORTRAIT
+
+=cut
+
+sub set_orientation {
+    my ( $self, %params ) = @_;
+    my $res = { 'command' => 'setOrientation' };
+    return $self->_execute_command( $res, \%params );
+}
+
+=head2 get_orientation
+
+ Description:
+    Get the current browser orientation. Returns either LANDSCAPE|PORTRAIT.
+
+ Usage:
+    print $driver->get_orientation;
+
+=cut
+
+sub get_orientation {
+    my ($self) = @_;
+    my $res = { 'command' => 'getOrientation' };
+    return $self->_execute_command($res);
 }
 
 =head2 send_modifier
