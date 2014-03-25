@@ -52,6 +52,10 @@ sub new {
                 'method' => 'GET',
                 'url' => "session/:sessionId/window/:windowHandle/size"
         },
+        'setWindowMaximize' => {
+                'method' => 'POST',
+                'url' => "session/:sessionId/window/:windowHandle/maximize"
+        },
         'getWindowPosition' => {
                 'method' => 'GET',
                 'url' => "session/:sessionId/window/:windowHandle/position"
@@ -210,8 +214,7 @@ sub new {
         },
         'getElementAttribute' => {
             'method' => 'GET',
-            'url' =>
-"session/:sessionId/element/:id/attribute/:name"
+            'url' => "session/:sessionId/element/:id/attribute/:name"
         },
         'elementEquals' => {
             'method' => 'GET',
@@ -222,8 +225,8 @@ sub new {
             'url' => "session/:sessionId/element/:id/displayed"
         },
         'close' => {
-                     'method' => 'DELETE',
-                     'url'    => "session/:sessionId/window"
+                'method' => 'DELETE',
+                'url'    => "session/:sessionId/window"
         },
         'dragElement' => {
                 'method' => 'POST',
@@ -276,6 +279,34 @@ sub new {
         'buttonUp' => {
                'method' => 'POST',
                'url'    => 'session/:sessionId/buttonup'
+        },
+        'getCacheStatus'   => {
+               'method' => 'GET',
+               'url' => "session/:sessionId/application_cache/status"
+        },
+        'setLocation' => {
+               'method' => 'POST',
+               'url' => "session/:sessionId/location"
+        },
+        'getLocation'   => {
+               'method' => 'GET',
+               'url' => "session/:sessionId/location"
+        },
+        'getLog' => {
+               'method' => 'POST',
+               'url' => "session/:sessionId/log"
+        },
+        'getLogTypes'   => {
+               'method' => 'GET',
+               'url' => "session/:sessionId/log/types"
+        },
+        'setOrientation' => {
+               'method' => 'POST',
+               'url' => "session/:sessionId/orientation"
+        },
+        'getOrientation'   => {
+               'method' => 'GET',
+               'url' => "session/:sessionId/orientation"
         },
         'uploadFile' => {
                'method' => 'POST',
