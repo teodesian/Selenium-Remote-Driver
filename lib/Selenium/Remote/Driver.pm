@@ -2108,7 +2108,7 @@ The following people have contributed to this module. (Thanks!)
 
 =item * Phil Mitchell
 
-=item * Emmanuel Peroumalnaïk
+=item * Emmanuel Peroumalnaik
 
 =item * Mark Stosberg
 
