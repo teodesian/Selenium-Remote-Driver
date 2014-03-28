@@ -1,10 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
-0.1701  3-XX-2013
-        - New Github maintainer: Daniel Gempesaw <gempesaw@gmail.com>
-        - Version 0.18, with its plethora of changes below, never made it to CPAN.
+0.18   3-28-2014
+        - New maintainer: Daniel Gempesaw <gempesaw@gmail.com>
+        - Fix failing tests in CPAN distribution!
 
-0.18   7-26-2013
         [THINGS THAT MIGHT BREAK YOUR CODE]
         - We now 'croak' instead of returning error strings in a number of
           cases where invalid method calls were made. This should make
@@ -102,6 +101,10 @@ Revision history for Selenium-Remote-Driver
         - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
 
         [INTERNALS]
+        - Switch S::R::D to Moo; this should not have any adverse impacts, as our API is unchanged
+
+        - Take advantage of additional Dist::Zilla plugins (travis, commitbuild, autoprereqs, etc)
+
         - MIME::Base64 is now only loaded if it used for a file upload or taking a screenshot.
           This will create a minor speed-up for common cases which don't use these features.
 
