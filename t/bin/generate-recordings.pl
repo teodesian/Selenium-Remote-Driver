@@ -9,8 +9,15 @@ unless (-d "t" && -f "dist.ini" && -f "t/01-driver.t" && -f "t/02-webelement.t")
 }
 
 startServer();
+if ($^O eq 'linux') {
+    print "Headless and need a webdriver server started? Try\n\n\tDISPLAY=:1 xvfb-run --auto-servernum java -jar /usr/lib/node_modules/protractor/selenium/selenium-server-standalone-2.40.0.jar\n\n";
+}
+
+my $export = $^O eq 'MSWin32' ? 'set' : 'export';
+my $srdLib = glob('Selenium-Remote-Driver*/lib');
+
 print `dzil build`;
-print `export WD_MOCKING_RECORD=1 && perl -I"Selenium-Remote-Driver/lib" -w t/01-driver.t & perl -I"Selenium-Remote-Driver/lib" -w t/02-webelement.t & wait`;
+print `$export WD_MOCKING_RECORD=1 && perl -I$srdLib t/01-driver.t && perl -I$srdLib t/02-webelement.t`;
 killServer();
 
 sub startServer {
@@ -26,6 +33,6 @@ sub killServer {
         system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
     }
     else {
-        `ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
+        `ps aux | grep [h]ttp-server\.pl  | awk '{print \$2}' | xargs kill`;
     }
 }
