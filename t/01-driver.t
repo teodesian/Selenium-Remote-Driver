@@ -3,15 +3,9 @@ use warnings;
 
 use Test::More;
 use Net::Ping;
-use Data::Dumper;
+use Selenium::Remote::Driver;
 
 BEGIN {
-    unless (use_ok( 'Selenium::Remote::Driver'))
-    {
-        BAIL_OUT ("Couldn't load Driver");
-        exit;
-    }
-
     if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
         use t::lib::MockSeleniumWebDriver;
         my $p = Net::Ping->new("tcp", 2);
