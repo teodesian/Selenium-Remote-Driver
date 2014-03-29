@@ -440,17 +440,3 @@ sub describe {
 }
 
 1;
-
-=head1 SEE ALSO
-
-For more information about Selenium , visit the website at
-L<http://code.google.com/p/selenium/>.
-
-=head1 BUGS
-
-The Selenium issue tracking system is available online at
-L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
-
-=head1 CURRENT MAINTAINER
-
-Daniel Gempesaw C<< <gempesaw@gmail.com> >>
