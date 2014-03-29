@@ -1,5 +1,7 @@
 # Selenium::Remote::Driver
 
+[![Build Status](https://travis-ci.org/gempesaw/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/gempesaw/Selenium-Remote-Driver)
+
 [Selenium WebDriver][1] is an open source project that exposes an API
 for browser automation, among other things. `Selenium::Remote::Driver`
 is a set of Perl bindings to that API that allow you to write
