@@ -75,7 +75,7 @@ sub request {
     }
 
     if ((defined $params) && $params ne '') {
-        my $json = new JSON;
+        my $json = JSON->new;
         $json->allow_blessed;
         $content = $json->allow_nonref->utf8->encode($params);
     }
@@ -95,7 +95,7 @@ sub request {
 sub _process_response {
     my ($self, $response) = @_;
     my $data; # server response 'value' that'll be returned to the user
-    my $json = new JSON;
+    my $json = JSON->new;
 
     if ($response->is_redirect) {
         return $self->request('GET', $response->header('location'));
@@ -113,7 +113,7 @@ sub _process_response {
         }
 
         if ($response->is_error) {
-            my $error_handler = new Selenium::Remote::ErrorHandler;
+            my $error_handler = Selenium::Remote::ErrorHandler->new;
             $data->{'cmd_status'} = 'NOTOK';
             if (defined $decoded_json) {
                 $data->{'cmd_return'} = $error_handler->process_error($decoded_json);
