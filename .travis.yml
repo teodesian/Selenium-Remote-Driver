@@ -7,7 +7,7 @@ perl:
    - 5.12
    - 5.10
 branches:
-   only: /^build\/.*/
+   only: cpan
 before_install:
    - export AUTOMATED_TESTING=1 HARNESS_OPTIONS=j10:c HARNESS_TIMER=1
    - rm .travis.yml
