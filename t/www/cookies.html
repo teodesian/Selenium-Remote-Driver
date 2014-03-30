@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>Testing cookies</title>
+
+    <script type="text/javascript">
+        function setCookie(NameOfCookie, value, expiredays) {
+		var ExpireDate = new Date ();
+		ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
+
+		  document.cookie = NameOfCookie + "=" + escape(value) + 
+		  ((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
+		}
+    </script>
+</head>
+<body onload="setCookie('foo1', 'bar1', 365); setCookie('foo2', 'bar2', 365);" />
+</html>

@@ -1,0 +1,53 @@
+---
+abstract: 'Perl Client for Selenium Remote Driver'
+author:
+  - "'Aditya Ivaturi <ivaturi@gmail.com>'"
+  - "'Daniel Gempesaw <gempesaw@gmail.com>'"
+  - "'Luke Closs <cpan@5thplane.com>'"
+  - "'Mark Stosberg <mark@stosberg.com>'"
+build_requires:
+  File::Basename: '0'
+  File::stat: '0'
+  IPC::Open2: '0'
+  LWP::Protocol::PSGI: '0.04'
+  LWP::Simple: '0'
+  Test::MockObject: '0'
+  Test::MockObject::Extends: '0'
+  Test::Tester: '0'
+configure_requires:
+  ExtUtils::MakeMaker: '6.30'
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 5.014, CPAN::Meta::Converter version 2.140640'
+license: apache
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: Selenium-Remote-Driver
+requires:
+  Carp: '0'
+  Data::Dumper: '0'
+  Exporter: '0'
+  HTTP::Headers: '0'
+  HTTP::Request: '0'
+  IO::Compress::Zip: '0'
+  IO::Socket: '0'
+  JSON: '0'
+  LWP::UserAgent: '0'
+  MIME::Base64: '0'
+  Moo: '0'
+  Net::Ping: '0'
+  Scalar::Util: '0'
+  Test::Builder: '0'
+  Test::LongString: '0'
+  Test::More: '0'
+  Try::Tiny: '0'
+  base: '0'
+  constant: '0'
+  parent: '0'
+  perl: '5.010'
+  strict: '0'
+  warnings: '0'
+resources:
+  bugtracker: https://github.com/gempesaw/Selenium-Remote-Driver/issues
+  repository: git://github.com/gempesaw/Selenium-Remote-Driver.git
+version: '0.18'

@@ -1,0 +1,16 @@
+<html>
+<body>
+<h3>Testing meta keys</h3>
+<script type="text/javascript">
+function displayunicode(e){
+  var unicode=e.keyCode? e.keyCode : e.charCode
+  var meta_out = document.getElementById('metaoutput');
+  meta_out.innerHTML = meta_out.innerHTML + unicode + "<br/>";
+}
+</script>
+<form>
+<input id="metainput" type="text" size="2" maxlength="1" onkeyup="displayunicode(event); this.select()" />
+</form>
+<div id="metaoutput"></div>
+</body>
+</html>

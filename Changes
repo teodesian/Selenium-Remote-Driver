@@ -1,0 +1,247 @@
+Revision history for Selenium-Remote-Driver
+
+0.18   3-28-2014
+        - New maintainer: Daniel Gempesaw <gempesaw@gmail.com>
+        - Fix failing tests in CPAN distribution!
+
+        [THINGS THAT MIGHT BREAK YOUR CODE]
+        - We now 'croak' instead of returning error strings in a number of
+          cases where invalid method calls were made. This should make
+          debugging easier in some cases, and is more aligned with our
+          documentation which already stated that we would croak on errors.
+          Still, your code may depend on the old behavior.
+          https://github.com/aivaturi/Selenium-Remote-Driver/commit/7cdf3dce0fcaa48a883d045368c094351754e85a
+
+        - The hover() method on the WebElement has been removed. This is not in the JSON Wire protocol,
+          and the same functionality is avialable with the Driver object's move_to() method.
+          https://github.com/aivaturi/Selenium-Remote-Driver/pull/77
+
+        [NEW FEATURES]
+        - Merged Test::WebDriver into this distribution as Test::Selenium::Remote::Driver.
+          Several updates to it are included since the last release. (Mark Stosberg)
+
+        - The existence of most (or all?) key testing methods in
+          Test::Selenium::Remote::Driver is now documented, rather than leaving it to users
+          to figure out the magic effects of AUTOLOAD on the methods in the parent
+          class. (Mark Stosberg)
+
+        - Added type_ok() to Test::Selenium::Remote::Driver, similar to the method by the same name
+          from Test::WWW::Mechanize (Mark Stosberg)
+
+        - Added several methods to Test::Selenium::Remote::Driver that allow you to find
+          an WebElement and test against in a single command. (Mark Stosberg)
+          The test methods for WebElements include:
+
+             type_element_ok   - find an element and type into it.
+             element_text_is   - find an element and check the text.
+             element_value_is  - find an element and check the value.
+             click_element_ok  - find an element and click on it.
+             clear_element_ok  - find an element and clear it.
+             is_element_displayed_ok - find an element and check to see if it's displayed.
+             is_element_enabled_ok - find an element and check to see if it's enabled.
+
+        - Added and started using Test::Selenium::Remote::WebElement. This a
+          sub-class of Selenium::Remote::WebElement. This allows testing
+          methods on the "WebElement" object as well as main '$driver' object.
+
+        - Added a pause() function, that sleeps for the given number of milliseconds, just like
+          Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
+
+        - new() now accepts a 'default_finder' option to allow you to change the default finder, which
+          is currently 'xpath'. This will be of interest to those who prefer CSS-style selectors,
+          such as jQuery uses.
+           https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
+
+        - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
+          This could be used to add testing methods or functionality for WebElements.
+
+        - Shortcut methods absorbed from Test::WebDriver into Selenium::Remote::Driver:
+
+          get_text() Returns the text for a particular element.
+          get_body() Returns the text for the whole body.
+          get_path() Returns the path part of the current URL.
+
+        - New short method to save a screenshot to a file: $driver->capture_screenshot($filename).
+          The name was chosen for compatibility with a WWW::Selenium method of the same name.
+
+        - Removed 'get_location()' as an alias in Test::Selenium::Remote::Driver.
+          Please use the more specific 'get_current_url()' instead.
+          It's a more specific name that matches the Selenium API method name.
+
+        - Adding text checking methods to Test::Selenium::Remote::Driver
+
+            # Run regex's against the entire page source
+            content_like()
+            content_unlike()
+
+            # Run regex's against just the "text" of the page
+            body_text_like()
+            body_text_unlike()
+
+            # Check page source for strings
+            content_contains()
+            content_lacks()
+
+            # Check text of page for strings
+            body_text_contains()
+            body_text_lacks()
+
+          The names are intentionally the same as their Test::WWW::Mechanize
+          counterparts.  However, these methods may take an arrayref of regular
+          expressions for improved performance when you want to run multiple
+          tests against the same page.
+
+          Normally Selenium::Remote::Driver would make an HTTP request to the
+          driven browser for each content check. By using an arrayref for
+          multiple checks of the same page, you can avoid the extra HTTP
+          requests and speed up your tests. (Mark Stosberg)
+
+
+        [DOCUMENTATION]
+        - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
+
+        [INTERNALS]
+        - Switch S::R::D to Moo; this should not have any adverse impacts, as our API is unchanged
+
+        - Take advantage of additional Dist::Zilla plugins (travis, commitbuild, autoprereqs, etc)
+
+        - MIME::Base64 is now only loaded if it used for a file upload or taking a screenshot.
+          This will create a minor speed-up for common cases which don't use these features.
+
+        - Explained why the code does 'use 5.006; use v5.10.0;', and it's not pretty.
+           The short version: before perl 5.006, the v-string 'v5.10.0' would not be understood.
+           The page http://www.dagolden.com/index.php/369/version-numbers-should-be-boring/
+           explains it in much more detail than I can.
+           Fortunately, it boils down to this: http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
+
+        - Added Test::LongString as a dependency to support the new content checking methods.
+
+0.17   7-13-2013
+        - Second build with DistZilla, now with distzilla branch merged into master.
+        - commit db99a00: Dave Rolsky: Fix broken use of =cut
+        - commit 505232b: Dave Rolsky: Changed indentation of commit 0d78dbe
+        - commit f042929: Dave Rolsky: Check for content_type not being json
+        - commit 0e7ad05: Dave Rolsky: Include error message from
+                          server when we can't create a session
+        - commit aba915e: Dave Rolsky: Don't assume response
+                          structure, avoid undef warnings
+        - commit 6e34634: Dave Rolsky: Move cmd_return check up a
+                          little higher to simplify the code
+        - commit b6e79c1: Mucking about trying to create 0.17
+        - commit 81a6ffe: Merged branch 'dist-zilla'
+        - commit 45bcea2: Updated Changes file for version 0.16 and 0.17
+        - commit b28b61e: Changed maintainer information
+        - commit b28b61e: Improved DistZilla configuration
+        - commit b28b61e: Improved 03-spec-coverage test
+        - commit b6b2cdb: Improved 03-spec-coverage test, skip some methods
+        - commit 61ae784: Reformatted README to 80 columns, fixed a typo.
+
+0.16   4-11-2013
+        - New maintainer and beginning CPAN artist: Charles Howes <chowes@cpan.org>
+        - First build with DistZilla (using distzilla branch from git repository, somewhat stale)
+        - Added debug_on() and debug_off() methods.
+        - commit 338872f: Deleted MANIFEST, MANIFEST.SKIP, Makefile.PL
+        - commit 338872f: Changed README
+        - commit 338872f: Created dist.ini for Distzilla
+        - commit 338872f: Added 'uploadFile' to Commands.pm
+        - commit 338872f: Forced stringification of arguments in send_keys,
+          https://github.com/aivaturi/Selenium-Remote-Driver/issues/52
+        - commit 338872f: Removed check for secure cookie in t/01-driver.t
+        - commit 338872f: Updated
+             t/mock-recordings/01-driver-mock-MSWin32.json
+             t/mock-recordings/01-driver-mock-darwin.json
+             t/mock-recordings/01-driver-mock-linux.json
+             t/mock-recordings/02-webelement-mock-MSWin32.json
+             t/mock-recordings/02-webelement-mock-darwin.json
+             t/mock-recordings/02-webelement-mock-linux.json
+        - commit 0d78dbe: Show error message from server
+          https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
+        - commit dadb329: Click wasn't working due to typo
+          https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
+        - commit b992873: Added Pod headers to WDKeys.pm
+        - commit d30e31e: Bumped version number to 0.16 in dist.ini
+        - commit 6936c64: Stripped CR from end of lines everywhere
+
+0.15   3-12-2012
+        - execute_script() can return web elements for data structures
+          (arrays for .e.g.).
+        - The error messages are now a little more descriptive in cases of
+          "UNKNOWN ERROR".
+        - Fixed the carp 1.25 related issue in tests.
+        - Added support for proxy configuration.
+
+0.14   3-1-2012
+        - Added method send_keys_to_active_element() in driver
+        - Added method get_sessions()
+        - Fixed issue #11
+        - Fixed documentation from issue #21
+
+0.13   2-8-2012
+        - Added support for key events in send_keys() method
+        - Added methods to get/set window position/size
+        - get_active_element() now returns a WebElement object
+        - Bunch of bug fixes & documentation fixes.
+
+0.12   9-20-2011
+        - Tests now use mock recordings for each major os
+          this will be expanded to include different versions
+          of selenium
+        - added module metadata so bug tracking and repository
+          info will appear on metacpan (Thanks Tom Hukins!)
+        - Fixed issue with find_child_element(s) which caused
+          search methods which had 2+ words to fail
+          ("css selector","class name","tag name", etc)
+
+0.11   8-16-2011
+  This is quite a large list for this release and will be
+  the first cpan release. The later releases will hopefully
+  happen often and won't be quite as large.
+
+        - subroutine calls carp when an error occurs or when
+          an element cannot be found
+        - if an element cannot be found, carp should tell you
+          which line in your local script where the element was
+          not found
+        - added the following driver api calls
+           click,double_click,button_down,button_up,close,status,
+           send_modifier,execute_script,execute_async_script
+
+        - fixed the following api calls
+           refresh,delete_cookie_named
+        - $element->get_value is deprecated...
+           subroutine now points to get_attribute('value')
+        - added the following element api calls
+           describe
+        - added initial IDE plugin for the Selenium-IDE
+           (this is based off the Rspec webdriver ide plugin)
+
+        - Added "extra_capabilities" named argument to the driver
+        - make send_keys accept one or more string argument
+        - added javascript method to driver
+           (thanks Phil Kania!)
+
+        - fixed issue: check for empty string before trying to decode
+        - fixed issue: if script using the module ever forked, the
+          driver would call quit whenever that fork was closed
+        - fixed issue: Marked as deprecated: WebElement::set_selected
+          and WebElement::toggle
+        - fixed issue: global $driver variable in WebElement caused the
+          remote connection to be destroyed before the driver was able
+          to call quit()
+
+        - fixed issues:
+          - improper definition of setImplicitWaitTimeout
+          - Driver.pm: missing 'css' entry in FINDERS
+          - Driver.pm::find_elements: set up $using correctly
+            (thanks Phil Mitchell!)
+
+0.10    5-2-2010
+        - Implemented support for JSON wire protocol as of a4 release of
+        Selenium 2.0.
+        - The main Driver & WebElement modules are implemented & functional.
+        - Added unit tests for Driver. As of this moment only live testing is
+        supported as the server itself is alpha & mocking its behavior doesn't
+        help our cause.
+        - Added POD for Driver & WebElement
+0.01    2-21-2010
+        First version, released on an unsuspecting world.
