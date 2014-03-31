@@ -1,10 +1,6 @@
 package Selenium::Remote::WDKeys;
 
-=head1 NAME
-
-Selenium::Remote::WDKeys - Representation of keystrokes used by Selenium::Remote::WebDriver
-
-=cut
+# ABSTRACT: Representation of keystrokes used by Selenium::Remote::WebDriver
 
 =head1 DESCRIPTION
 

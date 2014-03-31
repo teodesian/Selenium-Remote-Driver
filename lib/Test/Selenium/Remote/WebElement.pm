@@ -1,5 +1,7 @@
 package Test::Selenium::Remote::WebElement;
 
+# ABSTRACT: A sub-class of L<Selenium::Remote::WebElement>, with several test-specific method additions.
+
 use parent 'Selenium::Remote::WebElement';
 use Moo;
 use Test::Builder;
@@ -179,13 +181,7 @@ sub attribute_unlike {
 
 __END__
 
-=head1 NAME
-
-Test::Selenium::Remote::WebElement
-
 =head1 DESCRIPTION
-
-A sub-class of L<Selenium::Remote::WebElement>, with several test-specific method additions.
 
 This is an I<experimental> addition to the Selenium::Remote::Driver
 distribution, and some interfaces may change.
