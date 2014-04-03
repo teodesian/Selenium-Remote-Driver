@@ -343,7 +343,7 @@ sub _execute_command {
 # desired capabilities on the server.
 sub new_session {
     my ( $self, $extra_capabilities ) = @_;
-    $extra_capabilities ||= {};
+
     my $args = {
         'desiredCapabilities' => {
             'browserName'       => $self->browser_name,
