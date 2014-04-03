@@ -10,13 +10,9 @@ use MIME::Base64 qw/decode_base64/;
 use Archive::Extract;
 use File::Temp;
 use JSON;
+use Selenium::Remote::Driver::Firefox::Profile;
 
 BEGIN {
-    unless (use_ok('Selenium::Remote::Driver::Firefox::Profile')) {
-        BAIL_OUT ("Couldn't load Firefox Profile");
-        exit;
-    }
-
     if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))
     {
         use t::lib::MockSeleniumWebDriver;
