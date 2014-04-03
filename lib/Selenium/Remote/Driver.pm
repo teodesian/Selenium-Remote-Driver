@@ -279,6 +279,28 @@ has 'proxy' => (
 has 'extra_capabilities' => (
     is      => 'rw',
     default => sub { {} },
+    trigger => sub {
+        my ($self, $extra_capabilities) = @_;
+
+        if (defined $extra_capabilities->{firefox_profile} && !$self->has_firefox_profile) {
+            $self->firefox_profile($extra_capabilities->{firefox_profile});
+        }
+    }
+);
+
+has 'firefox_profile' => (
+    is => 'rw',
+    init_arg => undef,
+    coerce => sub {
+        my $profile = shift;
+        unless (Scalar::Util::blessed($profile)
+          && $profile->isa('Selenium::Remote::Driver::Firefox::Profile')) {
+            croak "firefox_profile should be a Selenium::Remote::Driver::Firefox::Profile\n";
+        }
+
+        return $profile->_encode;
+    },
+    predicate => 'has_firefox_profile'
 );
 
 sub BUILD {
@@ -357,6 +379,11 @@ sub new_session {
 
     if ( defined $self->proxy ) {
         $args->{desiredCapabilities}->{proxy} = $self->proxy;
+    }
+
+    if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
+        && $self->has_firefox_profile) {
+        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile;
     }
 
     # command => 'newSession' to fool the tests of commands implemented
