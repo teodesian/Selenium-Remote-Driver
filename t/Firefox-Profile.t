@@ -39,32 +39,30 @@ if (!$record && !(-e "t/mock-recordings/$mock_file"))
 }
 t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
-# Start our local http server
-if ($^O eq 'MSWin32' && $record)
-{
-    system("start \"TEMP_HTTP_SERVER\" /MIN perl t/http-server.pl");
-} elsif ($record)
-{
-    system("perl t/http-server.pl > /dev/null &");
-}
-
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new();
+
+    my $website = 'http://localhost:63636';
     $profile->set_preferences(
-        "browser.startup.homepage" => "http://www.google.com"
+        'browser.startup.homepage' => $website
     );
 
-    # This extension rewrites any page url that matches *.com to a
-    # single <h1>. The following javascript is in redisplay.xpi's
+    # This extension rewrites any page url to a single <h1>. The
+    # following javascript is in redisplay.xpi's
     # resources/gempesaw/lib/main.js:
 
     # var pageMod = require("sdk/page-mod");
     # pageMod.PageMod({
-    #     include: "*.com",
+    #     include: "*",
     #     contentScript: 'document.body.innerHTML = ' +
     #         ' "<h1>Page matches ruleset</h1>";'
     # });
     $profile->add_extension('t/www/redisplay.xpi');
+
+    my $filename = "test";
+    open (my $fh, ">", $filename);
+    print $fh $profile->_encode;
+    close ($fh);
 
     my $driver = Selenium::Remote::Driver->new(
         extra_capabilities => {
@@ -74,14 +72,15 @@ CUSTOM_EXTENSION_LOADED: {
 
     ok(defined $driver, "made a driver without dying");
 
-    # the initial automatic homepage load isn't blocking, so we need
-    # to wait until the page is loaded (when we can find elements)
+    # the initial automatic homepage load found in the preference
+    # 'browser.startup.homepage' isn't blocking, so we need to wait
+    # until the page is loaded (when we can find elements)
     $driver->set_implicit_wait_timeout(30000);
     $driver->find_element("h1", "tag_name");
-    cmp_ok($driver->get_title, '=~', qr/google/i,
+    cmp_ok($driver->get_current_url, '=~', qr/localhost/i,
            "profile loaded and preference respected!");
 
-    $driver->get("http://www.google.com");
+    $driver->get($website . '/index.html');
     cmp_ok($driver->get_text("body", "tag_name"), "=~", qr/ruleset/,
            "custom profile with extension loaded");
 }
@@ -159,16 +158,6 @@ CROAKING: {
         };
         ok ($@ =~ /coercion.*failed/, "caught invalid extension in driver constructor");
     }
-}
-
-# Kill our HTTP Server
-if ($^O eq 'MSWin32' && $record)
-{
-   system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
-}
-elsif ($record)
-{
-    `ps aux | grep http-server\.pl | grep perl | awk '{print \$2}' | xargs kill`;
 }
 
 done_testing;
