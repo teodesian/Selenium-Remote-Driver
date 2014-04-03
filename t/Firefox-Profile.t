@@ -59,11 +59,6 @@ CUSTOM_EXTENSION_LOADED: {
     # });
     $profile->add_extension('t/www/redisplay.xpi');
 
-    my $filename = "test";
-    open (my $fh, ">", $filename);
-    print $fh $profile->_encode;
-    close ($fh);
-
     my $driver = Selenium::Remote::Driver->new(
         extra_capabilities => {
             firefox_profile => $profile
