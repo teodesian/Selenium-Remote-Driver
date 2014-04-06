@@ -40,7 +40,7 @@ if (!$record && !(-e "t/mock-recordings/$mock_file"))
 t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
 CUSTOM_EXTENSION_LOADED: {
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new();
+    my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
 
     my $website = 'http://localhost:63636';
     $profile->set_preferences(
@@ -60,9 +60,7 @@ CUSTOM_EXTENSION_LOADED: {
     $profile->add_extension('t/www/redisplay.xpi');
 
     my $driver = Selenium::Remote::Driver->new(
-        extra_capabilities => {
-            firefox_profile => $profile
-        }
+        firefox_profile => $profile
     );
 
     ok(defined $driver, "made a driver without dying");
@@ -127,7 +125,7 @@ PREFERENCES_FORMATTING: {
 }
 
 CROAKING: {
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new();
+    my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
     {
         eval {
             $profile->add_extension('00-load.t');
@@ -146,9 +144,7 @@ CROAKING: {
     {
         eval {
             my $croakingDriver = Selenium::Remote::Driver->new(
-                extra_capabilities => {
-                    firefox_profile => 'clearly invalid!'
-                }
+                firefox_profile => 'clearly invalid!'
             );
         };
         ok ($@ =~ /coercion.*failed/, "caught invalid extension in driver constructor");

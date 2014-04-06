@@ -9,6 +9,9 @@ unless (-d "t" && -f "dist.ini" && -f "t/01-driver.t" && -f "t/02-webelement.t")
 
 startServer();
 
+print 'Cleaning...and building...
+';
+print `dzil clean`;
 print `dzil build`;
 
 if ($^O eq 'linux') {

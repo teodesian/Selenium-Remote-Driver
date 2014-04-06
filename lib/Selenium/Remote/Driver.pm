@@ -278,19 +278,11 @@ has 'proxy' => (
 
 has 'extra_capabilities' => (
     is      => 'rw',
-    default => sub { {} },
-    trigger => sub {
-        my ($self, $extra_capabilities) = @_;
-
-        if (defined $extra_capabilities->{firefox_profile} && !$self->has_firefox_profile) {
-            $self->firefox_profile($extra_capabilities->{firefox_profile});
-        }
-    }
+    default => sub { {} }
 );
 
 has 'firefox_profile' => (
     is => 'rw',
-    init_arg => undef,
     coerce => sub {
         my $profile = shift;
         unless (Scalar::Util::blessed($profile)
