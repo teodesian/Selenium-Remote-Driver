@@ -1,32 +1,11 @@
 package Selenium::Remote::WebElement;
-$Selenium::Remote::WebElement::VERSION = '0.18';
+$Selenium::Remote::WebElement::VERSION = '0.1801'; # TRIAL
+# ABSTRACT: Representation of an HTML Element used by Selenium Remote Driver
+
 use Moo;
 use Carp qw(croak);
 
-=head1 NAME
 
-Selenium::Remote::WebElement - Representation of an HTML Element used by Selenium Remote Driver
-
-=head1 VERSION
-
-version 0.18
-
-=cut
-
-=head1 DESCRIPTION
-
-Selenium Webdriver represents all the HTML elements as WebElement. This module
-provides a mechanism to represent them as objects & perform various actions on
-the related elements. This module should not be instantiated directly by the end
-user. Selenium::Remote::Driver instantiates this module when required. Typically,
-the find_element method in Selenium::Remote::Driver returns this object on which
-various element related operations can be carried out.
-
-=cut
-
-=head1 FUNCTIONS
-
-=cut
 
 has 'id' => (
     is => 'rw',
@@ -39,6 +18,190 @@ has 'driver' => (
 
 
 
+
+sub click {
+    my ($self) = @_;
+    my $res = { 'command' => 'clickElement', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub submit {
+    my ($self) = @_;
+    my $res = { 'command' => 'submitElement', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub send_keys {
+    my ( $self, @strings ) = @_;
+    my $res = { 'command' => 'sendKeysToElement', 'id' => $self->id };
+    map { $_ .= "" } @strings;
+    my $params = {
+        'value' => \@strings,
+    };
+    return $self->_execute_command( $res, $params );
+}
+
+
+sub is_selected {
+    my ($self) = @_;
+    my $res = { 'command' => 'isElementSelected', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub set_selected {
+    my ($self) = @_;
+    my $res = { 'command' => 'setElementSelected', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub toggle {
+    my ($self) = @_;
+    my $res = { 'command' => 'toggleElement', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub is_enabled {
+    my ($self) = @_;
+    my $res = { 'command' => 'isElementEnabled', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub get_element_location {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementLocation', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub get_element_location_in_view {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementLocationInView', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub get_tag_name {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementTagName', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub clear {
+    my ($self) = @_;
+    my $res = { 'command' => 'clearElement', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub get_attribute {
+    my ( $self, $attr_name ) = @_;
+    if ( not defined $attr_name ) {
+        croak 'Attribute name not provided';
+    }
+    my $res = {
+        'command' => 'getElementAttribute',
+        'id'      => $self->id,
+        'name'    => $attr_name,
+    };
+    return $self->_execute_command($res);
+}
+
+
+sub get_value {
+    my ($self) = @_;
+    return $self->get_attribute('value');
+}
+
+
+sub is_displayed {
+    my ($self) = @_;
+    my $res = { 'command' => 'isElementDisplayed', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub drag {
+    my ( $self, $x, $y ) = @_;
+    if ( ( not defined $x ) || ( not defined $y ) ) {
+        croak 'X & Y pixel coordinates not provided';
+    }
+    my $res = { 'command' => 'dragElement', 'id' => $self->id };
+    my $params = {
+        'x' => $x,
+        'y' => $y,
+    };
+    return $self->_execute_command( $res, $params );
+}
+
+
+sub get_size {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementSize', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub get_text {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementText', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+sub get_css_attribute {
+    my ( $self, $attr_name ) = @_;
+    if ( not defined $attr_name ) {
+        croak 'CSS attribute name not provided';
+    }
+    my $res = {
+        'command'       => 'getElementValueOfCssProperty',
+        'id'            => $self->id,
+        'property_name' => $attr_name,
+    };
+    return $self->_execute_command($res);
+}
+
+
+sub describe {
+    my ($self) = @_;
+    my $res = { 'command' => 'describeElement', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Selenium::Remote::WebElement - Representation of an HTML Element used by Selenium Remote Driver
+
+=head1 VERSION
+
+version 0.1801
+
+=head1 DESCRIPTION
+
+Selenium Webdriver represents all the HTML elements as WebElement. This module
+provides a mechanism to represent them as objects & perform various actions on
+the related elements. This module should not be instantiated directly by the end
+user. Selenium::Remote::Driver instantiates this module when required. Typically,
+the find_element method in Selenium::Remote::Driver returns this object on which
+various element related operations can be carried out.
+
+=head1 FUNCTIONS
+
 =head2 click
 
  Description:
@@ -46,14 +209,6 @@ has 'driver' => (
 
  Usage:
     $elem->click();
-
-=cut
-
-sub click {
-    my ($self) = @_;
-    my $res = { 'command' => 'clickElement', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 submit
 
@@ -63,14 +218,6 @@ sub click {
 
  Usage:
     $elem->submit();
-
-=cut
-
-sub submit {
-    my ($self) = @_;
-    my $res = { 'command' => 'submitElement', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 send_keys
 
@@ -95,18 +242,6 @@ sub submit {
     .
     $elem->send_keys(KEYS->{'space'}, KEYS->{'enter'});
 
-=cut
-
-sub send_keys {
-    my ( $self, @strings ) = @_;
-    my $res = { 'command' => 'sendKeysToElement', 'id' => $self->id };
-    map { $_ .= "" } @strings;
-    my $params = {
-        'value' => \@strings,
-    };
-    return $self->_execute_command( $res, $params );
-}
-
 =head2 is_selected
 
  Description:
@@ -119,14 +254,6 @@ sub send_keys {
  Usage:
     $elem->is_selected();
 
-=cut
-
-sub is_selected {
-    my ($self) = @_;
-    my $res = { 'command' => 'isElementSelected', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
-
 =head2 set_selected
 
  Description:
@@ -136,14 +263,6 @@ sub is_selected {
     $elem->set_selected();
 
  Note: DEPRECATED -- use click instead
-
-=cut
-
-sub set_selected {
-    my ($self) = @_;
-    my $res = { 'command' => 'setElementSelected', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 toggle
 
@@ -159,14 +278,6 @@ sub set_selected {
 
  Note: DEPRECATED -- use click instead
 
-=cut
-
-sub toggle {
-    my ($self) = @_;
-    my $res = { 'command' => 'toggleElement', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
-
 =head2 is_enabled
 
  Description:
@@ -177,14 +288,6 @@ sub toggle {
 
  Usage:
     $elem->is_enabled();
-
-=cut
-
-sub is_enabled {
-    my ($self) = @_;
-    my $res = { 'command' => 'isElementEnabled', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 get_element_location
 
@@ -197,14 +300,6 @@ sub is_enabled {
 
  Usage:
     $elem->get_element_location();
-
-=cut
-
-sub get_element_location {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementLocation', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 get_element_location_in_view
 
@@ -221,14 +316,6 @@ sub get_element_location {
  Usage:
     $elem->get_element_location_in_view();
 
-=cut
-
-sub get_element_location_in_view {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementLocationInView', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
-
 =head2 get_tag_name
 
  Description:
@@ -240,14 +327,6 @@ sub get_element_location_in_view {
  Usage:
     $elem->get_tag_name();
 
-=cut
-
-sub get_tag_name {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementTagName', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
-
 =head2 clear
 
  Description:
@@ -255,14 +334,6 @@ sub get_tag_name {
 
  Usage:
     $elem->clear();
-
-=cut
-
-sub clear {
-    my ($self) = @_;
-    my $res = { 'command' => 'clearElement', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 get_attribute
 
@@ -279,21 +350,6 @@ sub clear {
  Usage:
     $elem->get_attribute('name');
 
-=cut
-
-sub get_attribute {
-    my ( $self, $attr_name ) = @_;
-    if ( not defined $attr_name ) {
-        croak 'Attribute name not provided';
-    }
-    my $res = {
-        'command' => 'getElementAttribute',
-        'id'      => $self->id,
-        'name'    => $attr_name,
-    };
-    return $self->_execute_command($res);
-}
-
 =head2 get_value
 
  Description:
@@ -305,13 +361,6 @@ sub get_attribute {
  Usage:
     $elem->get_value();
 
-=cut
-
-sub get_value {
-    my ($self) = @_;
-    return $self->get_attribute('value');
-}
-
 =head2 is_displayed
 
  Description:
@@ -322,14 +371,6 @@ sub get_value {
 
  Usage:
     $elem->is_displayed();
-
-=cut
-
-sub is_displayed {
-    my ($self) = @_;
-    my $res = { 'command' => 'isElementDisplayed', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 drag
 
@@ -345,21 +386,6 @@ sub is_displayed {
  Usage:
     $elem->drag(216,158);
 
-=cut
-
-sub drag {
-    my ( $self, $x, $y ) = @_;
-    if ( ( not defined $x ) || ( not defined $y ) ) {
-        croak 'X & Y pixel coordinates not provided';
-    }
-    my $res = { 'command' => 'dragElement', 'id' => $self->id };
-    my $params = {
-        'x' => $x,
-        'y' => $y,
-    };
-    return $self->_execute_command( $res, $params );
-}
-
 =head2 get_size
 
  Description:
@@ -372,14 +398,6 @@ sub drag {
  Usage:
     $elem->get_size();
 
-=cut
-
-sub get_size {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementSize', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
-
 =head2 get_text
 
  Description:
@@ -390,14 +408,6 @@ sub get_size {
 
  Usage:
     $elem->get_text();
-
-=cut
-
-sub get_text {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementText', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
 
 =head2 get_css_attribute
 
@@ -416,21 +426,6 @@ sub get_text {
  Usage:
     $elem->get_css_attribute('background-color');
 
-=cut
-
-sub get_css_attribute {
-    my ( $self, $attr_name ) = @_;
-    if ( not defined $attr_name ) {
-        croak 'CSS attribute name not provided';
-    }
-    my $res = {
-        'command'       => 'getElementValueOfCssProperty',
-        'id'            => $self->id,
-        'property_name' => $attr_name,
-    };
-    return $self->_execute_command($res);
-}
-
 =head2 describe
 
  Description:
@@ -438,16 +433,6 @@ sub get_css_attribute {
 
  Usage:
     $elem->describe();
-
-=cut
-
-sub describe {
-    my ($self) = @_;
-    my $res = { 'command' => 'describeElement', 'id' => $self->id };
-    return $self->_execute_command($res);
-}
-
-1;
 
 =head1 SEE ALSO
 
@@ -459,28 +444,44 @@ L<http://code.google.com/p/selenium/>.
 The Selenium issue tracking system is available online at
 L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
 
-=head1 CURRENT MAINTAINER
+=head1 AUTHORS
 
-Daniel Gempesaw C<< <gempesaw@gmail.com> >>
+=over 4
 
-=head1 AUTHOR
+=item *
 
-Perl Bindings for Selenium Remote Driver by Aditya Ivaturi C<< <ivaturi@gmail.com> >>
+Aditya Ivaturi <ivaturi@gmail.com>
 
-=head1 LICENSE
+=item *
+
+Daniel Gempesaw <gempesaw@gmail.com>
+
+=item *
+
+Luke Closs <cpan@5thplane.com>
+
+=item *
+
+Mark Stosberg <mark@stosberg.com>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
+
+Copyright (c) 2014 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-480:    hit eof while in pod documentation (no =cut seen)
-        this can cause trouble with some pod utilities
+
+=cut

@@ -1,5 +1,13 @@
 Revision history for Selenium-Remote-Driver
 
+0.1801 4-9-2014
+       [DOCUMENTATION]
+       - Using Dist::Zilla & Pod::Weaver to keep the POD as DRY as possible
+
+        [BUG FIXES]
+        - Restore broken proxy functionality - should use the value passed in ->new
+        - #119 Restore broken find_elements functionality - should return an arrayref or an array
+
 0.18   3-28-2014
         - New maintainer: Daniel Gempesaw <gempesaw@gmail.com>
         - Fix failing tests in CPAN distribution!

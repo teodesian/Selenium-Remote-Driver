@@ -1,10 +1,10 @@
 {
    "abstract" : "Perl Client for Selenium Remote Driver",
    "author" : [
-      "'Aditya Ivaturi <ivaturi@gmail.com>'",
-      "'Daniel Gempesaw <gempesaw@gmail.com>'",
-      "'Luke Closs <cpan@5thplane.com>'",
-      "'Mark Stosberg <mark@stosberg.com>'"
+      "Aditya Ivaturi <ivaturi@gmail.com>",
+      "Daniel Gempesaw <gempesaw@gmail.com>",
+      "Luke Closs <cpan@5thplane.com>",
+      "Mark Stosberg <mark@stosberg.com>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Dist::Zilla version 5.014, CPAN::Meta::Converter version 2.140640",
@@ -69,7 +69,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/gempesaw/Selenium-Remote-Driver/issues"
@@ -80,6 +80,23 @@
          "web" : "https://github.com/gempesaw/Selenium-Remote-Driver"
       }
    },
-   "version" : "0.18"
+   "version" : "0.1801",
+   "x_contributors" : [
+      "Allen Lew <allen@alew.org>",
+      "Charles Howes <charles.howes@globalrelay.net>",
+      "Daniel Fackrell <dfackrell@bluehost.com>",
+      "Dave Rolsky <autarch@urth.org>",
+      "Emmanuel Peroumalnaik <eperoumalnaik@weborama.com>",
+      "Gordon Child <gordon@gordonchild.com>",
+      "GreatFlamingFoo <greatflamingfoo@gmail.com>",
+      "Ivan Kurmanov <duraley@gmail.com>",
+      "Jon Hermansen <jon.hermansen@gmail.com>",
+      "Ken Swanson <kswanson@genome.wustl.edu>",
+      "Phil Kania <phil@vivox.com>",
+      "Phil Mitchell <phil.mitchell@pobox.com>",
+      "Robert Utter <utter.robert@gmail.com>",
+      "Tom Hukins <tom@eborcom.com>",
+      "Vishwanath Janmanchi <jvishwanath@gmail.com>"
+   ]
 }
 

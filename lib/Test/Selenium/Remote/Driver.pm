@@ -1,5 +1,5 @@
 package Test::Selenium::Remote::Driver;
-$Test::Selenium::Remote::Driver::VERSION = '0.18';
+$Test::Selenium::Remote::Driver::VERSION = '0.1801'; # TRIAL
 use strict;
 use warnings;
 use parent  'Selenium::Remote::Driver';
@@ -140,10 +140,6 @@ sub error_callback {
 =head1 NAME
 
 Test::Selenium::Remote::Driver
-
-=head1 VERSION
-
-version 0.18
 
 =head1 DESCRIPTION
 

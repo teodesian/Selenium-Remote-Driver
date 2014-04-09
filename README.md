@@ -2,33 +2,66 @@
 
 [![Build Status](https://travis-ci.org/gempesaw/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/gempesaw/Selenium-Remote-Driver)
 
-[Selenium WebDriver][1] is an open source project that exposes an API
-for browser automation, among other things. `Selenium::Remote::Driver`
-is a set of Perl bindings to that API that allow you to write
-automated browser tests in Perl, taking advantage of Selenium's strong
-ecosystem.
+[Selenium WebDriver][wd] is a test tool that allows you to write
+automated web application UI tests in any programming language against
+any HTTP website using any mainstream JavaScript-enabled browser. This
+module is a Perl implementation of the client for the Webdriver
+[JSONWireProtocol that Selenium provides.][jsonwire]
 
-[1]: https://code.google.com/p/selenium/
+This module sends commands directly to the server using HTTP. Using
+this module together with the Selenium Server, you can automatically
+control any supported browser. To use this module, you need to have
+already downloaded and started the
+[standalone Selenium Server][standalone].
+
+[wd]: https://code.google.com/p/selenium/
+[jsonwire]: https://code.google.com/p/selenium/wiki/JsonWireProtocol
+[standalone]: http://selenium-release.storage.googleapis.com/index.html
 
 ## Installation
+
+It's probably easiest to use cpanm:
 
 ```bash
 $ cpanm Selenium::Remote::Driver
 ```
 
-To install from this repository, clone it, get `Dist::Zilla`, and:
+If you want to install from this repository, you have a few options:
+
+### With Dist::Zilla
+
+If you have Dist::Zilla, it's straightforward:
 
 ```bash
 $ dzil installdeps --missing | cpanm
 $ dzil install
 ```
 
+### Without Dist::Zilla
+
+If you don't want to use Dist::Zilla, we maintain a `cpan` branch that
+has a `Makefile.PL` for you to use:
+
+```bash
+$ git checkout -b cpan remotes/origin/cpan
+$ perl Makefile.PL
+$ make && make test && make install
+```
+
+You can also use `cpanm` to help you with dependencies while you've
+checked out the `cpan` branch:
+
+```bash
+$ cpanm --showdeps .
+```
+
 ## Usage
 
 You'll need a Remote WebDriver Server running somewhere. You can
-download a [selenium-standalone-server.jar][j] and run one locally, or
-you can point your driver at [Saucelabs][s] and
-let them handle the it.
+download a [selenium-standalone-server.jar][standalone] and run one
+locally, or you can point your driver somewhere like [Saucelabs][s].
+
+[s]: http://saucelabs.com
 
 ### Locally
 
@@ -41,32 +74,42 @@ print $driver->get_title();
 $driver->quit();
 ```
 
-[j]: http://selenium-release.storage.googleapis.com/index.html
-[s]: https://saucelabs.com
+### Saucelabs
 
-## Unit Tests
+```perl
+use Selenium::Remote::Driver;
 
-This module uses `LWP::Protocol::PSGI` to facilitate unit
-tests. `LWP::Protocol::PSGI` overrides the LWP HTTP/HTTPS & this allows
-us to "mock" the interaction with WebDriver Server. In regular
-instances you should be running the tests against the mocked
-recording, which are stored in t/mock-recordings. If you want to run
-the tests live against the WebDriver server, set an environment
-variable WD\_MOCKING\_RECORD to 1. This will force the unit tests to run
-tests against the WebDriver server & also save the traffic
-(request/response) in `t/mock-recordings`.
+my $user = $ENV{SAUCE_USERNAME};
+my $key = $ENV{SAUCE_ACCESS_KEY};
 
-There is a short script that will handle the environment variable and
-generate recordings for you:
+my $driver = Selenium::Remote::Driver->new(
+    remote_server_addr => $user . ':' . $key . '@ondemand.saucelabs.com',
+    port => 80
+);
 
-```bash
-$ perl t/bin/generate-recordings.pl
+$driver->get('http://www.google.com');
+print $driver->get_title();
+$driver->quit();
 ```
+
+There are additional usage examples on [metacpan][meta], and also
+[in this project's wiki][wiki], including
+[setting up the standalone server][setup], running tests on
+[Internet Explorer][ie], [Chrome][chrome], [PhantomJS][pjs], and other
+useful [example snippets][ex].
+
+[wiki]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki
+[setup]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Getting-Started-with-Selenium%3A%3ARemote%3A%3ADriver
+[ie]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/IE-browser-automation
+[chrome]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Chrome-browser-automation
+[pjs]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
+[ex]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
 
 ## Support and Documentation
 
-After installing, you can find documentation for this module with the
-perldoc command.
+Check out [metacpan][meta] for the POD; alternatively, after
+installing, you can find documentation for this module with the
+`perldoc` command.
 
 ```bash
 $ perldoc Selenium::Remote::Driver
@@ -75,20 +118,27 @@ $ perldoc Selenium::Remote::WebElement
 
 Please file all bugs in the [Github issue tracker][issue].
 
-You can also find some supporting docs in the [Github Wiki][wiki].
-
 [issue]: https://github.com/gempesaw/Selenium-Remote-Driver/issues
-[wiki]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki
+[meta]: https://metacpan.org/pod/Selenium::Remote::Driver
 
-## License and Copyright
+## Contributing
+
+The [contributing guidelines are also in the wiki][contrib]; thanks for
+considering contributing!
+
+[contrib]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Contribution-Guide
+
+## Copyright and License
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
+
+Copyright (c) 2014 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
