@@ -273,6 +273,7 @@ has 'proxy' => (
                 croak "proxyAutoconfigUrl should be of format http://";
             }
         }
+        $proxy;
     },
 );
 
