@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+0.1801 4-9-2014
+        [BUG FIXES]
+        - Restore broken proxy functionality
+
 0.18   3-28-2014
         - New maintainer: Daniel Gempesaw <gempesaw@gmail.com>
         - Fix failing tests in CPAN distribution!
