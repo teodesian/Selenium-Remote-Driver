@@ -148,6 +148,11 @@ FIND: {
     eval { $driver->find_element("element_that_doesnt_exist","id"); };
     chomp $@;
     is($@,$expected_err.".","find_element croaks properly");
+    my $elems = $driver->find_elements("//input[\@id='checky']");
+    is(scalar(@$elems),1, 'Got an arrayref of WebElements');
+    my @array_elems = $driver->find_elements("//input[\@id='checky']");
+    is(scalar(@array_elems),1, 'Got an array of WebElements');
+    is($elems->[0]->get_value(),$array_elems[0]->get_value(), 'and the elements returned are the same');
 }
 
 EXECUTE: {

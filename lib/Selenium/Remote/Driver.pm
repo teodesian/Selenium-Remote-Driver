@@ -1617,7 +1617,7 @@ sub find_element {
                  Defaults to 'xpath' if not configured global during instantiation.
 
  Output:
-    ARRAY of WebElement Objects
+    ARRAY or ARRAYREF of WebElement Objects
 
  Usage:
     $driver->find_elements("//input");
@@ -1652,16 +1652,16 @@ sub find_elements {
                 die $@;
             }
         }
-        my @elem_obj_arr = ();
+        my $elem_obj_arr = [];
         foreach (@$ret_data) {
             push(
-                @elem_obj_arr,
+                @$elem_obj_arr,
                 $self->webelement_class->new(
                     id => $_->{ELEMENT}, driver => $self
                 )
             );
         }
-        return @elem_obj_arr;
+        return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
     }
     else {
         croak "Bad method, expected - class, class_name, css, id, link,
