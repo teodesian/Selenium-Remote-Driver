@@ -2070,13 +2070,7 @@ __END__
 
 =head1 SEE ALSO
 
-For more information about Selenium , visit the website at
-L<http://code.google.com/p/selenium/>.
+http://code.google.com/p/selenium/
+https://github.com/gempesaw/Selenium-Remote-Driver/wiki
 
-Also checkout project's wiki page at
-L<https://github.com/gempesaw/Selenium-Remote-Driver/wiki>.
-
-=head1 BUGS
-
-The Selenium issue tracking system is available online at
-L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
+=cut
