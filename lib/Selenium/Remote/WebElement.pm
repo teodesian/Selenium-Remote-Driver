@@ -1,5 +1,5 @@
 package Selenium::Remote::WebElement;
-$Selenium::Remote::WebElement::VERSION = '0.1801'; # TRIAL
+$Selenium::Remote::WebElement::VERSION = '0.1801';
 # ABSTRACT: Representation of an HTML Element used by Selenium Remote Driver
 
 use Moo;
@@ -436,13 +436,24 @@ various element related operations can be carried out.
 
 =head1 SEE ALSO
 
-For more information about Selenium , visit the website at
-L<http://code.google.com/p/selenium/>.
+Please see those modules/websites for more information related to this module.
+
+=over 4
+
+=item *
+
+L<Selenium::Remote::Driver|Selenium::Remote::Driver>
+
+=back
 
 =head1 BUGS
 
-The Selenium issue tracking system is available online at
-L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
+Please report any bugs or feature requests on the bugtracker website
+https://github.com/gempesaw/Selenium-Remote-Driver/issues
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
 
 =head1 AUTHORS
 

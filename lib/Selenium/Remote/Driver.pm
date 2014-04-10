@@ -1,5 +1,5 @@
 package Selenium::Remote::Driver;
-$Selenium::Remote::Driver::VERSION = '0.1801'; # TRIAL
+$Selenium::Remote::Driver::VERSION = '0.1801';
 # ABSTRACT: Perl Client for Selenium Remote Driver
 
 use Moo;
@@ -2017,26 +2017,28 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
 
 =head1 SEE ALSO
 
-For more information about Selenium , visit the website at
-L<http://code.google.com/p/selenium/>.
+Please see those modules/websites for more information related to this module.
 
-Also checkout project's wiki page at
-L<https://github.com/gempesaw/Selenium-Remote-Driver/wiki>.
+=over 4
 
-=head1 BUGS
+=item *
 
-The Selenium issue tracking system is available online at
-L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
+L<http://code.google.com/p/selenium/|http://code.google.com/p/selenium/>
 
-=head1 SEE ALSO
+=item *
 
-For more information about Selenium , visit the website at
-L<http://code.google.com/p/selenium/>.
+L<https://github.com/gempesaw/Selenium-Remote-Driver/wiki|https://github.com/gempesaw/Selenium-Remote-Driver/wiki>
+
+=back
 
 =head1 BUGS
 
-The Selenium issue tracking system is available online at
-L<http://github.com/gempesaw/Selenium-Remote-Driver/issues>.
+Please report any bugs or feature requests on the bugtracker website
+https://github.com/gempesaw/Selenium-Remote-Driver/issues
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
 
 =head1 AUTHORS
 
