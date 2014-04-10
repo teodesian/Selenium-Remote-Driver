@@ -33,27 +33,26 @@ If you want to install from this repository, you have a few options:
 If you have Dist::Zilla, it's straightforward:
 
 ```bash
-$ dzil installdeps --missing | cpanm
+$ dzil listdeps --missing | cpanm
 $ dzil install
 ```
 
 ### Without Dist::Zilla
 
 If you don't want to use Dist::Zilla, we maintain a `cpan` branch that
-has a `Makefile.PL` for you to use:
+has a `Makefile.PL` that `cpanm` can install from:
 
 ```bash
-$ git checkout -b cpan remotes/origin/cpan
-$ perl Makefile.PL
-$ make && make test && make install
+$ cpanm -v git://github.com/gempesaw/Selenium-Remote-Driver.git@cpan
 ```
 
-You can also use `cpanm` to help you with dependencies while you've
-checked out the `cpan` branch:
+You can also use `cpanm` to help you with dependencies after you've
+cloned the repository:
 
 ```bash
 $ cpanm --showdeps .
 ```
+
 
 ## Usage
 
