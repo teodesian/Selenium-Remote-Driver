@@ -89,13 +89,15 @@ sub set_preference {
         my $value = $prefs{$_};
         my $clean_value = '';
 
-        if (blessed($value) and $value->isa("JSON::Boolean")) {
-            $clean_value = $value ? "true" : "false";
-        }
-        elsif ($value =~ /^(['"]).*\1$/ or looks_like_number($value)) {
+        if ($value =~ /^(['"]).*\1$/ or looks_like_number($value)) {
+            # plain integers: 0, 1, 32768, or integers wrapped in strings:
+            # "0", "1", "20140204". in either case, there's nothing for us
+            # to do.
             $clean_value = $value;
         }
         else {
+            # otherwise it's hopefully a string that we'll need to
+            # quote on our own
             $clean_value = '"' . $value . '"';
         }
 
@@ -103,9 +105,28 @@ sub set_preference {
     }
 }
 
-sub set_preferences {
+=method set_boolean_preference
+
+Set preferences that require boolean values of 'true' or 'false'. You
+can set multiple preferences at once. For string or integer
+preferences, use C<set_preference()>.
+
+    $profile->set_boolean_preference("false.pref" => 0);
+    # user_pref("false.pref", false);
+
+    $profile->set_boolean_preference("true.pref" => 1);
+    # user_pref("true.pref", true);
+
+=cut
+
+sub set_boolean_preference {
     my ($self, %prefs) = @_;
-    $self->set_preference(%prefs);
+
+    foreach (keys %prefs) {
+        my $value = $prefs{$_};
+
+        $self->{user_prefs}->{$_} = $value ? 'true' : 'false';
+    }
 }
 
 =method get_preference
@@ -145,11 +166,6 @@ sub add_extension {
     croak "$xpi_abs_path: extensions must be in .xpi format" unless $xpi_abs_path =~ /\.xpi$/;
 
     push (@{$self->{extensions}}, $xpi_abs_path);
-}
-
-sub path {
-    my $self = shift;
-    return $self->{profile_dir};
 }
 
 sub _encode {
