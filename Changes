@@ -1,8 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
+0.19   4-11-2014
+        [FIREFOX PROFILE]
+        - Added Selenium::Remote::Driver::Firefox::Profile for managing Firefox profiles
+
 0.1801 4-9-2014
-       [DOCUMENTATION]
-       - Using Dist::Zilla & Pod::Weaver to keep the POD as DRY as possible
+        [DOCUMENTATION]
+        - Using Dist::Zilla & Pod::Weaver to keep the POD as DRY as possible
 
         [BUG FIXES]
         - Restore broken proxy functionality - should use the value passed in ->new
