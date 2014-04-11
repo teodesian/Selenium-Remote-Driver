@@ -13,8 +13,7 @@ use JSON;
 use Selenium::Remote::Driver::Firefox::Profile;
 
 BEGIN {
-    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))
-    {
+    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
         use t::lib::MockSeleniumWebDriver;
         my $p = Net::Ping->new("tcp", 2);
         $p->port_number(4444);
@@ -28,13 +27,11 @@ BEGIN {
 
 my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
 my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/)
-{
+if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
     $os = 'linux';
 }
 my $mock_file = "firefox-profile-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file"))
-{
+if (!$record && !(-e "t/mock-recordings/$mock_file")) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
 t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
@@ -43,7 +40,7 @@ CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
 
     my $website = 'http://localhost:63636';
-    $profile->set_preferences(
+    $profile->set_preference(
         'browser.startup.homepage' => $website
     );
 
