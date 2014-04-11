@@ -169,9 +169,9 @@ CROAKING: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
     {
         eval {
-            $profile->add_extension('00-load.t');
+            $profile->add_extension('t/00-load.t');
         };
-        ok($@ =~ /xpi format/i, "caught invalid extension filetype");
+        cmp_ok($@, '=~', qr/xpi format/i, "caught invalid extension filetype");
     }
 
     {
