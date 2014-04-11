@@ -12,13 +12,49 @@ use Cwd qw(abs_path);
 use File::Copy qw(copy);
 use File::Temp;
 use MIME::Base64;
-use Scalar::Util qw(blessed looks_like_number);
+use Scalar::Util qw(looks_like_number);
+
+=head1 DESCRIPTION
+
+You can use this module to create a custom Firefox Profile for your
+Selenium tests. Currently, you can set browser preferences and add
+extensions to the profile before passing it in the constructor for a
+new Selenium::Remote::Driver.
+
+=head1 SYNPOSIS
+
+    use Selenium::Remote::Driver;
+    use Selenium::Remote::Driver::Firefox::Profile;
+
+    my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
+    $profile->set_preference(
+        'browser.startup.homepage' => 'http://www.google.com',
+        'browser.cache.disk.capacity' => 358400
+    );
+
+    $profile->set_boolean_preference(
+        'browser.shell.checkDefaultBrowser' => 0
+    );
+
+    $profile->add_extension('t/www/redisplay.xpi');
+
+    my $driver = Selenium::Remote::Driver->new(
+        'firefox_profile' => $profile
+    );
+
+    $driver->get('http://www.google.com');
+    print $driver->get_title();
+
+=cut
 
 sub new {
     my $class = shift;
 
     # TODO: add handling for a pre-existing profile folder passed into
     # the constructor
+
+    # TODO: accept user prefs, boolean prefs, and extensions in
+    # constructor
     my $self = {
         profile_dir => File::Temp->newdir(),
         user_prefs => {},
@@ -28,6 +64,23 @@ sub new {
 
     return $self;
 }
+
+=method set_preference
+
+Set string and integer preferences on the profile object. You can set
+multiple preferences at once. If you need to set a boolean preference,
+see C<set_boolean_preference()>.
+
+    $profile->set_preference("quoted.integer.pref" => '"20140314220517"');
+    # user_pref("quoted.integer.pref", "20140314220517");
+
+    $profile->set_preference("plain.integer.pref" => 9005);
+    # user_pref("plain.integer.pref", 9005);
+
+    $profile->set_preference("string.pref" => "sample string value");
+    # user_pref("string.pref", "sample string value");
+
+=cut
 
 sub set_preference {
     my ($self, %prefs) = @_;
@@ -55,11 +108,35 @@ sub set_preferences {
     $self->set_preference(%prefs);
 }
 
+=method get_preference
+
+Retrieve the computed value of a preference. Strings will be double
+quoted and boolean values will be single quoted as "true" or "false"
+accordingly.
+
+    $profile->set_boolean_preference("true.pref" => 1);
+    print $profile->get_preference("true.pref") # true
+
+    $profile->set_preference("string.pref" => "an extra set of quotes");
+    print $profile->get_preference("string.pref") # "an extra set of quotes"
+
+=cut
+
 sub get_preference {
     my ($self, $pref) = @_;
 
     return $self->{user_prefs}->{$pref};
 }
+
+=method add_extension
+
+Add an existing C<.xpi> to the profile by providing its path. This
+only works with packaged C<.xpi> files, not plain/un-packed extension
+directories.
+
+    $profile->add_extension('t/www/redisplay.xpi');
+
+=cut
 
 sub add_extension {
     my ($self, $xpi) = @_;
@@ -154,30 +231,6 @@ sub _install_extensions {
 
 __END__
 
-=head1 SYNPOSIS
+=head1 SEE ALSO
 
-    use Selenium::Remote::Driver;
-    use Selenium::Remote::Driver::Firefox::Profile;
-
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new();
-    $profile->set_preference(
-        "browser.startup.homepage" => "http://www.google.com"
-       );
-
-    $profile->add_extension('t/www/redisplay.xpi');
-
-    my $driver = Selenium::Remote::Driver->new(
-        extra_capabilities => {
-            firefox_profile => $profile
-        });
-    $driver->get("http://www.google.com");
-
-    print $driver->get_title();
-
-
-=head1 DESCRIPTION
-
-You can use this module to create a custom Firefox Profile for your
-Selenium tests. Currently, you can set browser preferences and add
-extensions to the profile before passing it in the constructor for a
-new Selenium::Remote::Driver.
+https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
