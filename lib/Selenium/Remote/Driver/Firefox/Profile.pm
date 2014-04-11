@@ -186,7 +186,7 @@ sub _write_preferences {
 
     my $userjs = $self->{profile_dir} . "/user.js";
     open (my $fh, ">>", $userjs)
-        or croak "Cannot open $userjs for writing preferences: $!";
+        or die "Cannot open $userjs for writing preferences: $!";
 
     foreach (keys %{$self->{user_prefs}}) {
         print $fh 'user_pref("' . $_ . '", ' . $self->get_preference($_) . ');' . "\n";
