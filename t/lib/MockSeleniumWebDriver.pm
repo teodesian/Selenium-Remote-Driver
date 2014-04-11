@@ -61,11 +61,6 @@ sub psgi_app {
     $expected = $expected eq "" ? $expected : decode_json($expected);
     my $actual = $content eq "" ? $content : decode_json($content);
 
-    # ugly hack because the profile is encoded differently every time.
-    if ($actual ne "" && defined $actual->{desiredCapabilities}->{firefox_profile}) {
-        $expected->{desiredCapabilities}->{firefox_profile} = $actual->{desiredCapabilities}->{firefox_profile};
-    }
-
     if (  $self->{req_resp}->[$$req_index]->{request}->{verb} eq $env->{REQUEST_METHOD}
       and $self->{req_resp}->[$$req_index]->{request}->{uri} eq $uri
       and (   $self->{req_resp}->[$$req_index]->{request}->{content} eq $content

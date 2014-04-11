@@ -38,27 +38,45 @@ t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
-
     my $website = 'http://localhost:63636';
-    $profile->set_preference(
-        'browser.startup.homepage' => $website
-    );
+    my $mock_encoded_profile = "t/www/encoded_profile.b64";
+    my $encoded;
 
-    # This extension rewrites any page url to a single <h1>. The
-    # following javascript is in redisplay.xpi's
-    # resources/gempesaw/lib/main.js:
+    # Set this to true to re-encode the profile. This should not need
+    # to happen often.
+    my $create_new_profile = 0;
+    if ($record && $create_new_profile) {
+        $profile->set_preference(
+            'browser.startup.homepage' => $website
+        );
 
-    # var pageMod = require("sdk/page-mod");
-    # pageMod.PageMod({
-    #     include: "*",
-    #     contentScript: 'document.body.innerHTML = ' +
-    #         ' "<h1>Page matches ruleset</h1>";'
-    # });
-    $profile->add_extension('t/www/redisplay.xpi');
+        # This extension rewrites any page url to a single <h1>. The
+        # following javascript is in redisplay.xpi's
+        # resources/gempesaw/lib/main.js:
 
-    my $driver = Selenium::Remote::Driver->new(
-        firefox_profile => $profile
-    );
+        # var pageMod = require("sdk/page-mod");
+        # pageMod.PageMod({
+        #     include: "*",
+        #     contentScript: 'document.body.innerHTML = ' +
+        #         ' "<h1>Page matches ruleset</h1>";'
+        # });
+        $profile->add_extension('t/www/redisplay.xpi');
+
+        $encoded = $profile->_encode;
+
+        open (my $fh, ">", $mock_encoded_profile);
+        print $fh $encoded;
+        close ($fh);
+    }
+    else {
+        open (my $fh, "<", $mock_encoded_profile);
+        $encoded = do {local $/ = undef; <$fh>};
+        close ($fh);
+    }
+
+    my $driver = Selenium::Remote::Driver->new(extra_capabilities => {
+        firefox_profile => $encoded
+    });
 
     ok(defined $driver, "made a driver without dying");
 
