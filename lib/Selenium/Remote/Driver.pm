@@ -196,6 +196,57 @@ available here.
     or
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
+=head2 new (desired_capabilities)
+
+ Description:
+
+    For experienced users who want complete control over the desired
+    capabilities, use the desired_capabilities hash option. This will
+    IGNORE all other browser-related desiredCapability options; the
+    only options that will be respected are those that are NOT part of
+    the Capabilities JSON Object as described in the Json Wire
+    Protocol. See Inputs below for more details.
+
+    The hashref you pass in as desired_capabilities only gets json
+    encoded before being passed to the Selenium server; no default
+    options of any sort will be added.
+
+    Additionally, you must handle normalization of the input options
+    (like C<browser_name> vs C<browserName>) and take care of things
+    like encoding the firefox profile if applicable.
+
+    More information about the desired capabilities object is
+    available on the Selenium wiki:
+
+    https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
+
+ Input:
+    If 'desired_capabilities' is one of your keys, these are the only
+    respected options:
+
+        'remote_server_addr'
+        'port'
+        'default_finder'
+        'webelement_class'
+        'auto_close'
+        'desired_capabilities'
+
+    All other options will be ignored.
+
+ Output:
+    Remote Driver object
+
+ Usage:
+    my $driver = Selenium::Remote::Driver->new(
+        'desired_capabilities' => {
+            'browserName' => 'firefox'
+        }
+    );
+
+    The above would generate a POST to the webdriver server at
+    localhost:4444 with the payload of {"desiredCapabilities":
+    {"browserName": "firefox" }}.
+
 =cut
 
 has 'remote_server_addr' => (
@@ -2112,6 +2163,7 @@ __END__
 =head1 SEE ALSO
 
 http://code.google.com/p/selenium/
+https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
 https://github.com/gempesaw/Selenium-Remote-Driver/wiki
 
 =cut
