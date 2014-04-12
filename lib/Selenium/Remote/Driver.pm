@@ -169,12 +169,27 @@ available here.
                                                'port'               => '2222',
                                                'auto_close'         => 0);
     or
-    my $driver = Selenium::Remote::Driver->new('browser_name'       => 'chrome',
-                                              'platform'           => 'VISTA',
-                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],
-                                                                                                'chrome.prefs' => {'download.default_directory' =>'/home/user/tmp', 'download.prompt_for_download' =>1 }
-                                                                                                },
-                                              );
+    my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome'
+                                               'extra_capabilities' => {
+                                                   'chromeOptions' => {
+                                                       'args'  => [
+                                                           'window-size=1260,960',
+                                                           'incognito'
+                                                       ],
+                                                       'prefs' => {
+                                                           'session' => {
+                                                               'restore_on_startup' => 4,
+                                                               'urls_to_restore_on_startup' => [
+                                                                   'http://www.google.com',
+                                                                   'http://docs.seleniumhq.org'
+                                                               ]},
+                                                           'first_run_tabs' => [
+                                                               'http://www.google.com',
+                                                               'http://docs.seleniumhq.org'
+                                                           ]
+                                                       }
+                                                   }
+                                               });
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
     or
