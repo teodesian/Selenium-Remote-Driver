@@ -122,8 +122,13 @@ Please file all bugs in the [Github issue tracker][issue].
 
 ## Contributing
 
-The [contributing guidelines are also in the wiki][contrib]; thanks for
-considering contributing!
+Thanks for considering contributing! The contributing guidelines are
+[also in the wiki][contrib]. The documentation there also includes
+information on generating new recordings via
+
+```bash
+$ perl t/bin/record.pl
+```
 
 [contrib]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Contribution-Guide
 
