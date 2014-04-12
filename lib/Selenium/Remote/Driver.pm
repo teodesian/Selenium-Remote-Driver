@@ -362,8 +362,8 @@ has 'extra_capabilities' => (
 );
 
 has 'firefox_profile' => (
-    is => 'rw',
-    coerce => sub {
+    is        => 'rw',
+    coerce    => sub {
         my $profile = shift;
         unless (Scalar::Util::blessed($profile)
           && $profile->isa('Selenium::Remote::Driver::Firefox::Profile')) {
@@ -375,11 +375,22 @@ has 'firefox_profile' => (
     predicate => 'has_firefox_profile'
 );
 
+has 'desired_capabilities' => (
+    is        => 'rw',
+    lazy      => 1,
+    predicate => 'has_desired_capabilities'
+);
+
 sub BUILD {
     my $self = shift;
 
     # Connect to remote server & establish a new session
-    $self->new_session( $self->extra_capabilities );
+    if ($self->has_desired_capabilities) {
+        $self->new_desired_session( $self->desired_capabilities );
+    }
+    else {
+        $self->new_session( $self->extra_capabilities );
+    }
 
     if ( !( defined $self->session_id ) ) {
         croak "Could not establish a session with the remote server\n";
@@ -457,6 +468,20 @@ sub new_session {
         && $self->has_firefox_profile) {
         $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile;
     }
+
+    $self->_request_new_session($args);
+}
+
+sub new_desired_session {
+    my ( $self, $caps ) = @_;
+
+    $self->_request_new_session({
+        desiredCapabilities => $caps
+    });
+}
+
+sub _request_new_session {
+    my ( $self, $args ) = @_;
 
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
