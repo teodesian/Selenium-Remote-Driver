@@ -124,8 +124,6 @@ available here.
         'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
         'javascript'           - <boolean>  - whether javascript should be supported
         'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
-        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
-        'extra_capabilities'   - HASH of extra capabilities
         'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
                 direct     - A direct connection                                                                    - no proxy in use,
@@ -137,10 +135,14 @@ available here.
             'ftpProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+        'extra_capabilities'   - HASH       - Any other extra capabilities
+
 
     You can also specify some options in the constructor hash that are
-    not part of the browser-related desired capabilities:
+    not part of the browser-related desired capabilities. These items
+    are also optional.
 
+        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
 
@@ -154,7 +156,6 @@ available here.
         'javascript'         => 1
         'auto_close'         => 1
         'default_finder'     => 'xpath'
-
 
  Output:
     Remote Driver object
