@@ -124,9 +124,10 @@ available here.
         'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
         'javascript'           - <boolean>  - whether javascript should be supported
         'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
+        'firefox_profile'      - Profile    - Use S::R::D::Firefox::Profile to create a Firefox profile for the browser to use
         'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
-                direct     - A direct connection                                                                    - no proxy in use,
+                direct     - A direct connection - no proxy in use,
                 manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
                 pac        - Proxy autoconfiguration from a URL,
                 autodetect - proxy autodetection, probably with WPAD,
@@ -136,7 +137,6 @@ available here.
             'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
         'extra_capabilities'   - HASH       - Any other extra capabilities
-
 
     You can also specify some options in the constructor hash that are
     not part of the browser-related desired capabilities. These items
