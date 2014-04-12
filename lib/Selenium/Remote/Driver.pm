@@ -163,12 +163,11 @@ available here.
     my $driver = Selenium::Remote::Driver->new;
     or
     my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
-                                              'platform' => 'MAC');
+                                               'platform'     => 'MAC');
     or
     my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
-                                              'port' => '2222',
-                                              auto_close => 0
-                                              );
+                                               'port'               => '2222',
+                                               'auto_close'         => 0);
     or
     my $driver = Selenium::Remote::Driver->new('browser_name'       => 'chrome',
                                               'platform'           => 'VISTA',
