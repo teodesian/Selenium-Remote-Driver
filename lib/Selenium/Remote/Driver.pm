@@ -301,9 +301,15 @@ has 'remote_conn' => (
         my $self = shift;
         return Selenium::Remote::RemoteConnection->new(
             remote_server_addr => $self->remote_server_addr,
-            port               => $self->port
+            port               => $self->port,
+            ua                 => $self->ua
         );
     },
+);
+
+has 'ua' => (
+    is      => 'lazy',
+    builder => sub { return LWP::UserAgent->new }
 );
 
 has 'commands' => (
