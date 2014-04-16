@@ -2,7 +2,8 @@ Revision history for Selenium-Remote-Driver
 
 0.19   4-11-2014
         [FIREFOX PROFILE]
-        - Added Selenium::Remote::Driver::Firefox::Profile for managing Firefox profiles
+        - Added Selenium::Remote::Driver::Firefox::Profile for managing Firefox profiles.
+
 
 0.1801 4-9-2014
         [DOCUMENTATION]
