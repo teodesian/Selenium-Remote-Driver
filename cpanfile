@@ -32,6 +32,7 @@ on 'test' => sub {
   requires "File::stat" => "0";
   requires "LWP::Protocol::PSGI" => "0.04";
   requires "LWP::Simple" => "0";
+  requires "Test::LWP::UserAgent" => "0";
   requires "Test::MockObject" => "0";
   requires "Test::MockObject::Extends" => "0";
   requires "Test::Tester" => "0";
