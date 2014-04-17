@@ -112,24 +112,22 @@ available here.
 
  Description:
     Constructor for Driver. It'll instantiate the object if it can communicate
-    with the Selenium RC server.
+    with the Selenium Webdriver server.
 
  Input: (all optional)
-    desired_capabilities - HASH - Following options are accepted:
+    Desired capabilities - HASH - Following options are accepted:
       Optional:
-        'remote_server_addr'   - <string>   - IP or FQDN of the RC server machine
-        'browser_name'         - <string>   - desired browser string: {iphone|firefox|internet explorer|htmlunit|iphone|chrome}
+        'remote_server_addr'   - <string>   - IP or FQDN of the Webdriver server machine
+        'port'                 - <string>   - Port on which the Webdriver server is listening
+        'browser_name'         - <string>   - desired browser string: {phantomjs|firefox|internet explorer|htmlunit|iphone|chrome}
         'version'              - <string>   - desired browser version number
         'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
         'javascript'           - <boolean>  - whether javascript should be supported
         'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
-        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
-        'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
-        'extra_capabilities'   - HASH of extra capabilities
-        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
+        'firefox_profile'      - Profile    - Use S::R::D::Firefox::Profile to create a Firefox profile for the browser to use
         'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
-                direct     - A direct connection                                                                    - no proxy in use,
+                direct     - A direct connection - no proxy in use,
                 manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
                 pac        - Proxy autoconfiguration from a URL,
                 autodetect - proxy autodetection, probably with WPAD,
@@ -138,16 +136,26 @@ available here.
             'ftpProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+        'extra_capabilities'   - HASH       - Any other extra capabilities
+
+    You can also specify some options in the constructor hash that are
+    not part of the browser-related desired capabilities. These items
+    are also optional.
+
+        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
+        'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
 
 
-        If no values are provided, then these defaults will be assumed:
-            'remote_server_addr' => 'localhost'
-            'port'               => '4444'
-            'browser_name'       => 'firefox'
-            'version'            => ''
-            'platform'           => 'ANY'
-            'javascript'         => 1
-            'auto_close'         => 1
+    If no values are provided, then these defaults will be assumed:
+        'remote_server_addr' => 'localhost'
+        'port'               => '4444'
+        'browser_name'       => 'firefox'
+        'version'            => ''
+        'platform'           => 'ANY'
+        'javascript'         => 1
+        'auto_close'         => 1
+        'default_finder'     => 'xpath'
 
  Output:
     Remote Driver object
@@ -156,23 +164,88 @@ available here.
     my $driver = Selenium::Remote::Driver->new;
     or
     my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
-                                              'platform' => 'MAC');
+                                               'platform'     => 'MAC');
     or
     my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
-                                              'port' => '2222',
-                                              auto_close => 0
-                                              );
+                                               'port'               => '2222',
+                                               'auto_close'         => 0);
     or
-    my $driver = Selenium::Remote::Driver->new('browser_name'       => 'chrome',
-                                              'platform'           => 'VISTA',
-                                              'extra_capabilities' => {'chrome.switches' => ["--user-data-dir=$ENV{LOCALAPPDATA}\\Google\\Chrome\\User Data"],
-                                                                                                'chrome.prefs' => {'download.default_directory' =>'/home/user/tmp', 'download.prompt_for_download' =>1 }
-                                                                                                },
-                                              );
+    my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome'
+                                               'extra_capabilities' => {
+                                                   'chromeOptions' => {
+                                                       'args'  => [
+                                                           'window-size=1260,960',
+                                                           'incognito'
+                                                       ],
+                                                       'prefs' => {
+                                                           'session' => {
+                                                               'restore_on_startup' => 4,
+                                                               'urls_to_restore_on_startup' => [
+                                                                   'http://www.google.com',
+                                                                   'http://docs.seleniumhq.org'
+                                                               ]},
+                                                           'first_run_tabs' => [
+                                                               'http://www.google.com',
+                                                               'http://docs.seleniumhq.org'
+                                                           ]
+                                                       }
+                                                   }
+                                               });
     or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
     or
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
+
+=head2 new (desired_capabilities)
+
+ Description:
+
+    For experienced users who want complete control over the desired
+    capabilities, use the desired_capabilities hash option. This will
+    IGNORE all other browser-related desiredCapability options; the
+    only options that will be respected are those that are NOT part of
+    the Capabilities JSON Object as described in the Json Wire
+    Protocol. See Inputs below for more details.
+
+    The hashref you pass in as desired_capabilities only gets json
+    encoded before being passed to the Selenium server; no default
+    options of any sort will be added.
+
+    Additionally, you must handle normalization of the input options
+    (like C<browser_name> vs C<browserName>) and take care of things
+    like encoding the firefox profile if applicable.
+
+    More information about the desired capabilities object is
+    available on the Selenium wiki:
+
+    https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
+
+ Input:
+    If 'desired_capabilities' is one of your keys, these are the only
+    respected options:
+
+        'remote_server_addr'
+        'port'
+        'default_finder'
+        'webelement_class'
+        'auto_close'
+        'desired_capabilities'
+
+    All other options will be ignored.
+
+ Output:
+    Remote Driver object
+
+ Usage:
+    my $driver = Selenium::Remote::Driver->new(
+        'desired_capabilities' => {
+            'browserName' => 'firefox'
+        }
+    );
+
+    The above would generate a POST to the webdriver server at
+    localhost:4444 with the payload of {"desiredCapabilities":
+    {"browserName": "firefox" }}.
 
 =cut
 
@@ -228,9 +301,15 @@ has 'remote_conn' => (
         my $self = shift;
         return Selenium::Remote::RemoteConnection->new(
             remote_server_addr => $self->remote_server_addr,
-            port               => $self->port
+            port               => $self->port,
+            ua                 => $self->ua
         );
     },
+);
+
+has 'ua' => (
+    is      => 'lazy',
+    builder => sub { return LWP::UserAgent->new }
 );
 
 has 'commands' => (
@@ -283,8 +362,8 @@ has 'extra_capabilities' => (
 );
 
 has 'firefox_profile' => (
-    is => 'rw',
-    coerce => sub {
+    is        => 'rw',
+    coerce    => sub {
         my $profile = shift;
         unless (Scalar::Util::blessed($profile)
           && $profile->isa('Selenium::Remote::Driver::Firefox::Profile')) {
@@ -296,11 +375,22 @@ has 'firefox_profile' => (
     predicate => 'has_firefox_profile'
 );
 
+has 'desired_capabilities' => (
+    is        => 'rw',
+    lazy      => 1,
+    predicate => 'has_desired_capabilities'
+);
+
 sub BUILD {
     my $self = shift;
 
     # Connect to remote server & establish a new session
-    $self->new_session( $self->extra_capabilities );
+    if ($self->has_desired_capabilities) {
+        $self->new_desired_session( $self->desired_capabilities );
+    }
+    else {
+        $self->new_session( $self->extra_capabilities );
+    }
 
     if ( !( defined $self->session_id ) ) {
         croak "Could not establish a session with the remote server\n";
@@ -378,6 +468,20 @@ sub new_session {
         && $self->has_firefox_profile) {
         $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile;
     }
+
+    $self->_request_new_session($args);
+}
+
+sub new_desired_session {
+    my ( $self, $caps ) = @_;
+
+    $self->_request_new_session({
+        desiredCapabilities => $caps
+    });
+}
+
+sub _request_new_session {
+    my ( $self, $args ) = @_;
 
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
@@ -2090,6 +2194,7 @@ __END__
 =head1 SEE ALSO
 
 http://code.google.com/p/selenium/
+https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
 https://github.com/gempesaw/Selenium-Remote-Driver/wiki
 
 =cut

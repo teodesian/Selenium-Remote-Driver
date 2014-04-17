@@ -1,8 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More;
+use JSON;
 use Net::Ping;
+use Test::More;
+use Test::LWP::UserAgent;
 use Selenium::Remote::Driver;
 
 BEGIN {
@@ -29,9 +31,47 @@ if (!$record && !(-e "t/mock-recordings/$mock_file")) {
 }
 t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
-my $driver = new Selenium::Remote::Driver(browser_name => 'firefox');
+my $driver = Selenium::Remote::Driver->new(browser_name => 'firefox');
 my $website = 'http://localhost:63636';
 my $ret;
+
+DESIRED_CAPABILITIES: {
+    # We're using a different test method for these because we needed
+    # to inspect payload of the POST to /session, and the method of
+    # recording the RES/REQ pairs doesn't provide any easy way to do
+    # that.
+    my $tua = Test::LWP::UserAgent->new;
+    my $res = {
+        cmd_return => {},
+        cmd_status => 'OK',
+        sessionId => '123124123'
+    };
+
+    $tua->map_response(qr{status|quit}, HTTP::Response->new(200, 'OK'));
+
+    $tua->map_response(qr{session}, sub {
+                           my $request = shift;
+                           my $caps = from_json($request->decoded_content)->{desiredCapabilities};
+                           my @keys = keys %$caps;
+                           ok(scalar @keys == 2, 'exactly 2 keys passed in if we use desired_capabilities');
+                           ok($keys[0] eq 'browserName', 'and it is the right one');
+                           ok($caps->{superfluous} eq 'thing', 'and we pass through anything else');
+                           ok($caps->{browserName} eq 'firefox', 'and we override the "normal" caps');
+                           ok(!exists $caps->{platform}, 'or ignore them entirely');
+                           HTTP::Response->new(204, 'OK', ['Content-Type' => 'application/json'], to_json($res));
+                       });
+
+    my $driver = Selenium::Remote::Driver->new(
+        auto_close => 0,
+        browser_name => 'not firefox',
+        platform => 'WINDOWS',
+        desired_capabilities => {
+            'browserName' => 'firefox',
+            'superfluous' => 'thing'
+        },
+        ua => $tua
+    );
+}
 
 CHECK_DRIVER: {
     ok(defined $driver, 'Object loaded fine...');
