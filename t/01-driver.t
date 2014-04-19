@@ -47,21 +47,42 @@ DESIRED_CAPABILITIES: {
         sessionId => '123124123'
     };
 
-    $tua->map_response(qr{status|quit}, HTTP::Response->new(200, 'OK'));
+    $tua->map_response(qr{status}, HTTP::Response->new(200, 'OK'));
 
-    $tua->map_response(qr{session}, sub {
-                           my $request = shift;
-                           my $caps = from_json($request->decoded_content)->{desiredCapabilities};
-                           my @keys = keys %$caps;
-                           ok(scalar @keys == 2, 'exactly 2 keys passed in if we use desired_capabilities');
-                           ok($keys[0] eq 'browserName', 'and it is the right one');
-                           ok($caps->{superfluous} eq 'thing', 'and we pass through anything else');
-                           ok($caps->{browserName} eq 'firefox', 'and we override the "normal" caps');
-                           ok(!exists $caps->{platform}, 'or ignore them entirely');
-                           HTTP::Response->new(204, 'OK', ['Content-Type' => 'application/json'], to_json($res));
-                       });
+    my $requests_count = 0;
+    my $mock_session_handler = sub {
+        my $request = shift;
+        $requests_count++;
 
-    my $driver = Selenium::Remote::Driver->new(
+        if ($request->method eq 'POST') {
+            my $caps = from_json($request->decoded_content)->{desiredCapabilities};
+
+            my @keys = keys %$caps;
+            if (scalar @keys) {
+                ok(scalar @keys == 2, 'exactly 2 keys passed in if we use desired_capabilities');
+
+                my $grep = grep { 'browserName' eq $_ } @keys;
+                ok($grep, 'and it is the right one');
+                ok($caps->{superfluous} eq 'thing', 'and we pass through anything else');
+                ok($caps->{browserName} eq 'firefox', 'and we override the "normal" caps');
+                ok(!exists $caps->{platform}, 'or ignore them entirely');
+            }
+            else {
+                ok(to_json($caps) eq '{}', 'an empty constructor defaults to an empty hash');
+            }
+
+            return HTTP::Response->new(204, 'OK', ['Content-Type' => 'application/json'], to_json($res));
+        }
+        else {
+            # it's the DELETE when the driver calls
+            # DESTROY. This should be the last call to /session/.
+            return HTTP::Response->new(200, 'OK')
+        }
+    };
+
+    $tua->map_response(qr{session}, $mock_session_handler);
+
+    my $caps_driver = Selenium::Remote::Driver->new_from_caps(
         auto_close => 0,
         browser_name => 'not firefox',
         platform => 'WINDOWS',
@@ -71,6 +92,24 @@ DESIRED_CAPABILITIES: {
         },
         ua => $tua
     );
+
+    ok($caps_driver->auto_close eq 0, 'and other properties are still set');
+
+    $caps_driver = Selenium::Remote::Driver->new(
+        auto_close => 0,
+        browser_name => 'not firefox',
+        platform => 'WINDOWS',
+        desired_capabilities => {
+            'browserName' => 'firefox',
+            'superfluous' => 'thing'
+        },
+        ua => $tua
+    );
+
+    ok($caps_driver->auto_close eq 0, 'and other properties are set if we use the normal constructor');
+
+    $caps_driver = Selenium::Remote::Driver->new_from_caps(ua => $tua);
+    ok($requests_count == 3, 'The new_from_caps section has the correct number of requests to /session/');
 }
 
 CHECK_DRIVER: {

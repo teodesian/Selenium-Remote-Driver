@@ -196,56 +196,57 @@ available here.
     or
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
-=head2 new (desired_capabilities)
+=head2 new_from_caps
 
  Description:
 
     For experienced users who want complete control over the desired
-    capabilities, use the desired_capabilities hash option. This will
-    IGNORE all other browser-related desiredCapability options; the
-    only options that will be respected are those that are NOT part of
-    the Capabilities JSON Object as described in the Json Wire
-    Protocol. See Inputs below for more details.
+    capabilities, use this alternative constructor along with the
+    C<desired_capabilities> hash key in the init hash. Unlike "new",
+    this constructor will not assume any defaults for your desired
+    capabilities.
+
+    This alternate constructor IGNORES all other browser-related
+    desiredCapability options; the only options that will be respected
+    are those that are NOT part of the Capabilities JSON Object as
+    described in the Json Wire Protocol.
+
+ Input:
+    The only respected keys in the input hash are:
+
+        remote_server_addr   - STRING  - defaults to localhost
+        port                 - INTEGER - defaults to 4444
+        default_finder       - STRING  - defaults to xpath
+        webelement_class     - STRING  - defaults to Selenium::Remote::WebElement
+        auto_close           - BOOLEAN - defaults to 1
+        desired_capabilities - HASHREF - defaults to {}
+
+    Except for C<desired_capabilities>, these keys perform exactly the
+    same as listed in the regular "new" constructor.
 
     The hashref you pass in as desired_capabilities only gets json
     encoded before being passed to the Selenium server; no default
     options of any sort will be added.
 
-    Additionally, you must handle normalization of the input options
-    (like C<browser_name> vs C<browserName>) and take care of things
-    like encoding the firefox profile if applicable.
-
-    More information about the desired capabilities object is
-    available on the Selenium wiki:
+    This means you must handle normalization and casing of the input
+    options (like "browser_name" vs "browserName") and take care of
+    things like encoding the firefox profile if applicable. More
+    information about the desired capabilities object is available on
+    the Selenium wiki:
 
     https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
-
- Input:
-    If 'desired_capabilities' is one of your keys, these are the only
-    respected options:
-
-        'remote_server_addr'
-        'port'
-        'default_finder'
-        'webelement_class'
-        'auto_close'
-        'desired_capabilities'
-
-    All other options will be ignored.
 
  Output:
     Remote Driver object
 
  Usage:
-    my $driver = Selenium::Remote::Driver->new(
-        'desired_capabilities' => {
-            'browserName' => 'firefox'
-        }
+    my $driver = Selenium::Remote::Driver->new_from_caps(
+        'desired_capabilities' => {'browserName' => 'firefox'}
     );
 
     The above would generate a POST to the webdriver server at
-    localhost:4444 with the payload of {"desiredCapabilities":
-    {"browserName": "firefox" }}.
+    localhost:4444 with the exact payload of '{"desiredCapabilities":
+    {"browserName": "firefox" }}'.
 
 =cut
 
@@ -395,6 +396,16 @@ sub BUILD {
     if ( !( defined $self->session_id ) ) {
         croak "Could not establish a session with the remote server\n";
     }
+}
+
+sub new_from_caps {
+    my ($self, %args) = @_;
+
+    if (not exists $args{desired_capabilities}) {
+        $args{desired_capabilities} = {};
+    }
+
+    return $self->new(%args);
 }
 
 sub DESTROY {
