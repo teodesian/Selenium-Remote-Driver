@@ -1,5 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
+0.20   4-17-2914
+        [DESIRED CAPABILITIES]
+        - Add a desired_capabilities option that provides full control over the desiredCapability object
+        - Add a new_from_caps constructor to distinguish against the normal new constructor
+        - Add a ua option to allow injection of LWP::UserAgent for testing
+
 0.19   4-11-2014
         [FIREFOX PROFILE]
         - Added Selenium::Remote::Driver::Firefox::Profile for managing Firefox profiles.
