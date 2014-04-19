@@ -145,6 +145,7 @@ available here.
         'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
+        'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
 
 
     If no values are provided, then these defaults will be assumed:
