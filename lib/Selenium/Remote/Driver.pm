@@ -383,19 +383,28 @@ has 'desired_capabilities' => (
     predicate => 'has_desired_capabilities'
 );
 
+has 'testing' => (
+    is => 'rw',
+    default => sub { 0 },
+);
+
 sub BUILD {
     my $self = shift;
 
-    # Connect to remote server & establish a new session
-    if ($self->has_desired_capabilities) {
-        $self->new_desired_session( $self->desired_capabilities );
-    }
-    else {
-        $self->new_session( $self->extra_capabilities );
-    }
+    # disable server connection when testing attribute is on
+    unless ($self->testing) {
 
-    if ( !( defined $self->session_id ) ) {
-        croak "Could not establish a session with the remote server\n";
+        if ($self->has_desired_capabilities) {
+            $self->new_desired_session( $self->desired_capabilities );
+        }
+        else {
+            # Connect to remote server & establish a new session
+            $self->new_session( $self->extra_capabilities );
+        }
+
+        if ( !( defined $self->session_id ) ) {
+            croak "Could not establish a session with the remote server\n";
+        }
     }
 }
 
@@ -409,7 +418,7 @@ sub new_from_caps {
     return $self->new(%args);
 }
 
-sub DESTROY {
+sub DEMOLISH {
     my ($self) = @_;
     return if $$ != $self->pid;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
