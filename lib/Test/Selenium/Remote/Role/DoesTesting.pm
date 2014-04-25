@@ -1,6 +1,7 @@
-package Test::Selenium::Remote::Role::DoesTesting; 
+package Test::Selenium::Remote::Role::DoesTesting;
 # ABSTRACT: Role to cope with everything that is related to testing (could
-# be reused in both testing classes) 
+# be reused in both testing classes)
+
 use Moo::Role;
 use Test::Builder;
 use Try::Tiny;
