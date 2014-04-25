@@ -1,140 +1,82 @@
 package Test::Selenium::Remote::Driver;
-
-use strict;
-use warnings;
-use parent  'Selenium::Remote::Driver';
 # ABSTRACT: Useful testing subclass for Selenium::Remote::Driver
 
+use Moo;
 use Test::Selenium::Remote::WebElement;
-use Test::More;
-use Test::Builder;
 use Test::LongString;
 use IO::Socket;
+use Sub::Install;
+use Try::Tiny;
 
-our $AUTOLOAD;
+extends 'Selenium::Remote::Driver';
 
-my $Test = Test::Builder->new;
-$Test->exported_to(__PACKAGE__);
-
-my %comparator = (
-    is       => 'is_eq',
-    isnt     => 'isnt_eq',
-    like     => 'like',
-    unlike   => 'unlike',
+# move_mouse_to_location_ok # TODO # move_to_ok # TODO
+has func_list => (
+    is      => 'lazy',
+    builder => sub {
+        return [
+            'alert_text_is',     'alert_text_isnt', 'alert_text_like',
+            'alert_text_unlike', 'current_window_handle_is',
+            'current_window_handle_isnt',   'current_window_handle_like',
+            'current_window_handle_unlike', 'window_handles_is',
+            'window_handles_isnt',          'window_handles_like',
+            'window_handles_unlike', 'window_size_is', 'window_size_isnt',
+            'window_size_like', 'window_size_unlike', 'window_position_is',
+            'window_position_isnt', 'window_position_like',
+            'window_position_unlike', 'current_url_is',     'current_url_isnt',
+            'current_url_like',       'current_url_unlike', 'title_is',
+            'title_isnt', 'title_like', 'title_unlike', 'active_element_is',
+            'active_element_isnt',   'active_element_like',
+            'active_element_unlike', 'send_keys_to_active_element_ok',
+            'send_keys_to_alert_ok', 'send_keys_to_prompt_ok',
+            'send_modifier_ok', 'accept_alert_ok', 'dismiss_alert_ok',
+            'get_ok', 'go_back_ok', 'go_forward_ok', 'add_cookie_ok',
+            'get_page_source_ok', 'find_element_ok', 'find_elements_ok',
+            'find_child_element_ok', 'find_child_elements_ok',
+            'compare_elements_ok', 'click_ok', 'double_click_ok',
+            'body_like',
+        ];
+    },
 );
-my $comparator_keys = join '|', keys %comparator;
 
-# These commands don't require a locator
-my %no_locator = map { $_ => 1 }
-                qw( alert_text current_window_handle current_url
-                    title page_source body location path);
-
-sub no_locator {
-    my $self   = shift;
-    my $method = shift;
-    return $no_locator{$method};
+sub has_args {
+    my $self          = shift;
+    my $fun_name      = shift;
+    my $hash_fun_args = {
+        'find_element'     => 1,
+        'compare_elements' => 2,
+        'get' => 1,
+    };
+    return ( $hash_fun_args->{$fun_name} // 0 );
 }
 
-sub AUTOLOAD {
-    my $name = $AUTOLOAD;
-    $name =~ s/.*:://;
-    return if $name eq 'DESTROY';
-    my $self = $_[0];
+with 'Test::Selenium::Remote::Role::DoesTesting';
 
-    my $sub;
-    if ($name =~ /(\w+)_($comparator_keys)$/i) {
-        my $getter = "get_$1";
-        my $comparator = $comparator{lc $2};
+has verbose => (
+    is => 'rw',
+);
 
-        # make a subroutine that will call Test::Builder's test methods
-        # with driver data from the getter
-        if ($self->no_locator($1)) {
-            $sub = sub {
-                my( $self, $str, $name ) = @_;
-                diag "Test::Selenium::Remote::Driver running no_locator $getter (@_[1..$#_])"
-                    if $self->{verbose};
-                $name = "$getter, '$str'"
-                    if $self->{default_names} and !defined $name;
-                no strict 'refs';
-                my $rc = $Test->$comparator( $self->$getter, $str, $name );
-                if (!$rc && $self->error_callback) {
-                    &{$self->error_callback}($name);
+has error_callback => (
+    is      => 'rw',
+    default => sub {
+        sub { }
+    },
+);
+
+
+sub BUILD {
+    my $self = shift;
+    foreach my $method_name ( @{ $self->func_list } ) {
+        unless ( defined( __PACKAGE__->can($method_name) ) ) {
+            my $sub = $self->_build_sub($method_name);
+            Sub::Install::install_sub(
+                {   code => $sub,
+                    into => __PACKAGE__,
+                    as   => $method_name
                 }
-                return $rc;
-            };
-        }
-        else {
-            $sub = sub {
-                my( $self, $locator, $str, $name ) = @_;
-                diag "Test::Selenium::Remote::Driver running with locator $getter (@_[1..$#_])"
-                    if $self->{verbose};
-                $name = "$getter, $locator, '$str'"
-                    if $self->{default_names} and !defined $name;
-                no strict 'refs';
-                no strict 'refs';
-                my $rc = $Test->$comparator( $self->$getter($locator), $str, $name );
-                if (!$rc && $self->error_callback) {
-                    &{$self->error_callback}($name);
-                }
-                return $rc;
-            };
+            );
         }
     }
-    elsif ($name =~ /(\w+?)_?ok$/i) {
-        my $cmd = $1;
-
-        # make a subroutine for ok() around the selenium command
-        # TODO: fix the thing for get_ok, it won't work as its arg get
-        # pop'd in $name (so the call to get has no args => end of game)
-        $sub = sub {
-            my $self = shift;
-            my $name = (@_ > 1 ? pop @_ : $cmd);
-            my ($arg1, $arg2) = @_;
-            if ($self->{default_names} and !defined $name) {
-                $name = $cmd;
-                $name .= ", $arg1" if defined $arg1;
-                $name .= ", $arg2" if defined $arg2;
-            }
-            diag "Test::Selenium::Remote::Driver running _ok $cmd (@_[1..$#_])"
-                    if $self->{verbose};
-
-            local $Test::Builder::Level = $Test::Builder::Level + 1;
-            my $rc = '';
-            eval { $rc = $self->$cmd( $arg1, $arg2 ) };
-            die $@ if $@ and $@ =~ /Can't locate object method/;
-            diag($@) if $@;
-            $rc = ok( $rc, $name );
-            if (!$rc && $self->error_callback) {
-                &{$self->error_callback}($name);
-            }
-            return $rc;
-        };
-    }
-
-    # jump directly to the new subroutine, avoiding an extra frame stack
-    if ($sub) {
-        no strict 'refs';
-        *{$AUTOLOAD} = $sub;
-        goto &$AUTOLOAD;
-    }
-    else {
-        # try to pass through to Selenium::Remote::Driver
-        my $sel = 'Selenium::Remote::Driver';
-        my $sub = "${sel}::${name}";
-        goto &$sub if exists &$sub;
-        my ($package, $filename, $line) = caller;
-        die qq(Can't locate object method "$name" via package ")
-            . __PACKAGE__
-            . qq(" (also tried "$sel") at $filename line $line\n);
-    }
-}
-
-sub error_callback {
-    my ($self, $cb) = @_;
-    if (defined($cb)) {
-        $self->{error_callback} = $cb;
-    }
-    return $self->{error_callback};
 }
 
 =head1 NAME
@@ -170,20 +112,20 @@ See L<Selenium::Driver::Remote> for the meanings of these options.
 
 =cut
 
-sub new {
-    my ($class, %p) = @_;
+sub BUILDARGS {
+    my ( $class, %p ) = @_;
 
-    for my $opt (qw/remote_server_addr port browser_name version platform
-                    javascript auto_close extra_capabilities/) {
+    for my $opt (
+        qw/remote_server_addr port browser_name version platform
+        javascript auto_close extra_capabilities/
+      )
+    {
         $p{$opt} //= $ENV{ 'TWD_' . uc($opt) };
     }
-    $p{browser_name}       //= $ENV{TWD_BROWSER}; # ykwim
-    $p{remote_server_addr} //= $ENV{TWD_HOST};    # ykwim
+    $p{browser_name}       //= $ENV{TWD_BROWSER};                      # ykwim
+    $p{remote_server_addr} //= $ENV{TWD_HOST};                         # ykwim
     $p{webelement_class}   //= 'Test::Selenium::Remote::WebElement';
-
-    my $self = $class->SUPER::new(%p);
-    $self->{verbose} = $p{verbose};
-    return $self;
+    return \%p;
 }
 
 =head2 server_is_running( $host, $port )
@@ -198,13 +140,14 @@ determine the server to check.
 
 sub server_is_running {
     my $class_or_self = shift;
-    my $host = $ENV{TWD_HOST} || shift || 'localhost';
-    my $port = $ENV{TWD_PORT} || shift || 4444;
+    my $host          = $ENV{TWD_HOST} || shift || 'localhost';
+    my $port          = $ENV{TWD_PORT} || shift || 4444;
 
-    return ($host, $port) if IO::Socket::INET->new(
+    return ( $host, $port )
+      if IO::Socket::INET->new(
         PeerAddr => $host,
         PeerPort => $port,
-    );
+      );
     return;
 
 }
@@ -304,11 +247,11 @@ Currently, other finders besides the default are not supported for C<type_ok()>.
 =cut
 
 sub type_element_ok {
-   my $self = shift;
-   my $locator = shift;
-   my $keys = shift;
-   my $desc = shift;
-   return $self->find_element($locator)->send_keys_ok($keys,$desc);
+    my $self    = shift;
+    my $locator = shift;
+    my $keys    = shift;
+    my $desc    = shift;
+    return $self->find_element($locator)->send_keys_ok( $keys, $desc );
 }
 
 
@@ -338,13 +281,17 @@ for C<find_no_element_ok()>.
 =cut
 
 sub find_no_element_ok {
-    my $self = shift;
+    my $self          = shift;
     my $search_target = shift;
-    my $desc = shift;
-
-    local $Test::Builder::Level = $Test::Builder::Level +1;
-    eval { $self->find_element($search_target) };
-    ok((defined $@),$desc);
+    my $desc          = shift;
+    my $rv = 0 ;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    try {
+        $self->find_element($search_target)
+    } catch {
+        $rv = 1 if ($_);
+    };
+    return $self->ok($rv == 1,$desc);
 }
 
 =head2 $twd->content_like( $regex [, $desc ] )
@@ -362,22 +309,22 @@ is no description.
 =cut
 
 sub content_like {
-    my $self = shift;
+    my $self  = shift;
     my $regex = shift;
-    my $desc = shift;
+    my $desc  = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
 
-    if (not ref $regex eq 'ARRAY') {
-        my $desc = qq{Content is like "$regex"} if (not defined $desc);
-        return like_string($content , $regex, $desc );
+    if ( not ref $regex eq 'ARRAY' ) {
+        my $desc = qq{Content is like "$regex"} if ( not defined $desc );
+        return like_string( $content, $regex, $desc );
     }
-    elsif (ref $regex eq 'ARRAY') {
+    elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Content is like "$re"} if (not defined $desc);
-            like_string($content , $re, $desc );
+            my $desc = qq{Content is like "$re"} if ( not defined $desc );
+            like_string( $content, $re, $desc );
         }
     }
 }
@@ -397,22 +344,22 @@ is no description.
 =cut
 
 sub content_unlike {
-    my $self = shift;
+    my $self  = shift;
     my $regex = shift;
-    my $desc = shift;
+    my $desc  = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
 
-    if (not ref $regex eq 'ARRAY') {
-        my $desc = qq{Content is unlike "$regex"} if (not defined $desc);
-        return unlike_string($content , $regex, $desc );
+    if ( not ref $regex eq 'ARRAY' ) {
+        my $desc = qq{Content is unlike "$regex"} if ( not defined $desc );
+        return unlike_string( $content, $regex, $desc );
     }
-    elsif (ref $regex eq 'ARRAY') {
+    elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Content is unlike "$re"} if (not defined $desc);
-            unlike_string($content , $re, $desc );
+            my $desc = qq{Content is unlike "$re"} if ( not defined $desc );
+            unlike_string( $content, $re, $desc );
         }
     }
 }
@@ -435,22 +382,22 @@ To also match the HTML see, C<< content_unlike() >>.
 =cut
 
 sub body_text_like {
-    my $self = shift;
+    my $self  = shift;
     my $regex = shift;
-    my $desc = shift;
+    my $desc  = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
 
-    if (not ref $regex eq 'ARRAY') {
-        my $desc = qq{Text is like "$regex"} if (not defined $desc);
-        return like_string($text , $regex, $desc );
+    if ( not ref $regex eq 'ARRAY' ) {
+        my $desc = qq{Text is like "$regex"} if ( not defined $desc );
+        return like_string( $text, $regex, $desc );
     }
-    elsif (ref $regex eq 'ARRAY') {
+    elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Text is like "$re"} if (not defined $desc);
-            like_string($text , $re, $desc );
+            my $desc = qq{Text is like "$re"} if ( not defined $desc );
+            like_string( $text, $re, $desc );
         }
     }
 }
@@ -473,22 +420,22 @@ To also match the HTML see, C<< content_unlike() >>.
 =cut
 
 sub body_text_unlike {
-    my $self = shift;
+    my $self  = shift;
     my $regex = shift;
-    my $desc = shift;
+    my $desc  = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
 
-    if (not ref $regex eq 'ARRAY') {
-        my $desc = qq{Text is unlike "$regex"} if (not defined $desc);
-        return unlike_string($text , $regex, $desc );
+    if ( not ref $regex eq 'ARRAY' ) {
+        my $desc = qq{Text is unlike "$regex"} if ( not defined $desc );
+        return unlike_string( $text, $regex, $desc );
     }
-    elsif (ref $regex eq 'ARRAY') {
+    elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Text is unlike "$re"} if (not defined $desc);
-            unlike_string($text , $re, $desc );
+            my $desc = qq{Text is unlike "$re"} if ( not defined $desc );
+            unlike_string( $text, $re, $desc );
         }
     }
 }
@@ -511,21 +458,21 @@ is no description.
 
 sub content_contains {
     my $self = shift;
-    my $str = shift;
+    my $str  = shift;
     my $desc = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
 
-    if (not ref $str eq 'ARRAY') {
-        my $desc = qq{Content contains "$str"} if (not defined $desc);
-        return contains_string($content , $str, $desc );
+    if ( not ref $str eq 'ARRAY' ) {
+        my $desc = qq{Content contains "$str"} if ( not defined $desc );
+        return contains_string( $content, $str, $desc );
     }
-    elsif (ref $str eq 'ARRAY') {
+    elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Content contains "$s"} if (not defined $desc);
-            contains_string($content , $s, $desc );
+            my $desc = qq{Content contains "$s"} if ( not defined $desc );
+            contains_string( $content, $s, $desc );
         }
     }
 }
@@ -546,21 +493,21 @@ is no description.
 
 sub content_lacks {
     my $self = shift;
-    my $str = shift;
+    my $str  = shift;
     my $desc = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
 
-    if (not ref $str eq 'ARRAY') {
-        my $desc = qq{Content lacks "$str"} if (not defined $desc);
-        return lacks_string($content , $str, $desc );
+    if ( not ref $str eq 'ARRAY' ) {
+        my $desc = qq{Content lacks "$str"} if ( not defined $desc );
+        return lacks_string( $content, $str, $desc );
     }
-    elsif (ref $str eq 'ARRAY') {
+    elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Content lacks "$s"} if (not defined $desc);
-            lacks_string($content , $s, $desc );
+            my $desc = qq{Content lacks "$s"} if ( not defined $desc );
+            lacks_string( $content, $s, $desc );
         }
     }
 }
@@ -584,21 +531,21 @@ To also match the HTML see, C<< content_uncontains() >>.
 
 sub body_text_contains {
     my $self = shift;
-    my $str = shift;
+    my $str  = shift;
     my $desc = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
 
-    if (not ref $str eq 'ARRAY') {
-        my $desc = qq{Text contains "$str"} if (not defined $desc);
-        return contains_string($text , $str, $desc );
+    if ( not ref $str eq 'ARRAY' ) {
+        my $desc = qq{Text contains "$str"} if ( not defined $desc );
+        return contains_string( $text, $str, $desc );
     }
-    elsif (ref $str eq 'ARRAY') {
+    elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Text contains "$s"} if (not defined $desc);
-            contains_string($text , $s, $desc );
+            my $desc = qq{Text contains "$s"} if ( not defined $desc );
+            contains_string( $text, $s, $desc );
         }
     }
 }
@@ -622,21 +569,21 @@ To also match the HTML see, C<< content_lacks() >>.
 
 sub body_text_lacks {
     my $self = shift;
-    my $str = shift;
+    my $str  = shift;
     my $desc = shift;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
 
-    if (not ref $str eq 'ARRAY') {
-        my $desc = qq{Text is lacks "$str"} if (not defined $desc);
-        return lacks_string($text , $str, $desc );
+    if ( not ref $str eq 'ARRAY' ) {
+        my $desc = qq{Text is lacks "$str"} if ( not defined $desc );
+        return lacks_string( $text, $str, $desc );
     }
-    elsif (ref $str eq 'ARRAY') {
+    elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Text is lacks "$s"} if (not defined $desc);
-            lacks_string($text , $s, $desc );
+            my $desc = qq{Text is lacks "$s"} if ( not defined $desc );
+            lacks_string( $text, $s, $desc );
         }
     }
 }
@@ -648,8 +595,8 @@ sub body_text_lacks {
 =cut
 
 sub element_text_is {
-    my ($self,$search_target,$expected,$desc) = @_;
-    return $self->find_element($search_target)->text_is($expected,$desc);
+    my ( $self, $search_target, $expected, $desc ) = @_;
+    return $self->find_element($search_target)->text_is( $expected, $desc );
 }
 
 =head2 $twd->element_value_is($search_target,$expected_value [,$desc]);
@@ -659,8 +606,8 @@ sub element_text_is {
 =cut
 
 sub element_value_is {
-    my ($self,$search_target,$expected,$desc) = @_;
-    return $self->find_element($search_target)->value_is($expected,$desc);
+    my ( $self, $search_target, $expected, $desc ) = @_;
+    return $self->find_element($search_target)->value_is( $expected, $desc );
 }
 
 =head2 $twd->click_element_ok($search_target [,$desc]);
@@ -672,7 +619,7 @@ Find an element and then click on it.
 =cut
 
 sub click_element_ok {
-    my ($self,$search_target,$desc) = @_;
+    my ( $self, $search_target, $desc ) = @_;
     return $self->find_element($search_target)->click_ok($desc);
 }
 
@@ -685,7 +632,7 @@ Find an element and then clear on it.
 =cut
 
 sub clear_element_ok {
-    my ($self,$search_target,$desc) = @_;
+    my ( $self, $search_target, $desc ) = @_;
     return $self->find_element($search_target)->clear_ok($desc);
 }
 
@@ -698,7 +645,7 @@ Find an element and check to confirm that it is displayed. (visible)
 =cut
 
 sub is_element_displayed_ok {
-    my ($self,$search_target,$desc) = @_;
+    my ( $self, $search_target, $desc ) = @_;
     return $self->find_element($search_target)->is_displayed_ok($desc);
 }
 
@@ -711,7 +658,7 @@ Find an element and check to confirm that it is enabled.
 =cut
 
 sub is_element_enabled_ok {
-    my ($self,$search_target,$desc) = @_;
+    my ( $self, $search_target, $desc ) = @_;
     return $self->find_element($search_target)->is_enabled_ok($desc);
 }
 
