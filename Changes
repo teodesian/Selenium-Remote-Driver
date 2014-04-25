@@ -1,10 +1,13 @@
 Revision history for Selenium-Remote-Driver
 
-0.20   4-17-2914
+0.20   4-25-2014
         [DESIRED CAPABILITIES]
         - Add a desired_capabilities option that provides full control over the desiredCapability object
         - Add a new_from_caps constructor to distinguish against the normal new constructor
         - Add a ua option to allow injection of LWP::UserAgent for testing
+
+        [MOO REWRITE]
+        - Completed the Moo restructure (pr #103) with pr #122, fixing a bug in _check_ok (#121).
 
 0.19   4-11-2014
         [FIREFOX PROFILE]
