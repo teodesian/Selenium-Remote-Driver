@@ -2185,7 +2185,7 @@ sub get_text {
 
 sub get_body {
     my $self = shift;
-    return $self->get_text('//body');
+    return $self->get_text('//body', 'xpath');
 }
 
 =head2 get_path
