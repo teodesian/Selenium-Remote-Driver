@@ -54,7 +54,8 @@ sub _check_ok {
     };
 
     my $default_test_name = $method;
-    $default_test_name .= join(" ", @r_args) if $num_of_args > 0;
+    $default_test_name .= "'" . join("' ", @r_args) . "'"
+        if $num_of_args > 0;
 
     my $test_name = pop @args // $default_test_name;
     return $self->ok( $rv, $test_name);
