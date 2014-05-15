@@ -20,7 +20,6 @@ use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
-use URI;
 
 use constant FINDERS => {
     class             => 'class name',
@@ -267,7 +266,11 @@ has 'browser_name' => (
 
 has 'base_url' => (
     is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'http://localhost' )},
+    coerce  => sub { 
+        my $base_url = shift || 'http://localhost';
+        $base_url =~ s|/$||;
+        return $base_url;
+    },
     default => sub {'http://localhost'},
 );
 
@@ -1070,14 +1073,14 @@ sub navigate {
 
 sub get {
     my ( $self, $url ) = @_;
-    my $uri = URI->new($url)->canonical;
 
-    $url = $self->base_url . "/" . $url
-        unless $url =~ m|://|;
+    if ($url !~ m|://|) {
+        $url =~ s|^/||;
+        $url = $self->base_url . "/" . $url;
+    }
 
-    my $uri    = URI->new($url)->canonical; # clean up url and slashes
     my $res    = { 'command' => 'get' };
-    my $params = { 'url'     => $uri->as_string };
+    my $params = { 'url'     => $url  };
     return $self->_execute_command( $res, $params );
 }
 
