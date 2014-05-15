@@ -20,6 +20,7 @@ use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
+use URI;
 
 use constant FINDERS => {
     class             => 'class name',
@@ -146,6 +147,7 @@ available here.
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
+        'base_url'             - <string>   - base url for the website Selenium acts on, default is 'http://localhost'
 
 
     If no values are provided, then these defaults will be assumed:
@@ -261,6 +263,12 @@ has 'browser_name' => (
     is      => 'rw',
     coerce  => sub { ( defined($_[0]) ? $_[0] : 'firefox' )},
     default => sub {'firefox'},
+);
+
+has 'base_url' => (
+    is      => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : 'http://localhost' )},
+    default => sub {'http://localhost'},
 );
 
 has 'platform' => (
@@ -1062,8 +1070,14 @@ sub navigate {
 
 sub get {
     my ( $self, $url ) = @_;
+    my $uri = URI->new($url)->canonical;
+
+    $url = $self->base_url . "/" . $url
+        unless $url =~ m|://|;
+
+    my $uri    = URI->new($url)->canonical; # clean up url and slashes
     my $res    = { 'command' => 'get' };
-    my $params = { 'url'     => $url };
+    my $params = { 'url'     => $uri->as_string };
     return $self->_execute_command( $res, $params );
 }
 
