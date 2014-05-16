@@ -40,20 +40,24 @@ sub _check_method {
 # main method for _ok tests
 
 sub _check_ok {
-    my $self      = shift;
-    my $method      = shift;
-    my @args = @_;
-    my $rv;
+    my $self   = shift;
+    my $method = shift;
+    my @args   = @_;
+    my ($rv, $num_of_args, @r_args);
     try {
-        my $num_of_args = $self->has_args($method);
-        my @r_args = splice( @args, 0, $num_of_args );
+        $num_of_args = $self->has_args($method);
+        @r_args = splice( @args, 0, $num_of_args );
         $rv = $self->$method(@r_args);
     }
     catch {
         $self->croak($_);
     };
 
-    my $test_name = pop @args // $method;
+    my $default_test_name = $method;
+    $default_test_name .= "'" . join("' ", @r_args) . "'"
+        if $num_of_args > 0;
+
+    my $test_name = pop @args // $default_test_name;
     return $self->ok( $rv, $test_name);
 }
 
