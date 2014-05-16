@@ -91,6 +91,7 @@ sub submit {
 
 sub send_keys {
     my ( $self, @strings ) = @_;
+    croak "no keys to send" unless scalar @strings >= 1;
     my $res = { 'command' => 'sendKeysToElement', 'id' => $self->id };
     map { $_ .= "" } @strings;
     my $params = {
