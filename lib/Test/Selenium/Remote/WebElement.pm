@@ -33,7 +33,7 @@ sub has_args {
     my $fun_name      = shift;
     my $hash_fun_args = {
         'get_attribute' => 1,
-        send_keys       => 1,
+        'send_keys'     => 1,
     };
     return ( $hash_fun_args->{$fun_name} // 0 );
 }
