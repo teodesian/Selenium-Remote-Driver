@@ -2152,7 +2152,7 @@ sub upload_file {
     require MIME::Base64;
 
     my $params = {
-        file => encode_base64($string)          # base64-encoded string
+        file => MIME::Base64::encode_base64($string)          # base64-encoded string
     };
     return $self->_execute_command( $res, $params );
 }
