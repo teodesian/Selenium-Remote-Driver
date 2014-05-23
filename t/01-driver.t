@@ -112,6 +112,34 @@ DESIRED_CAPABILITIES: {
     ok($requests_count == 3, 'The new_from_caps section has the correct number of requests to /session/');
 }
 
+GRID_STARTUP: {
+    # Mimicking a grid server; /wd/hub/status fails, and we expect
+    # grid/api/hub/status to be checked instead.
+    my $tua = Test::LWP::UserAgent->new;
+    my $not_ok = sub {
+        return HTTP::Response->new(500, 'NOTOK');
+    };
+    $tua->map_response(qr{wd/hub/status}, $not_ok);
+
+    my $grid_status_count = 0;
+    my $ok = sub {
+        my $res = {
+            cmd_return => {},
+            cmd_status => 'OK',
+            sessionId => '123124123'
+        };
+        $grid_status_count++;
+        return HTTP::Response->new(200, 'OK', ['Content-Type' => 'application/json'], to_json($res));
+    };
+    $tua->map_response(qr{(?:grid/api/hub/status|session)}, $ok);
+
+    my $grid_driver = Selenium::Remote::Driver->new(ua => $tua);
+
+    ok(defined $grid_driver, 'Grid: Object loaded fine using grid/api/hub/status');
+    ok($grid_driver->isa('Selenium::Remote::Driver'), 'Grid: ...and of right type');
+    ok($grid_status_count == 2, 'checked Grid specific status');
+}
+
 CHECK_DRIVER: {
     ok(defined $driver, 'Object loaded fine...');
     ok($driver->isa('Selenium::Remote::Driver'), '...and of right type');
