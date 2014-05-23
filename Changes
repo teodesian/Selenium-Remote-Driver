@@ -1,5 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
+0.2001 5-23-2014
+        [BUG FIXES]
+        - #128: Fix upload_file where encode_base64 was not exported properly
+        - #54 : Update the status endpoint when checking for Grid
+        - #124: Explicitly specify finder type in get_body
+
 0.20   4-25-2014
         [DESIRED CAPABILITIES]
         - Add a desired_capabilities option that provides full control over the desiredCapability object
