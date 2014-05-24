@@ -111,7 +111,17 @@ IMAGES: {
         is($ret->{'x'}, ($x+200), 'Moved to new x coord');
         is($ret->{'y'}, ($y+200), 'Moved to new y coord');
     }
-    ;
+}
+
+VISIBILITY: {
+    $driver->get("$website/index.html");
+    $elem = $driver->find_element('displayed', 'id');
+    ok($elem->is_displayed(), 'Elements are displayed by default.');
+    ok(!$elem->is_hidden(), 'Elements are not hidden by default.');
+
+    $elem = $driver->find_element('hidden', 'id');
+    ok(!$elem->is_displayed(), 'Hidden elements are not displayed.');
+    ok($elem->is_hidden(), 'Hidden elements are hidden.');
 }
 
 QUIT: {

@@ -324,6 +324,24 @@ sub is_displayed {
     return $self->_execute_command($res);
 }
 
+=head2 is_hidden
+
+ Description:
+    Determine if an element is currently hidden.
+
+ Output:
+    BOOLEAN - Whether the element is hidden.
+
+ Usage:
+    $elem->is_hidden();
+
+=cut
+
+sub is_hidden {
+    my ($self) = @_;
+    return ! $self->is_displayed();
+}
+
 =head2 drag
 
  Description:
