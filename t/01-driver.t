@@ -3,6 +3,7 @@ use warnings;
 
 use JSON;
 use Net::Ping;
+use HTTP::Headers;
 use Test::More;
 use Test::LWP::UserAgent;
 use Selenium::Remote::Driver;
@@ -346,6 +347,52 @@ AUTO_CLOSE: {
     $driver->DESTROY();
     ok(defined $driver->{'session_id'}, 'changing autoclose on the fly keeps the session open');
     $driver->auto_close(1);
+}
+
+BASE_URL: {
+    {
+        package MySeleniumRemoteDriver;
+        use Moo;
+        extends 'Selenium::Remote::Driver';
+        sub _execute_command { $_[2]->{url} }
+        1;
+    }
+
+    my @tests = ({
+        base_url => 'http://example.com',
+        url      => '/foo',
+        expected => 'http://example.com/foo',
+    },{
+        base_url => 'http://example.com/',
+        url      => '/foo',
+        expected => 'http://example.com/foo',
+    },{
+        base_url => 'http://example.com',
+        url      => 'foo',
+        expected => 'http://example.com/foo',
+    },{
+        base_url => 'http://example.com/a',
+        url      => '/foo',
+        expected => 'http://example.com/a/foo',
+    },{
+        base_url => 'http://example.com/a',
+        url      => 'foo',
+        expected => 'http://example.com/a/foo',
+    },{
+        base_url => 'http://example.com/a',
+        url      => 'http://blog.example.com/foo',
+        expected => 'http://blog.example.com/foo',
+    });
+
+    for my $test (@tests) {
+        my $base_url_driver = MySeleniumRemoteDriver->new(
+            browser_name => 'firefox',
+            base_url     => $test->{base_url},
+            testing      => 1,
+        );
+        my $got = $base_url_driver->get($test->{url});
+        is $got, $test->{expected}, "base_url + $test->{url}";
+    }
 }
 
 QUIT: {
