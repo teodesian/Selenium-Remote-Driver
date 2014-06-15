@@ -36,6 +36,24 @@ my $driver = Selenium::Remote::Driver->new(browser_name => 'firefox');
 my $website = 'http://localhost:63636';
 my $ret;
 
+ERROR_MESSAGE: {
+    my $unused_port = do {
+        my $l = IO::Socket::INET->new(
+            Listen    => 5,
+            LocalHost => '127.0.0.1',
+            LocalPort => 0,
+            Proto     => 'tcp',
+            ReuseAddr => 1,
+        ) or die $!;
+        $l->sockport;
+    };
+    eval {
+        my $sel = Selenium::Remote::Driver->new(
+                                    host => 'localhost', port => $unused_port);
+    };
+    unlike($@, qr/Use of uninitialized value/, "not unhelpful message");
+}
+
 DESIRED_CAPABILITIES: {
     # We're using a different test method for these because we needed
     # to inspect payload of the POST to /session, and the method of
