@@ -56,6 +56,13 @@ $ cpanm --showdeps .
 
 ## Usage
 
+### NB: Problems with Webdriver 2.42.x ?
+
+It appears that the standalone webdriver API changed slightly in
+2.42.x versions. We're working on an update to address this, but in
+the meantime if you can continue using 2.41.x or less, that should
+keep your tests in running condition for the time being.
+
 You'll need a Remote WebDriver Server running somewhere. You can
 download a [selenium-standalone-server.jar][standalone] and run one
 locally, or you can point your driver somewhere like [Saucelabs][s].
