@@ -1947,7 +1947,7 @@ sub find_child_elements {
                 die $@;
             }
         }
-        my $elem_obj_arr;
+        my $elem_obj_arr = [];
         my $i = 0;
         foreach (@$ret_data) {
             $elem_obj_arr->[$i] =
