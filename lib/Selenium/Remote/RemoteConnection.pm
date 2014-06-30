@@ -131,8 +131,8 @@ sub _process_response {
         }
         elsif ($response->is_success) {
             $data->{'cmd_status'} = 'OK';
-            if (defined $decoded_json) {
-                $data->{'cmd_return'} = $decoded_json->{'value'} // 'No Content'; 
+            if (defined $decoded_json && $decoded_json->{'value'}) {
+                $data->{'cmd_return'} = $decoded_json->{'value'};
             }
             else {
                 $data->{'cmd_return'} = 'Server returned status code '.$response->code.' but no data';
