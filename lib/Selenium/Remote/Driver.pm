@@ -146,7 +146,7 @@ available here.
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
-        'base_url'             - <string>   - base url for the website Selenium acts on, default is 'http://localhost'
+        'base_url'             - <string>   - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
 
 
     If no values are provided, then these defaults will be assumed:
@@ -266,12 +266,13 @@ has 'browser_name' => (
 
 has 'base_url' => (
     is      => 'rw',
-    coerce  => sub { 
-        my $base_url = shift || 'http://localhost';
+    lazy    => 1,
+    coerce  => sub {
+        my $base_url = shift;
         $base_url =~ s|/$||;
         return $base_url;
     },
-    default => sub {'http://localhost'},
+    predicate => 'has_base_url',
 );
 
 has 'platform' => (
@@ -1074,7 +1075,7 @@ sub navigate {
 sub get {
     my ( $self, $url ) = @_;
 
-    if ($url !~ m|://|) {
+    if ($self->has_base_url && $url !~ m|://|) {
         $url =~ s|^/||;
         $url = $self->base_url . "/" . $url;
     }
