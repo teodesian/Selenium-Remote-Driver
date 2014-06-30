@@ -131,7 +131,7 @@ sub _process_response {
         }
         elsif ($response->is_success) {
             $data->{'cmd_status'} = 'OK';
-            if (defined $decoded_json && $decoded_json->{'value'}) {
+            if (defined $decoded_json && defined $decoded_json->{'value'}) {
                 $data->{'cmd_return'} = $decoded_json->{'value'};
             }
             else {
