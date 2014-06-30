@@ -216,12 +216,12 @@ available here.
  Input:
     The only respected keys in the input hash are:
 
+        desired_capabilities - HASHREF - defaults to {}
         remote_server_addr   - STRING  - defaults to localhost
         port                 - INTEGER - defaults to 4444
         default_finder       - STRING  - defaults to xpath
         webelement_class     - STRING  - defaults to Selenium::Remote::WebElement
         auto_close           - BOOLEAN - defaults to 1
-        desired_capabilities - HASHREF - defaults to {}
 
     Except for C<desired_capabilities>, these keys perform exactly the
     same as listed in the regular "new" constructor.
