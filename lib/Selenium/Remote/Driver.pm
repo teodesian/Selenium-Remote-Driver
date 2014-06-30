@@ -1532,7 +1532,7 @@ sub set_window_position {
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
     my $ret = $self->_execute_command( $res, $params );
-    if ( $ret =~ m/204/g ) {
+    if ( $ret =~ m/200|204/g ) {
         return 1;
     }
     else { return 0; }
@@ -1565,7 +1565,7 @@ sub set_window_size {
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
     my $ret = $self->_execute_command( $res, $params );
-    if ( $ret =~ m/204/g ) {
+    if ( $ret =~ m/200|204/g ) {
         return 1;
     }
     else { return 0; }
