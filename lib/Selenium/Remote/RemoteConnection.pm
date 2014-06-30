@@ -84,7 +84,7 @@ sub request {
         $content = $json->allow_nonref->utf8->encode($params);
     }
 
-    print "REQ: $method, $url, $content\n" if $self->debug || 1;
+    print "REQ: $method, $url, $content\n" if $self->debug;
 
     # HTTP request
     my $header =
