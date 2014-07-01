@@ -46,6 +46,17 @@ has a `Makefile.PL` that `cpanm` can install from:
 $ cpanm -v git://github.com/gempesaw/Selenium-Remote-Driver.git@cpan
 ```
 
+Or, if the `git://` protocol is blocked or you don't want to use `cpanm`
+
+```bash
+$ git clone https://github.com/gempesaw/Selenium-Remote-Driver
+$ cd Selenium-Remote-Driver
+$ git checkout -b cpan origin/cpan
+$ perl Makefile.PL
+```
+
+### Viewing dependencies
+
 You can also use `cpanm` to help you with dependencies after you've
 cloned the repository:
 
