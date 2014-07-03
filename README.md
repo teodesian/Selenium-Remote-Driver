@@ -67,13 +67,6 @@ $ cpanm --showdeps .
 
 ## Usage
 
-### NB: Problems with Webdriver 2.42.x ?
-
-It appears that the standalone webdriver API changed slightly in
-2.42.x versions. We're working on an update to address this, but in
-the meantime if you can continue using 2.41.x or less, that should
-keep your tests in running condition for the time being.
-
 You'll need a Remote WebDriver Server running somewhere. You can
 download a [selenium-standalone-server.jar][standalone] and run one
 locally, or you can point your driver somewhere like [Saucelabs][s].
@@ -121,6 +114,19 @@ useful [example snippets][ex].
 [chrome]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Chrome-browser-automation
 [pjs]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
 [ex]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
+
+#### NB: Problems with Webdriver 2.42.x ?
+
+It appears that the standalone webdriver API for no-content successful
+responses changed slightly in 2.42.x versions, breaking things like
+`get_ok` and `set_window_size`. Your options for fixes are:
+
+* Upgrade your version of S::R::D via your preferred method! We've
+  released v0.2002 of S::R::D to CPAN, which contains the fixes to
+  address this.
+* Or, stick with v2.41.0 of the Selenium standalone server or lower
+  for your tests. v0.2001 of S::R::D still works with v2.41.0 of the
+  standalone server.
 
 ## Support and Documentation
 
