@@ -1,5 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
+0.2002 7-2-2014
+        [BUG FIXES]
+        - #135, #136, #142: Fix compatability issues with JSONWireProtocol changes in 2.42.2
+
+        [NEW FEATURES]
+        - Add an optional base_url parameter for automatic concatenation in get/get_ok
+
 0.2001 5-23-2014
         [BUG FIXES]
         - #128: Fix upload_file where encode_base64 was not exported properly
