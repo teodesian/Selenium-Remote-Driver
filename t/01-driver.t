@@ -5,6 +5,7 @@ use JSON;
 use Net::Ping;
 use HTTP::Headers;
 use Test::More;
+use LWP::Protocol::PSGI;
 use Test::LWP::UserAgent;
 use Selenium::Remote::Driver;
 
@@ -401,6 +402,7 @@ QUIT: {
 }
 
 NO_SERVER_ERROR_MESSAGE: {
+    LWP::Protocol::PSGI->unregister;
     my $unused_port = do {
         my $l = IO::Socket::INET->new(
             Listen    => 5,
