@@ -432,6 +432,9 @@ sub get_css_attribute {
  Usage:
     $elem->describe();
 
+ Note: DEPRECATED as of 2.42.2 -- use get_text, get_value, is_displayed, or
+ whatever appropriate WebElement function you need instead
+
 =cut
 
 sub describe {
