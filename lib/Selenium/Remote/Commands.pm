@@ -39,211 +39,211 @@ has '_cmds' => (
             },
             'quit' => {
                 'method' => 'DELETE',
-                'url'    => "session/:sessionId"
+                'url'    => 'session/:sessionId'
             },
             'getCurrentWindowHandle' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/window_handle"
+                'url'    => 'session/:sessionId/window_handle'
             },
             'getWindowHandles' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/window_handles"
+                'url'    => 'session/:sessionId/window_handles'
             },
             'getWindowSize' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/window/:windowHandle/size"
+                'url'    => 'session/:sessionId/window/:windowHandle/size'
             },
             'getWindowPosition' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/window/:windowHandle/position"
+                'url'    => 'session/:sessionId/window/:windowHandle/position'
             },
             'setWindowSize' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/window/:windowHandle/size"
+                'url'    => 'session/:sessionId/window/:windowHandle/size'
             },
             'setWindowPosition' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/window/:windowHandle/position"
+                'url'    => 'session/:sessionId/window/:windowHandle/position'
             },
             'getCurrentUrl' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/url"
+                'url'    => 'session/:sessionId/url'
             },
             'get' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/url"
+                'url'    => 'session/:sessionId/url'
             },
             'goForward' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/forward"
+                'url'    => 'session/:sessionId/forward'
             },
             'goBack' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/back"
+                'url'    => 'session/:sessionId/back'
             },
             'refresh' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/refresh"
+                'url'    => 'session/:sessionId/refresh'
             },
             'executeScript' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/execute"
+                'url'    => 'session/:sessionId/execute'
             },
             'executeAsyncScript' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/execute_async"
+                'url'    => 'session/:sessionId/execute_async'
             },
             'screenshot' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/screenshot"
+                'url'    => 'session/:sessionId/screenshot'
             },
             'availableEngines' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/ime/available_engines"
+                'url'    => 'session/:sessionId/ime/available_engines'
             },
             'switchToFrame' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/frame"
+                'url'    => 'session/:sessionId/frame'
             },
             'switchToWindow' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/window"
+                'url'    => 'session/:sessionId/window'
             },
             'getAllCookies' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/cookie"
+                'url'    => 'session/:sessionId/cookie'
             },
             'addCookie' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/cookie"
+                'url'    => 'session/:sessionId/cookie'
             },
             'deleteAllCookies' => {
                 'method' => 'DELETE',
-                'url'    => "session/:sessionId/cookie"
+                'url'    => 'session/:sessionId/cookie'
             },
             'deleteCookieNamed' => {
                 'method' => 'DELETE',
-                'url'    => "session/:sessionId/cookie/:name"
+                'url'    => 'session/:sessionId/cookie/:name'
             },
             'getPageSource' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/source"
+                'url'    => 'session/:sessionId/source'
             },
             'getTitle' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/title"
+                'url'    => 'session/:sessionId/title'
             },
             'findElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element"
+                'url'    => 'session/:sessionId/element'
             },
             'findElements' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/elements"
+                'url'    => 'session/:sessionId/elements'
             },
             'getActiveElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/active"
+                'url'    => 'session/:sessionId/element/active'
             },
             'describeElement' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id"
+                'url'    => 'session/:sessionId/element/:id'
             },
             'findChildElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/element"
+                'url'    => 'session/:sessionId/element/:id/element'
             },
             'findChildElements' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/elements"
+                'url'    => 'session/:sessionId/element/:id/elements'
             },
             'clickElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/click"
+                'url'    => 'session/:sessionId/element/:id/click'
             },
             'submitElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/submit"
+                'url'    => 'session/:sessionId/element/:id/submit'
             },
             'sendKeysToElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/value"
+                'url'    => 'session/:sessionId/element/:id/value'
             },
             'sendKeysToActiveElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/keys"
+                'url'    => 'session/:sessionId/keys'
             },
             'sendModifier' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/modifier"
+                'url'    => 'session/:sessionId/modifier'
             },
             'isElementSelected' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/selected"
+                'url'    => 'session/:sessionId/element/:id/selected'
             },
             'setElementSelected' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/selected"
+                'url'    => 'session/:sessionId/element/:id/selected'
             },
             'toggleElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/toggle"
+                'url'    => 'session/:sessionId/element/:id/toggle'
             },
             'isElementEnabled' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/enabled"
+                'url'    => 'session/:sessionId/element/:id/enabled'
             },
             'getElementLocation' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/location"
+                'url'    => 'session/:sessionId/element/:id/location'
             },
             'getElementLocationInView' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/location_in_view"
+                'url'    => 'session/:sessionId/element/:id/location_in_view'
             },
             'getElementTagName' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/name"
+                'url'    => 'session/:sessionId/element/:id/name'
             },
             'clearElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/clear"
+                'url'    => 'session/:sessionId/element/:id/clear'
             },
             'getElementAttribute' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/attribute/:name"
+                'url'    => 'session/:sessionId/element/:id/attribute/:name'
             },
             'elementEquals' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/equals/:other"
+                'url'    => 'session/:sessionId/element/:id/equals/:other'
             },
             'isElementDisplayed' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/displayed"
+                'url'    => 'session/:sessionId/element/:id/displayed'
             },
             'close' => {
                 'method' => 'DELETE',
-                'url'    => "session/:sessionId/window"
+                'url'    => 'session/:sessionId/window'
             },
             'dragElement' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/element/:id/drag"
+                'url'    => 'session/:sessionId/element/:id/drag'
             },
             'getElementSize' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/size"
+                'url'    => 'session/:sessionId/element/:id/size'
             },
             'getElementText' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/text"
+                'url'    => 'session/:sessionId/element/:id/text'
             },
             'getElementValueOfCssProperty' => {
                 'method' => 'GET',
-                'url'    => "session/:sessionId/element/:id/css/:propertyName"
+                'url'    => 'session/:sessionId/element/:id/css/:propertyName'
             },
             'mouseMoveToLocation' => {
                 'method' => 'POST',
-                'url'    => "session/:sessionId/moveto"
+                'url'    => 'session/:sessionId/moveto'
             },
             'getAlertText' => {
                 'method' => 'GET',
@@ -284,11 +284,11 @@ has '_cmds' => (
 
             #'setVisible' => {
             #               'method' => 'POST',
-            #               'url' => "session/:sessionId/visible"
+            #               'url' => 'session/:sessionId/visible'
             #},
             #'getVisible' => {
             #               'method' => 'GET',
-            #               'url' => "session/:sessionId/visible"
+            #               'url' => 'session/:sessionId/visible'
             #},
         };
     }
