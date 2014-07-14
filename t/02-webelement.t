@@ -68,9 +68,6 @@ INPUT: {
         $ret = $elem->is_selected();
         is($ret, 0, 'Toggle & Checkbox is selected');
     }
-    ;
-    note "describe return data has not yet been defined";
-    ok($elem->describe,"describe returns data");
 }
 
 MODIFIER: {
