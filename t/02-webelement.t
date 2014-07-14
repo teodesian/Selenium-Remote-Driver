@@ -53,6 +53,8 @@ INPUT: {
     is($ret, 'id', 'Get value (attribute)');
     $ret = $elem->get_attribute('value');
     is($ret, 'id', 'Get attribute @value');
+    $ret = $elem->get_attribute('missing-attribute');
+    ok(!$ret, 'Get attribute returns false for a missing attribute.');
     $ret = $elem->get_tag_name();
     is($ret, 'input', 'Get tag name');
 
