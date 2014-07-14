@@ -99,5 +99,27 @@ my $element = Test::Selenium::Remote::WebElement->new(
 
 }
 
+# content_like
+{
+    $successful_driver->mock( 'get_page_source', sub { 'this output matches regex' } );
+    check_tests(
+        sub {
+            my $rc = $successful_driver->content_like( qr/matches/,
+                'content_like works' );
+            is( $rc, 1, 'returns true' );
+        },
+        [   {   ok   => 1,
+                name => "content_like works",
+                diag => "",
+            },
+            {   ok   => 1,
+                name => "returns true",
+                diag => "",
+            },
+        ]
+    );
+
+}
+
 
 done_testing();
