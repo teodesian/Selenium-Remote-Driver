@@ -296,6 +296,10 @@ EXECUTE: {
     $elem = $driver->execute_async_script($script,'multi');
     ok($elem->isa('Selenium::Remote::WebElement'),'Executed async script');
     is($elem->get_attribute('id'),'multi','Async found proper element');
+
+    $script = 'return ""';
+    my $empty_string = $driver->execute_script($script);
+    cmp_ok($empty_string, 'eq', '', 'Empty strings are returned properly');
 }
 
 ALERT: {
