@@ -7,6 +7,7 @@ unless (-d "t" && -f "dist.ini" && -f "t/01-driver.t" && -f "t/02-webelement.t")
     die "Please run this from the root of the repo.";
 }
 
+resetEnv();
 startServer();
 
 print 'Cleaning...and building...
@@ -22,13 +23,13 @@ my $srdLib = glob('Selenium-Remote-Driver*/lib');
 my @files = (
     't/01-driver.t',
     't/02-webelement.t',
-    't/Firefox-Profile.t'
+    # 't/Firefox-Profile.t'
 );
 
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
 my $executeTests = join( ' && ', map { 'perl -I' . $srdLib . ' ' . $_ } @files);
 print `$export WD_MOCKING_RECORD=1 && $executeTests`;
-killServer();
+resetEnv();
 
 sub startServer {
     if ($^O eq 'MSWin32') {
@@ -45,4 +46,9 @@ sub killServer {
     else {
         `ps aux | grep [h]ttp-server\.pl  | awk '{print \$2}' | xargs kill`;
     }
+}
+
+sub resetEnv {
+    `dzil clean`;
+    killServer();
 }
