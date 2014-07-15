@@ -31,11 +31,11 @@ t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
 my $driver = new Selenium::Remote::Driver(browser_name => 'firefox');
 my $website = 'http://localhost:63636';
+$driver->get("$website/formPage.html");
 my $ret;
 my $elem;
 
 LINK: {
-    $driver->get("$website/formPage.html");
     $driver->find_element("//a[\@href='/index.html']")->click;
     pass('Click Link...');
     isa_ok($driver->get_active_element,"Selenium::Remote::WebElement","get_active_element");
