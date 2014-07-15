@@ -72,7 +72,7 @@ has '_cmds' => (
             'setWindowSize' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/window/:windowHandle/size',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'setWindowPosition' => {
                 'method'             => 'POST',
