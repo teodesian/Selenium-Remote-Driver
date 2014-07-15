@@ -443,10 +443,15 @@ sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->session_id;
     my $resource = $self->commands->get_params($res);
+
     if ($resource) {
-        my $resp =
-          $self->remote_conn->request( $resource->{'method'},
-            $resource->{'url'}, $params );
+        $params = {} unless $params;
+        my $resp = $self->remote_conn->request(
+            $resource->{method},
+            $resource->{url},
+            $resource->{no_content_success},
+            $params
+        );
         if ( ref($resp) eq 'HASH' ) {
             if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
                 return $resp->{cmd_return};
@@ -520,7 +525,9 @@ sub _request_new_session {
     # TODO: rewrite the testing better, this is so fragile.
     my $resp = $self->remote_conn->request(
         $self->commands->get_method('newSession'),
-        $self->commands->get_url('newSession'), $args,
+        $self->commands->get_url('newSession'),
+        $self->commands->get_no_content_success('newSession'),
+        $args,
     );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
         $self->session_id( $resp->{'sessionId'} );
