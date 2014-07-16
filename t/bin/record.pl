@@ -23,7 +23,7 @@ my $srdLib = glob('Selenium-Remote-Driver*/lib');
 my @files = (
     't/01-driver.t',
     't/02-webelement.t',
-    # 't/Firefox-Profile.t'
+    't/Firefox-Profile.t'
 );
 
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
