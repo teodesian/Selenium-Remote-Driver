@@ -1,5 +1,13 @@
 Revision history for Selenium-Remote-Driver
 
+0.21   7-16-2014
+        [NEW FEATURES]
+        - #87: Implement is_hidden for WebElements
+
+        [BUG FIXES]
+        - #145: Revert previous 2.42.2 fix to allow for endpoints properly returning ''
+        - #146: Keep test description when using content_like
+
 0.2002 7-2-2014
         [BUG FIXES]
         - #135, #136, #142: Fix compatability issues with JSONWireProtocol changes in 2.42.2
