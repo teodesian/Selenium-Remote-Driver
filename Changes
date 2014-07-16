@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+0.2101 7-16-2014
+        [BUG FIXES]
+        - Update list of no_content_success methods that interpret an undef value as success
+
 0.21   7-16-2014
         [NEW FEATURES]
         - #87: Implement is_hidden for WebElements
