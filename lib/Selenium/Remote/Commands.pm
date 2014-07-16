@@ -32,22 +32,22 @@ has '_cmds' => (
             'setTimeout' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/timeouts',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'setAsyncScriptTimeout' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/timeouts/async_script',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'setImplicitWaitTimeout' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/timeouts/implicit_wait',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'quit' => {
                 'method'             => 'DELETE',
                 'url'                => 'session/:sessionId',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'getCurrentWindowHandle' => {
                 'method'             => 'GET',
@@ -92,17 +92,17 @@ has '_cmds' => (
             'goForward' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/forward',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'goBack' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/back',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'refresh' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/refresh',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'executeScript' => {
                 'method'             => 'POST',
@@ -127,12 +127,12 @@ has '_cmds' => (
             'switchToFrame' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/frame',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'switchToWindow' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/window',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'getAllCookies' => {
                 'method'             => 'GET',
@@ -142,17 +142,17 @@ has '_cmds' => (
             'addCookie' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/cookie',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'deleteAllCookies' => {
                 'method'             => 'DELETE',
                 'url'                => 'session/:sessionId/cookie',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'deleteCookieNamed' => {
                 'method'             => 'DELETE',
                 'url'                => 'session/:sessionId/cookie/:name',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'getPageSource' => {
                 'method'             => 'GET',
@@ -197,27 +197,27 @@ has '_cmds' => (
             'clickElement' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/element/:id/click',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'submitElement' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/element/:id/submit',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'sendKeysToElement' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/element/:id/value',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'sendKeysToActiveElement' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/keys',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'sendModifier' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/modifier',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'isElementSelected' => {
                 'method'             => 'GET',
@@ -257,7 +257,7 @@ has '_cmds' => (
             'clearElement' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/element/:id/clear',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'getElementAttribute' => {
                 'method'             => 'GET',
@@ -277,12 +277,12 @@ has '_cmds' => (
             'close' => {
                 'method'             => 'DELETE',
                 'url'                => 'session/:sessionId/window',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'dragElement' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/element/:id/drag',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'getElementSize' => {
                 'method'             => 'GET',
@@ -302,7 +302,7 @@ has '_cmds' => (
             'mouseMoveToLocation' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/moveto',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'getAlertText' => {
                 'method'             => 'GET',
@@ -312,42 +312,42 @@ has '_cmds' => (
             'sendKeysToPrompt' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/alert_text',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'acceptAlert' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/accept_alert',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'dismissAlert' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/dismiss_alert',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'click' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/click',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'doubleClick' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/doubleclick',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'buttonDown' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/buttondown',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'buttonUp' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/buttonup',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
             'uploadFile' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/file',
-                'no_content_success' => 0
+                'no_content_success' => 1
             },
 
             #'setVisible' => {
