@@ -10,276 +10,344 @@ has '_cmds' => (
     builder => sub {
         return {
             'status' => {
-                'method' => 'GET',
-                'url'    => 'status'
+                'method'             => 'GET',
+                'url'                => 'status',
+                'no_content_success' => 0
             },
             'newSession' => {
-                'method' => 'POST',
-                'url'    => 'session'
+                'method'             => 'POST',
+                'url'                => 'session',
+                'no_content_success' => 0
             },
             'getSessions' => {
-                'method' => 'GET',
-                'url'    => 'sessions'
+                'method'             => 'GET',
+                'url'                => 'sessions',
+                'no_content_success' => 0
             },
             'getCapabilities' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId',
+                'no_content_success' => 0
             },
             'setTimeout' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/timeouts'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/timeouts',
+                'no_content_success' => 0
             },
             'setAsyncScriptTimeout' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/timeouts/async_script'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/timeouts/async_script',
+                'no_content_success' => 0
             },
             'setImplicitWaitTimeout' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/timeouts/implicit_wait'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/timeouts/implicit_wait',
+                'no_content_success' => 0
             },
             'quit' => {
-                'method' => 'DELETE',
-                'url'    => 'session/:sessionId'
+                'method'             => 'DELETE',
+                'url'                => 'session/:sessionId',
+                'no_content_success' => 0
             },
             'getCurrentWindowHandle' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/window_handle'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/window_handle',
+                'no_content_success' => 0
             },
             'getWindowHandles' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/window_handles'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/window_handles',
+                'no_content_success' => 0
             },
             'getWindowSize' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/window/:windowHandle/size'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/window/:windowHandle/size',
+                'no_content_success' => 0
             },
             'getWindowPosition' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/window/:windowHandle/position'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/window/:windowHandle/position',
+                'no_content_success' => 0
             },
             'setWindowSize' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/window/:windowHandle/size'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/window/:windowHandle/size',
+                'no_content_success' => 1
             },
             'setWindowPosition' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/window/:windowHandle/position'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/window/:windowHandle/position',
+                'no_content_success' => 1
             },
             'getCurrentUrl' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/url'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/url',
+                'no_content_success' => 0
             },
             'get' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/url'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/url',
+                'no_content_success' => 1
             },
             'goForward' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/forward'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/forward',
+                'no_content_success' => 0
             },
             'goBack' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/back'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/back',
+                'no_content_success' => 0
             },
             'refresh' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/refresh'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/refresh',
+                'no_content_success' => 0
             },
             'executeScript' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/execute'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/execute',
+                'no_content_success' => 0
             },
             'executeAsyncScript' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/execute_async'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/execute_async',
+                'no_content_success' => 0
             },
             'screenshot' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/screenshot'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/screenshot',
+                'no_content_success' => 0
             },
             'availableEngines' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/ime/available_engines'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/ime/available_engines',
+                'no_content_success' => 0
             },
             'switchToFrame' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/frame'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/frame',
+                'no_content_success' => 0
             },
             'switchToWindow' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/window'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/window',
+                'no_content_success' => 0
             },
             'getAllCookies' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/cookie'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/cookie',
+                'no_content_success' => 0
             },
             'addCookie' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/cookie'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/cookie',
+                'no_content_success' => 0
             },
             'deleteAllCookies' => {
-                'method' => 'DELETE',
-                'url'    => 'session/:sessionId/cookie'
+                'method'             => 'DELETE',
+                'url'                => 'session/:sessionId/cookie',
+                'no_content_success' => 0
             },
             'deleteCookieNamed' => {
-                'method' => 'DELETE',
-                'url'    => 'session/:sessionId/cookie/:name'
+                'method'             => 'DELETE',
+                'url'                => 'session/:sessionId/cookie/:name',
+                'no_content_success' => 0
             },
             'getPageSource' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/source'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/source',
+                'no_content_success' => 0
             },
             'getTitle' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/title'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/title',
+                'no_content_success' => 0
             },
             'findElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element',
+                'no_content_success' => 0
             },
             'findElements' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/elements'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/elements',
+                'no_content_success' => 0
             },
             'getActiveElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/active'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/active',
+                'no_content_success' => 0
             },
             'describeElement' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id',
+                'no_content_success' => 0
             },
             'findChildElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/element'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/element',
+                'no_content_success' => 0
             },
             'findChildElements' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/elements'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/elements',
+                'no_content_success' => 0
             },
             'clickElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/click'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/click',
+                'no_content_success' => 0
             },
             'submitElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/submit'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/submit',
+                'no_content_success' => 0
             },
             'sendKeysToElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/value'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/value',
+                'no_content_success' => 0
             },
             'sendKeysToActiveElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/keys'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/keys',
+                'no_content_success' => 0
             },
             'sendModifier' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/modifier'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/modifier',
+                'no_content_success' => 0
             },
             'isElementSelected' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/selected'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/selected',
+                'no_content_success' => 0
             },
             'setElementSelected' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/selected'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/selected',
+                'no_content_success' => 0
             },
             'toggleElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/toggle'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/toggle',
+                'no_content_success' => 0
             },
             'isElementEnabled' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/enabled'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/enabled',
+                'no_content_success' => 0
             },
             'getElementLocation' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/location'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/location',
+                'no_content_success' => 0
             },
             'getElementLocationInView' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/location_in_view'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/location_in_view',
+                'no_content_success' => 0
             },
             'getElementTagName' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/name'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/name',
+                'no_content_success' => 0
             },
             'clearElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/clear'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/clear',
+                'no_content_success' => 0
             },
             'getElementAttribute' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/attribute/:name'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/attribute/:name',
+                'no_content_success' => 0
             },
             'elementEquals' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/equals/:other'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/equals/:other',
+                'no_content_success' => 0
             },
             'isElementDisplayed' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/displayed'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/displayed',
+                'no_content_success' => 0
             },
             'close' => {
-                'method' => 'DELETE',
-                'url'    => 'session/:sessionId/window'
+                'method'             => 'DELETE',
+                'url'                => 'session/:sessionId/window',
+                'no_content_success' => 0
             },
             'dragElement' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/element/:id/drag'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/element/:id/drag',
+                'no_content_success' => 0
             },
             'getElementSize' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/size'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/size',
+                'no_content_success' => 0
             },
             'getElementText' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/text'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/text',
+                'no_content_success' => 0
             },
             'getElementValueOfCssProperty' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/element/:id/css/:propertyName'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/element/:id/css/:propertyName',
+                'no_content_success' => 0
             },
             'mouseMoveToLocation' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/moveto'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/moveto',
+                'no_content_success' => 0
             },
             'getAlertText' => {
-                'method' => 'GET',
-                'url'    => 'session/:sessionId/alert_text'
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/alert_text',
+                'no_content_success' => 0
             },
             'sendKeysToPrompt' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/alert_text'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/alert_text',
+                'no_content_success' => 0
             },
             'acceptAlert' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/accept_alert'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/accept_alert',
+                'no_content_success' => 0
             },
             'dismissAlert' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/dismiss_alert'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/dismiss_alert',
+                'no_content_success' => 0
             },
             'click' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/click'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/click',
+                'no_content_success' => 0
             },
             'doubleClick' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/doubleclick'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/doubleclick',
+                'no_content_success' => 0
             },
             'buttonDown' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/buttondown'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/buttondown',
+                'no_content_success' => 0
             },
             'buttonUp' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/buttonup'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/buttonup',
+                'no_content_success' => 0
             },
             'uploadFile' => {
-                'method' => 'POST',
-                'url'    => 'session/:sessionId/file'
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/file',
+                'no_content_success' => 0
             },
 
             #'setVisible' => {
@@ -305,6 +373,11 @@ sub get_method {
     return $self->get_cmds->{$command}->{method};
 }
 
+sub get_no_content_success {
+    my ( $self, $command ) = @_;
+    return $self->get_cmds->{$command}->{no_content_success};
+}
+
 # This method will replace the template & return
 sub get_params {
     my ( $self, $args ) = @_;
@@ -324,6 +397,7 @@ sub get_params {
     $url =~ s/:windowHandle/$args->{'window_handle'}/;
 
     $data->{'method'} = $self->get_method($command);
+    $data->{'no_content_success'} = $self->get_no_content_success($command);
     $data->{'url'}    = $url;
 
     return $data;

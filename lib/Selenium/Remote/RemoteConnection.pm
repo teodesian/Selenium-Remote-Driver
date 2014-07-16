@@ -55,7 +55,9 @@ sub BUILD {
 
 # This request method is tailored for Selenium RC server
 sub request {
-    my ($self, $method, $url, $params) = @_;
+    my ($self, $method, $url, $no_content_success, $params) = @_;
+    $no_content_success = $no_content_success // 0;
+
     my $content = '';
     my $fullurl = '';
 
@@ -93,11 +95,11 @@ sub request {
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
     my $response = $self->ua->request($request);
 
-    return $self->_process_response($response);
+    return $self->_process_response($response, $no_content_success);
 }
 
 sub _process_response {
-    my ($self, $response) = @_;
+    my ($self, $response, $no_content_success) = @_;
     my $data; # server response 'value' that'll be returned to the user
     my $json = JSON->new;
 
@@ -131,8 +133,13 @@ sub _process_response {
         }
         elsif ($response->is_success) {
             $data->{'cmd_status'} = 'OK';
-            if (defined $decoded_json && defined $decoded_json->{'value'}) {
-                $data->{'cmd_return'} = $decoded_json->{'value'};
+            if (defined $decoded_json) {
+                if ($no_content_success) {
+                    $data->{'cmd_return'} = 1
+                }
+                else {
+                    $data->{'cmd_return'} = $decoded_json->{'value'};
+                }
             }
             else {
                 $data->{'cmd_return'} = 'Server returned status code '.$response->code.' but no data';
