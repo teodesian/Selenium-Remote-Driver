@@ -1,6 +1,6 @@
 # Selenium::Remote::Driver
 
-[![Build Status](https://travis-ci.org/gempesaw/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/gempesaw/Selenium-Remote-Driver)
+[![Build Status](https://travis-ci.org/gempesaw/Selenium-Remote-Driver.svg?branch=cpan)](https://travis-ci.org/gempesaw/Selenium-Remote-Driver)
 
 [Selenium WebDriver][wd] is a test tool that allows you to write
 automated web application UI tests in any programming language against
