@@ -354,6 +354,17 @@ AUTO_CLOSE: {
     $driver->auto_close(1);
 }
 
+INNER_WINDOW_SIZE: {
+    my $normal = Selenium::Remote::Driver->new->get_window_size;
+
+    my $resized = Selenium::Remote::Driver->new(
+        inner_window_size => [ 640, 480 ]
+    )->get_window_size;
+
+    ok($normal->{height} != $resized->{height}, 'inner window size: height is immediately changed');
+    ok($normal->{width} != $resized->{width}, 'inner window size: width is immediately changed');
+}
+
 BASE_URL: {
     {
         package MySeleniumRemoteDriver;

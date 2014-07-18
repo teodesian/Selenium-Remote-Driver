@@ -143,11 +143,11 @@ available here.
     are also optional.
 
         'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
+        'base_url'             - <string>   - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
         'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+        'inner_window_size'    - <aref[Int]>- An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
         'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
-        'base_url'             - <string>   - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
-
 
     If no values are provided, then these defaults will be assumed:
         'remote_server_addr' => 'localhost'
@@ -395,6 +395,26 @@ has 'desired_capabilities' => (
     predicate => 'has_desired_capabilities'
 );
 
+has 'inner_window_size' => (
+    is        => 'rw',
+    lazy      => 1,
+    predicate => 1,
+    coerce    => sub {
+        my $size = shift;
+
+        croak "inner_window_size must have two elements: [ height, width ]"
+          unless scalar @$size == 2;
+
+        foreach my $dim (@$size) {
+            croak 'inner_window_size only accepts integers, not: ' . $dim
+              unless Scalar::Util::looks_like_number($dim);
+        }
+
+        return $size;
+    },
+
+);
+
 has 'testing' => (
     is => 'rw',
     default => sub { 0 },
@@ -416,6 +436,10 @@ sub BUILD {
 
         if ( !( defined $self->session_id ) ) {
             croak "Could not establish a session with the remote server\n";
+        }
+        elsif ($self->has_inner_window_size) {
+            my $size = $self->inner_window_size;
+            $self->set_inner_window_size(@$size);
         }
     }
 }
@@ -503,7 +527,7 @@ sub new_session {
     }
 
     if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
-        && $self->has_firefox_profile) {
+          && $self->has_firefox_profile) {
         $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile;
     }
 
@@ -2226,6 +2250,48 @@ sub get_path {
     return $location;
 }
 
+=head2 set_inner_window_size
+
+ Description:
+
+     Set the inner window size by closing the current window and
+     reopening the current page in a new window. This can be useful
+     when using browsers to mock as mobile devices.
+
+     This sub will be fired automatically if you set the
+     C<inner_window_size> hash key option during instantiation.
+
+ Input:
+     INT - height of the window
+     INT - width of the window
+
+ Output:
+     BOOLEAN - Success or failure
+
+ Usage:
+     $driver->set_inner_window_size(640, 480)
+
+=cut
+
+sub set_inner_window_size {
+    my $self = shift;
+    my $height = shift;
+    my $width = shift;
+    my $location = $self->get_current_url;
+
+    $self->execute_script('window.open("' . $location . '", "_blank")');
+    $self->close;
+    my @handles = @{ $self->get_window_handles };
+    $self->switch_to_window(pop @handles);
+
+    my @resize = (
+        'window.innerHeight = ' . $height,
+        'window.innerWidth  = ' . $width,
+        'return 1'
+    );
+
+    return $self->execute_script(join(';', @resize)) ? 1 : 0;
+}
 
 1;
 

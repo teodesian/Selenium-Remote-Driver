@@ -2,40 +2,49 @@
 
 use strict;
 use warnings;
+use Cwd qw/abs_path/;
 
-unless (-d "t" && -f "dist.ini" && -f "t/01-driver.t" && -f "t/02-webelement.t") {
-    die "Please run this from the root of the repo.";
-}
+my $this_file = abs_path(__FILE__);
+my $srd_folder = $this_file;
+$srd_folder =~ s/t\/bin\/record\.pl//;
 
 resetEnv();
 startServer();
 
 print 'Cleaning...and building...
 ';
-print `dzil clean`;
-print `dzil build`;
+print `cd $srd_folder && dzil build`;
 
 if ($^O eq 'linux') {
     print "Headless and need a webdriver server started? Try\n\n\tDISPLAY=:1 xvfb-run --auto-servernum java -jar /usr/lib/node_modules/protractor/selenium/selenium-server-standalone-2.42.2.jar\n\n";
 }
 
-my $srdLib = glob('Selenium-Remote-Driver*/lib');
-my @files = (
+my @files = map {
+    $srd_folder . $_
+} (
     't/01-driver.t',
     't/02-webelement.t',
     't/Firefox-Profile.t'
 );
 
+my $srdLib = glob($srd_folder . 'Selenium-Remote-Driver*/lib');
+my $tLib = glob($srd_folder . 'Selenium-Remote-Driver*');
+my $executeTests = join( ' && ', map {
+    'perl -I' . $srdLib
+      . ' -I' . $tLib
+      . ' ' . $_
+  } @files);
+
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
-my $executeTests = join( ' && ', map { 'perl -I' . $srdLib . ' ' . $_ } @files);
 print `$export WD_MOCKING_RECORD=1 && $executeTests`;
 resetEnv();
 
 sub startServer {
     if ($^O eq 'MSWin32') {
-        system("start \"TEMP_HTTP_SERVER\" /MIN perl t/http-server.pl");
-    } else {
-        system("perl t/http-server.pl > /dev/null &");
+        system('start "TEMP_HTTP_SERVER" /MIN perl ' . $srd_folder . 't/http-server.pl');
+    }
+    else {
+        system('perl ' . $srd_folder . 't/http-server.pl > /dev/null &');
     }
 }
 
@@ -49,6 +58,6 @@ sub killServer {
 }
 
 sub resetEnv {
-    `dzil clean`;
+    `cd $srd_folder && dzil clean`;
     killServer();
 }
