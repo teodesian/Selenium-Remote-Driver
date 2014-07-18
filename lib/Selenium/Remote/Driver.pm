@@ -2281,7 +2281,8 @@ sub set_inner_window_size {
 
     $self->execute_script('window.open("' . $location . '", "_blank")');
     $self->close;
-    $self->switch_to_window(shift $self->get_window_handles);
+    my @handles = @{ $self->get_window_handles };
+    $self->switch_to_window(pop @handles);
 
     my @resize = (
         'window.innerHeight = ' . $height,
