@@ -249,4 +249,5 @@ __END__
 
 =head1 SEE ALSO
 
+http://kb.mozillazine.org/About:config_entries
 https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
