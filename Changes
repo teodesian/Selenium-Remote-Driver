@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+0.2102 7-16-2014
+        [NEW FEATURES]
+        - Add inner_window_size sub and hash key option to accomodate S-R-D-UserAgent use
+
 0.2101 7-16-2014
         [BUG FIXES]
         - Update list of no_content_success methods that interpret an undef value as success
