@@ -76,12 +76,28 @@ locally, or you can point your driver somewhere like [Saucelabs][s].
 ### Locally
 
 ```perl
+#! /usr/bin/perl
+
+use strict;
+use warnings;
 use Selenium::Remote::Driver;
 
 my $driver = Selenium::Remote::Driver->new;
 $driver->get('http://www.google.com');
-print $driver->get_title();
-$driver->quit();
+print $driver->get_title . "\n"; # "Google"
+
+my $query = $driver->find_element('q', 'name');
+$query->send_keys('CPAN Selenium Remote Driver');
+
+my $send_search = $driver->find_element('btnG', 'name');
+$send_search->click;
+
+# make the find_element blocking for a second to allow the title to change
+$driver->set_implicit_wait_timeout(2000);
+my $results = $driver->find_element('search', 'id');
+
+print $driver->get_title . "\n"; # CPAN Selenium Remote Driver - Google Search
+$driver->quit;
 ```
 
 ### Saucelabs
