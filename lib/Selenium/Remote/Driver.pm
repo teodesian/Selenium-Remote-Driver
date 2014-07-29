@@ -1195,7 +1195,7 @@ sub refresh {
 
 sub has_javascript {
     my $self = shift;
-    return $self->javascript == JSON::true;
+    return int($self->javascript);
 }
 
 =head2 execute_async_script
