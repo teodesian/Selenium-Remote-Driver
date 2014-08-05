@@ -39,21 +39,34 @@ $ dzil install
 
 ### Without Dist::Zilla
 
-If you don't want to use Dist::Zilla, we maintain a `cpan` branch that
-has a `Makefile.PL` that `cpanm` can install from:
+We maintain two branches that have `Makefile.PL`:
+[`cpan`][cpan-branch] and [`build/master`][bm-branch]. The `cpan`
+branch is only updated every time we release to the CPAN, and it is
+not kept up to date with master. The `build/master` branch is an
+up-to-date copy of the latest changes in master, and will usually
+contain changes that have not made it to a CPAN release yet.
+
+To get either of these, you can use the following, (replacing
+"build/master" with "cpan" if desired):
 
 ```bash
-$ cpanm -v git://github.com/gempesaw/Selenium-Remote-Driver.git@cpan
+$ cpanm -v git://github.com/gempesaw/Selenium-Remote-Driver.git@build/master
 ```
 
-Or, if the `git://` protocol is blocked or you don't want to use `cpanm`
+Or, without `cpanm` and/or without the `git://` protocol:
 
 ```bash
-$ git clone https://github.com/gempesaw/Selenium-Remote-Driver
+$ git clone https://github.com/gempesaw/Selenium-Remote-Driver --branch build/master --single-branch --depth 1
 $ cd Selenium-Remote-Driver
-$ git checkout -b cpan origin/cpan
 $ perl Makefile.PL
 ```
+
+Note that due to POD::Weaver, the line numbers between these generated
+branches and the master branch are unfortunately completely
+incompatible.
+
+[cpan-branch]: https://github.com/gempesaw/Selenium-Remote-Driver/tree/cpan
+[bm-branch]: https://github.com/gempesaw/Selenium-Remote-Driver/tree/build/master
 
 ### Viewing dependencies
 
@@ -63,7 +76,6 @@ cloned the repository:
 ```bash
 $ cpanm --showdeps .
 ```
-
 
 ## Usage
 
