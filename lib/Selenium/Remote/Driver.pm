@@ -2302,5 +2302,7 @@ __END__
 http://code.google.com/p/selenium/
 https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
 https://github.com/gempesaw/Selenium-Remote-Driver/wiki
+Brownie
+Wight
 
 =cut
