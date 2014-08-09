@@ -158,16 +158,19 @@ responses changed slightly in 2.42.x versions, breaking things like
 
 ## Support and Documentation
 
-Check out [metacpan][meta] for the POD; alternatively, after
-installing, you can find documentation for this module with the
-`perldoc` command.
+There is a new mailing list available at
+
+https://groups.google.com/forum/#!forum/selenium-remote-driver
+
+for usage questions and ensuing discussions. If you've come across a
+bug, please open an issue in the [Github issue tracker][issue]. The
+POD is available in the usual places, including [metacpan][meta], and
+in your shell via `perldoc`.
 
 ```bash
 $ perldoc Selenium::Remote::Driver
 $ perldoc Selenium::Remote::WebElement
 ```
-
-Please file all bugs in the [Github issue tracker][issue].
 
 [issue]: https://github.com/gempesaw/Selenium-Remote-Driver/issues
 [meta]: https://metacpan.org/pod/Selenium::Remote::Driver
