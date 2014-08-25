@@ -349,15 +349,24 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/file',
                 'no_content_success' => 1
             },
+            'getLocalStorageItem' => {
+                'method'             => 'GET',
+                'url'                => '/session/:sessionId/local_storage/key/:key',
+                'no_content_success' => 0
+            },
+            'deleteLocalStorageItem' => {
+                'method'             => 'DELETE',
+                'url'                => '/session/:sessionId/local_storage/key/:key',
+                'no_content_success' => 1
+            }
 
-            #'setVisible' => {
-            #               'method' => 'POST',
-            #               'url' => 'session/:sessionId/visible'
-            #},
-            #'getVisible' => {
-            #               'method' => 'GET',
-            #               'url' => 'session/:sessionId/visible'
-            #},
+            # /session/:sessionId/local_storage
+            # /session/:sessionId/local_storage/key/:key
+            # /session/:sessionId/local_storage/size
+            # /session/:sessionId/session_storage
+            # /session/:sessionId/session_storage/key/:key
+            # /session/:sessionId/session_storage/size
+
         };
     }
 );

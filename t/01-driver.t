@@ -434,4 +434,29 @@ NO_SERVER_ERROR_MESSAGE: {
     unlike($@, qr/Use of uninitialized value/, "Error message for no server at host/port combination is helpful");
 }
 
+STORAGE: {
+    my $chrome;
+
+  SKIP: {
+        eval {
+            $chrome = Selenium::Remote::Driver->new(browser_name => 'chrome');
+            $chrome->get($website);
+        };
+
+        if ($@ || !defined $chrome) {
+            skip 'FirefoxDriver does not support Storage APIs; Chromedriver must be configured to perform storage tests', 3;
+        }
+
+        my ($key, $value) = ('testKey', 'testValue');
+        $chrome->execute_script('localStorage.' . $key . ' = "' . $value . '"; return 1');
+
+        my $actual = $chrome->get_local_storage_item($key);
+        ok($actual eq $value, 'can retrieve local storage by key');
+
+        ok($chrome->delete_local_storage_item($key), 'can delete local storage by key');
+        my $now_empty = $chrome->get_local_storage_item($key);
+        ok(!(defined $now_empty), 'retrieving an empty or deleted local storage key returns undef');
+    }
+}
+
 done_testing;

@@ -2021,7 +2021,7 @@ sub get_active_element {
  Description:
     Send an event to the active element to depress or release a modifier key.
 
-  Input: 2
+ Input: 2
     Required:
       value - String - The modifier key event to be sent. This key must be one 'Ctrl','Shift','Alt',' or 'Command'/'Meta' as defined by the send keys command
       isdown - Boolean/String - Whether to generate a key down or key up
@@ -2253,7 +2253,6 @@ sub get_path {
 =head2 set_inner_window_size
 
  Description:
-
      Set the inner window size by closing the current window and
      reopening the current page in a new window. This can be useful
      when using browsers to mock as mobile devices.
@@ -2292,6 +2291,52 @@ sub set_inner_window_size {
 
     return $self->execute_script(join(';', @resize)) ? 1 : 0;
 }
+
+=head2 get_local_storage_item
+
+ Description:
+     Get the value of a local storage item specified by the given key.
+
+ Input: 1
+    Required:
+        STRING - name of the key to be retrieved
+
+ Output:
+     STRING - value of the local storage item
+
+ Usage:
+     $driver->get_local_storage_item('key')
+
+=cut
+
+sub get_local_storage_item {
+    my ($self, $key) = @_;
+    my $res = { 'command' => 'getLocalStorageItem' };
+    my $params = { 'key' => $key };
+    return $self->_execute_command($res, $params);
+}
+
+=head2 delete_local_storage_item
+
+ Description:
+     Get the value of a local storage item specified by the given key.
+
+ Input: 1
+    Required
+        STRING - name of the key to be deleted
+
+ Usage:
+     $driver->delete_local_storage_item('key')
+
+=cut
+
+sub delete_local_storage_item {
+    my ($self, $key) = @_;
+    my $res = { 'command' => 'deleteLocalStorageItem' };
+    my $params = { 'key' => $key };
+    return $self->_execute_command($res, $params);
+}
+
 
 1;
 
