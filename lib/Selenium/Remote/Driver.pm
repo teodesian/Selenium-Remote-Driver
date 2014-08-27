@@ -1460,9 +1460,19 @@ sub switch_to_frame {
 =head2 switch_to_window
 
  Description:
-    Change focus to another window. The window to change focus to may be
-    specified by its server assigned window handle, or by the value of its name
-    attribute.
+    Change focus to another window. The window to change focus to may
+    be specified by its server assigned window handle, or by the value
+    of the page's window.name attribute.
+
+    If you wish to use the window name as the target, you'll need to
+    have set C<window.name> on the page either in app code or via
+    L</execute_script>, or pass a name as the second argument to the
+    C<window.open()> function when opening the new window. Note that
+    the window name used here has nothing to do with the window title,
+    or the C<< <title> >> element on the page.
+
+    Otherwise, use L</get_window_handles> and select a
+    Webdriver-generated handle from the output of that function.
 
  Input: 1
     Required:
