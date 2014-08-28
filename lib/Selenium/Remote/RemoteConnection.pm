@@ -31,6 +31,11 @@ has 'ua' => (
     builder => sub { return LWP::UserAgent->new; }
 );
 
+has 'error_handler' => (
+    is => 'lazy',
+    builder => sub { return Selenium::Remote::ErrorHandler->new; }
+);
+
 sub BUILD {
     my $self = shift;
     my $status;
@@ -121,10 +126,9 @@ sub _process_response {
         }
 
         if ($response->is_error) {
-            my $error_handler = Selenium::Remote::ErrorHandler->new;
             $data->{'cmd_status'} = 'NOTOK';
             if (defined $decoded_json) {
-                $data->{'cmd_return'} = $error_handler->process_error($decoded_json);
+                $data->{'cmd_return'} = $self->error_handler->process_error($decoded_json);
             }
             else {
                 $data->{'cmd_return'} = 'Server returned error code '.$response->code.' and no data';
