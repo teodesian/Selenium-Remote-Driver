@@ -558,7 +558,8 @@ sub _request_new_session {
     }
     else {
         my $error = 'Could not create new session';
-        $error .= ": $resp->{cmd_return}" if defined $resp->{cmd_return};
+        $error .= ': ' . $resp->{cmd_return}->{message}
+          if exists $resp->{cmd_return}->{message};
         croak $error;
     }
 }
