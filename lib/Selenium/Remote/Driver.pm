@@ -300,7 +300,7 @@ has 'webelement_class' => (
 
 has 'default_finder' => (
     is      => 'rw',
-    coerce  => sub { FINDERS->{ $_[0] } },
+    coerce  => sub { __PACKAGE__->FINDERS->{ $_[0] } },
     default => sub {'xpath'},
 );
 
@@ -1753,7 +1753,7 @@ sub find_element {
         croak 'Search string to find element not provided.';
     }
     my $using =
-      ( defined $method ) ? FINDERS->{$method} : $self->default_finder;
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
     if ( defined $using ) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
@@ -1812,7 +1812,7 @@ sub find_elements {
     }
 
     my $using =
-      ( defined $method ) ? FINDERS->{$method} : $self->default_finder;
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
 
     if ( defined $using ) {
         my $res = { 'command' => 'findElements' };
@@ -1887,9 +1887,9 @@ sub find_child_element {
         croak "Missing parameters";
     }
     my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists FINDERS->{$using} ) {
+    if ( exists $self->FINDERS->{$using} ) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-        my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
@@ -1948,9 +1948,9 @@ sub find_child_elements {
         croak "Missing parameters";
     }
     my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists FINDERS->{$using} ) {
+    if ( exists $self->FINDERS->{$using} ) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-        my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
