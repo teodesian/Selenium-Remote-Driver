@@ -1491,7 +1491,7 @@ sub switch_to_frame {
 =cut
 
 sub switch_to_window {
-    my ( $self, $name ) = @_;
+  my ( $self, $name ) = @_;
     if ( not defined $name ) {
         return 'Window name not provided';
     }
@@ -1500,52 +1500,6 @@ sub switch_to_window {
     return $self->_execute_command( $res, $params );
 }
 
-=head2 get_speed
-
- Description:
-    Get the current user input speed. The actual input speed is still browser
-    specific and not covered by the Driver.
-
- Output:
-    STRING - One of these: SLOW, MEDIUM, FAST
-
- Usage:
-    print $driver->get_speed();
-
-=cut
-
-sub get_speed {
-    my ($self) = @_;
-    my $res = { 'command' => 'getSpeed' };
-    return $self->_execute_command($res);
-}
-
-=head2 set_speed
-
- Description:
-    Set the user input speed.
-
- Input:
-    STRING - One of these: SLOW, MEDIUM, FAST
-
- Usage:
-    $driver->set_speed('MEDIUM');
-
- Note: This function is a no-op in WebDriver (?). See
-       https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion and
-       http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
-
-=cut
-
-sub set_speed {
-    my ( $self, $speed ) = @_;
-    if ( not defined $speed ) {
-        return 'Speed not provided.';
-    }
-    my $res    = { 'command' => 'setSpeed' };
-    my $params = { 'speed'   => $speed };
-    return $self->_execute_command( $res, $params );
-}
 
 =head2 set_window_position
 
