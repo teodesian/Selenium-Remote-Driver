@@ -20,6 +20,8 @@ use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
+use Selenium::Remote::MockRemoteConnection;
+use Selenium::Remote::MockCommands;
 
 use constant FINDERS => {
     class             => 'class name',
@@ -313,12 +315,25 @@ has 'remote_conn' => (
     is      => 'lazy',
     builder => sub {
         my $self = shift;
-        return Selenium::Remote::RemoteConnection->new(
-            remote_server_addr => $self->remote_server_addr,
-            port               => $self->port,
-            ua                 => $self->ua
-        );
+        if ( $self->testing ) {
+            return Selenium::Remote::MockRemoteConnection->new(
+                spec      => $self->spec,
+                mock_cmds => $self->commands,
+            );
+        }
+        else {
+            return Selenium::Remote::RemoteConnection->new(
+                remote_server_addr => $self->remote_server_addr,
+                port               => $self->port,
+                ua                 => $self->ua
+            );
+        }
     },
+);
+
+has 'spec' => ( 
+    is => 'ro', 
+    default => sub { {}} ,
 );
 
 has 'ua' => (
@@ -328,7 +343,15 @@ has 'ua' => (
 
 has 'commands' => (
     is      => 'lazy',
-    builder => sub { return Selenium::Remote::Commands->new; },
+    builder => sub {
+        my $self = shift;
+        if ( $self->testing ) {
+            return Selenium::Remote::MockCommands->new;
+        }
+        else {
+            return Selenium::Remote::Commands->new;
+        }
+    },
 );
 
 has 'auto_close' => (
@@ -423,8 +446,6 @@ has 'testing' => (
 sub BUILD {
     my $self = shift;
 
-    # disable server connection when testing attribute is on
-    unless ($self->testing) {
 
         if ($self->has_desired_capabilities) {
             $self->new_desired_session( $self->desired_capabilities );
@@ -441,7 +462,6 @@ sub BUILD {
             my $size = $self->inner_window_size;
             $self->set_inner_window_size(@$size);
         }
-    }
 }
 
 sub new_from_caps {
@@ -466,6 +486,7 @@ sub DEMOLISH {
 sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->session_id;
+    $DB::single = 1;
     my $resource = $self->commands->get_params($res);
 
     if ($resource) {
