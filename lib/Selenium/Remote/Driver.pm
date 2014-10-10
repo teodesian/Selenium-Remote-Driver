@@ -20,8 +20,6 @@ use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
-use Selenium::Remote::MockRemoteConnection;
-use Selenium::Remote::MockCommands;
 
 use constant FINDERS => {
     class             => 'class name',
@@ -314,26 +312,13 @@ has 'session_id' => (
 has 'remote_conn' => (
     is      => 'lazy',
     builder => sub {
-        my $self = shift;
-        if ( $self->testing ) {
-            return Selenium::Remote::MockRemoteConnection->new(
-                spec      => $self->spec,
-                mock_cmds => $self->commands,
-            );
-        }
-        else {
+            my $self = shift;
             return Selenium::Remote::RemoteConnection->new(
                 remote_server_addr => $self->remote_server_addr,
                 port               => $self->port,
                 ua                 => $self->ua
             );
-        }
     },
-);
-
-has 'spec' => ( 
-    is => 'ro', 
-    default => sub { {}} ,
 );
 
 has 'ua' => (
@@ -344,13 +329,7 @@ has 'ua' => (
 has 'commands' => (
     is      => 'lazy',
     builder => sub {
-        my $self = shift;
-        if ( $self->testing ) {
-            return Selenium::Remote::MockCommands->new;
-        }
-        else {
-            return Selenium::Remote::Commands->new;
-        }
+        return Selenium::Remote::Commands->new;
     },
 );
 

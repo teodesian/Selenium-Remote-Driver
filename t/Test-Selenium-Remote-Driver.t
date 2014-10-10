@@ -4,6 +4,8 @@ use Test::More;
 use Test::Exception;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
+use Selenium::Remote::MockCommands;
+use Selenium::Remote::MockRemoteConnection;
 use Carp;
 
 my $spec = {
@@ -15,8 +17,13 @@ my $spec = {
     },
     getPageSource => sub { return 'this output matches regex'},
 };
+my $mock_commands = Selenium::Remote::MockCommands->new;
 
-my $successful_driver = Test::Selenium::Remote::Driver->new( testing => 1, spec => $spec);
+my $successful_driver =
+  Test::Selenium::Remote::Driver->new(
+    remote_conn => Selenium::Remote::MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
+    commands => $mock_commands,
+);
 $successful_driver->find_element_ok('q','find_element_ok works');
 dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if element not found';
 $successful_driver->find_no_element_ok('notq','find_no_element_ok works');
