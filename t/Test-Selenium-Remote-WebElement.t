@@ -1,12 +1,13 @@
 #!perl
+use lib 't/lib';
 use Test::More;
-use Selenium::Remote::MockCommands;
-use Selenium::Remote::MockRemoteConnection;
+use MockCommands;
+use MockRemoteConnection;
 use Test::Selenium::Remote::Driver;
 use Test::Selenium::Remote::WebElement;
 
 # Start off by faking a bunch of Selenium::Remote::WebElement calls succeeding
-my $mock_commands = Selenium::Remote::MockCommands->new;
+my $mock_commands = MockCommands->new;
 my $spec = { };
 
 foreach my $k (
@@ -17,11 +18,11 @@ foreach my $k (
 $spec->{getElementTagName} = sub { return { status => 'OK', return => 'iframe' }}; 
 $spec->{getElementValue} = sub { return { status => 'OK', return => 'my_value' }};
 $spec->{getElementText} = sub { return { status => 'OK', return => "my_text\nis fantastic" }};
-$spec->{getElementAttribute}  = sub { my $name = $_[1]; return { status => 'OK', return => "my_$name" }};
+$spec->{getElementAttribute}  = sub { my @args = @_; my $name = $args[0]->{name};  return { status => 'OK', return => "my_$name" }};
 
 my $driver =
   Test::Selenium::Remote::Driver->new(
-    remote_conn => Selenium::Remote::MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
+    remote_conn => MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
 
@@ -37,6 +38,7 @@ $successful_element->send_keys_ok('Hello World');
 $successful_element->tag_name_is( 'iframe', 'we got an iframe tag' );
 $successful_element->tag_name_isnt( 'BOOM', 'tag name is not boom' ); 
 $successful_element->tag_name_unlike( qr/BOOM/, "tag_name doesn't match BOOM" );
+            $successful_element->value_is( 'my_value', 'Got an my_value value?' );
 
 #     check_test(
 #         sub {

@@ -1,4 +1,4 @@
-package Selenium::Remote::MockRemoteConnection;
+package MockRemoteConnection;
 
 # ABSTRACT: utility class to mock the responses from Selenium server
 
@@ -26,7 +26,11 @@ has 'session_id' => (
 
 sub request { 
     my $self = shift;
-    my ($method, $url, $no_content_success, $params) = @_;
+    my ($resource, $params) = @_;
+    my $method =        $resource->{method};
+    my $url =        $resource->{url};
+    my $no_content_success =        $resource->{no_content_success} // 0;
+    my $url_params = $resource->{url_params};
     my $mock_cmds = $self->mock_cmds;
     my $spec = $self->spec; 
     my $cmd = $mock_cmds->get_method_name_from_parameters({method => $method,url => $url});
@@ -37,7 +41,7 @@ sub request {
             $ret->{cmd_return} = 1;
         }
         else { 
-            my $mock_return = $return_sub->($params);
+            my $mock_return = $return_sub->($url_params,$params);
             if (ref($mock_return) eq 'HASH') { 
                 $ret->{cmd_status} = $mock_return->{status};
                 $ret->{cmd_return} = $mock_return->{return};

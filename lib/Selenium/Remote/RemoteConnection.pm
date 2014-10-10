@@ -35,7 +35,7 @@ sub BUILD {
     my $self = shift;
     my $status;
     try {
-        $status = $self->request('GET','status');
+        $status = $self->request({method => 'GET', url => 'status'});
     }
     catch {
         croak "Could not connect to SeleniumWebDriver: $_" ;
@@ -44,7 +44,7 @@ sub BUILD {
     if($status->{cmd_status} ne 'OK') {
         # Could be grid, see if we can talk to it
         $status = undef;
-        $status = $self->request('GET', 'grid/api/hub/status');
+        $status = $self->request({method => 'GET', url => 'grid/api/hub/status'});
     }
 
     unless ($status->{cmd_status} eq 'OK') {
@@ -55,8 +55,10 @@ sub BUILD {
 
 # This request method is tailored for Selenium RC server
 sub request {
-    my ($self, $method, $url, $no_content_success, $params) = @_;
-    $no_content_success = $no_content_success // 0;
+    my ($self,$resource,$params) = @_;
+    my $method =        $resource->{method};
+    my $url =        $resource->{url};
+    my $no_content_success =        $resource->{no_content_success} // 0;
 
     my $content = '';
     my $fullurl = '';

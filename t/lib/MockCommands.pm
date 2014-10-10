@@ -1,4 +1,4 @@
-package Selenium::Remote::MockCommands; 
+package MockCommands; 
 use Moo; 
 extends 'Selenium::Remote::Commands';
 
@@ -9,10 +9,11 @@ sub get_params {
     my $self = shift;
     my $args = shift;
     my $data = {};
-    my $command = $args->{command};
+    my $command = delete $args->{command};
     $data->{'url'} = $self->get_url($command);
     $data->{'method'} = $self->get_method($command);
     $data->{'no_content_success'} = $self->get_no_content_success($command);
+    $data->{'url_params'}  = $args;
     return $data; 
 }
 

@@ -1,25 +1,27 @@
 #!/usr/bin/env perl
+use lib 't/lib';
 use Test::More;
 use Test::Exception;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
-use Selenium::Remote::MockCommands;
-use Selenium::Remote::MockRemoteConnection;
+use MockCommands;
+use MockRemoteConnection;
 
 my $spec = {
     findElement => sub {
-        my $searched_item = shift;
+        my (undef,$searched_item) = @_;
+        $DB::single = 1;
         return { status => 'OK', return => { ELEMENT => '123456' } }
           if ( $searched_item->{value} eq 'q' );
         return { status => 'NOK', return => 0, error => 'element not found' };
     },
     getPageSource => sub { return 'this output matches regex'},
 };
-my $mock_commands = Selenium::Remote::MockCommands->new;
+my $mock_commands = MockCommands->new;
 
 my $successful_driver =
   Test::Selenium::Remote::Driver->new(
-    remote_conn => Selenium::Remote::MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
+    remote_conn => MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
 $successful_driver->find_element_ok('q','find_element_ok works');

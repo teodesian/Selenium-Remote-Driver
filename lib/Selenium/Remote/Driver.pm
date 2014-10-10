@@ -465,17 +465,11 @@ sub DEMOLISH {
 sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->session_id;
-    $DB::single = 1;
     my $resource = $self->commands->get_params($res);
 
     if ($resource) {
         $params = {} unless $params;
-        my $resp = $self->remote_conn->request(
-            $resource->{method},
-            $resource->{url},
-            $resource->{no_content_success},
-            $params
-        );
+        my $resp = $self->remote_conn->request( $resource, $params);
         if ( ref($resp) eq 'HASH' ) {
             if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
                 return $resp->{cmd_return};
@@ -547,10 +541,15 @@ sub _request_new_session {
 
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
-    my $resp = $self->remote_conn->request(
-        $self->commands->get_method('newSession'),
-        $self->commands->get_url('newSession'),
-        $self->commands->get_no_content_success('newSession'),
+    my $resource_new_session = { 
+        method => $self->commands->get_method('newSession'),
+        url => $self->commands->get_url('newSession'),
+        no_content_success => $self->commands->get_no_content_success('newSession'),
+    };
+    my $rc = $self->remote_conn;
+    $DB::single = 1;
+    my $resp = $rc->request(
+        $resource_new_session, 
         $args,
     );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
