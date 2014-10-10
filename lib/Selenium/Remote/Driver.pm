@@ -1491,7 +1491,7 @@ sub switch_to_frame {
 =cut
 
 sub switch_to_window {
-  my ( $self, $name ) = @_;
+    my ( $self, $name ) = @_;
     if ( not defined $name ) {
         return 'Window name not provided';
     }
@@ -1500,6 +1500,35 @@ sub switch_to_window {
     return $self->_execute_command( $res, $params );
 }
 
+=head2 get_speed
+
+ Description:
+    DEPRECATED - this function is a no-op in Webdriver, and will be
+    removed in the upcoming version of this module. See
+    https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion
+    and
+    http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
+
+=cut
+
+sub get_speed {
+    carp 'get_speed is deprecated and will be removed in the upcoming version of this module';
+}
+
+=head2 set_speed
+
+ Description:
+    DEPRECATED - this function is a no-op in Webdriver, and will be
+    removed in the upcoming version of this module. See
+    https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion
+    and
+    http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
+
+=cut
+
+sub set_speed {
+    carp 'set_speed is deprecated and will be removed in the upcoming version of this module';
+}
 
 =head2 set_window_position
 
