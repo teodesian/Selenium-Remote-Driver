@@ -1,12 +1,10 @@
 #!/usr/bin/env perl
-use Test::Tester;
 use Test::More;
 use Test::Exception;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
 use Selenium::Remote::MockCommands;
 use Selenium::Remote::MockRemoteConnection;
-use Carp;
 
 my $spec = {
     findElement => sub {
