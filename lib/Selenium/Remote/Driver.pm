@@ -547,7 +547,6 @@ sub _request_new_session {
         no_content_success => $self->commands->get_no_content_success('newSession'),
     };
     my $rc = $self->remote_conn;
-    $DB::single = 1;
     my $resp = $rc->request(
         $resource_new_session, 
         $args,

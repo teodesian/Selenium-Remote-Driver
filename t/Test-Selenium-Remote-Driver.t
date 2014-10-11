@@ -10,7 +10,6 @@ use MockRemoteConnection;
 my $spec = {
     findElement => sub {
         my (undef,$searched_item) = @_;
-        $DB::single = 1;
         return { status => 'OK', return => { ELEMENT => '123456' } }
           if ( $searched_item->{value} eq 'q' );
         return { status => 'NOK', return => 0, error => 'element not found' };

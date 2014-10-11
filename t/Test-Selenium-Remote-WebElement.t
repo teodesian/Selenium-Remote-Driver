@@ -15,6 +15,7 @@ foreach my $k (
   ) {
       $spec->{$k} = sub { return { status => 'OK', return => 1 }};
 }
+
 $spec->{getElementTagName} = sub { return { status => 'OK', return => 'iframe' }}; 
 $spec->{getElementValue} = sub { return { status => 'OK', return => 'my_value' }};
 $spec->{getElementText} = sub { return { status => 'OK', return => "my_text\nis fantastic" }};
