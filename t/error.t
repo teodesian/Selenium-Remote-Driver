@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Exception;
+use Test::LWP::UserAgent;
 use IO::Socket::INET;
 
 
@@ -12,6 +13,30 @@ BEGIN: {
         BAIL_OUT("Couldn't load Selenium::Remote::Driver");
         exit;
     }
+}
+
+UNAVAILABLE_BROWSER: {
+    my $tua = Test::LWP::UserAgent->new;
+
+    $tua->map_response(qr{status}, HTTP::Response->new(200, 'OK'));
+    $tua->map_response(qr{session}, HTTP::Response->new(
+        500,
+        'Internal Server Error',
+        ['Content-Type' => 'application/json'],
+        '{"status":13,"sessionId":null,"value":{"message":"The path to..."} }'
+    ));
+
+    throws_ok(
+        sub {
+            Selenium::Remote::Driver->new_from_caps(
+                ua => $tua,
+                desired_capabilities => {
+                    browserName => 'chrome'
+                }
+            );
+        }, qr/Could not create new session.*path to/,
+        'Errors in browser configuration are passed to user'
+    );
 }
 
 LOCAL: {
