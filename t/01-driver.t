@@ -160,7 +160,7 @@ IME: {
         if ($@) {
             skip "ime not available on this system",3;
         }
-    };
+    }
 }
 
 LOAD_PAGE: {
@@ -250,10 +250,10 @@ FIND: {
     $ret = $driver->find_child_elements($elem, "//option[\@selected='selected']");
     is(@{$ret}, 4, 'Got 4 WebElements');
     my $expected_err = "An element could not be located on the page using the "
-    . "given search parameters: "
-    . "element_that_doesnt_exist,id"
-    # the following needs to always be right before the eval
-    . " at " . __FILE__ . " line " . (__LINE__+1);
+      . "given search parameters: "
+      . "element_that_doesnt_exist,id"
+      # the following needs to always be right before the eval
+      . " at " . __FILE__ . " line " . (__LINE__+1);
     eval { $driver->find_element("element_that_doesnt_exist","id"); };
     chomp $@;
     is($@,$expected_err.".","find_element croaks properly");
