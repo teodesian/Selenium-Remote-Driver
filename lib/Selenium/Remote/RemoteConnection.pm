@@ -118,7 +118,7 @@ sub _process_response {
         if (($response->message ne 'No Content') && ($response->content ne '')) {
             if ($response->content_type !~ m/json/i) {
                 $data->{'cmd_status'} = 'NOTOK';
-                $data->{'cmd_return'} = 'Server returned error message '.$response->content.' instead of data';
+                $data->{'cmd_return'}->{message} = 'Server returned error message '.$response->content.' instead of data';
                 return $data;
             }
             $decoded_json = $json->allow_nonref(1)->utf8(1)->decode($response->content);
