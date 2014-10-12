@@ -2244,6 +2244,23 @@ sub get_path {
     return $location;
 }
 
+=head2 get_user_agent
+
+ Description:
+    Convenience method to get the user agent string, according to the
+    browser's value for window.navigator.userAgent.
+
+ Usage:
+    $user_agent = $driver->get_user_agent()
+
+=cut
+
+sub get_user_agent {
+    my $self = shift;
+    return $self->execute_script('return window.navigator.userAgent;');
+}
+
+
 =head2 set_inner_window_size
 
  Description:
