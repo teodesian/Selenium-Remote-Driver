@@ -4,6 +4,7 @@ package MockRemoteConnection;
 
 use Moo; 
 use JSON; 
+use Carp;
 use Try::Tiny;
 
 extends 'Selenium::Remote::RemoteConnection';
@@ -26,9 +27,39 @@ has 'fake_session_id' => (
     },
 );
 
+has 'record' => ( 
+    is => 'ro', 
+    default => sub { 0 } 
+);
+
+has 'session_store' => (
+    is => 'ro', 
+    default => sub { {} }
+);
+
+sub dump_session_store { 
+    my $self = shift; 
+    my ($file,$session_id) = @_;
+    croak "'$file' is not a file" unless (-f $file);
+    open my $fh, $file, '>' or croak "Opening '$file' failed";
+    my $session_store = $self->session_store;
+    my $dump = {};
+    foreach my $path (keys %{$session_store->{$session_id}}) { 
+        $dump->{$path} = $session_store->{$session_id}->{$path};
+    }
+        my $json = JSON->new;
+        $json->allow_blessed;
+    my $json_session = $json->allow_nonref->utf8->encode($dump);
+    print $fh $json_session; 
+    close ($fh);
+}
+
 sub request { 
     my $self = shift;
     my ($resource, $params) = @_;
+    if ($self->record) { 
+       my ($m,$u) = ($resource->{method},$resource->{url}); 
+    }
     my $method =        $resource->{method};
     my $url =        $resource->{url};
     my $no_content_success =        $resource->{no_content_success} // 0;
