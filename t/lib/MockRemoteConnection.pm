@@ -6,6 +6,8 @@ use Moo;
 use JSON; 
 use Carp;
 use Try::Tiny;
+# use lib 't/lib';
+# use MockCommands;
 
 extends 'Selenium::Remote::RemoteConnection';
 
@@ -16,6 +18,7 @@ has 'spec' => (
 
 has 'mock_cmds' => ( 
     is => 'ro', 
+    # default => sub { return MockCommands->new }
 );
 
 has 'fake_session_id' => ( 
@@ -37,11 +40,15 @@ has 'session_store' => (
     default => sub { {} }
 );
 
+has 'session_id' => ( 
+    is => 'rw',
+    default => sub { undef },
+);
+
 sub dump_session_store { 
     my $self = shift; 
     my ($file,$session_id) = @_;
-    croak "'$file' is not a file" unless (-f $file);
-    open my $fh, $file, '>' or croak "Opening '$file' failed";
+    open (my $fh, '>', $file) or croak "Opening '$file' failed";
     my $session_store = $self->session_store;
     my $dump = {};
     foreach my $path (keys %{$session_store->{$session_id}}) { 
@@ -57,13 +64,28 @@ sub dump_session_store {
 sub request { 
     my $self = shift;
     my ($resource, $params) = @_;
-    if ($self->record) { 
-       my ($m,$u) = ($resource->{method},$resource->{url}); 
-    }
     my $method =        $resource->{method};
     my $url =        $resource->{url};
     my $no_content_success =        $resource->{no_content_success} // 0;
     my $url_params = $resource->{url_params};
+    if ( $self->record ) {
+        my $response = $self->SUPER::request( $resource, $params, 1 );
+
+        if (   ( $response->message ne 'No Content' )
+            && ( $response->content ne '' ) )
+        {
+            if ( $response->content_type =~ m/json/i ) {
+                my $json = JSON->new;
+                $json->allow_blessed;
+                my $decoded_json =
+                  $json->allow_nonref(1)->utf8(1)->decode( $response->content );
+                $self->session_id( $decoded_json->{'sessionId'} )
+                  unless $self->session_id;
+            }
+        }
+        $self->session_store->{$self->session_id}->{"$method $url"} = $response if ($self->session_id);
+        return $self->_process_response($response,$no_content_success);
+    }
     my $mock_cmds = $self->mock_cmds;
     my $spec = $self->spec; 
     my $cmd = $mock_cmds->get_method_name_from_parameters({method => $method,url => $url});

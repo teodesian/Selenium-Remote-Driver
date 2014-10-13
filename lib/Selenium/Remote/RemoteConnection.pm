@@ -55,7 +55,7 @@ sub BUILD {
 
 # This request method is tailored for Selenium RC server
 sub request {
-    my ($self,$resource,$params) = @_;
+    my ($self,$resource,$params,$dont_process_response) = @_;
     my $method =        $resource->{method};
     my $url =        $resource->{url};
     my $no_content_success =        $resource->{no_content_success} // 0;
@@ -96,7 +96,9 @@ sub request {
     $header->header('Accept' => 'application/json');
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
     my $response = $self->ua->request($request);
-
+    if ($dont_process_response) { 
+        return $response;
+    }
     return $self->_process_response($response, $no_content_success);
 }
 
