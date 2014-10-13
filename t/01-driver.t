@@ -366,6 +366,9 @@ INNER_WINDOW_SIZE: {
 }
 
 BASE_URL: {
+    use lib 't/lib';
+    use MockCommands; 
+    use MockRemoteConnection;
     {
         package MySeleniumRemoteDriver;
         use Moo;
@@ -399,12 +402,13 @@ BASE_URL: {
         url      => 'http://blog.example.com/foo',
         expected => 'http://blog.example.com/foo',
     });
-
+    my $mock_commands = MockCommands->new;
     for my $test (@tests) {
         my $base_url_driver = MySeleniumRemoteDriver->new(
             browser_name => 'firefox',
             base_url     => $test->{base_url},
-            testing      => 1,
+            remote_conn => MockRemoteConnection->new(spec => {}, mock_cmds => $mock_commands),
+            commands => $mock_commands,
         );
         my $got = $base_url_driver->get($test->{url});
         is $got, $test->{expected}, "base_url + $test->{url}";
