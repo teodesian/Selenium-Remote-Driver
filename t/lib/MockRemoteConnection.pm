@@ -6,6 +6,8 @@ use Moo;
 use JSON; 
 use Try::Tiny;
 
+extends 'Selenium::Remote::RemoteConnection';
+
 has 'spec' => (
     is       => 'ro',
     required => 1,
