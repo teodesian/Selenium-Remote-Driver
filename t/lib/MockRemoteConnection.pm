@@ -15,7 +15,7 @@ has 'mock_cmds' => (
     is => 'ro', 
 );
 
-has 'session_id' => ( 
+has 'fake_session_id' => ( 
     is => 'lazy', 
     builder => sub { 
         my $id = join '',
@@ -51,10 +51,10 @@ sub request {
                 $ret = $mock_return;
             }
         }
-        $ret->{session_id} = $self->session_id if (ref($ret) eq 'HASH');
+        $ret->{session_id} = $self->fake_session_id if (ref($ret) eq 'HASH');
     }
     else { 
-        $ret->{sessionId} = $self->session_id;
+        $ret->{sessionId} = $self->fake_session_id;
     }
     return $ret;
 }
