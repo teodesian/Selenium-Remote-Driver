@@ -45,6 +45,16 @@ has 'session_id' => (
     default => sub { undef },
 );
 
+sub BUILD {
+    my $self = shift; 
+    $self->remote_server_addr('localhost');
+    $self->port('4444');
+}
+
+sub check_status { 
+    return;
+}
+
 sub dump_session_store { 
     my $self = shift; 
     my ($file,$session_id) = @_;

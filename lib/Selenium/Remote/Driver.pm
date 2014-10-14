@@ -538,7 +538,7 @@ sub new_desired_session {
 
 sub _request_new_session {
     my ( $self, $args ) = @_;
-
+    $self->remote_conn->check_status();
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
     my $resource_new_session = { 

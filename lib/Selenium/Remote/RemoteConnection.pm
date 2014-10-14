@@ -31,7 +31,7 @@ has 'ua' => (
     builder => sub { return LWP::UserAgent->new; }
 );
 
-sub BUILD {
+sub check_status { 
     my $self = shift;
     my $status;
     try {
@@ -50,7 +50,9 @@ sub BUILD {
     unless ($status->{cmd_status} eq 'OK') {
         croak "Selenium server did not return proper status";
     }
+    
 }
+
 
 
 # This request method is tailored for Selenium RC server

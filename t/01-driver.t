@@ -9,9 +9,9 @@ use LWP::Protocol::PSGI;
 use LWP::UserAgent;
 use Test::LWP::UserAgent;
 use Selenium::Remote::Driver;
-    use lib 't/lib';
-    use MockCommands; 
-    use MockRemoteConnection;
+use lib 't/lib';
+use MockCommands; 
+use MockRemoteConnection;
 
 BEGIN {
     if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
@@ -39,13 +39,6 @@ t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
 my $driver = Selenium::Remote::Driver->new(
     browser_name => 'firefox',
-    remote_conn  => MockRemoteConnection->new(
-        spec               => {},
-        record             => 1,
-        remote_server_addr => 'localhost',
-        port               => 4444,
-        ua                 => LWP::UserAgent->new
-    )
 );
 my $website = 'http://localhost:63636';
 my $ret;
