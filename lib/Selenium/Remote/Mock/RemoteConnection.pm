@@ -130,14 +130,14 @@ sub request {
             }
         }
         $self->session_store->{ $self->session_id }->{"$method $url $content"}
-          = $response
+          = $response->as_string
           if ( $self->session_id );
         return $self->_process_response( $response, $no_content_success );
     }
     if ( $self->replay ) {
         my $resp =
-          $self->session_store->{ $self->fake_session_id }
-          ->{"$method $url $content"} // HTTP::Response->new( '501',
+          HTTP::Response->parse($self->session_store->{ $self->fake_session_id }
+          ->{"$method $url $content"}) // HTTP::Response->new( '501',
             "No response available from the mocking file" );
         return $self->_process_response( $resp, $no_content_success );
     }
