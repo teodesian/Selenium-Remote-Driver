@@ -1,4 +1,4 @@
-package MockCommands; 
+package Selenium::Remote::Mock::Commands; 
 use Moo; 
 extends 'Selenium::Remote::Commands';
 

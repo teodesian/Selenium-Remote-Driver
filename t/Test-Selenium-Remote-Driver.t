@@ -1,11 +1,10 @@
 #!/usr/bin/env perl
-use lib 't/lib';
 use Test::More;
 use Test::Exception;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
-use MockCommands;
-use MockRemoteConnection;
+use Selenium::Remote::Mock::Commands;
+use Selenium::Remote::Mock::RemoteConnection;
 
 my $spec = {
     findElement => sub {
@@ -16,11 +15,11 @@ my $spec = {
     },
     getPageSource => sub { return 'this output matches regex'},
 };
-my $mock_commands = MockCommands->new;
+my $mock_commands = Selenium::Remote::Mock::Commands->new;
 
 my $successful_driver =
   Test::Selenium::Remote::Driver->new(
-    remote_conn => MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
+    remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
 $successful_driver->find_element_ok('q','find_element_ok works');

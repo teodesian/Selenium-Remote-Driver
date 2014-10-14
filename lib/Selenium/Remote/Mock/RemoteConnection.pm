@@ -1,4 +1,4 @@
-package MockRemoteConnection;
+package Selenium::Remote::Mock::RemoteConnection;
 
 # ABSTRACT: utility class to mock the responses from Selenium server
 
@@ -6,8 +6,6 @@ use Moo;
 use JSON; 
 use Carp;
 use Try::Tiny;
-# use lib 't/lib';
-# use MockCommands;
 
 extends 'Selenium::Remote::RemoteConnection';
 
@@ -18,7 +16,6 @@ has 'spec' => (
 
 has 'mock_cmds' => ( 
     is => 'ro', 
-    # default => sub { return MockCommands->new }
 );
 
 has 'fake_session_id' => ( 

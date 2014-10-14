@@ -9,9 +9,8 @@ use LWP::Protocol::PSGI;
 use LWP::UserAgent;
 use Test::LWP::UserAgent;
 use Selenium::Remote::Driver;
-use lib 't/lib';
-use MockCommands; 
-use MockRemoteConnection;
+use Selenium::Remote::Mock::Commands; 
+use Selenium::Remote::Mock::RemoteConnection; 
 
 BEGIN {
     if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
@@ -405,12 +404,12 @@ BASE_URL: {
         url      => 'http://blog.example.com/foo',
         expected => 'http://blog.example.com/foo',
     });
-    my $mock_commands = MockCommands->new;
+    my $mock_commands = Selenium::Remote::Mock::Commands->new;
     for my $test (@tests) {
         my $base_url_driver = MySeleniumRemoteDriver->new(
             browser_name => 'firefox',
             base_url     => $test->{base_url},
-            remote_conn => MockRemoteConnection->new(spec => {}, mock_cmds => $mock_commands),
+            remote_conn => Selenium::Remote::Mock::RemoteConnection->new(spec => {}, mock_cmds => $mock_commands),
             commands => $mock_commands,
         );
         my $got = $base_url_driver->get($test->{url});

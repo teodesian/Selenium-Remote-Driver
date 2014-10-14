@@ -1,13 +1,12 @@
 #!perl
-use lib 't/lib';
 use Test::More;
-use MockCommands;
-use MockRemoteConnection;
+use Selenium::Remote::Mock::Commands;
+use Selenium::Remote::Mock::RemoteConnection;
 use Test::Selenium::Remote::Driver;
 use Test::Selenium::Remote::WebElement;
 
 # Start off by faking a bunch of Selenium::Remote::WebElement calls succeeding
-my $mock_commands = MockCommands->new;
+my $mock_commands = Selenium::Remote::Mock::Commands->new;
 my $spec = { };
 
 foreach my $k (
@@ -23,7 +22,7 @@ $spec->{getElementAttribute}  = sub { my @args = @_; my $name = $args[0]->{name}
 
 my $driver =
   Test::Selenium::Remote::Driver->new(
-    remote_conn => MockRemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
+    remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
 
