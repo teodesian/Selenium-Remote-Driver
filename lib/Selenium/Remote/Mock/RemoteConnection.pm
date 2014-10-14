@@ -140,10 +140,16 @@ sub request {
         return $self->_process_response( $response, $no_content_success );
     }
     if ( $self->replay ) {
-        my $resp =
-          HTTP::Response->parse($self->session_store->{ $self->fake_session_id }
-          ->{"$method $url $content"}) // HTTP::Response->new( '501',
-            "No response available from the mocking file" );
+        my $resp; 
+        if ($self->session_store->{ $self->fake_session_id }
+          ->{"$method $url $content"}) { 
+          $resp =  HTTP::Response->parse($self->session_store->{ $self->fake_session_id }
+          ->{"$method $url $content"}) 
+        }
+        else { 
+        $resp = HTTP::Response->new( '204',
+            "No Content" );
+    }
         return $self->_process_response( $resp, $no_content_success );
     }
     my $mock_cmds = $self->mock_cmds;
