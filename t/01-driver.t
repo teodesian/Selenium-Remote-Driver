@@ -411,6 +411,11 @@ BASE_URL: {
     }
 }
 
+USER_AGENT: {
+    my $ua = $driver->get_user_agent;
+    ok($ua =~ /Firefox/, 'we can get a user agent');
+}
+
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');
