@@ -79,21 +79,25 @@ sub request {
     my $no_content_success =        $resource->{no_content_success} // 0;
     my $url_params = $resource->{url_params};
     if ( $self->record ) {
+        my $json = JSON->new;
+        $json->allow_blessed;
         my $response = $self->SUPER::request( $resource, $params, 1 );
 
         if (   ( $response->message ne 'No Content' )
             && ( $response->content ne '' ) )
         {
             if ( $response->content_type =~ m/json/i ) {
-                my $json = JSON->new;
-                $json->allow_blessed;
                 my $decoded_json =
                   $json->allow_nonref(1)->utf8(1)->decode( $response->content );
                 $self->session_id( $decoded_json->{'sessionId'} )
                   unless $self->session_id;
             }
         }
-        $self->session_store->{$self->session_id}->{"$method $url"} = $response if ($self->session_id);
+        my $content = '';
+        if (($params) && ($params ne '')) { 
+            $content = $json->allow_nonref->utf8->encode($params);
+        }
+        $self->session_store->{$self->session_id}->{"$method $url $content"} = $response if ($self->session_id);
         return $self->_process_response($response,$no_content_success);
     }
     my $mock_cmds = $self->mock_cmds;
