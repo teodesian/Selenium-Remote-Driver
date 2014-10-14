@@ -110,13 +110,18 @@ sub request {
     my $content            = '';
     my $json               = JSON->new;
     $json->allow_blessed;
-
-    if ( ($params) && ( $params ne '' ) ) {
-        $content = $json->allow_nonref->utf8->encode($params);
+    my $sorted_params = {};
+    if ($params) { 
+        foreach my $k (sort { $a cmp $b } keys(%$params)) { 
+            $sorted_params->{$k} = $params->{$k};
+        }
+    }
+    if ( ($sorted_params) && ( $sorted_params ne '' ) ) {
+        $content = $json->allow_nonref->utf8->encode($sorted_params);
     }
     my $url_params = $resource->{url_params};
     if ( $self->record ) {
-        my $response = $self->SUPER::request( $resource, $params, 1 );
+        my $response = $self->SUPER::request( $resource, $sorted_params, 1 );
 
         if (   ( $response->message ne 'No Content' )
             && ( $response->content ne '' ) )
