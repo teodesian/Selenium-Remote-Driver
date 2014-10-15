@@ -134,22 +134,25 @@ sub request {
                   unless $self->session_id;
             }
         }
-        $self->session_store->{ $self->session_id }->{"$method $url $content"}
-          = $response->as_string
-          if ( $self->session_id );
+        if ($self->session_id) { 
+            push @{$self->session_store->{ $self->session_id }->{"$method $url $content"}},$response->as_string
+    }
         return $self->_process_response( $response, $no_content_success );
     }
     if ( $self->replay ) {
-        my $resp; 
-        if ($self->session_store->{ $self->fake_session_id }
-          ->{"$method $url $content"}) { 
-          $resp =  HTTP::Response->parse($self->session_store->{ $self->fake_session_id }
-          ->{"$method $url $content"}) 
+        my $resp;
+        my $arr_of_resps = $self->session_store->{ $self->fake_session_id }
+          ->{"$method $url $content"};
+        if ( scalar(@$arr_of_resps) ) {
+            $resp = shift @$arr_of_resps;
+            $resp = HTTP::Response->parse($resp);
         }
-        else { 
-        $resp = HTTP::Response->new( '204',
-            "No Content" );
-    }
+        else {
+            $resp = HTTP::Response->new(
+                '501',
+                "Failed to find a response"
+            );
+        }
         return $self->_process_response( $resp, $no_content_success );
     }
     my $mock_cmds = $self->mock_cmds;
