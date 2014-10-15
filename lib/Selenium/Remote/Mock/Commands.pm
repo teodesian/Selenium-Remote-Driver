@@ -1,5 +1,7 @@
 package Selenium::Remote::Mock::Commands; 
+
 # ABSTRACT: utility class to mock Selenium::Remote::Commands 
+#
 use Moo; 
 extends 'Selenium::Remote::Commands';
 
@@ -33,3 +35,13 @@ sub get_method_name_from_parameters {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 DESCRIPTION
+
+Utility class to be for testing purposes, with L<Selenium::Remote::Mock::RemoteConnection> only.
+
+=cut

@@ -1,4 +1,5 @@
 package Test::Selenium::Remote::Driver;
+
 # ABSTRACT: Useful testing subclass for Selenium::Remote::Driver
 
 use Moo;
