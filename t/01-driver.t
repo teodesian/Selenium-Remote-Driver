@@ -9,8 +9,8 @@ use LWP::Protocol::PSGI;
 use LWP::UserAgent;
 use Test::LWP::UserAgent;
 use Selenium::Remote::Driver;
-use Selenium::Remote::Mock::Commands; 
-use Selenium::Remote::Mock::RemoteConnection; 
+use Selenium::Remote::Mock::Commands;
+use Selenium::Remote::Mock::RemoteConnection;
 
 BEGIN {
     if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
@@ -165,7 +165,7 @@ IME: {
         if ($@) {
             skip "ime not available on this system",3;
         }
-    };
+    }
 }
 
 LOAD_PAGE: {
@@ -255,10 +255,10 @@ FIND: {
     $ret = $driver->find_child_elements($elem, "//option[\@selected='selected']");
     is(@{$ret}, 4, 'Got 4 WebElements');
     my $expected_err = "An element could not be located on the page using the "
-    . "given search parameters: "
-    . "element_that_doesnt_exist,id"
-    # the following needs to always be right before the eval
-    . " at " . __FILE__ . " line " . (__LINE__+1);
+      . "given search parameters: "
+      . "element_that_doesnt_exist,id"
+      # the following needs to always be right before the eval
+      . " at " . __FILE__ . " line " . (__LINE__+1);
     eval { $driver->find_element("element_that_doesnt_exist","id"); };
     chomp $@;
     is($@,$expected_err.".","find_element croaks properly");
@@ -409,12 +409,23 @@ BASE_URL: {
         my $base_url_driver = MySeleniumRemoteDriver->new(
             browser_name => 'firefox',
             base_url     => $test->{base_url},
-            remote_conn => Selenium::Remote::Mock::RemoteConnection->new(spec => {}, mock_cmds => $mock_commands),
+            remote_conn => Selenium::Remote::Mock::RemoteConnection->new(
+                spec => {
+                    get =>
+                      sub { my ( undef, $params ) = @_; return $params->{url} }
+                },
+                mock_cmds => $mock_commands
+              ),
             commands => $mock_commands,
         );
         my $got = $base_url_driver->get($test->{url});
         is $got, $test->{expected}, "base_url + $test->{url}";
     }
+}
+
+USER_AGENT: {
+    my $ua = $driver->get_user_agent;
+    ok($ua =~ /Firefox/, 'we can get a user agent');
 }
 
 STORAGE: {

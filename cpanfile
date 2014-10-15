@@ -32,6 +32,7 @@ requires "warnings" => "0";
 on 'test' => sub {
   requires "File::Basename" => "0";
   requires "File::stat" => "0";
+  requires "IO::Socket::INET" => "0";
   requires "LWP::Protocol::PSGI" => "0.04";
   requires "LWP::Simple" => "0";
   requires "Test::Exception" => "0";

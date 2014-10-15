@@ -246,7 +246,7 @@ The JSON file looks like this :
         ...
     }
 
-The reason why we store array of responses is that the exact same request can be make more than once during a session, so we have to store every response to the same requests.
+The reason why we store array of responses is that the exact same request can be made more than once during a session, so we have to store every response to the same requests.
 
 =head2 Replay interactions
 

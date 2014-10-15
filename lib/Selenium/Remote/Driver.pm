@@ -300,7 +300,7 @@ has 'webelement_class' => (
 
 has 'default_finder' => (
     is      => 'rw',
-    coerce  => sub { FINDERS->{ $_[0] } },
+    coerce  => sub { __PACKAGE__->FINDERS->{ $_[0] } },
     default => sub {'xpath'},
 );
 
@@ -1501,48 +1501,31 @@ sub switch_to_window {
 =head2 get_speed
 
  Description:
-    Get the current user input speed. The actual input speed is still browser
-    specific and not covered by the Driver.
-
- Output:
-    STRING - One of these: SLOW, MEDIUM, FAST
-
- Usage:
-    print $driver->get_speed();
+    DEPRECATED - this function is a no-op in Webdriver, and will be
+    removed in the upcoming version of this module. See
+    https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion
+    and
+    http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
 
 =cut
 
 sub get_speed {
-    my ($self) = @_;
-    my $res = { 'command' => 'getSpeed' };
-    return $self->_execute_command($res);
+    carp 'get_speed is deprecated and will be removed in the upcoming version of this module';
 }
 
 =head2 set_speed
 
  Description:
-    Set the user input speed.
-
- Input:
-    STRING - One of these: SLOW, MEDIUM, FAST
-
- Usage:
-    $driver->set_speed('MEDIUM');
-
- Note: This function is a no-op in WebDriver (?). See
-       https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion and
-       http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
+    DEPRECATED - this function is a no-op in Webdriver, and will be
+    removed in the upcoming version of this module. See
+    https://groups.google.com/d/topic/selenium-users/oX0ZnYFPuSA/discussion
+    and
+    http://code.google.com/p/selenium/source/browse/trunk/java/client/src/org/openqa/selenium/WebDriverCommandProcessor.java
 
 =cut
 
 sub set_speed {
-    my ( $self, $speed ) = @_;
-    if ( not defined $speed ) {
-        return 'Speed not provided.';
-    }
-    my $res    = { 'command' => 'setSpeed' };
-    my $params = { 'speed'   => $speed };
-    return $self->_execute_command( $res, $params );
+    carp 'set_speed is deprecated and will be removed in the upcoming version of this module';
 }
 
 =head2 set_window_position
@@ -1768,7 +1751,7 @@ sub find_element {
         croak 'Search string to find element not provided.';
     }
     my $using =
-      ( defined $method ) ? FINDERS->{$method} : $self->default_finder;
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
     if ( defined $using ) {
         my $res = { 'command' => 'findElement' };
         my $params = { 'using' => $using, 'value' => $query };
@@ -1827,7 +1810,7 @@ sub find_elements {
     }
 
     my $using =
-      ( defined $method ) ? FINDERS->{$method} : $self->default_finder;
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
 
     if ( defined $using ) {
         my $res = { 'command' => 'findElements' };
@@ -1902,9 +1885,9 @@ sub find_child_element {
         croak "Missing parameters";
     }
     my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists FINDERS->{$using} ) {
+    if ( exists $self->FINDERS->{$using} ) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-        my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
@@ -1963,9 +1946,9 @@ sub find_child_elements {
         croak "Missing parameters";
     }
     my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists FINDERS->{$using} ) {
+    if ( exists $self->FINDERS->{$using} ) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-        my $params = { 'using' => FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
@@ -2258,6 +2241,23 @@ sub get_path {
     $location =~ s#^https?://[^/]+##;    # strip off host
     return $location;
 }
+
+=head2 get_user_agent
+
+ Description:
+    Convenience method to get the user agent string, according to the
+    browser's value for window.navigator.userAgent.
+
+ Usage:
+    $user_agent = $driver->get_user_agent()
+
+=cut
+
+sub get_user_agent {
+    my $self = shift;
+    return $self->execute_script('return window.navigator.userAgent;');
+}
+
 
 =head2 set_inner_window_size
 
