@@ -12,7 +12,7 @@ extends 'Selenium::Remote::RemoteConnection';
 
 has 'spec' => (
     is       => 'ro',
-    required => 1,
+    default => sub {{}},
 );
 
 has 'mock_cmds' => ( 
@@ -185,3 +185,35 @@ sub request {
 }
 
 1;
+__END__
+
+=pod
+
+=head1 DESCRIPTION
+
+Selenium::Remote::Mock::RemoteConnection is a class to act as a short-circuit or a pass through to the connection to a Selenium Server. 
+Using this class in place of L<Selenium::Remote::RemoteConnection> allows to: 
+=over
+
+=item *
+record interactions with the Selenium Server into a JSON file 
+
+=item * 
+replay recorded interactions from a JSON file to mock answers from the Selenium Server
+
+=item * 
+mock responses to specific functions 
+
+=back
+
+=head1 SYNOPSIS
+
+=head2 Record interactions 
+
+    
+
+=head2 Replay interactions
+
+=head2 Mock responses
+
+=cut

@@ -1,4 +1,5 @@
 package Selenium::Remote::Mock::Commands; 
+# ABSTRACT: utility class to mock Selenium::Remote::Commands 
 use Moo; 
 extends 'Selenium::Remote::Commands';
 
