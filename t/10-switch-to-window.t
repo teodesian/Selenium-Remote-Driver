@@ -4,16 +4,39 @@ use 5.010;
 
 use Test::More;
 use Test::Selenium::Remote::Driver;
+use Selenium::Remote::Mock::RemoteConnection;
 
-if (not Test::Selenium::Remote::Driver->server_is_running()) {
-    plan skip_all => 'The Selenium server must be running for this test';
+my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
+my $os  = $^O;
+if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
+    $os = 'linux';
 }
+
+my %selenium_args = ( 
+    browser_name => 'firefox',
+    default_finder => 'css',
+    javascript     => 1,
+);
+
+my $mock_file = "10-switch-to-window-mock-$os.json";
+if (!$record && !(-e "t/mock-recordings/$mock_file")) {
+    plan skip_all => "Mocking of tests is not been enabled for this platform";
+}
+
+if ($record) { 
+    $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
+}
+else { 
+    $selenium_args{remote_conn} =
+      Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
+        replay_file => "t/mock-recordings/$mock_file" );
+}
+
 
 plan tests => 9;
 
 my $s = Test::Selenium::Remote::Driver->new(
-    default_finder => 'css',
-    javascript     => 1,
+    %selenium_args
 );
 
 my $perl_title = 'The Perl Programming Language - www.perl.org';
@@ -49,3 +72,6 @@ $s->title_is($cpan_title);
 $s->switch_to_window('perlorg');
 $s->title_is($perl_title);
 
+if ($record) { 
+    $s->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
+}
