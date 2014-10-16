@@ -2,43 +2,40 @@ use strict;
 use warnings;
 
 use JSON;
-use Net::Ping;
-use HTTP::Headers;
 use Test::More;
-use LWP::Protocol::PSGI;
 use LWP::UserAgent;
 use Test::LWP::UserAgent;
+use IO::Socket::INET;
 use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
 
-BEGIN {
-    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
-        use t::lib::MockSeleniumWebDriver;
-        my $p = Net::Ping->new("tcp", 2);
-        $p->port_number(4444);
-        unless ($p->ping('localhost')) {
-            plan skip_all => "Selenium server is not running on localhost:4444";
-            exit;
-        }
-        warn "\n\nRecording...\n\n";
-    }
-}
 
 my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
 my $os  = $^O;
 if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
     $os = 'linux';
 }
+my %selenium_args = ( 
+    browser_name => 'firefox'
+);
+
+
 my $mock_file = "01-driver-mock-$os.json";
 if (!$record && !(-e "t/mock-recordings/$mock_file")) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
-t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
-my $driver = Selenium::Remote::Driver->new(
-    browser_name => 'firefox',
-);
+if ($record) { 
+    $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
+}
+else { 
+    $selenium_args{remote_conn} =
+      Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
+        replay_file => "t/mock-recordings/$mock_file" );
+}
+
+my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
 my $ret;
 
@@ -184,6 +181,7 @@ WINDOW: {
     is(ref $ret, 'ARRAY', 'Received all window handles');
     $ret = $driver->set_window_position(100,100);
     is($ret, 1, 'Set the window position to 100, 100');
+    $driver->pause(500);
     $ret = $driver->get_window_position();
     is ($ret->{'x'}, 100, 'Got the right X Co-ordinate');
     is ($ret->{'y'}, 100, 'Got the right Y Co-ordinate');
@@ -342,9 +340,10 @@ PAUSE: {
 }
 
 AUTO_CLOSE: {
+    my %stay_open_selenium_args = %selenium_args; 
+    $stay_open_selenium_args{auto_close} = 0;
     my $stayOpen = Selenium::Remote::Driver->new(
-        browser_name => 'firefox',
-        auto_close => 0
+        %stay_open_selenium_args
     );
 
     $stayOpen->DESTROY();
@@ -360,10 +359,12 @@ AUTO_CLOSE: {
 }
 
 INNER_WINDOW_SIZE: {
-    my $normal = Selenium::Remote::Driver->new->get_window_size;
-
+    my %normal_selenium_args = %selenium_args;
+    my $normal = Selenium::Remote::Driver->new(%normal_selenium_args)->get_window_size;
+    my %resized_selenium_args = %selenium_args;
+    $resized_selenium_args{inner_window_size} = [ 640,480];
     my $resized = Selenium::Remote::Driver->new(
-        inner_window_size => [ 640, 480 ]
+        %resized_selenium_args
     )->get_window_size;
 
     ok($normal->{height} != $resized->{height}, 'inner window size: height is immediately changed');
@@ -430,10 +431,12 @@ USER_AGENT: {
 
 STORAGE: {
     my $chrome;
+    my %selenium_chrome_args = ( browser_name => 'chrome');
+    $selenium_chrome_args{remote_conn} = $selenium_args{remote_conn};
 
   SKIP: {
         eval {
-            $chrome = Selenium::Remote::Driver->new(browser_name => 'chrome');
+            $chrome = Selenium::Remote::Driver->new(%selenium_chrome_args);
             $chrome->get($website);
         };
 
@@ -459,7 +462,6 @@ QUIT: {
 }
 
 NO_SERVER_ERROR_MESSAGE: {
-    LWP::Protocol::PSGI->unregister;
     my $unused_port = do {
         my $l = IO::Socket::INET->new(
             Listen    => 5,
@@ -475,6 +477,8 @@ NO_SERVER_ERROR_MESSAGE: {
     };
     unlike($@, qr/Use of uninitialized value/, "Error message for no server at host/port combination is helpful");
 }
-
+if ($record) { 
+    $driver->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
+}
 
 done_testing;

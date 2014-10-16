@@ -81,18 +81,17 @@ sub load_session_store {
     my $decoded_json = $json->allow_nonref(1)->utf8(1)->decode(<$fh>);
     close ($fh);
 
-    my $s_id = $self->fake_session_id;
-    $self->session_store->{$s_id} = $decoded_json;
+    $self->session_store($decoded_json);
 }
 
 sub dump_session_store { 
     my $self = shift; 
-    my ($file,$session_id) = @_;
+    my ($file) = @_;
     open (my $fh, '>', $file) or croak "Opening '$file' failed";
     my $session_store = $self->session_store;
     my $dump = {};
-    foreach my $path (keys %{$session_store->{$session_id}}) { 
-        $dump->{$path} = $session_store->{$session_id}->{$path};
+    foreach my $path (keys %{$session_store}) { 
+        $dump->{$path} = $session_store->{$path};
     }
     my $json = JSON->new;
     $json->allow_blessed;
@@ -134,15 +133,12 @@ sub request {
                   unless $self->session_id;
             }
         }
-        if ($self->session_id) { 
-            push @{$self->session_store->{ $self->session_id }->{"$method $url $content"}},$response->as_string
-    }
+        push @{$self->session_store->{"$method $url $content"}},$response->as_string;
         return $self->_process_response( $response, $no_content_success );
     }
     if ( $self->replay ) {
         my $resp;
-        my $arr_of_resps = $self->session_store->{ $self->fake_session_id }
-          ->{"$method $url $content"};
+        my $arr_of_resps = $self->session_store->{"$method $url $content"};
         if ( scalar(@$arr_of_resps) ) {
             $resp = shift @$arr_of_resps;
             $resp = HTTP::Response->parse($resp);
