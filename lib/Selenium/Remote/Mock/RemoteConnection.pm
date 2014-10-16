@@ -231,7 +231,7 @@ mock responses to specific functions
     $driver->quit;
 
     # dump the session to a file
-    $mock_connection->dump_session_store( 'my_record.json', $session_id );
+    $mock_connection->dump_session_store( 'my_record.json' );
 
 
 This code, above doing some basic Selenium interactions, will end up generating a JSON file containing all the requests and their responses for your Selenium session. 
