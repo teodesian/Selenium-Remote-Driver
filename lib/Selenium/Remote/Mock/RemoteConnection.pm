@@ -7,6 +7,7 @@ use JSON;
 use Carp;
 use Try::Tiny;
 use HTTP::Response; 
+use Data::Dumper; 
 
 extends 'Selenium::Remote::RemoteConnection';
 
@@ -109,36 +110,20 @@ sub request {
     my $content            = '';
     my $json               = JSON->new;
     $json->allow_blessed;
-    my $sorted_params = {};
     if ($params) { 
-        foreach my $k (sort { $a cmp $b } keys(%$params)) { 
-            $sorted_params->{$k} = $params->{$k};
-        }
-    }
-    if ( ($sorted_params) && ( $sorted_params ne '' ) ) {
-        $content = $json->allow_nonref->utf8->encode($sorted_params);
+        $Data::Dumper::Indent = 0; 
+        $Data::Dumper::Sortkeys = 1; 
+        $content = Dumper($params);   
     }
     my $url_params = $resource->{url_params};
     if ( $self->record ) {
-        my $response = $self->SUPER::request( $resource, $sorted_params, 1 );
-
-        if (   ( $response->message ne 'No Content' )
-            && ( $response->content ne '' ) )
-        {
-            if ( $response->content_type =~ m/json/i ) {
-                my $decoded_json =
-                  $json->allow_nonref(1)->utf8(1)
-                  ->decode( $response->content );
-                $self->session_id( $decoded_json->{'sessionId'} )
-                  unless $self->session_id;
-            }
-        }
+        my $response = $self->SUPER::request( $resource, $params, 1 );
         push @{$self->session_store->{"$method $url $content"}},$response->as_string;
         return $self->_process_response( $response, $no_content_success );
     }
     if ( $self->replay ) {
         my $resp;
-        my $arr_of_resps = $self->session_store->{"$method $url $content"};
+        my $arr_of_resps = $self->session_store->{"$method $url $content"} // [];
         if ( scalar(@$arr_of_resps) ) {
             $resp = shift @$arr_of_resps;
             $resp = HTTP::Response->parse($resp);
