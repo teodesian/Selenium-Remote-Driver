@@ -126,6 +126,8 @@ sub request {
     if ( $self->replay ) {
         my $resp;
         my $arr_of_resps = $self->session_store->{"$method $url $content"} // [];
+        use DDP; 
+        p "$method $url $content";
         if ( scalar(@$arr_of_resps) ) {
             $resp = shift @$arr_of_resps;
             $resp = HTTP::Response->parse($resp);
