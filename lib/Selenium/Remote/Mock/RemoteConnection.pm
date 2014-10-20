@@ -127,7 +127,8 @@ sub request {
         my $resp;
         my $arr_of_resps = $self->session_store->{"$method $url $content"} // [];
         use DDP; 
-        p "$method $url $content";
+        my $s =  "$method $url $content";
+        p $s;
         if ( scalar(@$arr_of_resps) ) {
             $resp = shift @$arr_of_resps;
             $resp = HTTP::Response->parse($resp);
