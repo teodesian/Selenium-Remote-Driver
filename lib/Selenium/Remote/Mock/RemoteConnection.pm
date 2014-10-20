@@ -115,7 +115,7 @@ sub request {
     if ($params) { 
         $Data::Dumper::Indent = 0; 
         $Data::Dumper::Sortkeys = 1; 
-        $content = Dumper($params);   
+        $content = $json->utf8->allow_nonref->encode(Dumper($params));   
     }
     my $url_params = $resource->{url_params};
     if ( $self->record ) {
