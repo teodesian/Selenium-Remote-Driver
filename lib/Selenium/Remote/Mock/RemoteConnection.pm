@@ -81,7 +81,9 @@ sub load_session_store {
     $json->allow_blessed;
     my $decoded_json = $json->allow_nonref(1)->utf8(1)->decode(<$fh>);
     close ($fh);
-
+    use DDP; 
+    my @k = keys %$decoded_json; 
+    p @k;
     $self->session_store($decoded_json);
 }
 
