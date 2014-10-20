@@ -113,9 +113,7 @@ sub request {
     my $json               = JSON->new;
     $json->allow_blessed;
     if ($params) { 
-        $Data::Dumper::Indent = 0; 
-        $Data::Dumper::Sortkeys = 1; 
-        $content = $json->utf8->allow_nonref->encode(Dumper($params));   
+        $content = $json->allow_nonref->utf8->canonical(1)->encode($params);
     }
     my $url_params = $resource->{url_params};
     if ( $self->record ) {
@@ -126,9 +124,6 @@ sub request {
     if ( $self->replay ) {
         my $resp;
         my $arr_of_resps = $self->session_store->{"$method $url $content"} // [];
-        use DDP; 
-        my $s =  "$method $url $content";
-        p $s;
         if ( scalar(@$arr_of_resps) ) {
             $resp = shift @$arr_of_resps;
             $resp = HTTP::Response->parse($resp);
