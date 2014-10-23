@@ -106,7 +106,7 @@ IMAGES: {
     my $y = $ret->{'y'};
   TODO: {
         local $TODO = "drag doesn't appear to be working currently in selenium server";
-        eval {$ret = $elem->drag(200,200);};
+        $ret = $elem->drag(200,200);
         $ret = $elem->get_element_location();
         is($ret->{'x'}, ($x+200), 'Moved to new x coord');
         is($ret->{'y'}, ($y+200), 'Moved to new y coord');
