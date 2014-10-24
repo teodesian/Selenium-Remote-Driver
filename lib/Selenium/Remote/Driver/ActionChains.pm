@@ -22,18 +22,18 @@ sub click {
     my $self = shift; 
     my $element = shift; 
     if ($element) { 
-        $self->driver->move_to(element => $element);
+       $self->move_to_element($element); 
     }
     # left click
     push @{$self->actions}, sub { $self->driver->click(0) };
     $self; 
 }
 
-sub click_and_hold_down { 
+sub click_and_hold { 
     my $self = shift; 
     my $element = shift; 
     if ($element) { 
-       $self->driver->move_to(element => $element); 
+       $self->move_to_element($element); 
     }
     push @{$self->actions}, sub { $self->driver->button_down };
     $self; 
@@ -43,7 +43,7 @@ sub context_click {
     my $self = shift; 
     my $element = shift; 
     if ($element) { 
-       $self->driver->move_to(element => $element); 
+       $self->move_to_element($element); 
     }
     # right click
     push @{$self->actions}, sub { $self->driver->click(2) }; 
@@ -55,7 +55,7 @@ sub double_click {
     my $self = shift; 
     my $element = shift; 
     if ($element) { 
-       $self->driver->move_to(element => $element); 
+       $self->move_to_element($element); 
     }
     push @{$self->actions}, sub { $self->driver->double_click };
     $self; 
@@ -65,7 +65,7 @@ sub release {
     my $self = shift; 
     my $element = shift; 
     if ($element) { 
-       $self->driver->move_to(element => $element); 
+       $self->move_to_element($element); 
     }
     push @{$self->actions}, sub { $self->driver->button_up };
     $self; 
@@ -77,6 +77,14 @@ sub drag_and_drop {
     $self->click_and_hold($source);
     $self->release($target);
     $self; 
+}
+
+sub move_to_element {
+    my $self    = shift;
+    my $element = shift;
+    push @{ $self->actions },
+      sub { $self->driver->move_to( element => $element ) };
+    $self;
 }
 
 
