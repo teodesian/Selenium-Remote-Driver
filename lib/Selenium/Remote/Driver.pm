@@ -417,11 +417,6 @@ has 'inner_window_size' => (
 
 );
 
-has 'testing' => (
-    is => 'rw',
-    default => sub { 0 },
-);
-
 sub BUILD {
     my $self = shift;
 
