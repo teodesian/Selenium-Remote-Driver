@@ -420,22 +420,21 @@ has 'inner_window_size' => (
 sub BUILD {
     my $self = shift;
 
+    if ($self->has_desired_capabilities) {
+        $self->new_desired_session( $self->desired_capabilities );
+    }
+    else {
+        # Connect to remote server & establish a new session
+        $self->new_session( $self->extra_capabilities );
+    }
 
-        if ($self->has_desired_capabilities) {
-            $self->new_desired_session( $self->desired_capabilities );
-        }
-        else {
-            # Connect to remote server & establish a new session
-            $self->new_session( $self->extra_capabilities );
-        }
-
-        if ( !( defined $self->session_id ) ) {
-            croak "Could not establish a session with the remote server\n";
-        }
-        elsif ($self->has_inner_window_size) {
-            my $size = $self->inner_window_size;
-            $self->set_inner_window_size(@$size);
-        }
+    if ( !( defined $self->session_id ) ) {
+        croak "Could not establish a session with the remote server\n";
+    }
+    elsif ($self->has_inner_window_size) {
+        my $size = $self->inner_window_size;
+        $self->set_inner_window_size(@$size);
+    }
 }
 
 sub new_from_caps {
