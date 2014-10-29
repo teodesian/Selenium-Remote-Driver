@@ -121,7 +121,7 @@ sub mocks_exist_for_platform {
 sub DEMOLISH {
     my ($self) = @_;
     if ($self->record) {
-        $self->remote_conn->dump_session_store($self->mock_file);
+        $self->mock_remote_conn->dump_session_store($self->mock_file);
     }
 }
 
