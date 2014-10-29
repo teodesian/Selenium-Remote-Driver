@@ -181,7 +181,6 @@ WINDOW: {
     is(ref $ret, 'ARRAY', 'Received all window handles');
     $ret = $driver->set_window_position(100,100);
     is($ret, 1, 'Set the window position to 100, 100');
-    $driver->pause(500);
     $ret = $driver->get_window_position();
     is ($ret->{'x'}, 100, 'Got the right X Co-ordinate');
     is ($ret->{'y'}, 100, 'Got the right Y Co-ordinate');
