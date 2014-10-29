@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-0.2150 10-10-2014
+0.2151 10-10-2014
         [NEW FEATURES]
         - Improved error messaging for Saucelabs non-json cases
         - Improved error messaging for incorrectly configured chromedrivers
@@ -9,6 +9,7 @@ Revision history for Selenium-Remote-Driver
         - Specify minimum compatible version of Moo dep
         - Make Driver.pm more easily subclassed ( ea68e06, 63e78e3 )
         - Get TravisCI passing again
+        - Roll & use our own mocking classes #164
 
         [BREAKING]
         - get|set_speed subs are no-ops and will be removed in the upcoming release
