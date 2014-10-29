@@ -2,14 +2,15 @@
 
 use strict;
 use warnings;
+
 use Cwd qw/abs_path/;
+use FindBin;
+# We can only dzil from the root of the repository.
+my $this_folder = $FindBin::Bin . '/../../'; # t/bin/../../
+my $srd_folder = abs_path($this_folder) . '/';
 
-my $this_file = abs_path(__FILE__);
-my $srd_folder = $this_file;
-$srd_folder =~ s/t\/bin\/record\.pl//;
-
-resetEnv();
-startServer();
+reset_env();
+start_server();
 
 print 'Cleaning...and building...
 ';
@@ -27,19 +28,21 @@ my @files = map {
     't/Firefox-Profile.t'
 );
 
-my $srdLib = glob($srd_folder . 'Selenium-Remote-Driver*/lib');
-my $tLib = glob($srd_folder . 'Selenium-Remote-Driver*');
-my $executeTests = join( ' && ', map {
-    'perl -I' . $srdLib
-      . ' -I' . $tLib
+my $srd_lib = glob($srd_folder . 'Selenium-Remote-Driver*/lib');
+my $t_lib = glob($srd_folder . 'Selenium-Remote-Driver*');
+
+my $execute_tests = join( ' && ', map {
+    'perl -I' . $srd_lib
+      . ' -I' . $t_lib
       . ' ' . $_
   } @files);
 
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
-print `$export WD_MOCKING_RECORD=1 && $executeTests`;
-resetEnv();
+my $wait = $^O eq 'MSWin32' ? 'START /WAIT' : '';
+print `$export WD_MOCKING_RECORD=1 && $wait $execute_tests`;
+reset_env();
 
-sub startServer {
+sub start_server {
     if ($^O eq 'MSWin32') {
         system('start "TEMP_HTTP_SERVER" /MIN perl ' . $srd_folder . 't/http-server.pl');
     }
@@ -48,7 +51,7 @@ sub startServer {
     }
 }
 
-sub killServer {
+sub kill_server {
     if ($^O eq 'MSWin32') {
         system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
     }
@@ -57,7 +60,8 @@ sub killServer {
     }
 }
 
-sub resetEnv {
+
+sub reset_env {
     `cd $srd_folder && dzil clean`;
-    killServer();
+    kill_server();
 }
