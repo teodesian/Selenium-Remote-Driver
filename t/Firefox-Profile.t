@@ -13,29 +13,17 @@ use JSON;
 use Selenium::Remote::Mock::RemoteConnection;
 use Selenium::Remote::Driver::Firefox::Profile;
 
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+use TestHarness;
 
-my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-    $os = 'linux';
-}
-my $mock_file = "firefox-profile-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file")) {
+my $harness = TestHarness->new(
+    this_file => $FindBin::Script
+);
+my %selenium_args = %{ $harness->base_caps };
+unless ($harness->mocks_exist_for_platform) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
-
-my %selenium_args = (
-    browser_name => 'firefox'
-);
-if ($record) {
-    $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
-}
-else {
-    $selenium_args{remote_conn} =
-      Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
-        replay_file => "t/mock-recordings/$mock_file" );
-}
-
 
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
@@ -46,7 +34,7 @@ CUSTOM_EXTENSION_LOADED: {
     # Set this to true to re-encode the profile. This should not need
     # to happen often.
     my $create_new_profile = 0;
-    if ($record && $create_new_profile) {
+    if ($create_new_profile) {
         $profile->set_preference(
             'browser.startup.homepage' => $website
         );
@@ -193,7 +181,5 @@ CROAKING: {
         ok ($@ =~ /coercion.*failed/, "caught invalid extension in driver constructor");
     }
 }
-if ($record) {
-    $selenium_args{remote_conn}->dump_session_store("t/mock-recordings/$mock_file");
-}
+
 done_testing;
