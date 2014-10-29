@@ -11,7 +11,7 @@ if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
     $os = 'linux';
 }
 
-my %selenium_args = ( 
+my %selenium_args = (
     browser_name => 'firefox',
     javascript => 1
 );
@@ -21,10 +21,10 @@ if (!$record && !(-e "t/mock-recordings/$mock_file")) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
 
-if ($record) { 
+if ($record) {
     $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
 }
-else { 
+else {
     $selenium_args{remote_conn} =
       Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
         replay_file => "t/mock-recordings/$mock_file" );
@@ -38,7 +38,7 @@ $t->get_ok('http://www.google.com');
 $t->title_like(qr/Google/);
 $t->body_like(qr/Google/);
 
-if ($record) { 
+if ($record) {
     $t->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
 }
 

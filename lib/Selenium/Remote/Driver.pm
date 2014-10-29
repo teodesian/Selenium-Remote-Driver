@@ -541,14 +541,14 @@ sub _request_new_session {
     $self->remote_conn->check_status();
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
-    my $resource_new_session = { 
+    my $resource_new_session = {
         method => $self->commands->get_method('newSession'),
         url => $self->commands->get_url('newSession'),
         no_content_success => $self->commands->get_no_content_success('newSession'),
     };
     my $rc = $self->remote_conn;
     my $resp = $rc->request(
-        $resource_new_session, 
+        $resource_new_session,
         $args,
     );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {

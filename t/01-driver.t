@@ -16,7 +16,7 @@ my $os  = $^O;
 if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
     $os = 'linux';
 }
-my %selenium_args = ( 
+my %selenium_args = (
     browser_name => 'firefox'
 );
 
@@ -26,10 +26,10 @@ if (!$record && !(-e "t/mock-recordings/$mock_file")) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
 
-if ($record) { 
+if ($record) {
     $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
 }
-else { 
+else {
     $selenium_args{remote_conn} =
       Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
         replay_file => "t/mock-recordings/$mock_file" );
@@ -340,7 +340,7 @@ PAUSE: {
 }
 
 AUTO_CLOSE: {
-    my %stay_open_selenium_args = %selenium_args; 
+    my %stay_open_selenium_args = %selenium_args;
     $stay_open_selenium_args{auto_close} = 0;
     my $stayOpen = Selenium::Remote::Driver->new(
         %stay_open_selenium_args
@@ -477,7 +477,7 @@ NO_SERVER_ERROR_MESSAGE: {
     };
     unlike($@, qr/Use of uninitialized value/, "Error message for no server at host/port combination is helpful");
 }
-if ($record) { 
+if ($record) {
     $driver->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
 }
 

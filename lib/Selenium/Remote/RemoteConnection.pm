@@ -38,7 +38,7 @@ has 'error_handler' => (
 
 
 
-sub check_status { 
+sub check_status {
     my $self = shift;
     my $status;
     try {
@@ -57,7 +57,6 @@ sub check_status {
     unless ($status->{cmd_status} eq 'OK') {
         croak "Selenium server did not return proper status";
     }
-    
 }
 
 
@@ -105,7 +104,7 @@ sub request {
     $header->header('Accept' => 'application/json');
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
     my $response = $self->ua->request($request);
-    if ($dont_process_response) { 
+    if ($dont_process_response) {
         return $response;
     }
     return $self->_process_response($response, $no_content_success);

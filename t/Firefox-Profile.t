@@ -24,13 +24,13 @@ if (!$record && !(-e "t/mock-recordings/$mock_file")) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
 
-my %selenium_args = ( 
+my %selenium_args = (
     browser_name => 'firefox'
 );
-if ($record) { 
+if ($record) {
     $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
 }
-else { 
+else {
     $selenium_args{remote_conn} =
       Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
         replay_file => "t/mock-recordings/$mock_file" );
@@ -74,7 +74,7 @@ CUSTOM_EXTENSION_LOADED: {
         $encoded = do {local $/ = undef; <$fh>};
         close ($fh);
     }
-    my %driver_args = %selenium_args; 
+    my %driver_args = %selenium_args;
     $driver_args{extra_capabilities} = { firefox_profile => $encoded };
     my $driver = Selenium::Remote::Driver->new(%driver_args);
 
@@ -193,7 +193,7 @@ CROAKING: {
         ok ($@ =~ /coercion.*failed/, "caught invalid extension in driver constructor");
     }
 }
-if ($record) { 
+if ($record) {
     $selenium_args{remote_conn}->dump_session_store("t/mock-recordings/$mock_file");
 }
 done_testing;

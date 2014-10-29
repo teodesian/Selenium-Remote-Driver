@@ -2,12 +2,12 @@ package Selenium::Remote::Mock::RemoteConnection;
 
 # ABSTRACT: utility class to mock the responses from Selenium server
 
-use Moo; 
-use JSON; 
+use Moo;
+use JSON;
 use Carp;
 use Try::Tiny;
-use HTTP::Response; 
-use Data::Dumper; 
+use HTTP::Response;
+use Data::Dumper;
 
 extends 'Selenium::Remote::RemoteConnection';
 
@@ -16,66 +16,66 @@ has 'spec' => (
     default => sub {{}},
 );
 
-has 'mock_cmds' => ( 
-    is => 'ro', 
+has 'mock_cmds' => (
+    is => 'ro',
 );
 
-has 'fake_session_id' => ( 
-    is => 'lazy', 
-    builder => sub { 
+has 'fake_session_id' => (
+    is => 'lazy',
+    builder => sub {
         my $id = join '',
         map +( 0 .. 9, 'a' .. 'z', 'A' .. 'Z' )[ rand( 10 + 26 * 2 ) ], 1 .. 50;
         return $id;
     },
 );
 
-has 'record' => ( 
-    is => 'ro', 
-    default => sub { 0 } 
+has 'record' => (
+    is => 'ro',
+    default => sub { 0 }
 );
 
-has 'replay' => ( 
+has 'replay' => (
     is => 'ro',
 );
 
-has 'replay_file' => ( 
+has 'replay_file' => (
     is => 'ro',
 );
 
 has 'session_store' => (
-    is => 'rw', 
+    is => 'rw',
     default => sub { {} }
 );
 
-has 'session_id' => ( 
+has 'session_id' => (
     is => 'rw',
     default => sub { undef },
 );
 
 sub BUILD {
-    my $self = shift; 
-    croak 'Cannot define replay and record attributes at the same time' if (($self->replay) && ($self->record)); 
-    croak 'replay_file attribute needs to be defined' if (($self->replay) && !($self->replay_file)); 
-    croak 'replay attribute needs to be defined' if (!($self->replay) && ($self->replay_file)); 
+    my $self = shift;
+    croak 'Cannot define replay and record attributes at the same time' if (($self->replay) && ($self->record));
+    croak 'replay_file attribute needs to be defined' if (($self->replay) && !($self->replay_file));
+    croak 'replay attribute needs to be defined' if (!($self->replay) && ($self->replay_file));
     $self->remote_server_addr('localhost');
     $self->port('4444');
-    if ($self->replay) { 
+    if ($self->replay) {
         $self->load_session_store($self->replay_file);
     }
 }
 
-sub check_status { 
+sub check_status {
     return;
 }
 
-sub load_session_store { 
-    my $self = shift; 
-    my $file = shift; 
+sub load_session_store {
+    my $self = shift;
+    my $file = shift;
     croak "'$file' is not a valid file" unless (-f $file);
     open (my $fh, '<', $file) or croak  "Opening '$file' failed";
     # here we use a fake session id since we have no way of figuring out
     # which session is good or not
-    local $/ = undef; 
+    local $/ = undef;
 
     my $json = JSON->new;
     $json->allow_blessed;
@@ -84,19 +84,19 @@ sub load_session_store {
     $self->session_store($decoded_json);
 }
 
-sub dump_session_store { 
-    my $self = shift; 
+sub dump_session_store {
+    my $self = shift;
     my ($file) = @_;
     open (my $fh, '>', $file) or croak "Opening '$file' failed";
     my $session_store = $self->session_store;
     my $dump = {};
-    foreach my $path (keys %{$session_store}) { 
+    foreach my $path (keys %{$session_store}) {
         $dump->{$path} = $session_store->{$path};
     }
     my $json = JSON->new;
     $json->allow_blessed;
     my $json_session = $json->allow_nonref->utf8->pretty->encode($dump);
-    print $fh $json_session; 
+    print $fh $json_session;
     close ($fh);
 }
 
@@ -109,7 +109,7 @@ sub request {
     my $content            = '';
     my $json               = JSON->new;
     $json->allow_blessed;
-    if ($params) { 
+    if ($params) {
         $content = $json->allow_nonref->utf8->canonical(1)->encode($params);
     }
     my $url_params = $resource->{url_params};
@@ -169,26 +169,26 @@ __END__
 
 =head1 DESCRIPTION
 
-Selenium::Remote::Mock::RemoteConnection is a class to act as a short-circuit or a pass through to the connection to a Selenium Server. 
-Using this class in place of L<Selenium::Remote::RemoteConnection> allows to: 
+Selenium::Remote::Mock::RemoteConnection is a class to act as a short-circuit or a pass through to the connection to a Selenium Server.
+Using this class in place of L<Selenium::Remote::RemoteConnection> allows to:
 
 =over
 
 =item *
-record interactions with the Selenium Server into a JSON file 
+record interactions with the Selenium Server into a JSON file
 
-=item * 
+=item *
 replay recorded interactions from a JSON file to mock answers from the Selenium Server
 
-=item * 
-mock responses to specific functions 
+=item *
+mock responses to specific functions
 
 =back
 
 =head1 SYNOPSIS
 
-=head2 Record interactions 
-    
+=head2 Record interactions
+
     #!perl
     use strict;
     use warnings;
@@ -204,7 +204,7 @@ mock responses to specific functions
     my $driver = Selenium::Remote::Driver->new( remote_conn => $mock_connection );
 
     # always store the session id, as it will become undef once
-    # $driver->quit is called  
+    # $driver->quit is called
     my $session_id = $driver->session_id;
 
     # do all the selenium things and quit
@@ -216,10 +216,10 @@ mock responses to specific functions
     $mock_connection->dump_session_store( 'my_record.json' );
 
 
-This code, above doing some basic Selenium interactions, will end up generating a JSON file containing all the requests and their responses for your Selenium session. 
-The JSON file looks like this : 
+This code, above doing some basic Selenium interactions, will end up generating a JSON file containing all the requests and their responses for your Selenium session.
+The JSON file looks like this :
 
-    { 
+    {
         "HTTP_REQUEST URL {request_parameters}":[ARRAY_OF_RESPONSES]
         ...
     }
@@ -233,11 +233,11 @@ The reason why we store array of responses is that the exact same request can be
     use warnings;
     use Test::More;
     use Test::Selenium::Remote::Driver;
-    use Selenium::Remote::Mock::RemoteConnection; 
+    use Selenium::Remote::Mock::RemoteConnection;
     my $mock_connection_2 =
       Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
         replay_file => 'my_record.json' );
-    # javascript + version parameters added or else it will not work 
+    # javascript + version parameters added or else it will not work
     my $driver =
       Test::Selenium::Remote::Driver->new( remote_conn => $mock_connection_2, javascript => 1, version => '' );
     $driver->get_ok('http://www.google.com');
@@ -245,15 +245,15 @@ The reason why we store array of responses is that the exact same request can be
     $driver->quit;
     done_testing;
 
-Using the file generated with the recording snippet from the section before, we are able to mock the responses. 
+Using the file generated with the recording snippet from the section before, we are able to mock the responses.
 
 Note that there is one small limitation (that I hope to remove in future versions), is that a record generated with L<Selenium::Remote::Driver> is not directly useable with L<Test::Selenium::Remote::Driver>.
-This is mainly because the way the two instances are created are a bit different, which leads to different requests made, for creating a session for instance. 
+This is mainly because the way the two instances are created are a bit different, which leads to different requests made, for creating a session for instance.
 For now, what works for sure is recording and replaying from the same class.
 
 =head2 Mock responses
 
-    
+
     #!perl
     use Test::More;
     use Test::Selenium::Remote::Driver;
@@ -285,26 +285,26 @@ For now, what works for sure is recording and replaying from the same class.
 
     done_testing();
 
-Mocking responses by hand requires a more advanced knowledge of the underlying implementation of L<Selenium::Remote::Driver>. 
+Mocking responses by hand requires a more advanced knowledge of the underlying implementation of L<Selenium::Remote::Driver>.
 What we mock here is the processed response that will be returned by L<Selenium::Remote::RemoteConnection> to '_execute_command' call.
-To accomplish this we need : 
+To accomplish this we need :
 
 =over
 
 =item *
 a spec: a HASHREF which keys are the name of the methods we want to mock. Note that those keys should also be valid keys from the _cmds attribute in L<Selenium::Remote::Command>.
-The value of each key is a sub which will be given two parameters: 
+The value of each key is a sub which will be given two parameters:
 
-=over 
+=over
 
-=item * 
-$url_params : the values that should have been replaced in the URL 
+=item *
+$url_params : the values that should have been replaced in the URL
 For instance, on the example above, it would have been:
     { session_id => 'some_session_id'}
 
-=item * 
+=item *
 $params : the original parameters of the request.
-On the example above it would have been: 
+On the example above it would have been:
     { value => 'q', using => 'xpath'}
 
 
@@ -312,12 +312,12 @@ On the example above it would have been:
 
 The sub used as a value in the spec is not expected to return anything, so you have to craft very carefully what you return so that it will produce the expected result.
 
-=item * 
+=item *
 a mock_cmd: a L<Selenium::Remote::Mock::Commands> object. This is used mainly to hijack the normal commands so that placeholders do not get replaced in the URLs.
 
 =back
 
-=head1 BUGS 
+=head1 BUGS
 
 This code is really early alpha, so its API might change. Use with caution !
 
