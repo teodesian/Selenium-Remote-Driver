@@ -18,7 +18,9 @@ use Selenium::Remote::Mock::RemoteConnection;
 =attr this_file
 
 Required. Pass in the short name of the test file in use so we can
-figure out where the corresponding recording belongs.
+figure out where the corresponding recording belongs. For a test file
+named C<t/01-driver.t>, we'd expect this argument to be
+C<01-driver.t>.
 
 =cut
 
@@ -34,10 +36,10 @@ has record => (
     default => sub {
         if (defined $ENV{WD_MOCKING_RECORD}
               && $ENV{WD_MOCKING_RECORD} == 1) {
-            return 1
+            return 1;
         }
         else {
-            return 0
+            return 0;
         }
     }
 );
@@ -95,7 +97,7 @@ has mock_file => (
         my ($self) = @_;
 
         # Since FindBin uses a Begin block, and we're using it in the
-        # tests themselves, $findBin::Bin will already be initialized
+        # tests themselves, $FindBin::Bin will already be initialized
         # to the folder that the *.t files live in - that is, `t`.
         my $mock_folder = $FindBin::Bin . '/mock-recordings/';
 
