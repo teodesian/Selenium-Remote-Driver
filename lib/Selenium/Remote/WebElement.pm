@@ -364,6 +364,13 @@ sub is_hidden {
  http://elementalselenium.com/tips/39-drag-and-drop
  https://gist.github.com/rcorreia/2362544
 
+ Check out the mouse_move_to_location, button_down, and button_up
+ functions on Selenium::Remote::Driver.
+
+ https://metacpan.org/pod/Selenium::Remote::Driver#mouse_move_to_location
+ https://metacpan.org/pod/Selenium::Remote::Driver#button_down
+ https://metacpan.org/pod/Selenium::Remote::Driver#button_up
+
 =cut
 
 sub drag {
