@@ -36,11 +36,13 @@ has 'error_handler' => (
     builder => sub { return Selenium::Remote::ErrorHandler->new; }
 );
 
-sub BUILD {
+
+
+sub check_status {
     my $self = shift;
     my $status;
     try {
-        $status = $self->request('GET','status');
+        $status = $self->request({method => 'GET', url => 'status'});
     }
     catch {
         croak "Could not connect to SeleniumWebDriver: $_" ;
@@ -49,7 +51,7 @@ sub BUILD {
     if($status->{cmd_status} ne 'OK') {
         # Could be grid, see if we can talk to it
         $status = undef;
-        $status = $self->request('GET', 'grid/api/hub/status');
+        $status = $self->request({method => 'GET', url => 'grid/api/hub/status'});
     }
 
     unless ($status->{cmd_status} eq 'OK') {
@@ -58,10 +60,13 @@ sub BUILD {
 }
 
 
+
 # This request method is tailored for Selenium RC server
 sub request {
-    my ($self, $method, $url, $no_content_success, $params) = @_;
-    $no_content_success = $no_content_success // 0;
+    my ($self,$resource,$params,$dont_process_response) = @_;
+    my $method =        $resource->{method};
+    my $url =        $resource->{url};
+    my $no_content_success =        $resource->{no_content_success} // 0;
 
     my $content = '';
     my $fullurl = '';
@@ -99,7 +104,9 @@ sub request {
     $header->header('Accept' => 'application/json');
     my $request = HTTP::Request->new($method, $fullurl, $header, $content);
     my $response = $self->ua->request($request);
-
+    if ($dont_process_response) {
+        return $response;
+    }
     return $self->_process_response($response, $no_content_success);
 }
 

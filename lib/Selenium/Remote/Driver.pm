@@ -312,12 +312,12 @@ has 'session_id' => (
 has 'remote_conn' => (
     is      => 'lazy',
     builder => sub {
-        my $self = shift;
-        return Selenium::Remote::RemoteConnection->new(
-            remote_server_addr => $self->remote_server_addr,
-            port               => $self->port,
-            ua                 => $self->ua
-        );
+            my $self = shift;
+            return Selenium::Remote::RemoteConnection->new(
+                remote_server_addr => $self->remote_server_addr,
+                port               => $self->port,
+                ua                 => $self->ua
+            );
     },
 );
 
@@ -328,7 +328,9 @@ has 'ua' => (
 
 has 'commands' => (
     is      => 'lazy',
-    builder => sub { return Selenium::Remote::Commands->new; },
+    builder => sub {
+        return Selenium::Remote::Commands->new;
+    },
 );
 
 has 'auto_close' => (
@@ -415,32 +417,23 @@ has 'inner_window_size' => (
 
 );
 
-has 'testing' => (
-    is => 'rw',
-    default => sub { 0 },
-);
-
 sub BUILD {
     my $self = shift;
 
-    # disable server connection when testing attribute is on
-    unless ($self->testing) {
+    if ($self->has_desired_capabilities) {
+        $self->new_desired_session( $self->desired_capabilities );
+    }
+    else {
+        # Connect to remote server & establish a new session
+        $self->new_session( $self->extra_capabilities );
+    }
 
-        if ($self->has_desired_capabilities) {
-            $self->new_desired_session( $self->desired_capabilities );
-        }
-        else {
-            # Connect to remote server & establish a new session
-            $self->new_session( $self->extra_capabilities );
-        }
-
-        if ( !( defined $self->session_id ) ) {
-            croak "Could not establish a session with the remote server\n";
-        }
-        elsif ($self->has_inner_window_size) {
-            my $size = $self->inner_window_size;
-            $self->set_inner_window_size(@$size);
-        }
+    if ( !( defined $self->session_id ) ) {
+        croak "Could not establish a session with the remote server\n";
+    }
+    elsif ($self->has_inner_window_size) {
+        my $size = $self->inner_window_size;
+        $self->set_inner_window_size(@$size);
     }
 }
 
@@ -470,12 +463,7 @@ sub _execute_command {
 
     if ($resource) {
         $params = {} unless $params;
-        my $resp = $self->remote_conn->request(
-            $resource->{method},
-            $resource->{url},
-            $resource->{no_content_success},
-            $params
-        );
+        my $resp = $self->remote_conn->request( $resource, $params);
         if ( ref($resp) eq 'HASH' ) {
             if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
                 return $resp->{cmd_return};
@@ -544,13 +532,17 @@ sub new_desired_session {
 
 sub _request_new_session {
     my ( $self, $args ) = @_;
-
+    $self->remote_conn->check_status();
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
-    my $resp = $self->remote_conn->request(
-        $self->commands->get_method('newSession'),
-        $self->commands->get_url('newSession'),
-        $self->commands->get_no_content_success('newSession'),
+    my $resource_new_session = {
+        method => $self->commands->get_method('newSession'),
+        url => $self->commands->get_url('newSession'),
+        no_content_success => $self->commands->get_no_content_success('newSession'),
+    };
+    my $rc = $self->remote_conn;
+    my $resp = $rc->request(
+        $resource_new_session,
         $args,
     );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {

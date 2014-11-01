@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -10,31 +10,20 @@ use MIME::Base64 qw/decode_base64/;
 use Archive::Extract;
 use File::Temp;
 use JSON;
+use Selenium::Remote::Mock::RemoteConnection;
 use Selenium::Remote::Driver::Firefox::Profile;
 
-BEGIN {
-    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
-        use t::lib::MockSeleniumWebDriver;
-        my $p = Net::Ping->new("tcp", 2);
-        $p->port_number(4444);
-        unless ($p->ping('localhost')) {
-            plan skip_all => "Selenium server is not running on localhost:4444";
-            exit;
-        }
-        warn "\n\nRecording...\n\n";
-    }
-}
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+use TestHarness;
 
-my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-    $os = 'linux';
-}
-my $mock_file = "firefox-profile-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file")) {
+my $harness = TestHarness->new(
+    this_file => $FindBin::Script
+);
+my %selenium_args = %{ $harness->base_caps };
+unless ($harness->mocks_exist_for_platform) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
-t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
@@ -45,7 +34,7 @@ CUSTOM_EXTENSION_LOADED: {
     # Set this to true to re-encode the profile. This should not need
     # to happen often.
     my $create_new_profile = 0;
-    if ($record && $create_new_profile) {
+    if ($create_new_profile) {
         $profile->set_preference(
             'browser.startup.homepage' => $website
         );
@@ -73,10 +62,9 @@ CUSTOM_EXTENSION_LOADED: {
         $encoded = do {local $/ = undef; <$fh>};
         close ($fh);
     }
-
-    my $driver = Selenium::Remote::Driver->new(extra_capabilities => {
-        firefox_profile => $encoded
-    });
+    my %driver_args = %selenium_args;
+    $driver_args{extra_capabilities} = { firefox_profile => $encoded };
+    my $driver = Selenium::Remote::Driver->new(%driver_args);
 
     ok(defined $driver, "made a driver without dying");
 
@@ -184,8 +172,10 @@ CROAKING: {
 
     {
         eval {
+            my %driver_args = %selenium_args;
+            $driver_args{firefox_profile} = 'clearly invalid';
             my $croakingDriver = Selenium::Remote::Driver->new(
-                firefox_profile => 'clearly invalid!'
+                %driver_args
             );
         };
         ok ($@ =~ /coercion.*failed/, "caught invalid extension in driver constructor");

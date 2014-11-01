@@ -2,34 +2,22 @@ use strict;
 use warnings;
 
 use Test::More;
-use Net::Ping;
 use Selenium::Remote::Driver;
+use Selenium::Remote::Mock::RemoteConnection;
 
-BEGIN {
-    if (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1)) {
-        use t::lib::MockSeleniumWebDriver;
-        my $p = Net::Ping->new("tcp", 2);
-        $p->port_number(4444);
-        unless ($p->ping('localhost')) {
-            plan skip_all => "Selenium server is not running on localhost:4444";
-            exit;
-        }
-        warn "\n\nRecording...\n\n";
-    }
-}
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+use TestHarness;
 
-my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-    $os = 'linux';
-}
-my $mock_file = "02-webelement-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file")) {
+my $harness = TestHarness->new(
+    this_file => $FindBin::Script
+);
+my %selenium_args = %{ $harness->base_caps };
+unless ($harness->mocks_exist_for_platform) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
-t::lib::MockSeleniumWebDriver::register($record,"t/mock-recordings/$mock_file");
 
-my $driver = new Selenium::Remote::Driver(browser_name => 'firefox');
+my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
 $driver->get("$website/formPage.html");
 my $ret;

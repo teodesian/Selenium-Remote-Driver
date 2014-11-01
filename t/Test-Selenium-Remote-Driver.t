@@ -1,125 +1,31 @@
 #!/usr/bin/env perl
-use Test::Tester;
 use Test::More;
-use Test::MockObject;
-use Test::MockObject::Extends;
+use Test::Exception;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
-use Carp;
+use Selenium::Remote::Mock::Commands;
+use Selenium::Remote::Mock::RemoteConnection;
 
-my $successful_driver = Test::Selenium::Remote::Driver->new( testing => 1 );
-$successful_driver = Test::MockObject::Extends->new($successful_driver);
+my $spec = {
+    findElement => sub {
+        my (undef,$searched_item) = @_;
+        return { status => 'OK', return => { ELEMENT => '123456' } }
+          if ( $searched_item->{value} eq 'q' );
+        return { status => 'NOK', return => 0, error => 'element not found' };
+    },
+    getPageSource => sub { return 'this output matches regex'},
+};
+my $mock_commands = Selenium::Remote::Mock::Commands->new;
 
-my $element = Test::Selenium::Remote::WebElement->new(
-    id     => '1342835311100',
-    parent => $successful_driver,
+my $successful_driver =
+  Test::Selenium::Remote::Driver->new(
+    remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
+    commands => $mock_commands,
 );
-
-
-# find_element_ok
-{
-    $successful_driver->mock( 'find_element', sub {$element} );
-    check_tests(
-        sub {
-            my $rc = $successful_driver->find_element_ok( 'q',
-                'find_element_ok works' );
-            is( $rc, 1, 'returns true' );
-        },
-        [   {   ok   => 1,
-                name => "find_element_ok works",
-                diag => "",
-            },
-            {   ok   => 1,
-                name => "returns true",
-                diag => "",
-            },
-        ]
-    );
-
-    $successful_driver->mock( 'find_element', sub {0} );
-    check_tests(
-        sub {
-            my $rc = $successful_driver->find_element_ok( 'q',
-                'find_element_ok works, falsey test' );
-            is( $rc, 0, 'returns false' );
-        },
-        [   {   ok   => 0,
-                name => "find_element_ok works, falsey test",
-                diag => "",
-            },
-            {   ok   => 1,
-                name => "returns false",
-                diag => "",
-            },
-        ]
-    );
-}
-
-# find_no_element_ok
-{
-    $successful_driver->mock( 'find_element', sub { die $_[1] } );
-    check_tests(
-        sub {
-            my $rc = $successful_driver->find_no_element_ok( 'BOOM',
-                'find_no_element_ok works, expecting to find nothing.' );
-            is( $rc, 1, 'returns true' );
-        },
-        [   {   ok   => 1,
-                name => "find_no_element_ok works, expecting to find nothing.",
-                diag => "",
-            },
-            {   ok   => 1,
-                name => "returns true",
-                diag => "",
-            },
-        ]
-    );
-
-    $successful_driver->mock( 'find_element', sub {$element} );
-    check_tests(
-        sub {
-            my $rc =
-              $successful_driver->find_no_element_ok( 'q',
-                'find_no_element_ok works, expecting a false value if a element exists'
-              );
-            is( $rc, 0, 'returns false' );
-        },
-        [   {   ok => 0,
-                name =>
-                  "find_no_element_ok works, expecting a false value if a element exists",
-                diag => "",
-            },
-            {   ok   => 1,
-                name => "returns false",
-                diag => "",
-            },
-        ]
-    );
-
-
-}
-
-# content_like
-{
-    $successful_driver->mock( 'get_page_source', sub { 'this output matches regex' } );
-    check_tests(
-        sub {
-            my $rc = $successful_driver->content_like( qr/matches/,
-                'content_like works' );
-            is( $rc, 1, 'returns true' );
-        },
-        [   {   ok   => 1,
-                name => "content_like works",
-                diag => "",
-            },
-            {   ok   => 1,
-                name => "returns true",
-                diag => "",
-            },
-        ]
-    );
-
-}
-
+$successful_driver->find_element_ok('q','find_element_ok works');
+dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if element not found';
+$successful_driver->find_no_element_ok('notq','find_no_element_ok works');
+$successful_driver->content_like( qr/matches/, 'content_like works');
+$successful_driver->content_unlike( qr/nomatch/, 'content_unlike works');
 
 done_testing();

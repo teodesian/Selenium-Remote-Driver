@@ -279,11 +279,6 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/window',
                 'no_content_success' => 1
             },
-            'dragElement' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/element/:id/drag',
-                'no_content_success' => 1
-            },
             'getElementSize' => {
                 'method'             => 'GET',
                 'url'                => 'session/:sessionId/element/:id/size',

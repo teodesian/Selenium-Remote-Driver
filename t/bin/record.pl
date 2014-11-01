@@ -2,53 +2,44 @@
 
 use strict;
 use warnings;
+
 use Cwd qw/abs_path/;
+use FindBin;
+# We can only dzil from the root of the repository.
+my $this_folder = $FindBin::Bin . '/../../'; # t/bin/../../
+my $repo_root = abs_path($this_folder) . '/';
 
-my $this_file = abs_path(__FILE__);
-my $srd_folder = $this_file;
-$srd_folder =~ s/t\/bin\/record\.pl//;
+reset_env();
+start_server();
 
-resetEnv();
-startServer();
-
-print 'Cleaning...and building...
-';
-print `cd $srd_folder && dzil build`;
+my $built_lib = glob('Selenium-Remote-Driver-*/lib');
+if (not defined $built_lib) {
+    print ' Building a dist.';
+    print `cd $repo_root && dzil build`;
+}
+# If built_lib wasn't around in the first place, we'll have to glob
+# for it again.
+$built_lib = $repo_root . ($built_lib || glob('Selenium-Remote-Driver-*/lib'));
 
 if ($^O eq 'linux') {
     print "Headless and need a webdriver server started? Try\n\n\tDISPLAY=:1 xvfb-run --auto-servernum java -jar /usr/lib/node_modules/protractor/selenium/selenium-server-standalone-2.42.2.jar\n\n";
 }
 
-my @files = map {
-    $srd_folder . $_
-} (
-    't/01-driver.t',
-    't/02-webelement.t',
-    't/Firefox-Profile.t'
-);
-
-my $srdLib = glob($srd_folder . 'Selenium-Remote-Driver*/lib');
-my $tLib = glob($srd_folder . 'Selenium-Remote-Driver*');
-my $executeTests = join( ' && ', map {
-    'perl -I' . $srdLib
-      . ' -I' . $tLib
-      . ' ' . $_
-  } @files);
-
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
-print `$export WD_MOCKING_RECORD=1 && $executeTests`;
-resetEnv();
+my $wait = $^O eq 'MSWin32' ? 'START /WAIT' : '';
+print `$export WD_MOCKING_RECORD=1 && cd $repo_root && prove -I$built_lib -rv t/`;
+reset_env();
 
-sub startServer {
+sub start_server {
     if ($^O eq 'MSWin32') {
-        system('start "TEMP_HTTP_SERVER" /MIN perl ' . $srd_folder . 't/http-server.pl');
+        system('start "TEMP_HTTP_SERVER" /MIN perl ' . $repo_root . 't/http-server.pl');
     }
     else {
-        system('perl ' . $srd_folder . 't/http-server.pl > /dev/null &');
+        system('perl ' . $repo_root . 't/http-server.pl > /dev/null &');
     }
 }
 
-sub killServer {
+sub kill_server {
     if ($^O eq 'MSWin32') {
         system("taskkill /FI \"WINDOWTITLE eq TEMP_HTTP_SERVER\"");
     }
@@ -57,7 +48,12 @@ sub killServer {
     }
 }
 
-sub resetEnv {
-    `cd $srd_folder && dzil clean`;
-    killServer();
+
+sub reset_env {
+    if (@ARGV && $ARGV[0] eq 'reset') {
+        print 'Cleaning. ';
+        `cd $repo_root && dzil clean`;
+    }
+    print 'Taking out any existing servers. ';
+    kill_server();
 }
