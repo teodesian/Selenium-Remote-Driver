@@ -447,21 +447,4 @@ QUIT: {
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');
 }
 
-NO_SERVER_ERROR_MESSAGE: {
-    my $unused_port = do {
-        my $l = IO::Socket::INET->new(
-            Listen    => 5,
-            LocalHost => '127.0.0.1',
-            LocalPort => 0,
-            Proto     => 'tcp',
-            ReuseAddr => 1,
-        ) or die $!;
-        $l->sockport;
-    };
-    eval {
-        my $sel = Selenium::Remote::Driver->new(port => $unused_port);
-    };
-    unlike($@, qr/Use of uninitialized value/, "Error message for no server at host/port combination is helpful");
-}
-
 done_testing;
