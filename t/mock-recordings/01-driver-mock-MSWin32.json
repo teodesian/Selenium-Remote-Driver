@@ -192,6 +192,9 @@
    "GET session/c6bebb71-4218-4723-9b43-d935f6160809/window/current/size {}" : [
       "HTTP/1.1 200 OK\nCache-Control: no-cache\nCache-Control: no-cache\nConnection: close\nDate: Wed, 29 Oct 2014 04:21:20 GMT\nServer: Jetty/5.1.x (Windows 7/6.1 x86 java/1.7.0_51\nContent-Length: 234\nContent-Type: application/json; charset=utf-8\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nClient-Date: Wed, 29 Oct 2014 04:21:20 GMT\nClient-Peer: ::1:4444\nClient-Response-Num: 1\n\n{\"sessionId\":\"c6bebb71-4218-4723-9b43-d935f6160809\",\"status\":0,\"value\":{\"height\":640,\"width\":480,\"class\":\"org.openqa.selenium.Dimension\",\"hCode\":1966080},\"state\":\"success\",\"class\":\"org.openqa.selenium.remote.Response\",\"hCode\":9335594}\n"
    ],
+   "POST session/c6bebb71-4218-4723-9b43-d935f6160809/window/current/maximize {}" : [
+      "HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: *\nDate: Tue, 04 Nov 2014 15:53:29 GMT\nCache-Control: no-cache\nServer: Jetty/5.1.x (Windows 7/6.1 amd64 java/1.7.0_03\nAccess-Control-Allow-Headers: Accept,Content-Type\nAccess-Control-Allow-Methods: DELETE,GET,HEAD,POST\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\n"
+   ],
    "GET session/8cbe14a6-db08-48d7-a138-64e11278803e/url {}" : [
       "HTTP/1.1 200 OK\nCache-Control: no-cache\nCache-Control: no-cache\nConnection: close\nDate: Wed, 29 Oct 2014 04:21:36 GMT\nServer: Jetty/5.1.x (Windows 7/6.1 x86 java/1.7.0_51\nContent-Length: 166\nContent-Type: application/json; charset=utf-8\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nClient-Date: Wed, 29 Oct 2014 04:21:36 GMT\nClient-Peer: ::1:4444\nClient-Response-Num: 1\n\n{\"sessionId\":\"8cbe14a6-db08-48d7-a138-64e11278803e\",\"status\":0,\"value\":\"about:blank\",\"state\":\"success\",\"class\":\"org.openqa.selenium.remote.Response\",\"hCode\":14684298}\n"
    ],
