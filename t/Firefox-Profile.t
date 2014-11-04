@@ -24,11 +24,12 @@ my %selenium_args = %{ $harness->base_caps };
 unless ($harness->mocks_exist_for_platform) {
     plan skip_all => "Mocking of tests is not been enabled for this platform";
 }
+my $fixture_dir = $FindBin::Bin . '/www/';
 
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
     my $website = 'http://localhost:63636';
-    my $mock_encoded_profile = "t/www/encoded_profile.b64";
+    my $mock_encoded_profile = $fixture_dir . 'encoded_profile.b64';
     my $encoded;
 
     # Set this to true to re-encode the profile. This should not need
@@ -49,7 +50,7 @@ CUSTOM_EXTENSION_LOADED: {
         #     contentScript: 'document.body.innerHTML = ' +
         #         ' "<h1>Page matches ruleset</h1>";'
         # });
-        $profile->add_extension('t/www/redisplay.xpi');
+        $profile->add_extension($fixture_dir . 'redisplay.xpi');
 
         $encoded = $profile->_encode;
 
