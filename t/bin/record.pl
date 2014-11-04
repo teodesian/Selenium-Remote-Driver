@@ -16,7 +16,8 @@ output_linux_help();
 my $built_lib = find_built_lib();
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
 my $wait = $^O eq 'MSWin32' ? 'START /WAIT' : '';
-print `$export WD_MOCKING_RECORD=1 && cd $repo_root && prove -I$built_lib -rv t/`;
+my $prove_opts = '-I' . $built_lib .' -j9 -r --verbose --trap --merge --state=save,slow';
+print `$export WD_MOCKING_RECORD=1 && cd $repo_root && prove $prove_opts t/`;
 reset_env();
 
 sub find_built_lib {
