@@ -1582,6 +1582,30 @@ sub set_window_size {
     return $ret ? 1 : 0;
 }
 
+=head2 maximize_window
+
+ Description:
+    Maximizes the browser window
+
+ Input:
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Output:
+    BOOLEAN - Success or failure
+
+ Usage:
+    $driver->maximize_window();
+
+=cut
+
+sub maximize_window {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
+    my $ret = $self->_execute_command( $res );
+    return $ret ? 1 : 0;
+}
+
 =head2 get_all_cookies
 
  Description:

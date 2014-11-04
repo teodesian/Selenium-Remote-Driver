@@ -84,6 +84,9 @@
    "POST session/5fb52ede-454d-42db-991f-1b15b583aac0/window/current/size {\"height\":640,\"width\":480}" : [
       "HTTP/1.1 200 OK\nCache-Control: no-cache\nCache-Control: no-cache\nConnection: close\nDate: Sat, 01 Nov 2014 01:30:09 GMT\nServer: Jetty/5.1.x (Mac OS X/10.9.5 x86_64 java/1.7.0_67\nContent-Length: 158\nContent-Type: application/json; charset=utf-8\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nClient-Date: Sat, 01 Nov 2014 01:30:09 GMT\nClient-Peer: 127.0.0.1:4444\nClient-Response-Num: 1\n\n{\"status\":0,\"sessionId\":\"5fb52ede-454d-42db-991f-1b15b583aac0\",\"value\":null,\"state\":\"success\",\"class\":\"org.openqa.selenium.remote.Response\",\"hCode\":409192685}\n"
    ],
+   "POST session/5fb52ede-454d-42db-991f-1b15b583aac0/window/current/maximize {}" : [
+      "HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: *\nDate: Tue, 04 Nov 2014 15:53:29 GMT\nCache-Control: no-cache\nServer: Jetty/5.1.x (Mac OS X/10.9.5 x86_64 java/1.7.0_67\nAccess-Control-Allow-Headers: Accept,Content-Type\nAccess-Control-Allow-Methods: DELETE,GET,HEAD,POST\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\n"
+   ],
    "GET session/cad1cbe4-c296-47ff-901d-cabbf3a1b519/window_handles {}" : [
       "HTTP/1.1 200 OK\nCache-Control: no-cache\nCache-Control: no-cache\nConnection: close\nDate: Sat, 01 Nov 2014 01:30:22 GMT\nServer: Jetty/5.1.x (Mac OS X/10.9.5 x86_64 java/1.7.0_67\nContent-Length: 196\nContent-Type: application/json; charset=utf-8\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nClient-Date: Sat, 01 Nov 2014 01:30:22 GMT\nClient-Peer: 127.0.0.1:4444\nClient-Response-Num: 1\n\n{\"status\":0,\"sessionId\":\"cad1cbe4-c296-47ff-901d-cabbf3a1b519\",\"value\":[\"{c276ff29-022b-e041-b4ec-7f375f40ec37}\"],\"state\":\"success\",\"class\":\"org.openqa.selenium.remote.Response\",\"hCode\":224289601}\n"
    ],

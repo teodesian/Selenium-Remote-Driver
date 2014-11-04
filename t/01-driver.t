@@ -176,6 +176,8 @@ WINDOW: {
     $ret = $driver->get_window_size();
     is ($ret->{'height'}, 640, 'Got the right height');
     is ($ret->{'width'}, 480, 'Got the right width');
+    $ret = $driver->maximize_window();
+    is ($ret, 1, "Got confirmation from maximize");
     $ret = $driver->get_page_source();
     ok($ret =~ m/^<html/i, 'Received page source');
     eval {$driver->set_implicit_wait_timeout(20001);};
