@@ -193,6 +193,9 @@
    "POST session/4d09b306-02c2-454a-8b41-2aaf1762610a/window/current/size {\"height\":640,\"width\":480}" : [
       "HTTP/1.1 200 OK\nCache-Control: no-cache\nCache-Control: no-cache\nConnection: close\nDate: Sat, 01 Nov 2014 01:35:12 GMT\nServer: Jetty/5.1.x (Linux/3.2.0-23-generic-pae i386 java/1.7.0_51\nContent-Length: 155\nContent-Type: application/json; charset=utf-8\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nClient-Date: Sat, 01 Nov 2014 01:35:12 GMT\nClient-Peer: 127.0.0.1:4444\nClient-Response-Num: 1\n\n{\"status\":0,\"sessionId\":\"4d09b306-02c2-454a-8b41-2aaf1762610a\",\"value\":null,\"state\":\"success\",\"class\":\"org.openqa.selenium.remote.Response\",\"hCode\":464008}\n"
    ],
+   "POST session/4d09b306-02c2-454a-8b41-2aaf1762610a/window/current/maximize {}" : [
+      "HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: *\nDate: Tue, 04 Nov 2014 15:53:29 GMT\nCache-Control: no-cache\nServer: Jetty/5.1.x (Linux/3.2.0-23-generic-pae i386 java/1.7.0_51\nAccess-Control-Allow-Headers: Accept,Content-Type\nAccess-Control-Allow-Methods: DELETE,GET,HEAD,POST\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\n"
+   ],
    "POST session/4d09b306-02c2-454a-8b41-2aaf1762610a/element {\"using\":\"xpath\",\"value\":\"//input[@id='checky']\"}" : [
       "HTTP/1.1 200 OK\nCache-Control: no-cache\nCache-Control: no-cache\nConnection: close\nDate: Sat, 01 Nov 2014 01:35:13 GMT\nServer: Jetty/5.1.x (Linux/3.2.0-23-generic-pae i386 java/1.7.0_51\nContent-Length: 168\nContent-Type: application/json; charset=utf-8\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nExpires: Thu, 01 Jan 1970 00:00:00 GMT\nClient-Date: Sat, 01 Nov 2014 01:35:13 GMT\nClient-Peer: 127.0.0.1:4444\nClient-Response-Num: 1\n\n{\"status\":0,\"sessionId\":\"4d09b306-02c2-454a-8b41-2aaf1762610a\",\"value\":{\"ELEMENT\":\"0\"},\"state\":\"success\",\"class\":\"org.openqa.selenium.remote.Response\",\"hCode\":16602152}\n"
    ],
