@@ -18,9 +18,7 @@ my %selenium_args = (
     javascript     => 1,
     %{ $harness->base_caps }
 );
-unless ($harness->mocks_exist_for_platform) {
-    plan skip_all => "Mocking of tests is not been enabled for this platform";
-}
+$harness->skip_all_unless_mocks_exist;
 
 plan tests => 9;
 
