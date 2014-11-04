@@ -550,8 +550,13 @@ sub _request_new_session {
     }
     else {
         my $error = 'Could not create new session';
-        $error .= ': ' . $resp->{cmd_return}->{message}
-          if exists $resp->{cmd_return}->{message};
+
+        if (ref $resp->{cmd_return} eq 'HASH') {
+            $error .= ': ' . $resp->{cmd_return}->{message};
+        }
+        else {
+            $error .= ': ' . $resp->{cmd_return};
+        }
         croak $error;
     }
 }
