@@ -1,9 +1,10 @@
 package TestHarness;
 
 # ABSTRACT: Take care of set up for recording/replaying mocks
-use Moo;
 use FindBin;
+use Moo;
 use Selenium::Remote::Mock::RemoteConnection;
+use Test::More;
 
 =head1 SYNOPSIS
 
@@ -107,6 +108,13 @@ has mock_file => (
         return $mock_folder . $test_name . '-mock-' . $self->os . '.json';
     }
 );
+
+sub skip_all_unless_mocks_exist {
+    my ($self) = @_;
+    unless ($self->mocks_exist_for_platform) {
+        plan skip_all => "Mocking of tests is not been enabled for this platform";
+    }
+}
 
 sub mocks_exist_for_platform {
     my ($self) = @_;
