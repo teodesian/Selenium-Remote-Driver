@@ -34,7 +34,7 @@ sub find_built_lib {
 
 sub output_linux_help {
     if ($^O eq 'linux') {
-        print "Headless and need a webdriver server started? Try\n\n\tDISPLAY=:1 xvfb-run --auto-servernum java -jar /usr/lib/node_modules/protractor/selenium/selenium-server-standalone-2.42.2.jar\n\n";
+        print "Headless and need a webdriver server started? Try\n\n\tDISPLAY=:1 xvfb-run --auto-servernum java -jar /usr/lib/node_modules/protractor/selenium/selenium-server-standalone-*.jar\n\n";
     }
 }
 
