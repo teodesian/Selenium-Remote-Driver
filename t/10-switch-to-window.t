@@ -18,9 +18,7 @@ my %selenium_args = (
     javascript     => 1,
     %{ $harness->base_caps }
 );
-unless ($harness->mocks_exist_for_platform) {
-    plan skip_all => "Mocking of tests is not been enabled for this platform";
-}
+$harness->skip_all_unless_mocks_exist;
 
 plan tests => 9;
 
@@ -47,7 +45,6 @@ my $handles = $s->get_window_handles;
 is scalar(@$handles), 2;
 # We don't assume any order in the @$handles array:
 my $cpan_handle = $perl_handle eq $handles->[0] ? $handles->[1] : $handles->[0];
-diag explain $handles;
 
 $s->switch_to_window($cpan_handle);
 $s->title_is($cpan_title);

@@ -162,8 +162,9 @@ directories.
 sub add_extension {
     my ($self, $xpi) = @_;
 
+    croak 'File not found: ' . $xpi unless -e $xpi;
     my $xpi_abs_path = abs_path($xpi);
-    croak "$xpi_abs_path: extensions must be in .xpi format" unless $xpi_abs_path =~ /\.xpi$/;
+    croak '$xpi_abs_path: extensions must be in .xpi format' unless $xpi_abs_path =~ /\.xpi$/;
 
     push (@{$self->{extensions}}, $xpi_abs_path);
 }

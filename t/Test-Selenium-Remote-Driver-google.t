@@ -13,9 +13,7 @@ my $harness = TestHarness->new(
     this_file => $FindBin::Script
 );
 my %selenium_args = %{ $harness->base_caps };
-unless ($harness->mocks_exist_for_platform) {
-    plan skip_all => "Mocking of tests is not been enabled for this platform";
-}
+$harness->skip_all_unless_mocks_exist;
 
 # Try to find
 my $t = Test::Selenium::Remote::Driver->new(
