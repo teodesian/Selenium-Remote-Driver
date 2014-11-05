@@ -4,6 +4,7 @@ Revision history for Selenium-Remote-Driver
         [NEW FEATURES]
         - Improved error messaging for Saucelabs non-json cases
         - Improved error messaging for incorrectly configured chromedrivers
+        - Add maximize_window endpoint
 
         [MAINTENAINCE]
         - Specify minimum compatible version of Moo dep
