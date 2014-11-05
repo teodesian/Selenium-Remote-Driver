@@ -176,9 +176,15 @@ WINDOW: {
     is ($ret->{'width'}, 480, 'Got the right width');
     $ret = $driver->maximize_window();
     is ($ret, 1, "Got confirmation from maximize");
-    $ret = $driver->get_window_size();
-    ok ($ret->{'height'} > 640, 'Height has increased');
-    ok ($ret->{'width'} > 480, 'Width has increased');
+
+  SKIP: {
+        skip 'headless browsers don\'t get maximized', 2
+          unless $^O =~ /darwin|MSWin32/;
+        $ret = $driver->get_window_size();
+        ok ($ret->{'height'} > 640, 'Height has increased');
+        ok ($ret->{'width'} > 480, 'Width has increased');
+    }
+
     $ret = $driver->get_page_source();
     ok($ret =~ m/^<html/i, 'Received page source');
     eval {$driver->set_implicit_wait_timeout(20001);};
