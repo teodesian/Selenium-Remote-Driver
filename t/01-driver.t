@@ -409,9 +409,9 @@ BASE_URL: {
                 spec => {
                     get =>
                       sub { my ( undef, $params ) = @_; return $params->{url} }
-                },
+                  },
                 mock_cmds => $mock_commands
-              ),
+            ),
             commands => $mock_commands,
         );
         my $got = $base_url_driver->get($test->{url});
