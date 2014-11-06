@@ -18,7 +18,6 @@ my %selenium_args = (
     javascript     => 1,
     %{ $harness->base_caps }
 );
-$harness->skip_all_unless_mocks_exist;
 
 plan tests => 9;
 
