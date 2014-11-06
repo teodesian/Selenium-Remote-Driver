@@ -14,11 +14,9 @@ use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;
 
-my $harness = TestHarness->new(
+my %selenium_args = %{ TestHarness->new(
     this_file => $FindBin::Script
-);
-my %selenium_args = %{ $harness->base_caps };
-$harness->skip_all_unless_mocks_exist;
+)->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
@@ -409,9 +407,9 @@ BASE_URL: {
                 spec => {
                     get =>
                       sub { my ( undef, $params ) = @_; return $params->{url} }
-                },
+                  },
                 mock_cmds => $mock_commands
-              ),
+            ),
             commands => $mock_commands,
         );
         my $got = $base_url_driver->get($test->{url});

@@ -8,11 +8,23 @@ use Test::More;
 
 =head1 SYNOPSIS
 
-    my $harness = TestHarness->new(
+    my %selenium_args = %{ TestHarness->new(
         this_file => $FindBin::Script
-    );
-    my %selenium_args = %{ $harness->base_caps };
-    $harness->skip_all_unless_mocks_exist;
+    )->base_caps };
+
+=head1 DESCRIPTION
+
+A setup class for all the repetitive things we need to do before
+running tests. First, we're deciding whether the test is in C<record>
+or C<replay> mode. If we're recording, we'll end up writing all the
+HTTP request/response pairs out to L</mock_file>. If we're replaying,
+we'll look for our OS-appropriate mock_file and try to read from it.
+
+After we figure that out, we can instantiate our
+Mock::RemoteConnection with the proper constructor arguments and
+return that as our base_args for use in the tests! Finally, on
+destruction, if we're recording, we make sure to dump out all of the
+request/response pairs to the mock_file.
 
 =attr this_file
 
@@ -103,28 +115,18 @@ has mock_file => (
         my $test_name = lc($self->calling_file);
         $test_name =~ s/\.t$//;
 
-        return $mock_folder . $test_name . '-mock-' . $self->os . '.json';
+        my $mock_file = $mock_folder . $test_name . '-mock-' . $self->os . '.json';
+
+        # If we're replaying, we need a mock to read from. Otherwise,
+        # we can't do anything
+        if (not $self->record) {
+            plan skip_all => "Mocking of tests is not been enabled for this platform"
+              unless -e $mock_file;
+        }
+
+        return $mock_file;
     }
 );
-
-sub skip_all_unless_mocks_exist {
-    my ($self) = @_;
-    unless ($self->mocks_exist_for_platform) {
-        plan skip_all => "Mocking of tests is not been enabled for this platform";
-    }
-}
-
-sub mocks_exist_for_platform {
-    my ($self) = @_;
-    if ($self->record) {
-        return 1;
-    }
-    else {
-        # When we're replaying a test, we need recordings to be able
-        # to do anything
-        return -e $self->mock_file;
-    }
-}
 
 sub DEMOLISH {
     my ($self) = @_;

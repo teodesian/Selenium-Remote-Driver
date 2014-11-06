@@ -7,7 +7,6 @@ use Test::Exception;
 use Test::LWP::UserAgent;
 use IO::Socket::INET;
 
-
 BEGIN: {
     unless (use_ok('Selenium::Remote::Driver')) {
         BAIL_OUT("Couldn't load Selenium::Remote::Driver");

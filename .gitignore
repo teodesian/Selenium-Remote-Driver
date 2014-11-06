@@ -9,3 +9,4 @@ cover_db
 .build
 Selenium-Remote-Driver-*
 .prove
+_prove

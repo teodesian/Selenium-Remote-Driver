@@ -9,11 +9,9 @@ use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;
 
-my $harness = TestHarness->new(
+my %selenium_args = %{ TestHarness->new(
     this_file => $FindBin::Script
-);
-my %selenium_args = %{ $harness->base_caps };
-$harness->skip_all_unless_mocks_exist;
+)->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
