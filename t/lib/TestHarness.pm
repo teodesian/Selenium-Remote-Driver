@@ -8,11 +8,23 @@ use Test::More;
 
 =head1 SYNOPSIS
 
-    my $harness = TestHarness->new(
+    my %selenium_args = %{ TestHarness->new(
         this_file => $FindBin::Script
-    );
-    my %selenium_args = %{ $harness->base_caps };
-    $harness->skip_all_unless_mocks_exist;
+    )->base_caps };
+
+=head1 DESCRIPTION
+
+A setup class for all the repetitive things we need to do before
+running tests. First, we're deciding whether the test is in C<record>
+or C<replay> mode. If we're recording, we'll end up writing all the
+HTTP request/response pairs out to L</mock_file>. If we're replaying,
+we'll look for our OS-appropriate mock_file and try to read from it.
+
+After we figure that out, we can instantiate our
+Mock::RemoteConnection with the proper constructor arguments and
+return that as our base_args for use in the tests! Finally, on
+destruction, if we're recording, we make sure to dump out all of the
+request/response pairs to the mock_file.
 
 =attr this_file
 
