@@ -103,28 +103,18 @@ has mock_file => (
         my $test_name = lc($self->calling_file);
         $test_name =~ s/\.t$//;
 
-        return $mock_folder . $test_name . '-mock-' . $self->os . '.json';
+        my $mock_file = $mock_folder . $test_name . '-mock-' . $self->os . '.json';
+
+        # If we're replaying, we need a mock to read from. Otherwise,
+        # we can't do anything
+        if (not $self->record) {
+            plan skip_all => "Mocking of tests is not been enabled for this platform"
+              unless -e $mock_file;
+        }
+
+        return $mock_file;
     }
 );
-
-sub skip_all_unless_mocks_exist {
-    my ($self) = @_;
-    unless ($self->mocks_exist_for_platform) {
-        plan skip_all => "Mocking of tests is not been enabled for this platform";
-    }
-}
-
-sub mocks_exist_for_platform {
-    my ($self) = @_;
-    if ($self->record) {
-        return 1;
-    }
-    else {
-        # When we're replaying a test, we need recordings to be able
-        # to do anything
-        return -e $self->mock_file;
-    }
-}
 
 sub DEMOLISH {
     my ($self) = @_;
