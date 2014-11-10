@@ -1,9 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
-0.2152    10-10-2014
+0.22   11-10-2014
         [NEW FEATURES]
         - Improved error messaging for Saucelabs non-json cases
-        - Improved error messaging for incorrectly configured chromedrivers
+        - Improved error messaging for malconfigured chromedrivers
         - #169 Add maximize_window function
         - #58 Add get_user_agent function
 
@@ -15,8 +15,11 @@ Revision history for Selenium-Remote-Driver
         - #152 Gracefully catch more error cases
 
         [BREAKING]
-        - #161 get|set_speed subs are no-ops and will be removed in the upcoming release
-        - #158 WebElement's drag function is deprecated. Use mouse_move_to_location in the interim
+        - #161 get|set_speed subs are no-ops and will be removed in
+          the upcoming release
+        - #158 WebElement's drag function is deprecated and will be
+          removed in the upcoming release. Use mouse_move_to_location
+          in the interim
 
 0.2102 7-16-2014
         [NEW FEATURES]
