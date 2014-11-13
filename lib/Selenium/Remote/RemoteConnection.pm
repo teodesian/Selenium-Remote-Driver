@@ -116,7 +116,11 @@ sub _process_response {
     my $json = JSON->new;
 
     if ($response->is_redirect) {
-        return $self->request('GET', $response->header('location'));
+        my $redirect = {
+            method => 'GET',
+            url    => $response->header('location')
+        };
+        return $self->request($redirect);
     }
     else {
         my $decoded_json = undef;
