@@ -65,5 +65,98 @@ document.onmouseup=new Function("isdrag=false");
 <img src="icon.gif" class="dragme" id="test3"><br>
 <img src="icon.gif" class="dragme" id="test4"><br>
 </div>
+
+<div class="drag">
+  <h4>Drag and Drop Test Fixture</h4>
+  <div id="columns">
+    <div class="column" id="column-a" draggable="true"><header>A</header></div>
+    <div class="column" id="column-b" draggable="true"><header>B</header></div>
+  </div>
+</div>
+<br>
+
+<style>
+.drag .columns {
+  width: 400px;
+}
+.drag .column {
+  height: 150px;
+  width: 150px;
+  float: left;
+  border: 2px solid #666666;
+  background-color: #ccc;
+  margin-right: 5px;
+  text-align: center;
+  cursor: move;
+}
+.drag .column.over {
+  border: 2px dashed #000;
+}
+
+</style>
+
+<script>
+var dragSrcEl = null;
+
+function handleDragStart(e) {
+  this.style.opacity = '0.4';
+
+  dragSrcEl = this;
+
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+
+  e.dataTransfer.dropEffect = 'move';
+
+  return false;
+}
+
+function handleDragEnter(e) {
+  this.classList.add('over');
+}
+
+function handleDragLeave(e) {
+  this.classList.remove('over');
+}
+
+function handleDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+
+  if (dragSrcEl != this) {
+    dragSrcEl.innerHTML = this.innerHTML;
+    this.innerHTML = e.dataTransfer.getData('text/html');
+  }
+
+  return false;
+}
+
+function handleDragEnd(e) {
+  [].forEach.call(cols, function (col) {
+    col.classList.remove('over');
+  });
+  this.style.opacity = '1';
+}
+
+var cols = document.querySelectorAll('#columns .column');
+[].forEach.call(cols, function(col) {
+  col.addEventListener('dragstart', handleDragStart, false);
+  col.addEventListener('dragenter', handleDragEnter, false);
+  col.addEventListener('dragover', handleDragOver, false);
+  col.addEventListener('dragleave', handleDragLeave, false);
+  col.addEventListener('drop', handleDrop, false);
+  col.addEventListener('dragend', handleDragEnd, false);
+});
+</script>
+
+
+<script src="jquery-1.3.2.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ requires "Carp" => "0";
 requires "Cwd" => "0";
 requires "Data::Dumper" => "0";
 requires "Exporter" => "0";
+requires "File::Basename" => "0";
 requires "File::Copy" => "0";
 requires "File::Temp" => "0";
 requires "HTTP::Headers" => "0";
@@ -30,7 +31,6 @@ requires "strict" => "0";
 requires "warnings" => "0";
 
 on 'test' => sub {
-  requires "File::Basename" => "0";
   requires "File::stat" => "0";
   requires "FindBin" => "0";
   requires "IO::Socket::INET" => "0";
