@@ -9,9 +9,10 @@ use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;
 
-my %selenium_args = %{ TestHarness->new(
+my $harness = TestHarness->new(
     this_file => $FindBin::Script
-)->base_caps };
+);
+my %selenium_args = %{ $harness->base_caps };
 
 # Try to find
 my $t = Test::Selenium::Remote::Driver->new(

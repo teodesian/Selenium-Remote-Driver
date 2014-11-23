@@ -8,9 +8,10 @@ use Test::More;
 
 =head1 SYNOPSIS
 
-    my %selenium_args = %{ TestHarness->new(
+    my $harness = TestHarness->new(
         this_file => $FindBin::Script
-    )->base_caps };
+    );
+    my %selenium_args = %{ $harness->base_caps };
 
 =head1 DESCRIPTION
 
