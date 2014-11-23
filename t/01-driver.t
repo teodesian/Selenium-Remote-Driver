@@ -450,6 +450,15 @@ STORAGE: {
     }
 }
 
+HTML5: {
+  SKIP: {
+        skip 'HTML5 Application Cache is not supported by firefox or chrome', 1 if 1;
+        $driver->get($website);
+        my $status = $driver->cache_status;
+        ok($status, 'we can get application cache status');
+    }
+}
+
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');

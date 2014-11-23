@@ -358,7 +358,12 @@ has '_cmds' => (
                 'method'             => 'DELETE',
                 'url'                => '/session/:sessionId/local_storage/key/:key',
                 'no_content_success' => 1
-            }
+            },
+            'cacheStatus' => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/application_cache/status',
+                'no_content_success' => 0
+            },
 
             # /session/:sessionId/local_storage
             # /session/:sessionId/local_storage/key/:key

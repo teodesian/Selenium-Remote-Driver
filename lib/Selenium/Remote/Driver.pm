@@ -2031,6 +2031,24 @@ sub get_active_element {
     }
 }
 
+=head2 cache_status
+
+ Description:
+    Get the status of the html5 application cache.
+
+ Usage:
+    print $driver->cache_status;
+
+ Output:
+    <number> - Status code for application cache: {UNCACHED = 0, IDLE = 1, CHECKING = 2, DOWNLOADING = 3, UPDATE_READY = 4, OBSOLETE = 5}
+
+=cut
+
+sub cache_status {
+    my ($self) = @_;
+    my $res = { 'command' => 'cacheStatus' };
+    return $self->_execute_command($res);
+}
 =head2 send_modifier
 
  Description:
