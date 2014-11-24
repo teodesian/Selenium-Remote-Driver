@@ -384,6 +384,14 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/log/types',
                 'no_content_success' => 0
             },
+            'setOrientation' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/orientation',
+                'no_content_success' => 1
+            },
+            'getOrientation'   => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/orientation',
                 'no_content_success' => 0
             },
 

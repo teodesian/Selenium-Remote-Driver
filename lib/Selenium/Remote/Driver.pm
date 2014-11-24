@@ -2149,6 +2149,49 @@ sub get_log_types {
     return $self->_execute_command($res);
 }
 
+
+=head2 set_orientation
+
+ Description:
+    Set the browser orientation.
+
+ Input:
+    Required:
+        <STRING> - Orientation {LANDSCAPE|PORTRAIT}
+
+ Usage:
+    $driver->set_orientation( $orientation  );
+
+ Output:
+    BOOLEAN - success or failure
+
+=cut
+
+sub set_orientation {
+    my ( $self, $orientation ) = @_;
+    my $res = { 'command' => 'setOrientation' };
+    return $self->_execute_command( $res, { orientation => $orientation } );
+}
+
+=head2 get_orientation
+
+ Description:
+    Get the current browser orientation. Returns either LANDSCAPE|PORTRAIT.
+
+ Usage:
+    print $driver->get_orientation;
+
+ Output:
+    <STRING> - your orientation.
+
+=cut
+
+sub get_orientation {
+    my ($self) = @_;
+    my $res = { 'command' => 'getOrientation' };
+    return $self->_execute_command($res);
+}
+
 =head2 send_modifier
 
  Description:

@@ -198,6 +198,14 @@ WINDOW: {
     ok(!$@,"Reset implicit wait timeout");
     $ret = $driver->get("$website/frameset.html");
     $ret = $driver->switch_to_frame('second');
+
+  SKIP: {
+        skip 'Cannot rotate desktop browsers', 3;
+        ok($driver->get_orientation eq 'PORTRAIT', 'Can get default orientation');
+        $ret = $driver->set_orientation('LANDSCAPE');
+        ok($ret, 'Can change orientation to LANDSCAPE');
+        ok($driver->get_orientation eq 'LANDSCAPE', 'Can get changed orientation');
+    }
 }
 
 COOKIES: {
