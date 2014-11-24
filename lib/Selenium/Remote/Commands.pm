@@ -366,22 +366,24 @@ has '_cmds' => (
             },
             'setGeolocation' => {
                 'method'             => 'POST',
-                'url'                => "session/:sessionId/location",
+                'url'                => 'session/:sessionId/location',
                 'no_content_success' => 1
             },
             'getGeolocation'   => {
                 'method'             => 'GET',
-                'url'                => "session/:sessionId/location",
+                'url'                => 'session/:sessionId/location',
                 'no_content_success' => 0
             },
             'getLog' => {
                 'method'             => 'POST',
-                'url'                => "session/:sessionId/log",
+                'url'                => 'session/:sessionId/log',
                 'no_content_success' => 0
             },
             'getLogTypes'   => {
                 'method'             => 'GET',
-                'url'                => "session/:sessionId/log/types",
+                'url'                => 'session/:sessionId/log/types',
+                'no_content_success' => 0
+            },
                 'no_content_success' => 0
             },
 
