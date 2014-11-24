@@ -33,7 +33,6 @@ my $todo_list = {
    'POST session/:sessionId/window/:windowHandle/position' => 1,
    'GET session/:sessionId/window/:windowHandle/position'  => 1,
    'POST session/:sessionId/keys'                          => 1,
-   'POST session/:sessionId/window/:windowHandle/maximize' => 1,
    'GET session/:sessionId/location'                       => 1,
    'POST session/:sessionId/location'                      => 1,
    'GET session/:sessionId/local_storage'                  => 1,
