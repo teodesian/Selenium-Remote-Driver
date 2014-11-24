@@ -374,6 +374,16 @@ has '_cmds' => (
                 'url'                => "session/:sessionId/location",
                 'no_content_success' => 0
             },
+            'getLog' => {
+                'method'             => 'POST',
+                'url'                => "session/:sessionId/log",
+                'no_content_success' => 0
+            },
+            'getLogTypes'   => {
+                'method'             => 'GET',
+                'url'                => "session/:sessionId/log/types",
+                'no_content_success' => 0
+            },
 
             # /session/:sessionId/local_storage
             # /session/:sessionId/local_storage/key/:key

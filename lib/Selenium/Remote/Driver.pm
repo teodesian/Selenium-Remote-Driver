@@ -2101,6 +2101,54 @@ sub get_geolocation {
     my $res = { 'command' => 'getGeolocation' };
     return $self->_execute_command($res);
 }
+
+=head2 get_log
+
+ Description:
+    Get the log for a given log type. Log buffer is reset after each request.
+
+ Input:
+    Required:
+        <STRING> - Type of log to retrieve:
+        {client|driver|browser|server}. There may be others available; see
+        get_log_types for a full list for your driver.
+
+ Usage:
+    $driver->get_log( $log_type );
+
+ Output:
+    <ARRAY|ARRAYREF> - An array of log entries since the most recent request.
+
+=cut
+
+sub get_log {
+    my ( $self, $type ) = @_;
+    my $res = { 'command' => 'getLog' };
+    return $self->_execute_command( $res, { type => $type });
+}
+
+=head2 get_log_types
+
+ Description:
+    Get available log types. By default, every driver should have client,
+    driver, browser, and server types, but there may be more available,
+    depending on your driver.
+
+ Usage:
+    my @types = $driver->get_log_types;
+    $driver->get_log($types[0]);
+
+ Output:
+    <ARRAYREF> - The list of log types.
+
+=cut
+
+sub get_log_types {
+    my ($self) = @_;
+    my $res = { 'command' => 'getLogTypes' };
+    return $self->_execute_command($res);
+}
+
 =head2 send_modifier
 
  Description:

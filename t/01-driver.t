@@ -478,6 +478,17 @@ HTML5: {
     }
 }
 
+LOGS: {
+    $driver->get($website);
+
+    my $types = $driver->get_log_types;
+    ok(scalar @$types >= 4, 'Can get log types');
+    foreach (@$types) {
+        my $log = $driver->get_log($_);
+        ok(defined $log, 'Can get logs from the ' . $_);
+    }
+}
+
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');

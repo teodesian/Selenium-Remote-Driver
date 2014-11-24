@@ -46,8 +46,6 @@ my $todo_list = {
    'GET session/:sessionId/session_storage/key/:key'       => 1,
    'DELETE session/:sessionId/session_storage/key/:key'    => 1,
    'GET session/:sessionId/session_storage/size'           => 1,
-   'POST session/:sessionId/log'                           => 1,
-   'GET session/:sessionId/log/types'                      => 1,
 };
 my @lines = split(/\n/, $data);
 my @methods;
