@@ -2049,6 +2049,58 @@ sub cache_status {
     my $res = { 'command' => 'cacheStatus' };
     return $self->_execute_command($res);
 }
+
+=head2 set_geolocation
+
+ Description:
+    Set the current geographic location - note that your driver must
+    implement this endpoint, or else it will crash your session. At the
+    very least, it works in v2.12 of Chromedriver.
+
+ Input:
+    Required:
+        HASH: A hash with key C<location> whose value is a Location hashref. See
+        usage section for example.
+
+ Usage:
+    $driver->set_geolocation( location => {
+        latitude  => 40.714353,
+        longitude => -74.005973,
+        altitude  => 0.056747
+    });
+
+ Output:
+    BOOLEAN - success or failure
+
+=cut
+
+sub set_geolocation {
+    my ( $self, %params ) = @_;
+    my $res = { 'command' => 'setGeolocation' };
+    return $self->_execute_command( $res, \%params );
+}
+
+=head2 get_geolocation
+
+ Description:
+    Get the current geographic location. Note that your webdriver must
+    implement this endpoint - otherwise, it will crash your session. At
+    the time of release, we couldn't get this to work on the desktop
+    FirefoxDriver or desktop Chromedriver.
+
+ Usage:
+    print $driver->get_geolocation;
+
+ Output:
+    { latitude: number, longitude: number, altitude: number } - The current geo location.
+
+=cut
+
+sub get_geolocation {
+    my ($self) = @_;
+    my $res = { 'command' => 'getGeolocation' };
+    return $self->_execute_command($res);
+}
 =head2 send_modifier
 
  Description:

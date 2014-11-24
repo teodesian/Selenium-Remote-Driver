@@ -364,6 +364,16 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/application_cache/status',
                 'no_content_success' => 0
             },
+            'setGeolocation' => {
+                'method'             => 'POST',
+                'url'                => "session/:sessionId/location",
+                'no_content_success' => 1
+            },
+            'getGeolocation'   => {
+                'method'             => 'GET',
+                'url'                => "session/:sessionId/location",
+                'no_content_success' => 0
+            },
 
             # /session/:sessionId/local_storage
             # /session/:sessionId/local_storage/key/:key

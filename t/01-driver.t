@@ -23,6 +23,12 @@ my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
 my $ret;
 
+my $chrome;
+eval { $chrome = Selenium::Remote::Driver->new(
+    %selenium_args,
+    browser_name => 'chrome'
+); };
+
 DESIRED_CAPABILITIES: {
     # We're using a different test method for these because we needed
     # to inspect payload of the POST to /session, and the method of
@@ -424,13 +430,8 @@ USER_AGENT: {
 }
 
 STORAGE: {
-    my $chrome;
-    my %selenium_chrome_args = ( browser_name => 'chrome');
-    $selenium_chrome_args{remote_conn} = $selenium_args{remote_conn};
-
   SKIP: {
         eval {
-            $chrome = Selenium::Remote::Driver->new(%selenium_chrome_args);
             $chrome->get($website);
         };
 
@@ -456,6 +457,24 @@ HTML5: {
         $driver->get($website);
         my $status = $driver->cache_status;
         ok($status, 'we can get application cache status');
+    }
+
+  SKIP: {
+        skip 'Geolocation requires Chrome to test', 2 unless $chrome;
+
+        my $ret = $chrome->set_geolocation( location => {
+            latitude => 40.714353,
+            longitude => -74.005973,
+            altitude => 0.056747
+        });
+        ok($ret, 'can set geolocation');
+
+      TODO: {
+            local $TODO = 'GET geolocation has a cast Long to Double error in Chromedriver';
+            my $ret = {};
+            eval { $ret = $chrome->get_geolocation };
+            ok(exists $ret->{location}, 'get_geolocation returns a location dictionary.');
+        }
     }
 }
 
