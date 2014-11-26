@@ -1798,8 +1798,7 @@ sub find_element {
             driver => $self );
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
@@ -1866,8 +1865,7 @@ sub find_elements {
         return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
@@ -1931,8 +1929,7 @@ sub find_child_element {
             driver => $self );
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
@@ -1999,8 +1996,7 @@ sub find_child_elements {
         return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
