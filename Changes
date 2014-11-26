@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+0.2202 11-26-2014
+        [BUG FIXES]
+        - Generalize error message for invalid finder strategies
+
 0.2201 11-13-2014
         [BUG FIXES]
         - Fix redirect handling mishap in RemoteConnection
