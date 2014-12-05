@@ -1,4 +1,5 @@
 package Test::Selenium::Remote::WebElement;
+
 # ABSTRACT: A sub-class of L<Selenium::Remote::WebElement>, with several test-specific method additions.
 
 use Moo;
