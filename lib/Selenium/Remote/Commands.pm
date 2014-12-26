@@ -69,6 +69,11 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/window/:windowHandle/position',
                 'no_content_success' => 0
             },
+            'maximizeWindow' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/window/:windowHandle/maximize',
+                'no_content_success' => 1
+            },
             'setWindowSize' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/window/:windowHandle/size',
@@ -277,11 +282,6 @@ has '_cmds' => (
             'close' => {
                 'method'             => 'DELETE',
                 'url'                => 'session/:sessionId/window',
-                'no_content_success' => 1
-            },
-            'dragElement' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/element/:id/drag',
                 'no_content_success' => 1
             },
             'getElementSize' => {

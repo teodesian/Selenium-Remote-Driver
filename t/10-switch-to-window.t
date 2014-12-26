@@ -6,32 +6,18 @@ use Test::More;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::Mock::RemoteConnection;
 
-my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-    $os = 'linux';
-}
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+use TestHarness;
 
-my %selenium_args = ( 
-    browser_name => 'firefox',
+my $harness = TestHarness->new(
+    this_file => $FindBin::Script
+);
+my %selenium_args = (
     default_finder => 'css',
     javascript     => 1,
+    %{ $harness->base_caps }
 );
-
-my $mock_file = "10-switch-to-window-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file")) {
-    plan skip_all => "Mocking of tests is not been enabled for this platform";
-}
-
-if ($record) { 
-    $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
-}
-else { 
-    $selenium_args{remote_conn} =
-      Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
-        replay_file => "t/mock-recordings/$mock_file" );
-}
-
 
 plan tests => 9;
 
@@ -58,7 +44,6 @@ my $handles = $s->get_window_handles;
 is scalar(@$handles), 2;
 # We don't assume any order in the @$handles array:
 my $cpan_handle = $perl_handle eq $handles->[0] ? $handles->[1] : $handles->[0];
-diag explain $handles;
 
 $s->switch_to_window($cpan_handle);
 $s->title_is($cpan_title);
@@ -71,7 +56,3 @@ $s->title_is($cpan_title);
 
 $s->switch_to_window('perlorg');
 $s->title_is($perl_title);
-
-if ($record) { 
-    $s->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
-}

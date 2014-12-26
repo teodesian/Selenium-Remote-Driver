@@ -1,14 +1,14 @@
-package Selenium::Remote::Mock::Commands; 
+package Selenium::Remote::Mock::Commands;
 
-# ABSTRACT: utility class to mock Selenium::Remote::Commands 
+# ABSTRACT: utility class to mock Selenium::Remote::Commands
 #
-use Moo; 
+use Moo;
 extends 'Selenium::Remote::Commands';
 
 
 # override get_params so we do not rewrite the parameters
 
-sub get_params { 
+sub get_params {
     my $self = shift;
     my $args = shift;
     my $data = {};
@@ -17,17 +17,17 @@ sub get_params {
     $data->{'method'} = $self->get_method($command);
     $data->{'no_content_success'} = $self->get_no_content_success($command);
     $data->{'url_params'}  = $args;
-    return $data; 
+    return $data;
 }
 
-sub get_method_name_from_parameters { 
-    my $self = shift; 
+sub get_method_name_from_parameters {
+    my $self = shift;
     my $params = shift;
     my $method_name = '';
     my $cmds = $self->get_cmds();
-    foreach my $cmd (keys %{$cmds}) { 
-        if (($cmds->{$cmd}->{method} eq $params->{method}) && ($cmds->{$cmd}->{url} eq $params->{url})) { 
-            $method_name = $cmd; 
+    foreach my $cmd (keys %{$cmds}) {
+        if (($cmds->{$cmd}->{method} eq $params->{method}) && ($cmds->{$cmd}->{url} eq $params->{url})) {
+            $method_name = $cmd;
             last;
         }
     }

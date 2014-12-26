@@ -10,30 +10,14 @@ use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
 
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+use TestHarness;
 
-my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-    $os = 'linux';
-}
-my %selenium_args = ( 
-    browser_name => 'firefox'
+my $harness = TestHarness->new(
+    this_file => $FindBin::Script
 );
-
-
-my $mock_file = "01-driver-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file")) {
-    plan skip_all => "Mocking of tests is not been enabled for this platform";
-}
-
-if ($record) { 
-    $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
-}
-else { 
-    $selenium_args{remote_conn} =
-      Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
-        replay_file => "t/mock-recordings/$mock_file" );
-}
+my %selenium_args = %{ $harness->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
@@ -181,7 +165,6 @@ WINDOW: {
     is(ref $ret, 'ARRAY', 'Received all window handles');
     $ret = $driver->set_window_position(100,100);
     is($ret, 1, 'Set the window position to 100, 100');
-    $driver->pause(500);
     $ret = $driver->get_window_position();
     is ($ret->{'x'}, 100, 'Got the right X Co-ordinate');
     is ($ret->{'y'}, 100, 'Got the right Y Co-ordinate');
@@ -190,6 +173,17 @@ WINDOW: {
     $ret = $driver->get_window_size();
     is ($ret->{'height'}, 640, 'Got the right height');
     is ($ret->{'width'}, 480, 'Got the right width');
+    $ret = $driver->maximize_window();
+    is ($ret, 1, "Got confirmation from maximize");
+
+  SKIP: {
+        skip 'headless browsers don\'t get maximized', 2
+          unless $^O =~ /darwin|MSWin32/;
+        $ret = $driver->get_window_size();
+        ok ($ret->{'height'} > 640, 'Height has increased');
+        ok ($ret->{'width'} > 480, 'Width has increased');
+    }
+
     $ret = $driver->get_page_source();
     ok($ret =~ m/^<html/i, 'Received page source');
     eval {$driver->set_implicit_wait_timeout(20001);};
@@ -259,7 +253,7 @@ FIND: {
       . " at " . __FILE__ . " line " . (__LINE__+1);
     eval { $driver->find_element("element_that_doesnt_exist","id"); };
     chomp $@;
-    is($@,$expected_err.".","find_element croaks properly");
+    like($@,qr/$expected_err/,"find_element croaks properly");
     my $elems = $driver->find_elements("//input[\@id='checky']");
     is(scalar(@$elems),1, 'Got an arrayref of WebElements');
     my @array_elems = $driver->find_elements("//input[\@id='checky']");
@@ -340,7 +334,7 @@ PAUSE: {
 }
 
 AUTO_CLOSE: {
-    my %stay_open_selenium_args = %selenium_args; 
+    my %stay_open_selenium_args = %selenium_args;
     $stay_open_selenium_args{auto_close} = 0;
     my $stayOpen = Selenium::Remote::Driver->new(
         %stay_open_selenium_args
@@ -414,9 +408,9 @@ BASE_URL: {
                 spec => {
                     get =>
                       sub { my ( undef, $params ) = @_; return $params->{url} }
-                },
+                  },
                 mock_cmds => $mock_commands
-              ),
+            ),
             commands => $mock_commands,
         );
         my $got = $base_url_driver->get($test->{url});
@@ -459,26 +453,6 @@ STORAGE: {
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');
-}
-
-NO_SERVER_ERROR_MESSAGE: {
-    my $unused_port = do {
-        my $l = IO::Socket::INET->new(
-            Listen    => 5,
-            LocalHost => '127.0.0.1',
-            LocalPort => 0,
-            Proto     => 'tcp',
-            ReuseAddr => 1,
-        ) or die $!;
-        $l->sockport;
-    };
-    eval {
-        my $sel = Selenium::Remote::Driver->new(port => $unused_port);
-    };
-    unlike($@, qr/Use of uninitialized value/, "Error message for no server at host/port combination is helpful");
-}
-if ($record) { 
-    $driver->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
 }
 
 done_testing;

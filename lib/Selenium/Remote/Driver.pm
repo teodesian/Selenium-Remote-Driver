@@ -417,30 +417,24 @@ has 'inner_window_size' => (
 
 );
 
-has 'testing' => (
-    is => 'rw',
-    default => sub { 0 },
-);
-
 sub BUILD {
     my $self = shift;
 
+    if ($self->has_desired_capabilities) {
+        $self->new_desired_session( $self->desired_capabilities );
+    }
+    else {
+        # Connect to remote server & establish a new session
+        $self->new_session( $self->extra_capabilities );
+    }
 
-        if ($self->has_desired_capabilities) {
-            $self->new_desired_session( $self->desired_capabilities );
-        }
-        else {
-            # Connect to remote server & establish a new session
-            $self->new_session( $self->extra_capabilities );
-        }
-
-        if ( !( defined $self->session_id ) ) {
-            croak "Could not establish a session with the remote server\n";
-        }
-        elsif ($self->has_inner_window_size) {
-            my $size = $self->inner_window_size;
-            $self->set_inner_window_size(@$size);
-        }
+    if ( !( defined $self->session_id ) ) {
+        croak "Could not establish a session with the remote server\n";
+    }
+    elsif ($self->has_inner_window_size) {
+        my $size = $self->inner_window_size;
+        $self->set_inner_window_size(@$size);
+    }
 }
 
 sub new_from_caps {
@@ -541,14 +535,14 @@ sub _request_new_session {
     $self->remote_conn->check_status();
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
-    my $resource_new_session = { 
+    my $resource_new_session = {
         method => $self->commands->get_method('newSession'),
         url => $self->commands->get_url('newSession'),
         no_content_success => $self->commands->get_no_content_success('newSession'),
     };
     my $rc = $self->remote_conn;
     my $resp = $rc->request(
-        $resource_new_session, 
+        $resource_new_session,
         $args,
     );
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
@@ -556,8 +550,13 @@ sub _request_new_session {
     }
     else {
         my $error = 'Could not create new session';
-        $error .= ': ' . $resp->{cmd_return}->{message}
-          if exists $resp->{cmd_return}->{message};
+
+        if (ref $resp->{cmd_return} eq 'HASH') {
+            $error .= ': ' . $resp->{cmd_return}->{message};
+        }
+        else {
+            $error .= ': ' . $resp->{cmd_return};
+        }
         croak $error;
     }
 }
@@ -1588,6 +1587,30 @@ sub set_window_size {
     return $ret ? 1 : 0;
 }
 
+=head2 maximize_window
+
+ Description:
+    Maximizes the browser window
+
+ Input:
+    STRING - <optional> - window handle (default is 'current' window)
+
+ Output:
+    BOOLEAN - Success or failure
+
+ Usage:
+    $driver->maximize_window();
+
+=cut
+
+sub maximize_window {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
+    my $ret = $self->_execute_command( $res );
+    return $ret ? 1 : 0;
+}
+
 =head2 get_all_cookies
 
  Description:
@@ -1775,8 +1798,7 @@ sub find_element {
             driver => $self );
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
@@ -1843,8 +1865,7 @@ sub find_elements {
         return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
@@ -1908,8 +1929,7 @@ sub find_child_element {
             driver => $self );
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 
@@ -1976,8 +1996,7 @@ sub find_child_elements {
         return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
     }
     else {
-        croak "Bad method, expected - class, class_name, css, id, link,
-                link_text, partial_link_text, name, tag_name, xpath";
+        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
 

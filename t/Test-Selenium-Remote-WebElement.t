@@ -15,7 +15,7 @@ foreach my $k (
       $spec->{$k} = sub { return { status => 'OK', return => 1 }};
 }
 
-$spec->{getElementTagName} = sub { return { status => 'OK', return => 'iframe' }}; 
+$spec->{getElementTagName} = sub { return { status => 'OK', return => 'iframe' }};
 $spec->{getElementValue} = sub { return { status => 'OK', return => 'my_value' }};
 $spec->{getElementText} = sub { return { status => 'OK', return => "my_text\nis fantastic" }};
 $spec->{getElementAttribute}  = sub { my @args = @_; my $name = $args[0]->{name};  return { status => 'OK', return => "my_$name" }};
@@ -36,7 +36,7 @@ $successful_element->is_enabled_ok;
 $successful_element->is_displayed_ok;
 $successful_element->send_keys_ok('Hello World');
 $successful_element->tag_name_is( 'iframe', 'we got an iframe tag' );
-$successful_element->tag_name_isnt( 'BOOM', 'tag name is not boom' ); 
+$successful_element->tag_name_isnt( 'BOOM', 'tag name is not boom' );
 $successful_element->tag_name_unlike( qr/BOOM/, "tag_name doesn't match BOOM" );
 $successful_element->value_is( 'my_value', 'Got an my_value value?' );
 $successful_element->value_isnt( 'BOOM', 'Not BOOM.' );

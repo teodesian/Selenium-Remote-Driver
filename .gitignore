@@ -8,3 +8,5 @@ cover_db
 *.sublime*
 .build
 Selenium-Remote-Driver-*
+.prove
+_prove
