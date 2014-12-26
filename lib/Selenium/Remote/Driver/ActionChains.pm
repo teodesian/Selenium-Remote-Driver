@@ -79,6 +79,15 @@ sub drag_and_drop {
     $self; 
 }
 
+sub drag_and_drop_by_offset { 
+    my $self = shift; 
+    my ($source,$xoffset,$yoffset) = @_;
+    $self->click_and_hold($source); 
+    $self->move_by_offset($xoffset,$yoffset);
+    $self->release($source); 
+    $self;
+}
+
 sub move_to_element {
     my $self    = shift;
     my $element = shift;
@@ -87,5 +96,41 @@ sub move_to_element {
     $self;
 }
 
+sub move_by_offset {
+    my $self = shift;
+    my ( $xoffset, $yoffset ) = @_;
+    push @{ $self->actions }, sub {
+        $self->driver->move_to( xoffset => $xoffset, yoffset => $yoffset );
+    };
+    $self;
+}
+
+sub move_to_element_with_offset {
+    my $self = shift;
+    my ( $element, $xoffset, $yoffset ) = @_;
+    push @{ $self->actions }, sub {
+        $self->driver->move_to( element => $element, xoffset => $xoffset,
+            yoffset => $yoffset );
+    };
+    $self;
+}
+
+sub key_down { 
+    my $self = shift; 
+    my ($value ,$element) = @_;
+    if (defined($element)) { 
+        $self->click($element);
+    }
+    push @{ $self->actions }, $self->driver->send_keys_to_active_element(@$value);
+}
+
+sub key_up { 
+    my $self = shift; 
+    my ($value ,$element) = @_;
+    if (defined($element)) { 
+        $self->click($element);
+    }
+    push @{ $self->actions }, $self->driver->send_keys_to_active_element(@$value);
+}
 
 1;
