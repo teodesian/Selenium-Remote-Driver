@@ -14,6 +14,12 @@ my $spec = {
         return { status => 'NOK', return => 0, error => 'element not found' };
     },
     getPageSource => sub { return 'this output matches regex'},
+    findElements => sub { 
+        my (undef,$searched_expr) = @_;
+        if ($searched_expr) { 
+            return { status => 'OK', return => [ { ELEMENT => '123456' }, { ELEMENT => '12341234' } ] }
+        }
+    },
 };
 my $mock_commands = Selenium::Remote::Mock::Commands->new;
 
@@ -27,5 +33,6 @@ dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if
 $successful_driver->find_no_element_ok('notq','find_no_element_ok works');
 $successful_driver->content_like( qr/matches/, 'content_like works');
 $successful_driver->content_unlike( qr/nomatch/, 'content_unlike works');
+$successful_driver->find_elements_ok('abc','find_elements_ok works');
 
 done_testing();
