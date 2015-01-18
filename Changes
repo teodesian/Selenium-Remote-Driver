@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+0.2203 01-18-2014
+        [BUG FIXES]
+        - #175 Fix find_elements_ok
+
 0.2202 11-26-2014
         [BUG FIXES]
         - Generalize error message for invalid finder strategies
