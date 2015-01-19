@@ -20,6 +20,8 @@ use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
+use File::Spec::Functions ();
+use File::Basename ();
 
 use constant FINDERS => {
     class             => 'class name',
@@ -2369,7 +2371,15 @@ sub upload_file {
     my $params = {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
     };
-    return $self->_execute_command( $res, $params );
+    my $ret = $self->_execute_command( $res, $params );
+
+    #WORKAROUND: Since this is undocumented selenium functionality, work around a bug.
+    my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
+    if ($file ne $filename) {
+        $ret = File::Spec::Functions::catpath($drive,$path,$filename);
+    }
+
+    return $ret;
 }
 
 =head2 get_text
