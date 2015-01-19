@@ -450,6 +450,12 @@ STORAGE: {
     }
 }
 
+UPLOAD: {
+    #Webdriver only returns the full filename if there isn't any path components in it, so test both cases
+    like( $driver->upload_file('uploadTest'),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
+    like( $driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file returns FULL path to the file: subdir');
+}
+
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');

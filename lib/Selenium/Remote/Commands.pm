@@ -347,7 +347,7 @@ has '_cmds' => (
             'uploadFile' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/file',
-                'no_content_success' => 1
+                'no_content_success' => 0
             },
             'getLocalStorageItem' => {
                 'method'             => 'GET',
