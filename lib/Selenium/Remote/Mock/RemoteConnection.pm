@@ -52,12 +52,17 @@ has 'session_id' => (
     default => sub { undef },
 );
 
+has 'debug' => (
+    is => 'rw',
+    default => sub { 0 }
+);
+
 sub BUILD {
     my $self = shift;
     croak 'Cannot define replay and record attributes at the same time' if (($self->replay) && ($self->record));
     croak 'replay_file attribute needs to be defined' if (($self->replay) && !($self->replay_file));
     croak 'replay attribute needs to be defined' if (!($self->replay) && ($self->replay_file));
-    $self->remote_server_addr('localhost');
+    $self->remote_server_addr('localhost') if !defined($self->remote_server_addr);
     $self->port('4444');
     if ($self->replay) {
         $self->load_session_store($self->replay_file);
@@ -113,6 +118,9 @@ sub request {
         $content = $json->allow_nonref->utf8->canonical(1)->encode($params);
     }
     my $url_params = $resource->{url_params};
+
+    print "REQ: $method, $url, $content\n" if $self->debug;
+
     if ( $self->record ) {
         my $response = $self->SUPER::request( $resource, $params, 1 );
         push @{$self->session_store->{"$method $url $content"}},$response->as_string;
