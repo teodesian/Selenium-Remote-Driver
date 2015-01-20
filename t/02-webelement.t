@@ -89,13 +89,20 @@ IMAGES: {
     ok(defined $ret->{'y'}, 'Image - got y coord');
     my $x = $ret->{'x'};
     my $y = $ret->{'y'};
-  TODO: {
-        local $TODO = "drag doesn't appear to be working currently in selenium server";
-        $ret = $elem->drag(200,200);
-        $ret = $elem->get_element_location();
-        is($ret->{'x'}, ($x+200), 'Moved to new x coord');
-        is($ret->{'y'}, ($y+200), 'Moved to new y coord');
-    }
+}
+
+DRAG_HACK: {
+    $driver->get("$website/dragAndDropTest.html");
+
+    my $grab = $driver->find_element('column-a', 'id');
+    my $target = $driver->find_element('column-b', 'id');
+    is($grab->get_text, 'A', 'before drag, column-a has "A"');
+
+    $ret = $grab->drag($target);
+    is($grab->get_text, 'B', 'after drag, column-a has "B"');
+
+    $target->drag($grab);
+    is($grab->get_text, 'A', 'after second drag, column-a has "A"');
 }
 
 VISIBILITY: {

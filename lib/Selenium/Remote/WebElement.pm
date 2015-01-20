@@ -4,6 +4,8 @@ package Selenium::Remote::WebElement;
 
 use Moo;
 use Carp qw(carp croak);
+use Cwd qw(abs_path);
+use File::Basename qw(dirname);
 
 =head1 DESCRIPTION
 
@@ -29,7 +31,20 @@ has 'driver' => (
     handles => [qw(_execute_command)],
 );
 
+has '_drag_js' => (
+    is => 'ro',
+    lazy => 1,
+    builder => sub {
+        my $this_folder = dirname(abs_path(__FILE__));
+        my $drag_file = $this_folder . '/drag.js';
 
+        open (my $fh, "<", $drag_file);
+        my $drag_js = join('', <$fh>);
+        close ($fh);
+
+        return $drag_js;
+    }
+);
 
 =head2 click
 
@@ -345,36 +360,36 @@ sub is_hidden {
 =head2 drag
 
  Description:
-    Drag and drop an element. The distance to drag an element should be
-    specified relative to the upper-left corner of the page and it starts at 0,0
+    Drag and drop an element on to another element. Because the
+    implementation of this is broken on the Webdriver side for HTML5
+    pages, we've temporarily added this subroutine as a hack. It
+    allows you to drag one element on to another element via simulated
+    jQuery event calls. This will ONLY work if the page already has
+    jQuery, or if you add jQuery to the page manually.
 
- Input: 2
+    Because this a weak hack and C<drag>is not in the
+    JSONWireProtocol, it may be removed at any time, and will
+    definitely be removed when the associated Webdriver bug is
+    resolved. For reference, see:
+
+    http://blog.danielgempesaw.com/post/103347925809/
+    https://gist.github.com/rcorreia/2362544
+
+ Input: 1
     Required:
-        NUMBER - X axis distance in pixels
-        NUMBER - Y axis distance in pixels
+        WebElement - The target element on to which we'll get dragged.
 
  Usage:
-    $elem->drag(216,158);
-
- Note: DEPRECATED - drag is no longer available in the
- JSONWireProtocol. We are working on an ActionsChains implementation,
- but drag and drop doesn't currently work on the Webdriver side for
- HTML5 pages. For reference, see:
-
- http://elementalselenium.com/tips/39-drag-and-drop
- https://gist.github.com/rcorreia/2362544
-
- Check out the mouse_move_to_location, button_down, and button_up
- functions on Selenium::Remote::Driver.
-
- https://metacpan.org/pod/Selenium::Remote::Driver#mouse_move_to_location
- https://metacpan.org/pod/Selenium::Remote::Driver#button_down
- https://metacpan.org/pod/Selenium::Remote::Driver#button_up
+    $target = $d->find_element('target', 'class');
+    $elem->drag($target);
 
 =cut
 
 sub drag {
-    carp 'drag is no longer available in the JSONWireProtocol and will be removed in the next version of this module';
+    my ($self, $target) = @_;
+
+    my $simulate_js = '$(arguments[0]).simulateDragDrop({ dropTarget: arguments[1] }); return 1';
+    return $self->driver->execute_script( $self->_drag_js . $simulate_js, $self, $target);
 }
 
 =head2 get_size
