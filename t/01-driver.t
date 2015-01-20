@@ -13,6 +13,7 @@ use Selenium::Remote::Mock::RemoteConnection;
 use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;
+use Test::Fatal;
 
 my $harness = TestHarness->new(
     this_file => $FindBin::Script
@@ -456,6 +457,10 @@ UPLOAD: {
     my $otherTestFile = "UEsDBBQACAAIAFtuNEYAAAAAAAAAAAAAAAAMABUAdC91cGxvYWRUZXN0VVQJAAOesb5UnrG+VFV4\nBADoA+gDK0ktLgEAUEsHCAx+f9gGAAAABAAAAFBLAQIUAxQACAAIAFtuNEYMfn/YBgAAAAQAAAAM\nAA0AAAAAAAAAAACkgQAAAAB0L3VwbG9hZFRlc3RVVAUAAZ6xvlRVeAAAUEsFBgAAAAABAAEARwAA\nAFUAAAAAAA==\n";
     like( $driver->upload_file('uploadTest',$testFile),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
     like( $driver->upload_file('t/uploadTest',$otherTestFile),qr/uploadTest$/,'upload_file returns FULL path to the file: subdir');
+
+    #Negative tests to verify that our expected behavior codepath is travelled by tests
+    like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/,"Passing missing file terminates program");
+    like( exception { $driver->upload_file(__FILE__) },qr/501/,"Passing this file rightly fails due to mock not being present");
 }
 
 QUIT: {
