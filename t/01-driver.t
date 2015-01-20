@@ -23,6 +23,12 @@ my $driver = Selenium::Remote::Driver->new(%selenium_args);
 my $website = 'http://localhost:63636';
 my $ret;
 
+my $chrome;
+eval { $chrome = Selenium::Remote::Driver->new(
+    %selenium_args,
+    browser_name => 'chrome'
+); };
+
 DESIRED_CAPABILITIES: {
     # We're using a different test method for these because we needed
     # to inspect payload of the POST to /session, and the method of
@@ -192,6 +198,14 @@ WINDOW: {
     ok(!$@,"Reset implicit wait timeout");
     $ret = $driver->get("$website/frameset.html");
     $ret = $driver->switch_to_frame('second');
+
+  SKIP: {
+        skip 'Cannot rotate desktop browsers', 3;
+        ok($driver->get_orientation eq 'PORTRAIT', 'Can get default orientation');
+        $ret = $driver->set_orientation('LANDSCAPE');
+        ok($ret, 'Can change orientation to LANDSCAPE');
+        ok($driver->get_orientation eq 'LANDSCAPE', 'Can get changed orientation');
+    }
 }
 
 COOKIES: {
@@ -424,13 +438,8 @@ USER_AGENT: {
 }
 
 STORAGE: {
-    my $chrome;
-    my %selenium_chrome_args = ( browser_name => 'chrome');
-    $selenium_chrome_args{remote_conn} = $selenium_args{remote_conn};
-
   SKIP: {
         eval {
-            $chrome = Selenium::Remote::Driver->new(%selenium_chrome_args);
             $chrome->get($website);
         };
 
@@ -447,6 +456,44 @@ STORAGE: {
         ok($chrome->delete_local_storage_item($key), 'can delete local storage by key');
         my $now_empty = $chrome->get_local_storage_item($key);
         ok(!(defined $now_empty), 'retrieving an empty or deleted local storage key returns undef');
+    }
+}
+
+HTML5: {
+  SKIP: {
+        skip 'HTML5 Application Cache is not supported by firefox or chrome', 1 if 1;
+        $driver->get($website);
+        my $status = $driver->cache_status;
+        ok($status, 'we can get application cache status');
+    }
+
+  SKIP: {
+        skip 'Geolocation requires Chrome to test', 2 unless $chrome;
+
+        my $ret = $chrome->set_geolocation( location => {
+            latitude => 40.714353,
+            longitude => -74.005973,
+            altitude => 0.056747
+        });
+        ok($ret, 'can set geolocation');
+
+      TODO: {
+            local $TODO = 'GET geolocation has a cast Long to Double error in Chromedriver';
+            my $ret = {};
+            eval { $ret = $chrome->get_geolocation };
+            ok(exists $ret->{location}, 'get_geolocation returns a location dictionary.');
+        }
+    }
+}
+
+LOGS: {
+    $driver->get($website);
+
+    my $types = $driver->get_log_types;
+    ok(scalar @$types >= 4, 'Can get log types');
+    foreach (@$types) {
+        my $log = $driver->get_log($_);
+        ok(defined $log, 'Can get logs from the ' . $_);
     }
 }
 

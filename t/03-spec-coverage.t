@@ -35,6 +35,7 @@ my $todo_list = {
    'POST session/:sessionId/keys'                          => 1,
    'GET session/:sessionId/location'                       => 1,
    'POST session/:sessionId/location'                      => 1,
+   'POST session/:sessionId/window/:windowHandle/maximize' => 1,
    'GET session/:sessionId/local_storage'                  => 1,
    'POST session/:sessionId/local_storage'                 => 1,
    'DELETE session/:sessionId/local_storage'               => 1,
@@ -47,9 +48,6 @@ my $todo_list = {
    'GET session/:sessionId/session_storage/key/:key'       => 1,
    'DELETE session/:sessionId/session_storage/key/:key'    => 1,
    'GET session/:sessionId/session_storage/size'           => 1,
-   'POST session/:sessionId/log'                           => 1,
-   'GET session/:sessionId/log/types'                      => 1,
-   'GET session/:sessionId/application_cache/status'       => 1,
 };
 my @lines = split(/\n/, $data);
 my @methods;
