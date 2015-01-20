@@ -2188,6 +2188,9 @@ sub button_up {
     machine. That file then can be used for testing file upload on web
     forms. Returns the remote-server's path to the file.
 
+    Passing raw data as an argument past the filename will upload
+    that rather than the file's contents.
+
  Usage:
     my $remote_fname = $driver->upload_file( $fname );
     my $element = $driver->find_element( '//input[@id="file"]' );
@@ -2199,17 +2202,17 @@ sub button_up {
 # org.openqa.selenium.remote.RemoteWebElement java class.
 
 sub upload_file {
-    my ( $self, $filename ) = @_;
-    if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
-    my $string = "";    # buffer
-    zip $filename => \$string
-      or die "zip failed: $ZipError\n";    # compress the file into string
-    my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
-    require MIME::Base64;
+    my ( $self, $filename, $raw_content ) = @_;
 
+    #If no processing is passed, send the argument raw
     my $params = {
-        file => MIME::Base64::encode_base64($string)          # base64-encoded string
+        file => $raw_content
     };
+
+    #Otherwise, zip/base64 it.
+    $params = $self->_prepare_file($filename) if !defined($raw_content);
+
+    my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
     my $ret = $self->_execute_command( $res, $params );
 
     #WORKAROUND: Since this is undocumented selenium functionality, work around a bug.
@@ -2219,6 +2222,19 @@ sub upload_file {
     }
 
     return $ret;
+}
+
+sub _prepare_file {
+    my ($self,$filename) = @_;
+    if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
+    my $string = "";    # buffer
+    zip $filename => \$string
+      or die "zip failed: $ZipError\n";    # compress the file into string
+    require MIME::Base64;
+
+    return {
+        file => MIME::Base64::encode_base64($string)          # base64-encoded string
+    };
 }
 
 =head2 get_text
