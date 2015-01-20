@@ -52,9 +52,9 @@ has 'session_id' => (
     default => sub { undef },
 );
 
-has 'debug' => (
-    is => 'rw',
-    default => sub { 0 }
+has 'remote_server_addr' => (
+    is => 'lazy',
+    default => sub { 'localhost' }
 );
 
 sub BUILD {
@@ -62,7 +62,6 @@ sub BUILD {
     croak 'Cannot define replay and record attributes at the same time' if (($self->replay) && ($self->record));
     croak 'replay_file attribute needs to be defined' if (($self->replay) && !($self->replay_file));
     croak 'replay attribute needs to be defined' if (!($self->replay) && ($self->replay_file));
-    $self->remote_server_addr('localhost') if !defined($self->remote_server_addr);
     $self->port('4444');
     if ($self->replay) {
         $self->load_session_store($self->replay_file);
