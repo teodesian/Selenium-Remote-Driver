@@ -344,18 +344,17 @@ sub content_unlike {
     my $self  = shift;
     my $regex = shift;
     my $desc  = shift;
-
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
 
     if ( not ref $regex eq 'ARRAY' ) {
-        my $desc = qq{Content is unlike "$regex"} if ( not defined $desc );
+        $desc = qq{Content is unlike "$regex"} if ( not defined $desc );
         return unlike_string( $content, $regex, $desc );
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Content is unlike "$re"} if ( not defined $desc );
+            $desc = qq{Content is unlike "$re"} if ( not defined $desc );
             unlike_string( $content, $re, $desc );
         }
     }
