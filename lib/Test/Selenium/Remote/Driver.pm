@@ -261,27 +261,27 @@ sub type_element_ok {
 }
 
 
-=head2 $twd->find_element_ok($search_target [, $desc ]);
+=head2 $twd->find_element_ok($search_target [,$finder, $desc ]);
 
-   $twd->find_element_ok( $search_target [, $desc ] );
+   $twd->find_element_ok( $search_target [,$finder, $desc ] );
 
 Returns true if C<$search_target> is successfully found on the page. L<$search_target>
-is passed to L<Selenium::Remote::Driver/find_element> using the C<default_finder>. See
-there for more details on the format. Currently, other finders besides the default are not supported
-for C<find_element_ok()>.
+is passed to L<Selenium::Remote::Driver/find_element> using a finder or the C<default_finder>
+if none passed.
+See there for more details on the format for C<find_element_ok()>.
 
 =cut
 
 # Eventually, it would be nice to support other finds like Test::WWW::Selenium does, like this:
 # 'xpath=//foo', or 'css=.foo', etc.
 
-=head2 $twd->find_no_element_ok($search_target [, $desc ]);
+=head2 $twd->find_no_element_ok($search_target [,$finder, $desc ]);
 
-   $twd->find_no_element_ok( $search_target [, $desc ] );
+   $twd->find_no_element_ok( $search_target [,$finder, $desc ] );
 
 Returns true if C<$search_target> is I<not> found on the page. L<$search_target>
-is passed to L<Selenium::Remote::Driver/find_element> using the C<default_finder>. See
-there for more details on the format. Currently, other finders besides the default are not supported
+is passed to L<Selenium::Remote::Driver/find_element> using a finder or the
+C<default_finder> if none passed.See there for more details on the format. 
 for C<find_no_element_ok()>.
 
 =cut
