@@ -39,16 +39,19 @@ sub _check_method {
 }
 
 # main method for _ok tests
+# a bit hacked so that find_no_element_ok can also be processed
+# TODO: maybe simplify a bit the logic 
 
 sub _check_ok {
     my $self   = shift;
     my $method = shift;
+    my $real_method = '';
     my @args   = @_;
     my ($rv, $num_of_args, @r_args);
     try {
         $num_of_args = $self->has_args($method);
         @r_args = splice( @args, 0, $num_of_args );
-        if ($method =~ m/^find_element/) { 
+        if ($method =~ m/^find(_no)?_element/) { 
             # case find_element_ok was called with no arguments    
             if (scalar(@r_args) == 1) { 
                 push @r_args, $self->default_finder; 
@@ -84,10 +87,20 @@ sub _check_ok {
                 }
             }
         }
+        if ($method eq 'find_no_element_ok') { 
+            $real_method = $method;
+            $method = 'find_element'; 
+        }
         $rv = $self->$method(@r_args);
     }
     catch {
-        $self->croak($_);
+        if ($real_method) {
+            $method = $real_method;
+            $rv     = 1;
+        }
+        else {
+            $self->croak($_);
+        }
     };
 
     my $default_test_name = $method;

@@ -45,6 +45,7 @@ sub has_args {
     my $fun_name      = shift;
     my $hash_fun_args = {
         'find_element'     => 2,
+        'find_no_element_ok' => 2,
         'find_child_element'     => 3,
         'find_child_elements'     => 3,
         'find_element'     => 2,
@@ -286,17 +287,8 @@ for C<find_no_element_ok()>.
 =cut
 
 sub find_no_element_ok {
-    my $self          = shift;
-    my $search_target = shift;
-    my $desc          = shift;
-    my $rv = 0 ;
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
-    try {
-        $self->find_element($search_target)
-    } catch {
-        $rv = 1 if ($_);
-    };
-    return $self->ok($rv == 1,$desc);
+    my $self = shift;
+    $self->_check_ok('find_no_element_ok',@_);
 }
 
 =head2 $twd->content_like( $regex [, $desc ] )

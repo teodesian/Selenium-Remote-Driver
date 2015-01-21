@@ -67,7 +67,7 @@ $successful_driver->find_element_ok('p','class','find_element_ok with a locator 
 $successful_driver->find_child_element_ok({id => 1},'p','class','find_child_element_ok with a locator works');
 dies_ok{ $successful_driver->find_child_element_ok({id => 1200}) } 'find_child_element_ok dies if the element is not found';
 dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if element not found';
-$successful_driver->find_no_element_ok('notq','find_no_element_ok works');
+$successful_driver->find_no_element_ok('notq','xpath','find_no_element_ok works');
 $successful_driver->content_like( qr/matches/, 'content_like works');
 $successful_driver->content_unlike( qr/nomatch/, 'content_unlike works');
 $successful_driver->find_elements_ok('abc','find_elements_ok works');
