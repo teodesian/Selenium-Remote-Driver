@@ -5,6 +5,7 @@ package Test::Selenium::Remote::Role::DoesTesting;
 use Moo::Role;
 use Test::Builder;
 use Try::Tiny;
+use List::MoreUtils qw/any/;
 use namespace::clean;
 
 requires qw(func_list has_args);
@@ -47,6 +48,24 @@ sub _check_ok {
     try {
         $num_of_args = $self->has_args($method);
         @r_args = splice( @args, 0, $num_of_args );
+        if ($method =~ m/^find_element/) { 
+            # case find_element*_ok was called with no arguments    
+            if (scalar(@r_args) == 1) { 
+                push @r_args, $self->default_finder; 
+            }
+            else { 
+                if (scalar(@r_args) == 2) { 
+                    # case find_element was called with no finder but
+                    # a test description
+                    my $finder = $r_args[1]; 
+                    my @FINDERS = keys (%{$self->FINDERS});
+                    unless ( any { $finder eq $_ } @FINDERS) { 
+                        $r_args[1] = $self->default_finder; 
+                        push @args, $finder; 
+                    }
+                }
+            }
+        }
         $rv = $self->$method(@r_args);
     }
     catch {
