@@ -49,7 +49,7 @@ sub _check_ok {
         $num_of_args = $self->has_args($method);
         @r_args = splice( @args, 0, $num_of_args );
         if ($method =~ m/^find_element/) { 
-            # case find_element*_ok was called with no arguments    
+            # case find_element_ok was called with no arguments    
             if (scalar(@r_args) == 1) { 
                 push @r_args, $self->default_finder; 
             }
@@ -61,6 +61,24 @@ sub _check_ok {
                     my @FINDERS = keys (%{$self->FINDERS});
                     unless ( any { $finder eq $_ } @FINDERS) { 
                         $r_args[1] = $self->default_finder; 
+                        push @args, $finder; 
+                    }
+                }
+            }
+        }
+        if ($method =~ m/^find_child_element/) { 
+            # case find_element_ok was called with no arguments    
+            if (scalar(@r_args) == 2) { 
+                push @r_args, $self->default_finder; 
+            }
+            else { 
+                if (scalar(@r_args) == 3) { 
+                    # case find_element was called with no finder but
+                    # a test description
+                    my $finder = $r_args[2]; 
+                    my @FINDERS = keys (%{$self->FINDERS});
+                    unless ( any { $finder eq $_ } @FINDERS) { 
+                        $r_args[2] = $self->default_finder; 
                         push @args, $finder; 
                     }
                 }

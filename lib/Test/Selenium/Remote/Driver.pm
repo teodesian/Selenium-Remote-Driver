@@ -45,6 +45,9 @@ sub has_args {
     my $fun_name      = shift;
     my $hash_fun_args = {
         'find_element'     => 2,
+        'find_child_element'     => 3,
+        'find_child_elements'     => 3,
+        'find_element'     => 2,
         'find_elements'     => 2,
         'compare_elements' => 2,
         'get' => 1,
