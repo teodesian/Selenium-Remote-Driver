@@ -27,7 +27,6 @@ sub _check_method {
     my @args = @_;
     my $rv;
     try {
-        $DB::single = 1;
         my $num_of_args = $self->has_args($method);
         my @r_args = splice( @args, 0, $num_of_args );
         $rv = $self->$method(@r_args);

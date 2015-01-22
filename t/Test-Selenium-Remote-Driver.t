@@ -5,7 +5,6 @@ use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
-use DDP; 
 
 my $find_element = sub {
     my ( undef, $searched_item ) = @_;
