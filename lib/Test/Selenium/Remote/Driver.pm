@@ -239,17 +239,8 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
 
     click_ok
     double_click_ok
-
-=head2 $twd->type_element_ok($search_target [,$locator], $keys, [, $desc ]);
-
-   $twd->type_element_ok( $search_target [,$locator], $keys [, $desc ] );
-
-Use L<Selenium::Remote::Driver/find_element> to resolve the C<$search_target>
-to a web element and an optional locator, and then type C<$keys> into it, providing an optional test
-label.
-
-
 =cut
+
 
 # function composing a find_element with locator with a webelement test
 
@@ -264,7 +255,7 @@ sub _find_element_with_action {
     else { 
         if ($params) { 
             # means that we called it the 'old way' (no locator strategy)
-            if (!$self->FINDERS->{$locator_strategy}) { 
+            if (!defined($self->FINDERS->{$locator_strategy})) { 
                 $desc = $params; 
                 $params = $locator_strategy; 
                 $locator_strategy = $self->default_finder;
@@ -273,7 +264,7 @@ sub _find_element_with_action {
         else { 
             # means it was called with no locator strategy and no desc 
             if ($locator_strategy) { 
-                if (!$self->FINDERS->{$locator_strategy}) { 
+                if (!defined($self->FINDERS->{$locator_strategy})) { 
                     $params = $locator_strategy; 
                     $locator_strategy = $self->default_finder;
                 }
@@ -290,6 +281,17 @@ sub _find_element_with_action {
     return $self->find_element($locator,$locator_strategy)->$method( $params, $desc );
 }
 
+
+=head2 $twd->type_element_ok($search_target [,$locator], $keys, [, $desc ]);
+
+   $twd->type_element_ok( $search_target [,$locator], $keys [, $desc ] );
+
+Use L<Selenium::Remote::Driver/find_element> to resolve the C<$search_target>
+to a web element and an optional locator, and then type C<$keys> into it, providing an optional test
+label.
+
+
+=cut
 
 sub type_element_ok {
     my $self    = shift;
