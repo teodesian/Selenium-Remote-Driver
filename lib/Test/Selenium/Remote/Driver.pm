@@ -240,24 +240,47 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
     click_ok
     double_click_ok
 
-=head2 $twd->type_element_ok($search_target, $keys, [, $desc ]);
+=head2 $twd->type_element_ok($search_target [,$locator], $keys, [, $desc ]);
 
-   $twd->type_element_ok( $search_target, $keys [, $desc ] );
+   $twd->type_element_ok( $search_target [,$locator], $keys [, $desc ] );
 
 Use L<Selenium::Remote::Driver/find_element> to resolve the C<$search_target>
-to a web element, and then type C<$keys> into it, providing an optional test
+to a web element and an optional locator, and then type C<$keys> into it, providing an optional test
 label.
 
-Currently, other finders besides the default are not supported for C<type_ok()>.
 
 =cut
 
 sub type_element_ok {
     my $self    = shift;
-    my $locator = shift;
-    my $keys    = shift;
-    my $desc    = shift;
-    return $self->find_element($locator)->send_keys_ok( $keys, $desc );
+    my ($locator,$locator_strategy,$keys,$desc) = @_;
+    # case 4 args 
+    if ($desc) { 
+        $self->croak('Invalid locator strategy') unless ($self->FINDERS->{$locator_strategy});
+    }
+    else { 
+        if ($keys) { 
+            # means that we called it the 'old way' (no locator strategy)
+            if (!$self->FINDERS->{$locator_strategy}) { 
+                $desc = $keys; 
+                $keys = $locator_strategy; 
+                $locator_strategy = $self->default_finder;
+            }
+        }
+        else { 
+            # means it was called with no locator strategy and no desc 
+            if ($locator_strategy) { 
+                if (!$self->FINDERS->{$locator_strategy}) { 
+                    $keys = $locator_strategy; 
+                    $locator_strategy = $self->default_finder;
+                }
+            }
+            else { 
+                $self->croak('Not enough arguments');
+            }
+        }
+    }
+    return $self->find_element($locator,$locator_strategy)->send_keys_ok( $keys, $desc );
 }
 
 

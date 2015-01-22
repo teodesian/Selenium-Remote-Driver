@@ -5,6 +5,8 @@ use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
+use DDP; 
+
 my $find_element = sub {
     my ( undef, $searched_item ) = @_;
     if ( $searched_item->{value} eq 'q' ) {
@@ -47,12 +49,20 @@ my $find_elements = sub {
     }
 };
 
+my $send_keys = sub {
+        my ( $session_object, $val ) = @_;
+        my $keys = shift @{ $val->{value} };
+        return { status => 'OK', return => 1 } if ( $keys =~ /abc|def/ );
+        return { status => 'NOK', return => 0, error => 'cannot send keys' };
+      };
+
 my $spec = {
     findElement => $find_element,
     findChildElement => $find_child_element,
     getPageSource => sub { return 'this output matches regex'},
     findElements => $find_elements,
     findChildElements => $find_child_element,
+    sendKeysToElement => $send_keys,
 };
 
 my $mock_commands = Selenium::Remote::Mock::Commands->new;
@@ -72,5 +82,7 @@ $successful_driver->content_like( qr/matches/, 'content_like works');
 $successful_driver->content_unlike( qr/nomatch/, 'content_unlike works');
 $successful_driver->find_elements_ok('abc','find_elements_ok works');
 $successful_driver->find_child_elements_ok({id => 1},'p','find_child_elements_ok works');
+$successful_driver->type_element_ok('q','abc');
+$successful_driver->type_element_ok('p','class','def','type_element_ok works with a locator');
 
 done_testing();

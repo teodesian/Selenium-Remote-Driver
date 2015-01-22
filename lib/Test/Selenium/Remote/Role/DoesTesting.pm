@@ -40,7 +40,6 @@ sub _check_method {
 
 # main method for _ok tests
 # a bit hacked so that find_no_element_ok can also be processed
-# TODO: maybe simplify a bit the logic 
 
 sub _check_ok {
     my $self   = shift;
@@ -69,6 +68,7 @@ sub _check_ok {
                 }
             }
         }
+        # quick hack to fit 'find_no_element' into check_ok logic
         if ($method eq 'find_no_element') { 
             $real_method = $method;
             $method = 'find_element'; 
