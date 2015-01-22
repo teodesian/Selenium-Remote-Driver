@@ -33,7 +33,7 @@ has func_list => (
             'send_modifier_ok', 'accept_alert_ok', 'dismiss_alert_ok',
             'get_ok', 'go_back_ok', 'go_forward_ok', 'add_cookie_ok',
             'get_page_source_ok', 'find_element_ok', 'find_elements_ok',
-            'find_child_element_ok', 'find_child_elements_ok',
+            'find_child_element_ok', 'find_child_elements_ok', 'find_no_element_ok',
             'compare_elements_ok', 'click_ok', 'double_click_ok',
             'body_like',
         ];
@@ -45,7 +45,7 @@ sub has_args {
     my $fun_name      = shift;
     my $hash_fun_args = {
         'find_element'     => 2,
-        'find_no_element_ok' => 2,
+        'find_no_element' => 2,
         'find_child_element'     => 3,
         'find_child_elements'     => 3,
         'find_element'     => 2,
@@ -286,10 +286,6 @@ for C<find_no_element_ok()>.
 
 =cut
 
-sub find_no_element_ok {
-    my $self = shift;
-    $self->_check_ok('find_no_element_ok',@_);
-}
 
 =head2 $twd->content_like( $regex [, $desc ] )
 

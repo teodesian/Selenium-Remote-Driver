@@ -69,7 +69,7 @@ sub _check_ok {
                 }
             }
         }
-        if ($method eq 'find_no_element_ok') { 
+        if ($method eq 'find_no_element') { 
             $real_method = $method;
             $method = 'find_element'; 
         }
