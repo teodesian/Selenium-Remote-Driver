@@ -251,19 +251,22 @@ label.
 
 =cut
 
-sub type_element_ok {
-    my $self    = shift;
-    my ($locator,$locator_strategy,$keys,$desc) = @_;
+# function composing a find_element with locator with a webelement test
+
+sub _find_element_with_action { 
+    my $self = shift; 
+    my $method = shift;
+    my ($locator,$locator_strategy,$params,$desc) = @_;
     # case 4 args 
     if ($desc) { 
         $self->croak('Invalid locator strategy') unless ($self->FINDERS->{$locator_strategy});
     }
     else { 
-        if ($keys) { 
+        if ($params) { 
             # means that we called it the 'old way' (no locator strategy)
             if (!$self->FINDERS->{$locator_strategy}) { 
-                $desc = $keys; 
-                $keys = $locator_strategy; 
+                $desc = $params; 
+                $params = $locator_strategy; 
                 $locator_strategy = $self->default_finder;
             }
         }
@@ -271,7 +274,7 @@ sub type_element_ok {
             # means it was called with no locator strategy and no desc 
             if ($locator_strategy) { 
                 if (!$self->FINDERS->{$locator_strategy}) { 
-                    $keys = $locator_strategy; 
+                    $params = $locator_strategy; 
                     $locator_strategy = $self->default_finder;
                 }
             }
@@ -280,7 +283,99 @@ sub type_element_ok {
             }
         }
     }
-    return $self->find_element($locator,$locator_strategy)->send_keys_ok( $keys, $desc );
+    unless ($desc) {
+        $desc = $method;
+        $desc .= "'" . join( " ", ($params // '') ) . "'";
+    }
+    return $self->find_element($locator,$locator_strategy)->$method( $params, $desc );
+}
+
+
+sub type_element_ok {
+    my $self    = shift;
+    my $method = 'send_keys_ok'; 
+    return $self->_find_element_with_action($method,@_);
+}
+
+
+=head2 $twd->element_text_is($search_target[,$finder],$expected_text [,$desc]);
+
+    $twd->element_text_is($search_target[,$finder],$expected_text [,$desc]);
+
+=cut
+
+sub element_text_is {
+    my $self = shift; 
+    my $method = 'text_is';
+    return $self->_find_element_with_action($method,@_);
+}
+
+=head2 $twd->element_value_is($search_target[,$finder],$expected_value [,$desc]);
+
+    $twd->element_value_is($search_target[,$finder],$expected_value [,$desc]);
+
+=cut
+
+sub element_value_is {
+    my $self = shift; 
+    my $method = 'value_is';
+    return $self->_find_element_with_action($method,@_);
+}
+
+=head2 $twd->click_element_ok($search_target [,$desc]);
+
+    $twd->click_element_ok($search_target [,$desc]);
+
+Find an element and then click on it.
+
+=cut
+
+sub click_element_ok {
+    my $self = shift; 
+    my $method = 'click_ok';
+    return $self->_find_element_with_action($method,@_);
+}
+
+=head2 $twd->clear_element_ok($search_target [,$desc]);
+
+    $twd->clear_element_ok($search_target [,$desc]);
+
+Find an element and then clear on it.
+
+=cut
+
+sub clear_element_ok {
+    my $self = shift; 
+    my $method = 'clear_ok';
+    return $self->_find_element_with_action($method,@_);
+}
+
+=head2 $twd->is_element_displayed_ok($search_target [,$desc]);
+
+    $twd->is_element_displayed_ok($search_target [,$desc]);
+
+Find an element and check to confirm that it is displayed. (visible)
+
+=cut
+
+sub is_element_displayed_ok {
+    my $self = shift; 
+    my $method = 'is_displayed_ok';
+    return $self->_find_element_with_action($method,@_);
+}
+
+=head2 $twd->is_element_enabled_ok($search_target [,$desc]);
+
+    $twd->is_element_enabled_ok($search_target [,$desc]);
+
+Find an element and check to confirm that it is enabled.
+
+=cut
+
+sub is_element_enabled_ok {
+    my $self = shift; 
+    my $method = 'is_enabled_ok';
+    return $self->_find_element_with_action($method,@_);
 }
 
 
@@ -603,79 +698,6 @@ sub body_text_lacks {
     }
 }
 
-=head2 $twd->element_text_is($search_target,$expected_text [,$desc]);
-
-    $twd->element_text_is($search_target,$expected_text [,$desc]);
-
-=cut
-
-sub element_text_is {
-    my ( $self, $search_target, $expected, $desc ) = @_;
-    return $self->find_element($search_target)->text_is( $expected, $desc );
-}
-
-=head2 $twd->element_value_is($search_target,$expected_value [,$desc]);
-
-    $twd->element_value_is($search_target,$expected_value [,$desc]);
-
-=cut
-
-sub element_value_is {
-    my ( $self, $search_target, $expected, $desc ) = @_;
-    return $self->find_element($search_target)->value_is( $expected, $desc );
-}
-
-=head2 $twd->click_element_ok($search_target [,$desc]);
-
-    $twd->click_element_ok($search_target [,$desc]);
-
-Find an element and then click on it.
-
-=cut
-
-sub click_element_ok {
-    my ( $self, $search_target, $desc ) = @_;
-    return $self->find_element($search_target)->click_ok($desc);
-}
-
-=head2 $twd->clear_element_ok($search_target [,$desc]);
-
-    $twd->clear_element_ok($search_target [,$desc]);
-
-Find an element and then clear on it.
-
-=cut
-
-sub clear_element_ok {
-    my ( $self, $search_target, $desc ) = @_;
-    return $self->find_element($search_target)->clear_ok($desc);
-}
-
-=head2 $twd->is_element_displayed_ok($search_target [,$desc]);
-
-    $twd->is_element_displayed_ok($search_target [,$desc]);
-
-Find an element and check to confirm that it is displayed. (visible)
-
-=cut
-
-sub is_element_displayed_ok {
-    my ( $self, $search_target, $desc ) = @_;
-    return $self->find_element($search_target)->is_displayed_ok($desc);
-}
-
-=head2 $twd->is_element_enabled_ok($search_target [,$desc]);
-
-    $twd->is_element_enabled_ok($search_target [,$desc]);
-
-Find an element and check to confirm that it is enabled.
-
-=cut
-
-sub is_element_enabled_ok {
-    my ( $self, $search_target, $desc ) = @_;
-    return $self->find_element($search_target)->is_enabled_ok($desc);
-}
 
 1;
 
