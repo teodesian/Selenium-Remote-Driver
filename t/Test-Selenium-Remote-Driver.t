@@ -16,6 +16,9 @@ my $find_element = sub {
     {
         return { status => 'OK', return => { ELEMENT => '123457' } };
     }
+    if ( $searched_item->{value} eq '//body' && $searched_item->{using} eq 'xpath') { 
+        return { status => 'OK', return => { ELEMENT => '123458' } };
+    }
     return { status => 'NOK', return => 0, error => 'element not found' };
 };
 my $find_child_element = sub {
@@ -59,6 +62,7 @@ my $get_text = sub {
     my ($session_object) =@_; 
     return 'abc' if ($session_object->{id} eq '123456');
     return 'def' if ($session_object->{id} eq '123457');
+    return 'this output matches' if ($session_object->{id} eq '123458');
     return;
 };
 
@@ -105,9 +109,15 @@ dies_ok{ $successful_driver->find_child_element_ok({id => 1200}) } 'find_child_e
 
 $successful_driver->find_no_element_ok('notq','xpath','find_no_element_ok works');
 
-
+# body and content function family 
 $successful_driver->content_like( qr/matches/, 'content_like works');
 $successful_driver->content_unlike( qr/nomatch/, 'content_unlike works');
+$successful_driver->content_contains( 'matches', 'content_contains works');
+$successful_driver->content_lacks( 'nomatch', 'content_lacks works');
+$successful_driver->body_text_contains( ['match','output'], 'body_text_contains works');
+$successful_driver->body_text_lacks( 'nomatch', 'body_text_lacks works');
+$successful_driver->body_text_like( qr/this/, 'body_text_like works');
+$successful_driver->body_text_unlike( qr/notthis/, 'body_text_unlike works');
 
 $successful_driver->type_element_ok('q','abc');
 $successful_driver->type_element_ok('p','class','def','type_element_ok works with a locator');

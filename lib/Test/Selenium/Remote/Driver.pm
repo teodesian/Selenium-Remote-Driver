@@ -503,12 +503,12 @@ sub body_text_like {
     my $text = $self->get_body();
 
     if ( not ref $regex eq 'ARRAY' ) {
-        my $desc = qq{Text is like "$regex"} if ( not defined $desc );
+        $desc = qq{Text is like "$regex"} if ( not defined $desc );
         return like_string( $text, $regex, $desc );
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Text is like "$re"} if ( not defined $desc );
+            $desc = qq{Text is like "$re"} if ( not defined $desc );
             like_string( $text, $re, $desc );
         }
     }
@@ -541,12 +541,12 @@ sub body_text_unlike {
     my $text = $self->get_body();
 
     if ( not ref $regex eq 'ARRAY' ) {
-        my $desc = qq{Text is unlike "$regex"} if ( not defined $desc );
+        $desc = qq{Text is unlike "$regex"} if ( not defined $desc );
         return unlike_string( $text, $regex, $desc );
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
-            my $desc = qq{Text is unlike "$re"} if ( not defined $desc );
+            $desc = qq{Text is unlike "$re"} if ( not defined $desc );
             unlike_string( $text, $re, $desc );
         }
     }
@@ -578,12 +578,12 @@ sub content_contains {
     my $content = $self->get_page_source();
 
     if ( not ref $str eq 'ARRAY' ) {
-        my $desc = qq{Content contains "$str"} if ( not defined $desc );
+        $desc = qq{Content contains "$str"} if ( not defined $desc );
         return contains_string( $content, $str, $desc );
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Content contains "$s"} if ( not defined $desc );
+            $desc = qq{Content contains "$s"} if ( not defined $desc );
             contains_string( $content, $s, $desc );
         }
     }
@@ -613,12 +613,12 @@ sub content_lacks {
     my $content = $self->get_page_source();
 
     if ( not ref $str eq 'ARRAY' ) {
-        my $desc = qq{Content lacks "$str"} if ( not defined $desc );
+        $desc = qq{Content lacks "$str"} if ( not defined $desc );
         return lacks_string( $content, $str, $desc );
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Content lacks "$s"} if ( not defined $desc );
+            $desc = qq{Content lacks "$s"} if ( not defined $desc );
             lacks_string( $content, $s, $desc );
         }
     }
@@ -651,12 +651,12 @@ sub body_text_contains {
     my $text = $self->get_body();
 
     if ( not ref $str eq 'ARRAY' ) {
-        my $desc = qq{Text contains "$str"} if ( not defined $desc );
+        $desc = qq{Text contains "$str"} if ( not defined $desc );
         return contains_string( $text, $str, $desc );
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Text contains "$s"} if ( not defined $desc );
+            $desc = qq{Text contains "$s"} if ( not defined $desc );
             contains_string( $text, $s, $desc );
         }
     }
@@ -689,12 +689,12 @@ sub body_text_lacks {
     my $text = $self->get_body();
 
     if ( not ref $str eq 'ARRAY' ) {
-        my $desc = qq{Text is lacks "$str"} if ( not defined $desc );
+        $desc = qq{Text is lacks "$str"} if ( not defined $desc );
         return lacks_string( $text, $str, $desc );
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            my $desc = qq{Text is lacks "$s"} if ( not defined $desc );
+            $desc = qq{Text is lacks "$s"} if ( not defined $desc );
             lacks_string( $text, $s, $desc );
         }
     }
