@@ -1,6 +1,7 @@
 package TestHarness;
 
 # ABSTRACT: Take care of set up for recording/replaying mocks
+use Carp qw/croak/;
 use FindBin;
 use Moo;
 use Selenium::Remote::Mock::RemoteConnection;
@@ -76,6 +77,10 @@ has base_caps => (
         my ($self) = @_;
         my $args = {
             browser_name => 'firefox',
+            platform => 'WINDOWS',
+            extra_capabilities => {
+                name => 'Selenium Remote Driver recording tests'
+            },
             remote_conn => $self->mock_remote_conn
         };
 
@@ -88,17 +93,28 @@ has mock_remote_conn => (
     lazy => 1,
     builder => sub {
         my ($self) = @_;
+        my %args = ();
+
         if ($self->record) {
-            return Selenium::Remote::Mock::RemoteConnection->new(
+            %args = (
                 record => 1
             );
         }
         else {
-            return Selenium::Remote::Mock::RemoteConnection->new(
+            %args = (
                 replay      => 1,
                 replay_file => $self->mock_file
             );
         }
+
+        if ($self->saucelabs) {
+            croak 'We can\'t find your Sauce credentials in SAUCE_USER and/or SAUCE_KEY env vars'
+              unless $ENV{SAUCE_USER} && $ENV{SAUCE_KEY};
+            $args{remote_server_addr} = $ENV{SAUCE_USER} . ':' . $ENV{SAUCE_KEY} . '@ondemand.saucelabs.com';
+            $args{port} = 80;
+        }
+
+        return Selenium::Remote::Mock::RemoteConnection->new( %args );
     }
 );
 
@@ -127,6 +143,12 @@ has mock_file => (
 
         return $mock_file;
     }
+);
+
+has saucelabs => (
+    is => 'ro',
+    lazy => 1,
+    default => sub { 0 }
 );
 
 sub DEMOLISH {
