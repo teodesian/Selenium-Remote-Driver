@@ -15,6 +15,7 @@ requires "IO::Compress::Zip" => "0";
 requires "IO::Socket" => "0";
 requires "JSON" => "0";
 requires "LWP::UserAgent" => "0";
+requires "List::MoreUtils" => "0";
 requires "MIME::Base64" => "0";
 requires "Moo" => "1.005";
 requires "Moo::Role" => "0";
@@ -44,7 +45,7 @@ on 'test' => sub {
 };
 
 on 'configure' => sub {
-  requires "ExtUtils::MakeMaker" => "6.30";
+  requires "ExtUtils::MakeMaker" => "0";
 };
 
 on 'develop' => sub {
