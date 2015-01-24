@@ -15,20 +15,27 @@ use lib $FindBin::Bin . '/lib';
 use TestHarness;
 use Test::Fatal;
 
+my $saucelabs = $ENV{SAUCELABS} // 1;
 my $harness = TestHarness->new(
-    this_file => $FindBin::Script
+    this_file => $FindBin::Script,
+    record => 1,
+    saucelabs => $saucelabs
 );
 my %selenium_args = %{ $harness->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
-my $website = 'http://localhost:63636';
-my $ret;
 
-my $chrome;
-eval { $chrome = Selenium::Remote::Driver->new(
-    %selenium_args,
-    browser_name => 'chrome'
-); };
+my ($domain, $website);
+if ($saucelabs) {
+    $domain = 'danielgempesaw.com';
+    $website = 'http://' . $domain . '/Selenium-Remote-Driver';
+}
+else {
+    $domain = 'localhost';
+    $website = 'http://' . $domain . ':63636';
+}
+
+my $ret;
 
 DESIRED_CAPABILITIES: {
     # We're using a different test method for these because we needed
@@ -143,8 +150,8 @@ CHECK_DRIVER: {
     is($ret->{'browserName'}, 'firefox', 'Right capabilities');
     my $status = $driver->status;
     ok($status->{build}->{version},"Got status build.version");
-    ok($status->{build}->{revision},"Got status build.revision");
-    ok($status->{build}->{time},"Got status build.time");
+    # ok($status->{build}->{revision},"Got status build.revision");
+    # ok($status->{build}->{time},"Got status build.time");
 }
 
 IME: {
@@ -217,7 +224,7 @@ COOKIES: {
     pass('Deleting cookies...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 0, 'Deleted all cookies.');
-    $ret = $driver->add_cookie('foo', 'bar', '/', 'localhost', 0);
+    $ret = $driver->add_cookie('foo', 'bar', '/', $domain, 0);
     pass('Adding cookie foo...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 1, 'foo cookie added.');
@@ -248,6 +255,8 @@ MOVE: {
 
 FIND: {
     my $elem = $driver->find_element("//input[\@id='checky']");
+    use Data::Dumper; use DDP;
+    p $elem;
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Xpath');
     $elem = $driver->find_element('checky', 'id');
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Id');
@@ -437,6 +446,12 @@ USER_AGENT: {
     my $ua = $driver->get_user_agent;
     ok($ua =~ /Firefox/, 'we can get a user agent');
 }
+
+my $chrome;
+eval { $chrome = Selenium::Remote::Driver->new(
+    %selenium_args,
+    browser_name => 'chrome'
+); };
 
 STORAGE: {
   SKIP: {
