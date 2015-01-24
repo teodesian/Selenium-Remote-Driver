@@ -25,11 +25,6 @@ my %selenium_args = %{ $harness->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
 
-my $chrome;
-eval { $chrome = Selenium::Remote::Driver->new(
-    %selenium_args,
-    browser_name => 'chrome'
-); };
 my ($domain, $website);
 if ($saucelabs) {
     $domain = 'danielgempesaw.com';
@@ -449,6 +444,12 @@ USER_AGENT: {
     my $ua = $driver->get_user_agent;
     ok($ua =~ /Firefox/, 'we can get a user agent');
 }
+
+my $chrome;
+eval { $chrome = Selenium::Remote::Driver->new(
+    %selenium_args,
+    browser_name => 'chrome'
+); };
 
 STORAGE: {
   SKIP: {
