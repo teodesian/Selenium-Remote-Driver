@@ -507,7 +507,11 @@ UPLOAD: {
 
     #Negative tests to verify that our expected behavior codepath is travelled by tests
     like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/,"Passing missing file terminates program");
-    like( exception { $driver->upload_file(__FILE__) },qr/501/,"Passing this file rightly fails due to mock not being present");
+  SKIP: {
+        skip 'purposefully excluding this test from the recording', 1
+          if $harness->record;
+        like( exception { $driver->upload_file(__FILE__) },qr/501/,"Passing this file rightly fails due to mock not being present");
+    }
 }
 
 QUIT: {
