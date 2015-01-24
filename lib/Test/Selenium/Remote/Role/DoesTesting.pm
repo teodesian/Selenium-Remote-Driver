@@ -5,6 +5,7 @@ package Test::Selenium::Remote::Role::DoesTesting;
 use Moo::Role;
 use Test::Builder;
 use Try::Tiny;
+use List::MoreUtils qw/any/;
 use namespace::clean;
 
 requires qw(func_list has_args);
@@ -38,19 +39,50 @@ sub _check_method {
 }
 
 # main method for _ok tests
+# a bit hacked so that find_no_element_ok can also be processed
 
 sub _check_ok {
     my $self   = shift;
     my $method = shift;
+    my $real_method = '';
     my @args   = @_;
     my ($rv, $num_of_args, @r_args);
     try {
         $num_of_args = $self->has_args($method);
         @r_args = splice( @args, 0, $num_of_args );
+        if ($method =~ m/^find(_no|_child)?_element/) { 
+            # case find_element_ok was called with no arguments    
+            if (scalar(@r_args) - $num_of_args == 1) { 
+                push @r_args, $self->default_finder; 
+            }
+            else { 
+                if (scalar(@r_args) == $num_of_args) {
+                    # case find_element was called with no finder but
+                    # a test description
+                    my $finder = $r_args[$num_of_args - 1]; 
+                    my @FINDERS = keys (%{$self->FINDERS});
+                    unless ( any { $finder eq $_ } @FINDERS) { 
+                        $r_args[$num_of_args - 1] = $self->default_finder; 
+                        push @args, $finder; 
+                    }
+                }
+            }
+        }
+        # quick hack to fit 'find_no_element' into check_ok logic
+        if ($method eq 'find_no_element') { 
+            $real_method = $method;
+            $method = 'find_element'; 
+        }
         $rv = $self->$method(@r_args);
     }
     catch {
-        $self->croak($_);
+        if ($real_method) {
+            $method = $real_method;
+            $rv     = 1;
+        }
+        else {
+            $self->croak($_);
+        }
     };
 
     my $default_test_name = $method;

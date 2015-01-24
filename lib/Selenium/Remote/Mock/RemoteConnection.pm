@@ -147,10 +147,6 @@ sub request {
     my $ret = { cmd_status => 'OK', cmd_return => 1 };
     if ( defined( $spec->{$cmd} ) ) {
         my $return_sub = $spec->{$cmd};
-        if ($no_content_success) {
-            $ret->{cmd_return} = 1;
-        }
-        else {
             my $mock_return = $return_sub->( $url_params, $params );
             if ( ref($mock_return) eq 'HASH' ) {
                 $ret->{cmd_status} = $mock_return->{status};
@@ -160,7 +156,6 @@ sub request {
             else {
                 $ret = $mock_return;
             }
-        }
         $ret->{session_id} = $self->fake_session_id if ( ref($ret) eq 'HASH' );
     }
     else {

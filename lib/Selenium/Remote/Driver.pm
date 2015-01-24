@@ -36,6 +36,7 @@ use constant FINDERS => {
     xpath             => 'xpath',
 };
 
+
 =head1 SYNOPSIS
 
     use Selenium::Remote::Driver;
