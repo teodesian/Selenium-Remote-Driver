@@ -7,7 +7,6 @@ use JSON;
 use Carp;
 use Try::Tiny;
 use HTTP::Response;
-use Data::Dumper;
 
 extends 'Selenium::Remote::RemoteConnection';
 
@@ -52,9 +51,14 @@ has 'session_id' => (
     default => sub { undef },
 );
 
-has 'remote_server_addr' => (
+has '+remote_server_addr' => (
     is => 'lazy',
     default => sub { 'localhost' }
+);
+
+has '+port' => (
+    is => 'lazy',
+    default => sub { 4444 }
 );
 
 sub BUILD {
@@ -62,7 +66,6 @@ sub BUILD {
     croak 'Cannot define replay and record attributes at the same time' if (($self->replay) && ($self->record));
     croak 'replay_file attribute needs to be defined' if (($self->replay) && !($self->replay_file));
     croak 'replay attribute needs to be defined' if (!($self->replay) && ($self->replay_file));
-    $self->port('4444');
     if ($self->replay) {
         $self->load_session_store($self->replay_file);
     }
