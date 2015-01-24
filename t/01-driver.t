@@ -150,8 +150,8 @@ CHECK_DRIVER: {
     is($ret->{'browserName'}, 'firefox', 'Right capabilities');
     my $status = $driver->status;
     ok($status->{build}->{version},"Got status build.version");
-    ok($status->{build}->{revision},"Got status build.revision");
-    ok($status->{build}->{time},"Got status build.time");
+    # ok($status->{build}->{revision},"Got status build.revision");
+    # ok($status->{build}->{time},"Got status build.time");
 }
 
 IME: {
@@ -255,6 +255,8 @@ MOVE: {
 
 FIND: {
     my $elem = $driver->find_element("//input[\@id='checky']");
+    use Data::Dumper; use DDP;
+    p $elem;
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Xpath');
     $elem = $driver->find_element('checky', 'id');
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Id');
