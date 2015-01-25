@@ -1,5 +1,16 @@
 Revision history for Selenium-Remote-Driver
 
+0.23 01-25-2014
+        [NEW FEATURES]
+        - #178 Fix upload_file's return value & add test suite
+        - #179 Add optional middle finder-strategy argument to T:S:R:D's find_element-like functions
+        - #174 Add new endpoints: cache status, geolocation, log types, orientation, etc
+
+        [BUG FIXES]
+        - #175 Fix find_elements
+        - #180 Stop overwriting body_text_unlike test descriptions
+        - #141 Explicitly cast height and weight to integers for set_window_size
+
 0.2203 01-18-2014
         [BUG FIXES]
         - #175 Fix find_elements_ok
