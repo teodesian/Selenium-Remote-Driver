@@ -258,7 +258,7 @@ sub _find_element_with_action {
             if (!defined($self->FINDERS->{$locator_strategy})) { 
                 $desc = $params; 
                 $params = $locator_strategy; 
-                $locator_strategy = $self->default_finder;
+                $locator_strategy = $self->_get_finder_key($self->default_finder);
             }
         }
         else { 
@@ -266,7 +266,7 @@ sub _find_element_with_action {
             if ($locator_strategy) { 
                 if (!defined($self->FINDERS->{$locator_strategy})) { 
                     $params = $locator_strategy; 
-                    $locator_strategy = $self->default_finder;
+                    $locator_strategy = $self->_get_finder_key($self->default_finder);
                 }
             }
             else { 

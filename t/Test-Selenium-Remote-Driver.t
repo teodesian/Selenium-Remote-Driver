@@ -96,7 +96,9 @@ my $successful_driver =
 
 # find element ok tests 
 $successful_driver->find_element_ok('q','find_element_ok works');
-$successful_driver->find_element_ok('p','class','find_element_ok with a locator works');
+$successful_driver->default_finder('class');
+$successful_driver->find_element_ok('p','find_element_ok with a locator works');
+$successful_driver->default_finder('xpath');
 dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if element not found';
 $successful_driver->find_elements_ok('abc','find_elements_ok works');
 
@@ -120,7 +122,8 @@ $successful_driver->body_text_like( qr/this/, 'body_text_like works');
 $successful_driver->body_text_unlike( qr/notthis/, 'body_text_unlike works');
 
 $successful_driver->type_element_ok('q','abc');
-$successful_driver->type_element_ok('p','class','def','type_element_ok works with a locator');
+$successful_driver->default_finder('class');
+$successful_driver->type_element_ok('p','def','type_element_ok works with a locator');
 
 $successful_driver->element_text_is('q','abc','element has a correct text');
 $successful_driver->element_text_is('p','class','def');
