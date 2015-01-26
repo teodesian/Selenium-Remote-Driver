@@ -26,7 +26,8 @@ my $fixture_dir = $FindBin::Bin . '/www/';
 
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
-    my $website = 'http://localhost:63636';
+    my $domain = $harness->domain;
+    my $website = $harness->website;
     my $mock_encoded_profile = $fixture_dir . 'encoded_profile.b64';
     my $encoded;
 
@@ -74,7 +75,7 @@ CUSTOM_EXTENSION_LOADED: {
     # elements)
     $driver->set_implicit_wait_timeout(30000);
     $driver->find_element("h1", "tag_name");
-    cmp_ok($driver->get_current_url, '=~', qr/localhost/i,
+    cmp_ok($driver->get_current_url, '=~', qr/$domain/i,
            "profile loaded and preference respected!");
 
     $driver->get($website . '/index.html');

@@ -129,6 +129,21 @@ has mock_file => (
     }
 );
 
+has website => (
+    is => 'ro',
+    default => sub {
+        my ($self) = @_;
+        my $port = 63636;
+
+        return 'http://' . $self->domain . ':' . $port;
+    }
+);
+
+has domain => (
+    is => 'ro',
+    default => sub { 'localhost' }
+);
+
 sub DEMOLISH {
     my ($self) = @_;
     if ($self->record) {

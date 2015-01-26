@@ -21,7 +21,8 @@ my $harness = TestHarness->new(
 my %selenium_args = %{ $harness->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
-my $website = 'http://localhost:63636';
+my $domain = $harness->domain;
+my $website = $harness->website;
 my $ret;
 
 my $chrome;
@@ -217,7 +218,7 @@ COOKIES: {
     pass('Deleting cookies...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 0, 'Deleted all cookies.');
-    $ret = $driver->add_cookie('foo', 'bar', '/', 'localhost', 0);
+    $ret = $driver->add_cookie('foo', 'bar', '/', $domain, 0);
     pass('Adding cookie foo...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 1, 'foo cookie added.');
