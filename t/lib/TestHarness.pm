@@ -42,6 +42,16 @@ has calling_file => (
     required => 1
 );
 
+=attr record
+
+Optional. Determines whether or not this test run should record new
+mocks, or look up a previous recording to replay against them. If the
+parameter is not used during construction, the default behavior is to
+check for the environment variable WD_MOCKING_RECORD to be defined and
+equal to 1.
+
+=cut
+
 has record => (
     is => 'ro',
     init_args => undef,
