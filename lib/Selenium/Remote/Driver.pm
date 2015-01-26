@@ -22,6 +22,7 @@ use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
 use File::Basename ();
+use Sub::Install ();
 
 use constant FINDERS => {
     class             => 'class name',
@@ -420,6 +421,8 @@ has 'inner_window_size' => (
 
 );
 
+with 'Selenium::Remote::Finders';
+
 sub BUILD {
     my $self = shift;
 
@@ -437,6 +440,18 @@ sub BUILD {
     elsif ($self->has_inner_window_size) {
         my $size = $self->inner_window_size;
         $self->set_inner_window_size(@$size);
+    }
+
+    # setup non-croaking, parameter versions of finders
+    foreach my $by (keys %{ $self->FINDERS }) {
+        my $finder_name = 'find_element_by_' . $by;
+        my $find_sub = $self->_build_find_by($by);
+
+        Sub::Install::install_sub({
+            code => $find_sub,
+            into => __PACKAGE__,
+            as   => $finder_name,
+        });
     }
 }
 
