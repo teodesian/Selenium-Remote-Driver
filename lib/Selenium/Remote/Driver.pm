@@ -1771,8 +1771,27 @@ sub get_page_source {
 =head2 find_element
 
  Description:
-    Search for an element on the page, starting from the document root. The
-    located element will be returned as a WebElement object.
+    Search for an element on the page, starting from the document
+    root. The located element will be returned as a WebElement
+    object. If the element cannot be found, we will CROAK, killing
+    your script. If you wish for a warning instead, use the
+    parameterized version of the finders:
+
+        find_element_by_class
+        find_element_by_class_name
+        find_element_by_css
+        find_element_by_id
+        find_element_by_link
+        find_element_by_link_text
+        find_element_by_name
+        find_element_by_partial_link_text
+        find_element_by_tag_name
+        find_element_by_xpath
+
+    These functions all take a single STRING argument: the locator
+    search target of the element you want. If the element is found, we
+    will receive a WebElement. Otherwise, we will return 0. Note that
+    invoking methods on 0 will of course kill your script.
 
  Input: 2 (1 optional)
     Required:
@@ -2023,6 +2042,46 @@ sub find_child_elements {
         croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
+
+=head2 find_element_by_class
+
+See L</find_element>.
+
+=head2 find_element_by_class_name
+
+See L</find_element>.
+
+=head2 find_element_by_css
+
+See L</find_element>.
+
+=head2 find_element_by_id
+
+See L</find_element>.
+
+=head2 find_element_by_link
+
+See L</find_element>.
+
+=head2 find_element_by_link_text
+
+See L</find_element>.
+
+=head2 find_element_by_name
+
+See L</find_element>.
+
+=head2 find_element_by_partial_link_text
+
+See L</find_element>.
+
+=head2 find_element_by_tag_name
+
+See L</find_element>.
+
+=head2 find_element_by_xpath
+
+See L</find_element>.
 
 =head2 get_active_element
 
