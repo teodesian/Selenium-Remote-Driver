@@ -442,16 +442,20 @@ sub BUILD {
         $self->set_inner_window_size(@$size);
     }
 
-    # setup non-croaking, parameter versions of finders
+    # Setup non-croaking, parameter versions of finders
     foreach my $by (keys %{ $self->FINDERS }) {
         my $finder_name = 'find_element_by_' . $by;
-        my $find_sub = $self->_build_find_by($by);
+        # In case we get instantiated multiple times, we don't want to
+        # install into the name space every time.
+        unless ($self->can($finder_name)) {
+            my $find_sub = $self->_build_find_by($by);
 
-        Sub::Install::install_sub({
-            code => $find_sub,
-            into => __PACKAGE__,
-            as   => $finder_name,
-        });
+            Sub::Install::install_sub({
+                code => $find_sub,
+                into => __PACKAGE__,
+                as   => $finder_name,
+            });
+        }
     }
 }
 
