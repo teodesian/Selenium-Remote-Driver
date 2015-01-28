@@ -46,6 +46,12 @@ foreach my $by (keys %finders) {
     my $elem = $driver->$method($locator);
     ok($elem, $method . ': finds an element properly');
     ok($elem->isa('Selenium::Remote::WebElement'), $method . ': element is a WebElement');
-    ok(!$driver->$method('missing') , $method . ': does not croak on unavailable elements');
+    {
+        # Briefly suppress warning output for prettier tests
+        my $warned = 0;
+        local $SIG{__WARN__} = sub { $warned++ };
+        ok(!$driver->$method('missing') , $method . ': does not croak on unavailable elements');
+        ok($warned, $method . ': unavailable elements throw a warning');
+    }
 }
 done_testing;
