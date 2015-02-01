@@ -13,8 +13,7 @@ use lib $FindBin::Bin . '/lib';
 use TestHarness;
 
 my $harness = TestHarness->new(
-    this_file => $FindBin::Script,
-    record => 1
+    this_file => $FindBin::Script
 );
 
 my %caps = %{ $harness->base_caps };
