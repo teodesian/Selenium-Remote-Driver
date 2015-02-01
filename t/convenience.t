@@ -2,9 +2,10 @@
 
 use strict;
 use warnings;
-use Selenium::InternetExplorer;
 use Selenium::Chrome;
 use Selenium::Firefox;
+use Selenium::InternetExplorer;
+use Selenium::PhantomJS;
 use Test::More;
 
 use FindBin;
