@@ -22,6 +22,7 @@ use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
 use File::Basename ();
+use Sub::Install ();
 
 use constant FINDERS => {
     class             => 'class name',
@@ -420,6 +421,8 @@ has 'inner_window_size' => (
 
 );
 
+with 'Selenium::Remote::Finders';
+
 sub BUILD {
     my $self = shift;
 
@@ -437,6 +440,22 @@ sub BUILD {
     elsif ($self->has_inner_window_size) {
         my $size = $self->inner_window_size;
         $self->set_inner_window_size(@$size);
+    }
+
+    # Setup non-croaking, parameter versions of finders
+    foreach my $by (keys %{ $self->FINDERS }) {
+        my $finder_name = 'find_element_by_' . $by;
+        # In case we get instantiated multiple times, we don't want to
+        # install into the name space every time.
+        unless ($self->can($finder_name)) {
+            my $find_sub = $self->_build_find_by($by);
+
+            Sub::Install::install_sub({
+                code => $find_sub,
+                into => __PACKAGE__,
+                as   => $finder_name,
+            });
+        }
     }
 }
 
@@ -1752,8 +1771,27 @@ sub get_page_source {
 =head2 find_element
 
  Description:
-    Search for an element on the page, starting from the document root. The
-    located element will be returned as a WebElement object.
+    Search for an element on the page, starting from the document
+    root. The located element will be returned as a WebElement
+    object. If the element cannot be found, we will CROAK, killing
+    your script. If you wish for a warning instead, use the
+    parameterized version of the finders:
+
+        find_element_by_class
+        find_element_by_class_name
+        find_element_by_css
+        find_element_by_id
+        find_element_by_link
+        find_element_by_link_text
+        find_element_by_name
+        find_element_by_partial_link_text
+        find_element_by_tag_name
+        find_element_by_xpath
+
+    These functions all take a single STRING argument: the locator
+    search target of the element you want. If the element is found, we
+    will receive a WebElement. Otherwise, we will return 0. Note that
+    invoking methods on 0 will of course kill your script.
 
  Input: 2 (1 optional)
     Required:
@@ -2004,6 +2042,46 @@ sub find_child_elements {
         croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
     }
 }
+
+=head2 find_element_by_class
+
+See L</find_element>.
+
+=head2 find_element_by_class_name
+
+See L</find_element>.
+
+=head2 find_element_by_css
+
+See L</find_element>.
+
+=head2 find_element_by_id
+
+See L</find_element>.
+
+=head2 find_element_by_link
+
+See L</find_element>.
+
+=head2 find_element_by_link_text
+
+See L</find_element>.
+
+=head2 find_element_by_name
+
+See L</find_element>.
+
+=head2 find_element_by_partial_link_text
+
+See L</find_element>.
+
+=head2 find_element_by_tag_name
+
+See L</find_element>.
+
+=head2 find_element_by_xpath
+
+See L</find_element>.
 
 =head2 get_active_element
 
