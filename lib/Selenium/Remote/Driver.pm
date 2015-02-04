@@ -421,6 +421,23 @@ has 'inner_window_size' => (
 
 );
 
+has 'warnings' => (
+    is => 'ro',
+    lazy => 1,
+    default => sub { 0 },
+    trigger => sub {
+        my ($self) = @_;
+
+        if ($self->warnings) {
+            Sub::Install::reinstall_sub({
+                code => \&Carp::carp,
+                into => __PACKAGE__,
+                as   => 'croak',
+            });
+        }
+    }
+);
+
 with 'Selenium::Remote::Finders';
 
 sub BUILD {
