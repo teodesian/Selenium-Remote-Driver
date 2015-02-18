@@ -45,7 +45,7 @@ and return control to you at that point.
 
 PLEASE check the return value before proceeding, as we unwisely
 suppress any attempts your BLOCK may make to die or croak. The BLOCK
-you pass is called in a L<try/Try::Tiny>, and if any of the
+you pass is called in a L<Try::Tiny/try>, and if any of the
 invocations of your function throw and the BLOCK never becomes true,
 we'll carp exactly once at the end immediately before returning
 false. We overwrite the death message from each iteration, so at the
