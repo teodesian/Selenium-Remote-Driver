@@ -497,6 +497,8 @@ sub _execute_command {
                 }
                 elsif ( $resp->{cmd_return} ) {
                     if ( ref( $resp->{cmd_return} ) eq 'HASH' ) {
+                        $msg .= ": $res->{command}"
+                          if $res->{command};
                         $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                           if $resp->{cmd_return}->{error}->{msg};
                         $msg .= ": $resp->{cmd_return}->{message}"
