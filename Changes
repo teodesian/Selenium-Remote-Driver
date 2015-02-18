@@ -1,6 +1,15 @@
 Revision history for Selenium-Remote-Driver
 
-0.23 01-25-2014
+0.2350 02-18-2015
+        [NEW FEATURES]
+        - #182 Non-crashing warn-instead-of-die parameter finders: find_element_by_class, etc
+        - #183 Convenience packages for starting up browsers: Selenium::Chrome, Selenium::Firefox, etc
+        - Provide wait_until utility functionality in Selenium::Waiter
+
+        [BUG FIXES]
+        - #184 Fix bug about reverting default finder in T:S:R:D
+
+0.23   01-25-2014
         [NEW FEATURES]
         - #178 Fix upload_file's return value & add test suite
         - #179 Add optional middle finder-strategy argument to T:S:R:D's find_element-like functions
