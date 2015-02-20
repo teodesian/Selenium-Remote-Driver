@@ -3,14 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-
-BEGIN: {
-    unless (use_ok('Selenium::Remote::Driver')) {
-        BAIL_OUT("Couldn't load Selenium::Remote::Driver");
-        exit;
-    }
-}
-
+use Selenium::Remote::Driver;
 use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;
