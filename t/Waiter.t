@@ -33,12 +33,6 @@ EXCEPTIONS: {
     my %opts = ( timeout => 2 );
     warning_is { wait_until { die 'caught!' } %opts } 'caught!',
       'exceptions usually only warn once';
-
-    # This test is flaky when accelerated, so let's slow it down.
-    Time::Mock->throttle(1);
-    my %debug = ( debug => 1, %opts );
-    warnings_are { wait_until { die 'caught!' } %debug } ['caught!', 'caught!'],
-      'exceptions warn repreatedly when in debug mode';
 }
 
 sub waits_ok  {
