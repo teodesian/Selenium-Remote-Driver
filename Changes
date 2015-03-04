@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-0.2351 02-18-2015
+0.24    02-18-2015
         [NEW FEATURES]
         - #182 Non-crashing warn-instead-of-die parameter finders: find_element_by_class, etc
         - #183 Convenience packages for starting up browsers: Selenium::Chrome, Selenium::Firefox, etc
