@@ -4,8 +4,10 @@ use strict;
 use warnings;
 use Test::More;
 use Selenium::Binary;
+use Selenium::Firefox::Binary;
 use Selenium::Chrome;
 use Selenium::PhantomJS;
+use Selenium::Firefox;
 
 use FindBin;
 use lib $FindBin::Bin . '/lib';
@@ -29,6 +31,12 @@ CHROME: {
     ok( $chrome->browser_name eq 'chrome', 'convenience chrome is okay' );
     isnt( $chrome->port, 4444, 'chrome can start up its own binary');
     $chrome->quit;
+}
+
+FIREFOX: {
+    my $binary = Selenium::Firefox::Binary::path();
+    ok(-x $binary, 'we can find some sort of firefox');
+
 }
 
 done_testing;
