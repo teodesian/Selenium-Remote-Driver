@@ -29,15 +29,22 @@ sub _unix_path {
 }
 
 sub path {
+    my $path;
     if ($^O eq 'MSWin32') {
-        return _windows_path();
+        $path =_windows_path();
     }
     elsif ($^O eq 'darwin') {
-        return _darwin_path();
+        $path =_darwin_path();
     }
     else {
-        return _unix_path;
+        $path = _unix_path;
     }
+
+    if (not -x $path) {
+        die $path . ' is not an executable file.';
+    }
+
+    return $path;
 }
 
 1;
