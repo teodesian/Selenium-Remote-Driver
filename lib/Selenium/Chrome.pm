@@ -1,7 +1,12 @@
 package Selenium::Chrome;
 
 # ABSTRACT: A convenience package for creating a Chrome instance
+use File::Which qw/which/;
+use IO::Socket::INET;
+use Selenium::Waiter qw/wait_until/;
+
 use Moo;
+use namespace::clean;
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -10,9 +15,51 @@ extends 'Selenium::Remote::Driver';
 
 =cut
 
+my $default_binary_server = '127.0.0.1';
+my $default_binary_port = 9515;
+
 has '+browser_name' => (
     is => 'ro',
     default => sub { 'chrome' }
+);
+
+has '+port' => (
+    is => 'lazy'
+);
+
+has 'binary_mode' => (
+    is => 'ro',
+    init_arg => undef,
+    builder => sub {
+        my ($self) = @_;
+
+        if (! $self->has_remote_server_addr && ! $self->has_port) {
+            my $executable = _find_executable('chromedriver');
+            my $port = _find_open_port_above($default_binary_port);
+            my $command = _construct_command($executable, $port);
+
+            system($command);
+            my $success = wait_until { _query_port($port) } timeout => 10;
+            if ($success) {
+                $self->port($port);
+            }
+            else {
+                warn qq(
+Unable to start up the chromedriver binary via:
+
+    $command
+
+We'll try falling back to standard Remote Driver mode via the webdriver.chrome.driver property...
+);
+
+            }
+
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 );
 
 sub _find_executable {
