@@ -11,6 +11,25 @@ extends 'Selenium::Remote::Driver';
 
     my $driver = Selenium::Chrome->new;
 
+=head1 DESCRIPTION
+
+This class allows you to use the ChromeDriver without needing the JRE
+or a selenium server running. If you refrain from passing the
+C<remote_server_addr> and C<port> arguments, we will search for the
+chromedriver executable binary in your $PATH. We'll try to start the
+binary connect to it, shutting it down at the end of the test.
+
+If the chromedriver binary is not found, we'll fall back to the
+default L<Selenium::Remote::Driver> behavior of assuming defaults of
+127.0.0.1:4444.
+
+If you specify a remote server address, or a port, we'll assume you
+know what you're doing and take no additional behavior.
+
+If you're curious whether your Selenium::Chrome instance is using a
+separate ChromeDriver binary, or through the selenium server, you can
+check the C<binary_mode> attr after instantiation.
+
 =cut
 
 use constant CHROMEDRIVER_PORT => 9515;
