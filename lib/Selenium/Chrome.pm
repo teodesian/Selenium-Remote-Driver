@@ -116,4 +116,14 @@ sub _probe_port {
         Timeout => 3
     );
 }
+
+sub DEMOLISH {
+    my ($self) = @_;
+
+    my $port = $self->port;
+    my $ua = LWP::UserAgent->new;
+
+    $ua->get($default_binary_server . ':' . $port . '/wd/hub/shutdown');
+}
+
 1;
