@@ -23,6 +23,9 @@ has '+browser_name' => (
     default => sub { 'chrome' }
 );
 
+
+# By shadowing the parent's port function, we can set the port in
+# _build_binary_mode's builder
 has '+port' => (
     is => 'lazy'
 );
@@ -30,21 +33,24 @@ has '+port' => (
 has 'binary_mode' => (
     is => 'ro',
     init_arg => undef,
-    builder => sub {
-        my ($self) = @_;
+    builder => 1
+);
 
-        if (! $self->has_remote_server_addr && ! $self->has_port) {
-            my $executable = _find_executable('chromedriver');
-            my $port = _find_open_port_above($default_binary_port);
-            my $command = _construct_command($executable, $port);
+sub _build_binary_mode {
+    my ($self) = @_;
 
-            system($command);
-            my $success = wait_until { _query_port($port) } timeout => 10;
-            if ($success) {
-                $self->port($port);
-            }
-            else {
-                warn qq(
+    if (! $self->has_remote_server_addr && ! $self->has_port) {
+        my $executable = _find_executable('chromedriver');
+        my $port = _find_open_port_above($default_binary_port);
+        my $command = _construct_command($executable, $port);
+
+        system($command);
+        my $success = wait_until { _probe_port($port) } timeout => 10;
+        if ($success) {
+            $self->port($port);
+        }
+        else {
+            warn qq(
 Unable to start up the chromedriver binary via:
 
     $command
@@ -52,15 +58,14 @@ Unable to start up the chromedriver binary via:
 We'll try falling back to standard Remote Driver mode via the webdriver.chrome.driver property...
 );
 
-            }
+        }
 
-            return 1;
-        }
-        else {
-            return 0;
-        }
+        return 1;
     }
-);
+    else {
+        return 0;
+    }
+}
 
 sub _find_executable {
     my ($binary) = @_;
