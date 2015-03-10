@@ -15,4 +15,29 @@ has '+browser_name' => (
     default => sub { 'chrome' }
 );
 
+sub _find_open_port_above {
+    my ($port) = @_;
+
+    my $free_port = wait_until {
+        if (_probe_port($port)) {
+            $port++;
+            return 0;
+        }
+        else {
+            return $port;
+        }
+    };
+
+    return $free_port;
+}
+
+sub _probe_port {
+    my ($port) = @_;
+
+    return IO::Socket::INET->new(
+        PeerAddr => $default_binary_server,
+        PeerPort => $port,
+        Timeout => 3
+    );
+}
 1;
