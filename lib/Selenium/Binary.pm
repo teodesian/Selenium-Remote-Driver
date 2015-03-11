@@ -1,5 +1,6 @@
 package Selenium::Binary;
 
+# ABSTRACT: Execute a binary asynchronously on a specific port
 use File::Which qw/which/;
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
@@ -7,6 +8,7 @@ use Selenium::Waiter qw/wait_until/;
 require Exporter;
 our @ISA = qw/Exporter/;
 our @EXPORT = qw/start_binary_on_port/;
+our @EXPORT_OK = qw/_find_open_port_above _probe_port/;
 
 sub start_binary_on_port {
     my ($process, $port) = @_;
