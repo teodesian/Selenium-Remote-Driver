@@ -11,8 +11,10 @@ use Carp qw(croak);
 use Cwd qw(abs_path);
 use File::Copy qw(copy);
 use File::Temp;
+use File::Basename qw(dirname);
+use JSON qw/decode_json/;
 use MIME::Base64;
-use Scalar::Util qw(looks_like_number);
+use Scalar::Util qw(blessed looks_like_number);
 
 =head1 DESCRIPTION
 
@@ -171,6 +173,36 @@ sub add_extension {
     croak '$xpi_abs_path: extensions must be in .xpi format' unless $xpi_abs_path =~ /\.xpi$/;
 
     push (@{$self->{extensions}}, $xpi_abs_path);
+}
+
+=method add_webdriver
+
+Primarily for internal use, we add the webdriver extension to the
+current Firefox profile.
+
+=cut
+
+sub add_webdriver {
+    my ($self, $port) = @_;
+
+    my $this_dir = dirname(abs_path(__FILE__));
+    my $webdriver_extension = $this_dir . '/webdriver.xpi';
+    my $default_prefs_filename = $this_dir . '/webdriver_prefs.json';
+
+    my $json;
+    {
+        local $/;
+        open (my $fh, '<', $default_prefs_filename);
+        $json = <$fh>;
+        close ($fh);
+    }
+    my $webdriver_prefs = decode_json($json);
+
+    $self->set_preference(%{ $webdriver_prefs->{mutable} });
+    $self->set_preference(%{ $webdriver_prefs->{frozen} });
+
+    $self->add_extension($webdriver_extension);
+    $self->set_preference('webdriver_firefox_port', $port);
 }
 
 sub _encode {
