@@ -36,7 +36,8 @@ CHROME: {
 FIREFOX: {
     my $binary = Selenium::Firefox::Binary::path();
     ok(-x $binary, 'we can find some sort of firefox');
-
+    my $firefox = Selenium::Firefox->new;
+    isnt( $firefox->port, 4444, 'firefox can start up its own binary');
 }
 
 done_testing;
