@@ -226,9 +226,12 @@ sub _install_extensions {
         # .xpi in the /extensions/ folder and change the filename to
         # its id, which is found in the install.rdf in the root of the
         # zip.
-        my $ae = Archive::Extract->new( archive => $_,
-                                        type => "zip");
+        my $ae = Archive::Extract->new(
+            archive => $_,
+            type => "zip"
+        );
 
+        $Archive::Extract::PREFER_BIN = 1;
         my $tempDir = File::Temp->newdir();
         $ae->extract( to => $tempDir );
         my $install = $ae->extract_path();
