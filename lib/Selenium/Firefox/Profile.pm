@@ -69,7 +69,7 @@ sub new {
 
 Set string and integer preferences on the profile object. You can set
 multiple preferences at once. If you need to set a boolean preference,
-see C<set_boolean_preference()>.
+either use JSON::true/JSON::false, or see C<set_boolean_preference()>.
 
     $profile->set_preference("quoted.integer.pref" => '"20140314220517"');
     # user_pref("quoted.integer.pref", "20140314220517");
@@ -89,7 +89,11 @@ sub set_preference {
         my $value = $prefs{$_};
         my $clean_value = '';
 
-        if ($value =~ /^(['"]).*\1$/ or looks_like_number($value)) {
+        if ( blessed($value) ) {
+            $self->set_boolean_preference($_, $value );
+            next;
+        }
+        elsif ($value =~ /^(['"]).*\1$/ or looks_like_number($value)) {
             # plain integers: 0, 1, 32768, or integers wrapped in strings:
             # "0", "1", "20140204". in either case, there's nothing for us
             # to do.
