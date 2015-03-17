@@ -198,6 +198,8 @@ sub add_webdriver {
     }
     my $webdriver_prefs = decode_json($json);
 
+    # TODO: Let the user's mutable preferences persist instead of
+    # overwriting them here.
     $self->set_preference(%{ $webdriver_prefs->{mutable} });
     $self->set_preference(%{ $webdriver_prefs->{frozen} });
 
