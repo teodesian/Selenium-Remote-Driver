@@ -5,7 +5,7 @@ use File::Which qw/which/;
 
 require Exporter;
 our @ISA = qw/Exporter/;
-our @EXPORT_OK = qw/path/;
+our @EXPORT_OK = qw/firefox_path/;
 
 sub _windows_path {
     # TODO: make this slightly less dumb
@@ -28,7 +28,7 @@ sub _unix_path {
     return which('firefox') || '/usr/bin/firefox';
 }
 
-sub path {
+sub firefox_path {
     my $path;
     if ($^O eq 'MSWin32') {
         $path =_windows_path();

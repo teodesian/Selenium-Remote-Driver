@@ -2,12 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More;
-use Selenium::Binary;
+use Selenium::Binary qw/_probe_port/;
 use Selenium::Firefox::Binary;
 use Selenium::Chrome;
 use Selenium::PhantomJS;
 use Selenium::Firefox;
+use Test::More;
 
 use FindBin;
 use lib $FindBin::Bin . '/lib';
@@ -20,9 +20,11 @@ my %caps = %{ $harness->base_caps };
 delete $caps{browser_name};
 
 PHANTOMJS: {
-    my $ghost = Selenium::PhantomJS->new( %caps );
-    is( $ghost->browser_name, 'phantomjs', 'binary phantomjs is okay');
-    isnt( $ghost->port, 4444, 'phantomjs can start up its own binary');
+    my $phantom = Selenium::PhantomJS->new( %caps );
+    is( $phantom->browser_name, 'phantomjs', 'binary phantomjs is okay');
+    isnt( $phantom->port, 4444, 'phantomjs can start up its own binary');
+
+    ok( _probe_port( $phantom->port ), 'the phantomjs binary is listening on its port');
 }
 
 CHROME: {
@@ -30,14 +32,17 @@ CHROME: {
     my $chrome = Selenium::Chrome->new( %caps );
     ok( $chrome->browser_name eq 'chrome', 'convenience chrome is okay' );
     isnt( $chrome->port, 4444, 'chrome can start up its own binary');
-    $chrome->quit;
+
+    ok( _probe_port( $chrome->port ), 'the chrome binary is listening on its port');
 }
 
 FIREFOX: {
-    my $binary = Selenium::Firefox::Binary::path();
+    my $binary = Selenium::Firefox::Binary::firefox_path();
     ok(-x $binary, 'we can find some sort of firefox');
     my $firefox = Selenium::Firefox->new;
     isnt( $firefox->port, 4444, 'firefox can start up its own binary');
+
+    ok( _probe_port( $firefox->port ), 'the firefox binary is listening on its port');
 }
 
 done_testing;

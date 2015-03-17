@@ -2,7 +2,7 @@ package Selenium::Firefox;
 
 # ABSTRACT: A convenience package for creating a Firefox instance
 use Selenium::Binary qw/_find_open_port_above _probe_port/;
-use Selenium::Firefox::Binary qw/path/;
+use Selenium::Firefox::Binary qw/firefox_path/;
 use Selenium::Firefox::Profile;
 use Selenium::Waiter qw/wait_until/;
 use Moo;
@@ -58,7 +58,7 @@ has 'binary_mode' => (
         $ENV{'MOZ_CRASHREPORTER_DISABLE'} = '1'; # disable breakpad
         $ENV{'NO_EM_RESTART'} = '1'; # prevent the binary from detaching from the console.log
 
-        my $binary = path();
+        my $binary = firefox_path();
         system( $binary . ' -no-remote > /dev/null 2>&1 & ');
 
         my $success = wait_until { _probe_port($port) } timeout => 10;
