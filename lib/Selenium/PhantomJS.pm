@@ -62,9 +62,8 @@ sub DEMOLISH {
     my ($self) = @_;
 
     if ($self->binary_mode) {
-
         my $port = $self->port;
-        my $ua = LWP::UserAgent->new;
+        my $ua = $self->ua;
 
         $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
     }
