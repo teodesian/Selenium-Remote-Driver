@@ -12,14 +12,14 @@ extends 'Selenium::Remote::Driver';
 =head1 DESCRIPTION
 
 This class allows you to use the ChromeDriver without needing the JRE
-or a selenium server running. If you refrain from passing the
+or a selenium server running. When you refrain from passing the
 C<remote_server_addr> and C<port> arguments, we will search for the
 chromedriver executable binary in your $PATH. We'll try to start the
 binary connect to it, shutting it down at the end of the test.
 
 If the chromedriver binary is not found, we'll fall back to the
 default L<Selenium::Remote::Driver> behavior of assuming defaults of
-127.0.0.1:4444.
+127.0.0.1:4444 after waiting a few seconds.
 
 If you specify a remote server address, or a port, we'll assume you
 know what you're doing and take no additional behavior.
