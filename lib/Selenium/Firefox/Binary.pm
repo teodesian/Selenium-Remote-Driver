@@ -16,7 +16,7 @@ sub _firefox_windows_path {
 sub _firefox_darwin_path {
     my $default_firefox = '/Applications/Firefox.app/Contents/MacOS/firefox-bin';
 
-    if (-e $default_firefox) {
+    if (-e $default_firefox && -x $default_firefox) {
         return $default_firefox
     }
     else {
