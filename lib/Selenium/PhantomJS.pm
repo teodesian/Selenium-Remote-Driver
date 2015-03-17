@@ -1,9 +1,8 @@
 package Selenium::PhantomJS;
 
 # ABSTRACT: A convenience package for creating a PhantomJS instance
-use Selenium::Binary qw/start_binary_on_port/;
 use Moo;
-use namespace::clean;
+with 'Selenium::BinaryModeBuilder';
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -31,24 +30,15 @@ has 'binary_mode' => (
     builder => 1
 );
 
-sub _build_binary_mode {
-    my ($self) = @_;
+has 'binary_name' => (
+    is => 'lazy',
+    default => sub { 'phantomjs' }
+);
 
-    if (! $self->has_remote_server_addr && ! $self->has_port) {
-        try {
-            my $port = start_binary_on_port('phantomjs', PHANTOMJS_PORT);
-            $self->port($port);
-            return 1;
-        }
-        catch {
-            warn $_;
-            return 0;
-        }
-    }
-    else {
-        return 0;
-    }
-}
+has 'binary_port' => (
+    is => 'lazy',
+    default => sub { 8910 }
+);
 
 sub DEMOLISH {
     my ($self) = @_;
