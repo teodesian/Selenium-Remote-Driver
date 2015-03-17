@@ -2,8 +2,8 @@ package Selenium::Firefox;
 
 # ABSTRACT: A convenience package for creating a Firefox instance
 use Moo;
-extends 'Selenium::Remote::Driver';
 with 'Selenium::BinaryModeBuilder';
+extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
 
@@ -39,12 +39,6 @@ has '+browser_name' => (
 has '+port' => (
     is => 'lazy',
     default => sub { 4444 }
-);
-
-has 'binary_mode' => (
-    is => 'ro',
-    init_arg => undef,
-    builder => 1
 );
 
 has 'binary_name' => (

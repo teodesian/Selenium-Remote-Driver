@@ -41,12 +41,6 @@ has '+port' => (
     is => 'lazy'
 );
 
-has 'binary_mode' => (
-    is => 'ro',
-    init_arg => undef,
-    builder => 1
-);
-
 has 'binary_name' => (
     is => 'lazy',
     default => sub { 'chromedriver' }

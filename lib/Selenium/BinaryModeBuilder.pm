@@ -4,7 +4,12 @@ package Selenium::BinaryModeBuilder;
 use Selenium::Binary qw/start_binary_on_port/;
 use Try::Tiny;
 use Moo::Role;
-use namespace::clean;
+
+has 'binary_mode' => (
+    is => 'ro',
+    init_arg => undef,
+    builder => 1
+);
 
 sub _build_binary_mode {
     my ($self) = @_;
