@@ -126,6 +126,15 @@ PREFERENCES: {
             cmp_ok($profile->get_preference($_), "eq", $expected->{$_},
                    "$_ pref is formatted correctly");
         }
+
+        $profile->set_preference(
+            'boolean.true.2' => JSON::true,
+            'boolean.false.2' => JSON::false
+        );
+        is($profile->get_preference('boolean.true.2'), 'true',
+           'format true booleans via set_preference & JSON::true');
+        is($profile->get_preference('boolean.false.2'), 'false',
+           'format false booleans via set_preference & JSON::false');
     }
 
   PACK_AND_UNPACK: {

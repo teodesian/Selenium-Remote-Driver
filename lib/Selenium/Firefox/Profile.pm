@@ -91,7 +91,7 @@ sub set_preference {
         my $value = $prefs{$_};
         my $clean_value = '';
 
-        if ( blessed($value) ) {
+        if ( JSON::is_bool($value) ) {
             $self->set_boolean_preference($_, $value );
             next;
         }
