@@ -6,15 +6,16 @@ use strict;
 use warnings;
 
 use Archive::Zip qw( :ERROR_CODES );
-use Archive::Extract;
 use Carp qw(croak);
 use Cwd qw(abs_path);
 use File::Copy qw(copy);
 use File::Temp;
 use File::Basename qw(dirname);
+use IO::Uncompress::Unzip qw(unzip $UnzipError);
 use JSON qw/decode_json/;
 use MIME::Base64;
 use Scalar::Util qw(blessed looks_like_number);
+use XML::Simple;
 
 =head1 DESCRIPTION
 
@@ -255,32 +256,21 @@ sub _install_extensions {
     mkdir $extension_dir unless -d $extension_dir;
 
     # TODO: handle extensions that need to be unpacked
-    foreach (@{$self->{extensions}}) {
+    foreach my $xpi (@{$self->{extensions}}) {
         # For Firefox to recognize the extension, we have to put the
         # .xpi in the /extensions/ folder and change the filename to
         # its id, which is found in the install.rdf in the root of the
         # zip.
-        my $ae = Archive::Extract->new(
-            archive => $_,
-            type => "zip"
-        );
 
-        $Archive::Extract::PREFER_BIN = 1;
-        my $tempDir = File::Temp->newdir();
-        $ae->extract( to => $tempDir );
-        my $install = $ae->extract_path();
-        $install .= '/install.rdf';
+        my $fh;
+        unzip $xpi => \$fh, Name => "install.rdf"
+          or die "unzip failed: $UnzipError\n";
 
-        open (my $fh, "<", $install)
-            or croak "No install.rdf inside $_: $!";
-        my (@file) = <$fh>;
-        close ($fh);
+        my $rdf = XMLin($fh);
+        my $name = $rdf->{Description}->{'em:id'};
 
-        my @name = grep { chomp; $_ =~ /<em:id>[^{]/ } @file;
-        $name[0] =~ s/.*<em:id>(.*)<\/em:id>.*/$1/;
-
-        my $xpi_dest = $extension_dir . $name[0] . ".xpi";
-        copy($_, $xpi_dest)
+        my $xpi_dest = $extension_dir . $name . ".xpi";
+        copy($xpi, $xpi_dest)
             or croak "Error copying $_ to $xpi_dest : $!";
     }
 }
