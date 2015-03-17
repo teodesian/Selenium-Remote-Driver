@@ -39,6 +39,10 @@ CHROME: {
 FIREFOX: {
     my $binary = Selenium::Firefox::Binary::firefox_path();
     ok(-x $binary, 'we can find some sort of firefox');
+
+    my $command = Selenium::Binary::_construct_command('firefox', 1234);
+    ok($command =~ /firefox -no-remote/, 'firefox command has proper args');
+
     my $firefox = Selenium::Firefox->new;
     isnt( $firefox->port, 4444, 'firefox can start up its own binary');
 

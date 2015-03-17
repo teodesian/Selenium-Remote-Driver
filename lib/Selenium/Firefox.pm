@@ -1,10 +1,8 @@
 package Selenium::Firefox;
 
 # ABSTRACT: A convenience package for creating a Firefox instance
-use Selenium::Binary qw/_find_open_port_above _probe_port/;
-use Selenium::Firefox::Binary qw/firefox_path/;
-use Selenium::Firefox::Profile;
-use Selenium::Waiter qw/wait_until/;
+use Selenium::Binary qw/start_binary_on_port/;
+use Try::Tiny;
 use Moo;
 use namespace::clean;
 extends 'Selenium::Remote::Driver';
@@ -45,31 +43,27 @@ has '+firefox_profile' => (
 has 'binary_mode' => (
     is => 'ro',
     init_arg => undef,
-    builder => sub {
-        my ($self) = @_;
+    builder => 1
+);
 
-        my $profile = Selenium::Firefox::Profile->new;
+sub _build_binary_mode {
+    my ($self) = @_;
 
-        my $port = _find_open_port_above(FIREFOX_PORT);
-        $profile->add_webdriver($port);
-
-        $ENV{'XRE_PROFILE_PATH'} = $profile->_layout_on_disk;
-        $ENV{'MOZ_NO_REMOTE'} = '1'; # able to launch multiple instances
-        $ENV{'MOZ_CRASHREPORTER_DISABLE'} = '1'; # disable breakpad
-        $ENV{'NO_EM_RESTART'} = '1'; # prevent the binary from detaching from the console.log
-
-        my $binary = firefox_path();
-        system( $binary . ' -no-remote > /dev/null 2>&1 & ');
-
-        my $success = wait_until { _probe_port($port) } timeout => 10;
-        if ($success) {
+    if (! $self->has_remote_server_addr && ! $self->has_port) {
+        try {
+            my $port = start_binary_on_port('firefox', FIREFOX_PORT);
             $self->port($port);
-            return 1
+            return 1;
         }
-        else {
+        catch {
+            warn $_;
             return 0;
         }
     }
-);
+    else {
+        return 0;
+    }
+}
+
 
 1;

@@ -4,6 +4,8 @@ package Selenium::Binary;
 use File::Which qw/which/;
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
+use Selenium::Firefox::Binary qw/firefox_path setup_firefox_binary_env/;
+use Selenium::Firefox::Profile;
 
 require Exporter;
 our @ISA = qw/Exporter/;
@@ -15,6 +17,9 @@ sub start_binary_on_port {
 
     my $executable = _find_executable($process);
     $port = _find_open_port_above($port);
+    if ($process eq 'firefox') {
+        setup_firefox_binary_env($port);
+    }
     my $command = _construct_command($executable, $port);
 
     system($command);
@@ -30,13 +35,18 @@ sub start_binary_on_port {
 sub _find_executable {
     my ($binary) = @_;
 
-    my $executable = which($binary);
-
-    if (not defined $executable) {
-        die qq(Unable to find the $binary binary in your \$PATH. We'll try falling back to standard Remote Driver);
+    if ($binary eq 'firefox') {
+        return firefox_path();
     }
     else {
-        return $executable;
+        my $executable = which($binary);
+
+        if (not defined $executable) {
+            die qq(Unable to find the $binary binary in your \$PATH. We'll try falling back to standard Remote Driver);
+        }
+        else {
+            return $executable;
+        }
     }
 }
 
@@ -54,6 +64,9 @@ sub _construct_command {
         %args = (
             webdriver => '127.0.0.1:' . $port
         );
+    }
+    elsif ($executable =~ /firefox/i) {
+        $executable .= ' -no-remote ';
     }
 
     my @args = map { '--' . $_ . '=' . $args{$_} } keys %args;
