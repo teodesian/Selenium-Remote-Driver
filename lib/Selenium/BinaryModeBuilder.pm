@@ -12,6 +12,7 @@ use Moo::Role;
 has 'binary_mode' => (
     is => 'ro',
     init_arg => undef,
+    lazy => 1,
     builder => 1
 );
 
