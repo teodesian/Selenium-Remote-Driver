@@ -27,6 +27,8 @@ PHANTOMJS: {
 }
 
 CHROME: {
+    # TODO: fix this test, as it's a hack that depends entirely on the
+    # node module protractor's included `webdriver-manager` binary.
     $ENV{PATH} .= ':/usr/local/lib/node_modules/protractor/selenium';
     my $chrome = Selenium::Chrome->new( %caps );
     ok( $chrome->browser_name eq 'chrome', 'convenience chrome is okay' );
