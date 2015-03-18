@@ -90,7 +90,7 @@ sub _construct_command {
     if ($executable =~ /chromedriver$/) {
         %args = (
             port => $port,
-            'base-url' => 'wd/hub'
+            'url-base' => 'wd/hub'
         );
     }
     elsif ($executable =~ /phantomjs$/) {
