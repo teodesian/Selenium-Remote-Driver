@@ -16,23 +16,37 @@ has 'binary_mode' => (
     builder => 1
 );
 
+has 'try_binary' => (
+    is => 'lazy',
+    default => sub { 0 },
+    trigger => sub {
+        my ($self) = @_;
+        $self->binary_mode if $self->try_binary;
+    }
+);
+
+sub BUILDARGS {
+    my ( $class, %args ) = @_;
+
+    if ( ! exists $args{remote_server_addr} && ! exists $args{port} ) {
+        $args{try_binary} = 1;
+    }
+
+    return { %args };
+}
+
 sub _build_binary_mode {
     my ($self) = @_;
 
-    if (! $self->has_remote_server_addr && ! $self->has_port) {
-        try {
-            my $port = start_binary_on_port($self->binary_name, $self->binary_port);
-            $self->port($port);
-            return 1;
-        }
-        catch {
-            warn $_;
-            return 0;
-        }
+    return try {
+        my $port = start_binary_on_port($self->binary_name, $self->binary_port);
+        $self->port($port);
+        return 1;
     }
-    else {
+    catch {
+        warn $_;
         return 0;
-    }
+    };
 }
 
 sub probe_port {
