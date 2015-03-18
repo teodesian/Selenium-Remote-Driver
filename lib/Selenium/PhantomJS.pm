@@ -55,12 +55,7 @@ has 'binary_port' => (
 sub DEMOLISH {
     my ($self) = @_;
 
-    if ($self->binary_mode) {
-        my $port = $self->port;
-        my $ua = $self->ua;
-
-        $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
-    }
+    $self->shutdown_binary;
 }
 
 1;

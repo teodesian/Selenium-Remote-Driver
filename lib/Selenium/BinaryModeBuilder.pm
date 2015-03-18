@@ -10,10 +10,10 @@ use Try::Tiny;
 use Moo::Role;
 
 has 'binary_mode' => (
-    is => 'ro',
+    is => 'lazy',
     init_arg => undef,
-    lazy => 1,
-    builder => 1
+    builder => 1,
+    predicate => 1
 );
 
 has 'try_binary' => (
@@ -76,6 +76,17 @@ sub start_binary_on_port {
     }
     else {
         die 'Unable to connect to the ' . $executable . ' binary on port ' . $port;
+    }
+}
+
+sub shutdown_binary {
+    my ($self) = @_;
+
+    if ($self->has_binary_mode && $self->binary_mode) {
+        my $port = $self->port;
+        my $ua = $self->ua;
+
+        $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
     }
 }
 
