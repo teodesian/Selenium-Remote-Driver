@@ -8,18 +8,12 @@ use Selenium::PhantomJS;
 use Selenium::Firefox;
 use Test::More;
 
-use FindBin;
-use lib $FindBin::Bin . '/lib';
-use TestHarness;
-
-my $harness = TestHarness->new(
-    this_file => $FindBin::Script
-);
-my %caps = %{ $harness->base_caps };
-delete $caps{browser_name};
+unless( $ENV{RELEASE_TESTING} ) {
+    plan skip_all => "Author tests not required for installation.";
+}
 
 PHANTOMJS: {
-    my $phantom = Selenium::PhantomJS->new( %caps );
+    my $phantom = Selenium::PhantomJS->new;
     is( $phantom->browser_name, 'phantomjs', 'binary phantomjs is okay');
     isnt( $phantom->port, 4444, 'phantomjs can start up its own binary');
 
@@ -30,7 +24,8 @@ CHROME: {
     # TODO: fix this test, as it's a hack that depends entirely on the
     # node module protractor's included `webdriver-manager` binary.
     $ENV{PATH} .= ':/usr/local/lib/node_modules/protractor/selenium';
-    my $chrome = Selenium::Chrome->new( %caps );
+
+    my $chrome = Selenium::Chrome->new;
     ok( $chrome->browser_name eq 'chrome', 'convenience chrome is okay' );
     isnt( $chrome->port, 4444, 'chrome can start up its own binary');
 
