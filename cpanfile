@@ -36,7 +36,6 @@ requires "strict" => "0";
 requires "warnings" => "0";
 
 on 'test' => sub {
-  requires "Archive::Extract" => "0";
   requires "File::stat" => "0";
   requires "FindBin" => "0";
   requires "LWP::Simple" => "0";

@@ -7,7 +7,7 @@ use Selenium::Remote::Driver;
 use Test::More;
 
 use MIME::Base64 qw/decode_base64/;
-use Archive::Extract;
+use IO::Uncompress::Unzip qw(unzip $UnzipError);
 use File::Temp;
 use JSON;
 use Selenium::Remote::Mock::RemoteConnection;
@@ -142,19 +142,10 @@ PREFERENCES: {
         my $fh = File::Temp->new();
         print $fh decode_base64($encoded);
         close $fh;
-        my $zip = Archive::Extract->new(
-            archive => $fh->filename,
-            type => "zip"
-        );
-        my $tempdir = File::Temp->newdir();
-        my $ok = $zip->extract( to => $tempdir );
-        my $outdir = $zip->extract_path;
 
-        my $filename = $tempdir . "/user.js";
-        open ($fh, "<", $filename);
-        my (@file) = <$fh>;
-        close ($fh);
-        my $userjs = join('', @file);
+        my $userjs;
+        unzip $fh->filename => \$userjs, Name => "user.js"
+          or die "unzip failed: $UnzipError\n";
 
         foreach (keys %$expected) {
             my $value = $expected->{$_};
