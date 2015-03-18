@@ -2,7 +2,7 @@ package Selenium::PhantomJS;
 
 # ABSTRACT: A convenience package for creating a PhantomJS instance
 use Moo;
-with 'Selenium::BinaryModeBuilder';
+with 'Selenium::CanStartBinary';
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS

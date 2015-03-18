@@ -1,4 +1,4 @@
-package Selenium::BinaryModeBuilder;
+package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
 use File::Which qw/which/;
