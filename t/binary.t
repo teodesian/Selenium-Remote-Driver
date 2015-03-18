@@ -13,6 +13,12 @@ unless( $ENV{RELEASE_TESTING} ) {
 }
 
 PHANTOMJS: {
+    my $version = `phantomjs -v` // '';
+    chomp $version;
+
+    skip 'PhantomJS binary not found in path', 3
+      unless is_proper_phantomjs_available($version);
+
     my $phantom = Selenium::PhantomJS->new;
     is( $phantom->browser_name, 'phantomjs', 'binary phantomjs is okay');
     isnt( $phantom->port, 4444, 'phantomjs can start up its own binary');
@@ -42,6 +48,13 @@ FIREFOX: {
     my $firefox = Selenium::Firefox->new;
     isnt( $firefox->port, 4444, 'firefox can start up its own binary');
     ok( Selenium::BinaryModeBuilder::probe_port( $firefox->port ), 'the firefox binary is listening on its port');
+}
+
+sub is_proper_phantomjs_available {
+    my ($ver) = @_;
+
+    $ver =~ s/\.\d$//;
+    return $ver >= 1.9;
 }
 
 done_testing;
