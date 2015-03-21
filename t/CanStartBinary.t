@@ -19,11 +19,8 @@ PHANTOMJS: {
         skip 'Phantomjs binary not found in path', 3
           unless $has_phantomjs;
 
-        my $version = `phantomjs -v` // '';
-        chomp $version;
-
         skip 'PhantomJS binary not found in path', 3
-          unless is_proper_phantomjs_available($version);
+          unless is_proper_phantomjs_available();
 
         my $phantom = Selenium::PhantomJS->new;
         is( $phantom->browser_name, 'phantomjs', 'binary phantomjs is okay');
@@ -65,7 +62,8 @@ FIREFOX: {
 }
 
 sub is_proper_phantomjs_available {
-    my ($ver) = @_;
+    my $ver = `phantomjs -v` // '';
+    chomp $ver;
 
     $ver =~ s/^(\d\.\d).*/$1/;
     return $ver >= 1.9;
