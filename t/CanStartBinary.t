@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 use File::Which qw/which/;
-use Selenium::Firefox::Binary;
 use Selenium::Chrome;
-use Selenium::PhantomJS;
 use Selenium::Firefox;
+use Selenium::Firefox::Binary;
+use Selenium::PhantomJS;
 use Test::More;
 
 unless ( $ENV{RELEASE_TESTING} ) {
@@ -49,6 +49,8 @@ FIREFOX: {
     ok($command =~ /firefox -no-remote/, 'firefox command has proper args');
 
   SKIP: {
+        skip 'Firefox will not start up without a display', 3
+          unless $ENV{DISPLAY};
         my $binary = Selenium::Firefox::Binary::firefox_path();
         skip 'Firefox binary not found in path', 3
           unless $binary;
