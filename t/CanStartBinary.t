@@ -7,6 +7,7 @@ use Selenium::Chrome;
 use Selenium::Firefox;
 use Selenium::Firefox::Binary;
 use Selenium::PhantomJS;
+use Test::Fatal;
 use Test::More;
 
 unless ( $ENV{RELEASE_TESTING} ) {
@@ -27,6 +28,33 @@ PHANTOMJS: {
         isnt( $phantom->port, 4444, 'phantomjs can start up its own binary');
 
         ok( Selenium::CanStartBinary::probe_port( $phantom->port ), 'the phantomjs binary is listening on its port');
+    }
+}
+
+MANUAL: {
+    package ManualChrome {
+        use Moo;
+        with 'Selenium::CanStartBinary';
+        has 'binary_name' => ( is => 'ro', default => 'fake' );
+        has 'binary_port' => ( is => 'ro', default => 12345 );
+        1
+    };
+
+    ok( exception { ManualChrome->new( binary_path => '/not/executable') },
+        'we throw if the user specified binary is not executable');
+
+  SKIP: {
+        my $phantom_binary = which('phantomjs');
+        skip 'PhantomJS needed for manual binary path tests', 3
+          unless $phantom_binary;
+
+        my $manual_phantom = Selenium::PhantomJS->new(
+            binary_path => $phantom_binary
+        );
+        ok( $manual_phantom->browser_name eq 'phantomjs', 'convenience phantom is okay' );
+        isnt( $manual_phantom->port, 4444, 'phantom can start up its own binary');
+
+        ok( Selenium::CanStartBinary::probe_port( $manual_phantom->port ), 'the chrome binary is listening on its port');
     }
 }
 

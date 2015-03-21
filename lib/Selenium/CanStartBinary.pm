@@ -6,7 +6,6 @@ use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
 use Selenium::Firefox::Binary qw/firefox_path setup_firefox_binary_env/;
 use Selenium::Firefox::Profile;
-use Try::Tiny;
 use Moo::Role;
 
 has 'binary_mode' => (
@@ -43,15 +42,12 @@ sub BUILDARGS {
 sub _build_binary_mode {
     my ($self) = @_;
 
-    return try {
-        my $port = start_binary_on_port($self->binary_name, $self->binary_port);
-        $self->port($port);
-        return 1;
-    }
-    catch {
-        warn $_;
-        return 0;
-    };
+    my $port = $self->start_binary_on_port(
+        $self->binary_name,
+        $self->binary_port
+    );
+    $self->port($port);
+    return 1;
 }
 
 sub probe_port {
@@ -65,9 +61,9 @@ sub probe_port {
 }
 
 sub start_binary_on_port {
-    my ($process, $port) = @_;
+    my ($self, $process, $port) = @_;
 
-    my $executable = _find_executable($process);
+    my $executable = $self->_find_executable($process);
     $port = _find_open_port_above($port);
     if ($process eq 'firefox') {
         setup_firefox_binary_env($port);
@@ -96,7 +92,16 @@ sub shutdown_binary {
 }
 
 sub _find_executable {
-    my ($binary) = @_;
+    my ($self, $binary) = @_;
+
+    if ($self->has_binary_path) {
+        if (-x $self->binary_path) {
+            return $self->binary_path;
+        }
+        else {
+            die 'The binary at "' . $self->binary_path . '" is not executable. Fix the path or chmod +x it as needed.';
+        }
+    }
 
     if ($binary eq 'firefox') {
         return firefox_path();
@@ -105,7 +110,7 @@ sub _find_executable {
         my $executable = which($binary);
 
         if (not defined $executable) {
-            die qq(Unable to find the $binary binary in your \$PATH. We'll try falling back to standard Remote Driver);
+            warn qq(Unable to find the $binary binary in your \$PATH. We'll try falling back to standard Remote Driver);
         }
         else {
             return $executable;
