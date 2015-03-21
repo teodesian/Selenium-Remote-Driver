@@ -49,8 +49,8 @@ FIREFOX: {
     ok($command =~ /firefox -no-remote/, 'firefox command has proper args');
 
   SKIP: {
-        skip 'Firefox will not start up without a display', 3
-          unless $ENV{DISPLAY};
+        skip 'Firefox will not start up on UNIX without a display', 3
+          if ($^O ne 'MSWin32' && ! $ENV{DISPLAY});
         my $binary = Selenium::Firefox::Binary::firefox_path();
         skip 'Firefox binary not found in path', 3
           unless $binary;
