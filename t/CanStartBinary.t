@@ -15,7 +15,7 @@ unless ( $ENV{RELEASE_TESTING} ) {
 
 PHANTOMJS: {
   SKIP: {
-        my $has_phantomjs = Selenium::CanStartBinary::_find_executable('phantomjs');
+        my $has_phantomjs = which('phantomjs');
         skip 'Phantomjs binary not found in path', 3
           unless $has_phantomjs;
 
@@ -35,7 +35,7 @@ PHANTOMJS: {
 
 CHROME: {
   SKIP: {
-        my $has_chromedriver = Selenium::CanStartBinary::_find_executable('chromedriver');
+        my $has_chromedriver = which('chromedriver');
         skip 'Chrome binary not found in path', 3
           unless $has_chromedriver;
 
@@ -67,7 +67,7 @@ FIREFOX: {
 sub is_proper_phantomjs_available {
     my ($ver) = @_;
 
-    $ver =~ s/\.\d$//;
+    $ver =~ s/^(\d\.\d).*/$1/;
     return $ver >= 1.9;
 }
 
