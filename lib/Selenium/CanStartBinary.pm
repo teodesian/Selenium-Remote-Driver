@@ -30,6 +30,11 @@ sub BUILDARGS {
 
     if ( ! exists $args{remote_server_addr} && ! exists $args{port} ) {
         $args{try_binary} = 1;
+
+        # Windows may throw a fit about invalid pointers if we try to
+        # connect to localhost instead of 127.1
+        $args{remote_server_addr} = '127.0.0.1';
+
     }
 
     return { %args };
@@ -112,13 +117,13 @@ sub _construct_command {
     my ($executable, $port) = @_;
 
     my %args;
-    if ($executable =~ /chromedriver$/) {
+    if ($executable =~ /chromedriver(\.exe)?$/i) {
         %args = (
             port => $port,
             'url-base' => 'wd/hub'
         );
     }
-    elsif ($executable =~ /phantomjs$/) {
+    elsif ($executable =~ /phantomjs(\.exe)?$/i) {
         %args = (
             webdriver => '127.0.0.1:' . $port
         );
