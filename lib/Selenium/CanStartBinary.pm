@@ -8,6 +8,62 @@ use Selenium::Firefox::Binary qw/firefox_path setup_firefox_binary_env/;
 use Selenium::Firefox::Profile;
 use Moo::Role;
 
+=head1 NAME
+
+CanStartBinary - Role that a Selenium::Remote::Driver can consume to start a binary
+
+=head1 SYNOPSIS
+
+    package ChromeDriver {
+        use Moo;
+        with 'Selenium::CanStartBinary';
+        extends 'Selenium::Remote::Driver';
+        has 'binary_name' => ( is => 'ro', default => 'chromedriver' );
+        has 'binary_port' => ( is => 'ro', default => 9515 );
+        1
+    };
+
+    my $chrome_via_binary = ChromeDriver->new;
+
+=head1 DESCRIPTION
+
+This role takes care of the details for starting up a Webdriver
+instance. It does not do any downloading or installation of any sort -
+you're still responsible for obtaining and installing the necessary
+binaries into your C<$PATH> for this role to find.
+
+The role determines whether or not it should try to do its own magic
+based on whether or not the consuming class is instantiated with a
+C<remote_server_addr> and/or C<port>. If they're missing, we assume
+the user wants to use the Webdrivers directly and act
+accordingly. We'll go find the proper associated binary (or you can
+specify it with L</binary_path>), figure out what arguments it wants,
+set up any necessary environments, and start up the binary.
+
+There's a number of TODOs left over - namely Windows support is
+severely lacking, and we're pretty naive when we attempt to locate the
+executables on our own. You may be well served in specifying the paths
+to the webdriver in question yourself, if we can't figure it out.
+
+=attr binary_path
+
+Optional: specify the path to the executable in question. If you don't
+specify anything, we use L<File::Which/which> and take our best guess
+as to where the proper executable might be. If the expected executable
+is in your C<$PATH>, you shouldn't have to use this attribute.
+
+As always, make sure _not_ to specify the C<remote_server_addr> and
+C<port> when instantiating your class, or we'll have no choice but to
+assume you're running a Remote Webdriver instance.
+
+=cut
+
+has 'binary_path' => (
+    is => 'lazy',
+    default => sub { '' },
+    predicate => 1
+);
+
 has 'binary_mode' => (
     is => 'lazy',
     init_arg => undef,
@@ -25,6 +81,20 @@ has 'try_binary' => (
 );
 
 sub BUILDARGS {
+    # There's a bit of finagling to do to since we can't ensure the
+    # attribute instantiation order. To decide whether we're going into
+    # binary mode, we need the remote_server_addr and port. But, they're
+    # both lazy and only instantiated immediately before S:R:D's
+    # remote_conn attribute. Once remote_conn is set, we can't change it,
+    # so we need the following order:
+    #
+    #     parent: remote_server_addr, port
+    #     role:   binary_mode (aka _build_binary_mode)
+    #     parent: remote_conn
+    #
+    # Since we can't force an order, we introduced try_binary which gets
+    # decided during BUILDARGS to tip us off as to whether we should try
+    # binary mode or not.
     my ( $class, %args ) = @_;
 
     if ( ! exists $args{remote_server_addr} && ! exists $args{port} ) {
