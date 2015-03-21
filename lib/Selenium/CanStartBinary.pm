@@ -134,7 +134,29 @@ sub _construct_command {
 
     my @args = map { '--' . $_ . '=' . $args{$_} } keys %args;
 
-    return join(' ', ($executable, @args, '> /dev/null 2>&1 &') );
+    # Handle Windows vs Unix discrepancies for invoking shell commands
+    my ($prefix, $suffix) = (_command_prefix(), _command_suffix());
+    return join(' ', ($prefix, $executable, @args, $suffix) );
+}
+
+sub _command_prefix {
+    if ($^O eq 'MSWin32') {
+        return 'start /MAX '
+    }
+    else {
+        return '';
+    }
+}
+
+sub _command_suffix {
+    if ($^O eq 'MSWin32') {
+        return ' > /nul 2>&1 ';
+    }
+    else {
+        # TODO: allow users to specify whether & where they want
+        # driver output to go
+        return ' > /dev/null 2>&1 &';
+    }
 }
 
 sub _find_open_port_above {
