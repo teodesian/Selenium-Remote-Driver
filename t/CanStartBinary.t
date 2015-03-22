@@ -90,7 +90,7 @@ FIREFOX: {
 }
 
 sub is_proper_phantomjs_available {
-    my $ver = `phantomjs -v` // '';
+    my $ver = `phantomjs --version` // '';
     chomp $ver;
 
     $ver =~ s/^(\d\.\d).*/$1/;
