@@ -32,15 +32,14 @@ PHANTOMJS: {
 }
 
 MANUAL: {
-    package ManualChrome {
+    package BadBinary {
         use Moo;
         with 'Selenium::CanStartBinary';
-        has 'binary' => ( is => 'ro' , default => '' );
-        has 'binary_port' => ( is => 'ro', default => 12345 );
+        has 'binary' => ( is => 'ro' );
         1
     };
 
-    ok( exception { ManualChrome->new( binary => '/not/executable') },
+    ok( exception { BadBinary->new( binary => '/not/executable') },
         'we throw if the user specified binary is not executable');
 
   SKIP: {
