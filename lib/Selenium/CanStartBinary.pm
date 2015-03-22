@@ -180,7 +180,7 @@ sub _build_binary_mode {
 
     my $port = $self->port;
     return unless $port != 4444;
-    if (ref($self) eq 'Selenium::Firefox') {
+    if ($self->isa('Selenium::Firefox')) {
         setup_firefox_binary_env($port);
     }
     my $command = $self->_construct_command($executable, $port);
@@ -223,7 +223,7 @@ sub shutdown_windows_binary {
     # Firefox doesn't have a Driver/Session architecture - the only
     # thing running is Firefox itself, so there's no other task to
     # kill.
-    return if $self->isa('Selenium::Firefox')
+    return if $self->isa('Selenium::Firefox');
 
     my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '"';
     system($kill);
