@@ -35,12 +35,33 @@ has '+browser_name' => (
     default => sub { 'firefox' }
 );
 
+=attr binary
+
+Optional: specify the path to your binary. If you don't specify
+anything, we'll try to find it on our own via L<File::Which/which>.
+
+=cut
+
 has 'binary' => (
     is => 'lazy',
     coerce => \&coerce_firefox_binary,
     default => sub { 'firefox' },
     predicate => 1
 );
+
+=attr binary_port
+
+Optional: specify the port that we should bind to. If you don't
+specify anything, we'll default to the driver's default port. Since
+there's no a priori guarantee that this will be an open port, this is
+_not_ necessarily the port that we end up using - if the port here is
+already bound, we'll search above it until we find an open one.
+
+See L<Selenium::CanStartBinary/port> for more details, and
+L<Selenium::Remote::Driver/port> after instantiation to see what the
+actual port turned out to be.
+
+=cut
 
 has 'binary_port' => (
     is => 'lazy',
