@@ -2,8 +2,8 @@ package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
 use Selenium::CanStartBinary::ProbePort qw/find_open_port_above probe_port/;
+use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
-use Selenium::Firefox::Binary qw/firefox_path setup_firefox_binary_env/;
 use Selenium::Firefox::Profile;
 use Moo::Role;
 
