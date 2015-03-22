@@ -60,11 +60,14 @@ sub firefox_path {
     return $path;
 }
 
+# We want the profile to persist to the end of the session, not just
+# the end of this function.
+my $profile;
 sub setup_firefox_binary_env {
     my ($port) = @_;
 
     # TODO: respect the user's profile instead of overwriting it
-    my $profile = Selenium::Firefox::Profile->new;
+    $profile = Selenium::Firefox::Profile->new;
     $profile->add_webdriver($port);
 
     $ENV{'XRE_PROFILE_PATH'} = $profile->_layout_on_disk;
