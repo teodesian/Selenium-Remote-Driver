@@ -1,6 +1,6 @@
 package Selenium::PhantomJS;
 
-# ABSTRACT: A convenience package for creating a PhantomJS instance
+# ABSTRACT: Use GhostDriver without a Selenium server
 use Moo;
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
 extends 'Selenium::Remote::Driver';
@@ -11,12 +11,11 @@ extends 'Selenium::Remote::Driver';
 
 =head1 DESCRIPTION
 
-This class allows you to use PhantomJS through Ghostdriver without
-needing the JRE or a selenium server running. When you refrain from
-passing the C<remote_server_addr> and C<port> arguments, we will
-search for the phantomjs executable binary in your $PATH. We'll try
-to start the binary connect to it, shutting it down at the end of the
-test.
+This class allows you to use PhantomJS via Ghostdriver without needing
+the JRE or a selenium server running. When you refrain from passing
+the C<remote_server_addr> and C<port> arguments, we will search for
+the phantomjs executable binary in your $PATH. We'll try to start the
+binary connect to it, shutting it down at the end of the test.
 
 If the binary is not found, we'll fall back to the default
 L<Selenium::Remote::Driver> behavior of assuming defaults of
@@ -68,12 +67,6 @@ has 'binary_port' => (
     is => 'lazy',
     default => sub { 8910 }
 );
-
-sub DEMOLISH {
-    my ($self) = @_;
-
-    $self->shutdown_binary;
-}
 
 with 'Selenium::CanStartBinary';
 

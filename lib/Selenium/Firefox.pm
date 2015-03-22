@@ -1,6 +1,6 @@
 package Selenium::Firefox;
 
-# ABSTRACT: A convenience package for creating a Firefox instance
+# ABSTRACT: Use FirefoxDriver without a Selenium server
 use Moo;
 use Selenium::CanStartBinary::FindBinary qw/coerce_firefox_binary/;
 extends 'Selenium::Remote::Driver';
@@ -38,7 +38,9 @@ has '+browser_name' => (
 =attr binary
 
 Optional: specify the path to your binary. If you don't specify
-anything, we'll try to find it on our own via L<File::Which/which>.
+anything, we'll try to find it on our own in the default installation
+paths for Firefox. If your Firefox is elsewhere, we probably won't be
+able to find it, so you may be well served by specifying it yourself.
 
 =cut
 

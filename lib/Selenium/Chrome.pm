@@ -1,6 +1,6 @@
 package Selenium::Chrome;
 
-# ABSTRACT: A convenience package for creating a Chrome instance
+# ABSTRACT: Use ChromeDriver without a Selenium server
 use Moo;
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
 extends 'Selenium::Remote::Driver';
@@ -69,11 +69,5 @@ has 'binary_port' => (
 );
 
 with 'Selenium::CanStartBinary';
-
-sub DEMOLISH {
-    my ($self) = @_;
-
-    $self->shutdown_binary;
-}
 
 1;
