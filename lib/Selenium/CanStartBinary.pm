@@ -7,37 +7,48 @@ use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
 use Moo::Role;
 
-=head1 NAME
-
-CanStartBinary - Role that a Selenium::Remote::Driver can consume to start a binary
-
 =head1 SYNOPSIS
 
-    package ChromeDriver {
+    package My::Selenium::Chrome {
         use Moo;
-        with 'Selenium::CanStartBinary';
         extends 'Selenium::Remote::Driver';
+
         has 'binary' => ( is => 'ro', default => 'chromedriver' );
         has 'binary_port' => ( is => 'ro', default => 9515 );
+        with 'Selenium::CanStartBinary';
         1
     };
 
-    my $chrome_via_binary = ChromeDriver->new;
+    my $chrome_via_binary = My::Selenium::Chrome->new;
+    my $chrome_with_path  = My::Selenium::Chrome->new(
+        binary => './chromedriver'
+    );
 
 =head1 DESCRIPTION
 
 This role takes care of the details for starting up a Webdriver
 instance. It does not do any downloading or installation of any sort -
 you're still responsible for obtaining and installing the necessary
-binaries into your C<$PATH> for this role to find.
+binaries into your C<$PATH> for this role to find. You may be
+interested in L<Selenium::Chrome>, L<Selenium::Firefox>, or
+L<Selenium::PhantomJS> if you're looking for classes that already
+consume this role.
 
 The role determines whether or not it should try to do its own magic
-based on whether or not the consuming class is instantiated with a
-C<remote_server_addr> and/or C<port>. If they're missing, we assume
-the user wants to use the Webdrivers directly and act
-accordingly. We'll go find the proper associated binary (or you can
-specify it with L</binary_path>), figure out what arguments it wants,
-set up any necessary environments, and start up the binary.
+based on whether the consuming class is instantiated with a
+C<remote_server_addr> and/or C<port>.
+
+    # We'll start up the Chrome binary for you
+    my $chrome_via_binary = Selenium::Chrome->new;
+
+    # Look for a selenium server running on 4444.
+    my $chrome_via_server = Selenium::Chrome->new( port => 4444 );
+
+If they're missing, we assume the user wants to use a webdriver
+directly and act accordingly. We handle finding the proper associated
+binary (or you can specify it with L</binary>), figuring out what
+arguments it wants, setting up any necessary environments, and
+starting up the binary.
 
 There's a number of TODOs left over - namely Windows support is
 severely lacking, and we're pretty naive when we attempt to locate the
