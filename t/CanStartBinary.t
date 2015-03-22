@@ -70,7 +70,7 @@ CHROME: {
 }
 
 FIREFOX: {
-    my $command = Selenium::CanStartBinary::_construct_command('firefox', 1234);
+    my $command = Selenium::CanStartBinary->_construct_command('firefox', 1234);
     ok($command =~ /firefox -no-remote/, 'firefox command has proper args');
 
   SKIP: {

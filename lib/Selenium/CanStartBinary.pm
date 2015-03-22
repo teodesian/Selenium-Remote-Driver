@@ -131,7 +131,7 @@ sub start_binary_on_port {
     if (ref($self) eq 'Selenium::Firefox') {
         setup_firefox_binary_env($port);
     }
-    my $command = _construct_command($executable, $port);
+    my $command = $self->_construct_command($executable, $port);
 
     system($command);
     my $success = wait_until { probe_port($port) } timeout => 10;
@@ -185,7 +185,7 @@ sub _find_executable {
 }
 
 sub _construct_command {
-    my ($executable, $port) = @_;
+    my ($self, $executable, $port) = @_;
 
     my %args;
     if ($executable =~ /chromedriver(\.exe)?$/i) {
@@ -206,13 +206,16 @@ sub _construct_command {
     my @args = map { '--' . $_ . '=' . $args{$_} } keys %args;
 
     # Handle Windows vs Unix discrepancies for invoking shell commands
-    my ($prefix, $suffix) = (_command_prefix(), _command_suffix());
+    my ($prefix, $suffix) = ($self->_command_prefix(), $self->_command_suffix());
     return join(' ', ($prefix, $executable, @args, $suffix) );
 }
 
 sub _command_prefix {
+    my ($self) = @_;
+
     if ($^O eq 'MSWin32') {
-        return 'start /MAX '
+        my $title = ref($self) . ':' . $self->binary_port;
+        return 'start "' . $title . '" /MAX '
     }
     else {
         return '';
@@ -220,12 +223,13 @@ sub _command_prefix {
 }
 
 sub _command_suffix {
+    # TODO: allow users to specify whether & where they want driver
+    # output to go
+
     if ($^O eq 'MSWin32') {
         return ' > /nul 2>&1 ';
     }
     else {
-        # TODO: allow users to specify whether & where they want
-        # driver output to go
         return ' > /dev/null 2>&1 &';
     }
 }
