@@ -1,6 +1,7 @@
 package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
+use Cwd qw/abs_path/;
 use File::Which qw/which/;
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
@@ -18,7 +19,7 @@ CanStartBinary - Role that a Selenium::Remote::Driver can consume to start a bin
         use Moo;
         with 'Selenium::CanStartBinary';
         extends 'Selenium::Remote::Driver';
-        has 'binary_name' => ( is => 'ro', default => 'chromedriver' );
+        has 'binary' => ( is => 'ro', default => 'chromedriver' );
         has 'binary_port' => ( is => 'ro', default => 9515 );
         1
     };
@@ -45,7 +46,7 @@ severely lacking, and we're pretty naive when we attempt to locate the
 executables on our own. You may be well served in specifying the paths
 to the webdriver in question yourself, if we can't figure it out.
 
-=attr binary_path
+=attr binary
 
 Optional: specify the path to the executable in question. If you don't
 specify anything, we use L<File::Which/which> and take our best guess
@@ -57,12 +58,6 @@ C<port> when instantiating your class, or we'll have no choice but to
 assume you're running a Remote Webdriver instance.
 
 =cut
-
-has 'binary_path' => (
-    is => 'lazy',
-    default => sub { '' },
-    predicate => 1
-);
 
 has 'binary_mode' => (
     is => 'lazy',

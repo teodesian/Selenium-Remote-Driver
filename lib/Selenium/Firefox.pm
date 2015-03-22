@@ -41,9 +41,9 @@ has '+port' => (
     default => sub { 4444 }
 );
 
-has 'binary_name' => (
+has 'binary' => (
     is => 'lazy',
-    default => sub { 'firefox' }
+    default => sub { 'firefox' },
 );
 
 has 'binary_port' => (

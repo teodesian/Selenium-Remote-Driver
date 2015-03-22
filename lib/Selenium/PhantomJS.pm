@@ -42,9 +42,9 @@ has '+port' => (
     is => 'lazy'
 );
 
-has 'binary_name' => (
+has 'binary' => (
     is => 'lazy',
-    default => sub { 'phantomjs' }
+    default => sub { 'phantomjs' },
 );
 
 has 'binary_port' => (

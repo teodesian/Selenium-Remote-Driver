@@ -41,9 +41,9 @@ has '+port' => (
     is => 'lazy'
 );
 
-has 'binary_name' => (
+has 'binary' => (
     is => 'lazy',
-    default => sub { 'chromedriver' }
+    default => sub { 'chromedriver' },
 );
 
 has 'binary_port' => (
