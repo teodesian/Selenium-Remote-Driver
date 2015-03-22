@@ -70,9 +70,6 @@ CHROME: {
 }
 
 FIREFOX: {
-    my $command = Selenium::CanStartBinary->_construct_command('firefox', 1234);
-    ok($command =~ /firefox -no-remote/, 'firefox command has proper args');
-
   SKIP: {
         skip 'Firefox will not start up on UNIX without a display', 3
           if ($^O ne 'MSWin32' && ! $ENV{DISPLAY});

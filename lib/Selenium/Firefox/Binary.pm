@@ -10,6 +10,18 @@ our @EXPORT_OK = qw/firefox_path setup_firefox_binary_env/;
 
 sub _firefox_windows_path {
     # TODO: make this slightly less dumb
+    my @program_files = (
+        $ENV{PROGRAMFILES} // 'C:\Program Files',
+        $ENV{'PROGRAMFILES(X86)'} // 'C:\Program Files (x86)',
+    );
+
+    foreach (@program_files) {
+        my $binary_path = $_ . '\Mozilla Firefox\firefox.exe';
+        return $binary_path if -x $binary_path;
+    }
+
+    # Fall back to a completely naive strategy
+    warn q/We couldn't find a viable firefox.EXE; you may want to specify it via the binary attribute./;
     return which('firefox');
 }
 

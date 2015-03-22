@@ -187,19 +187,22 @@ sub _find_executable {
 sub _construct_command {
     my ($self, $executable, $port) = @_;
 
+    # Handle spaces in executable path names
+    $executable = '"' . $executable . '"';
+
     my %args;
-    if ($executable =~ /chromedriver(\.exe)?$/i) {
+    if ($executable =~ /chromedriver(\.exe)?"$/i) {
         %args = (
             port => $port,
             'url-base' => 'wd/hub'
         );
     }
-    elsif ($executable =~ /phantomjs(\.exe)?$/i) {
+    elsif ($executable =~ /phantomjs(\.exe)?"$/i) {
         %args = (
             webdriver => '127.0.0.1:' . $port
         );
     }
-    elsif ($executable =~ /firefox/i) {
+    elsif ($executable =~ /firefox(-bin|\.exe)"$/i) {
         $executable .= ' -no-remote ';
     }
 
