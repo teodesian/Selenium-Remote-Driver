@@ -92,6 +92,20 @@ has 'port' => (
     }
 );
 
+=attr binary_mode
+
+Mostly intended for internal use, its builder coordinates all the side
+effects of interacting with the binary: locating the executable,
+finding an open port, setting up the environment, shelling out to
+start the binary, and ensuring that the webdriver is listening on the
+correct port.
+
+If all of the above steps pass, it will return truthy after
+instantiation. If any of them fail, it should return falsy and the
+class should attempt normal L<Selenium::Remote::Driver> behavior.
+
+=cut
+
 has 'binary_mode' => (
     is => 'lazy',
     init_arg => undef,
