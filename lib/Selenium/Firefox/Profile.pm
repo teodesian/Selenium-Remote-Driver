@@ -27,9 +27,9 @@ new Selenium::Remote::Driver.
 =head1 SYNPOSIS
 
     use Selenium::Remote::Driver;
-    use Selenium::Remote::Driver::Firefox::Profile;
+    use Selenium::Firefox::Profile;
 
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
+    my $profile = Selenium::Firefox::Profile->new;
     $profile->set_preference(
         'browser.startup.homepage' => 'http://www.google.com',
         'browser.cache.disk.capacity' => 358400
