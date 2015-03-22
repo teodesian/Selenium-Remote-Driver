@@ -43,21 +43,30 @@ set up any necessary environments, and start up the binary.
 
 There's a number of TODOs left over - namely Windows support is
 severely lacking, and we're pretty naive when we attempt to locate the
-executables on our own. You may be well served in specifying the paths
-to the webdriver in question yourself, if we can't figure it out.
+executables on our own.
+
+In the following documentation, C<required> refers to when you're
+consuming the role, not the C<required> when you're instantiating a
+class that has already consumed the role.
 
 =attr binary
 
-Optional: specify the path to the executable in question. If you don't
-specify anything, we use L<File::Which/which> and take our best guess
-as to where the proper executable might be. If the expected executable
-is in your C<$PATH>, you shouldn't have to use this attribute.
-
-As always, make sure _not_ to specify the C<remote_server_addr> and
-C<port> when instantiating your class, or we'll have no choice but to
-assume you're running a Remote Webdriver instance.
+Required: Specify the path to the executable in question, or the name
+of the executable for us to find via L<File::Which/which>.
 
 =cut
+
+requires 'binary';
+
+=attr binary_port
+
+Required: Specify a default port that for the webdriver binary to try
+to bind to. If that port is unavailable, we'll probe above that port
+until we find a valid one.
+
+=cut
+
+requires 'binary_port';
 
 has 'binary_mode' => (
     is => 'lazy',

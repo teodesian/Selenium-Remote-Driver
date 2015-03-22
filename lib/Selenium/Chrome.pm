@@ -2,7 +2,6 @@ package Selenium::Chrome;
 
 # ABSTRACT: A convenience package for creating a Chrome instance
 use Moo;
-with 'Selenium::CanStartBinary';
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -51,6 +50,8 @@ has 'binary_port' => (
     is => 'lazy',
     default => sub { 9515 }
 );
+
+with 'Selenium::CanStartBinary';
 
 sub DEMOLISH {
     my ($self) = @_;
