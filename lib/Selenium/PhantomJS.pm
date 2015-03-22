@@ -45,6 +45,7 @@ has '+port' => (
 has 'binary' => (
     is => 'lazy',
     default => sub { 'phantomjs' },
+    predicate => 1
 );
 
 has 'binary_port' => (

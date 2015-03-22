@@ -44,6 +44,7 @@ has '+port' => (
 has 'binary' => (
     is => 'lazy',
     default => sub { 'firefox' },
+    predicate => 1
 );
 
 has 'binary_port' => (
