@@ -1,6 +1,7 @@
 package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
+use File::Spec;
 use Selenium::CanStartBinary::ProbePort qw/find_open_port_above probe_port/;
 use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
@@ -122,6 +123,28 @@ has 'try_binary' => (
     }
 );
 
+=attr window_title
+
+Intended for internal use: this will build us a unique title for the
+background binary process of the Webdriver. Then, when we're cleaning
+up, we know what the window title is that we're going to C<taskkill>.
+
+=cut
+
+has 'window_title' => (
+    is => 'lazy',
+    init_arg => undef,
+    builder => sub {
+        my ($self) = @_;
+        my (undef, undef, $file) = File::Spec->splitpath( $self->binary );
+        my $port = $self->port;
+
+        return $file . ':' . $port;
+    }
+);
+
+use constant IS_WIN => $^O eq 'MSWin32';
+
 sub BUILDARGS {
     # There's a bit of finagling to do to since we can't ensure the
     # attribute instantiation order. To decide whether we're going into
@@ -181,12 +204,27 @@ sub shutdown_binary {
         my $ua = $self->ua;
 
         $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
+
+        # close the additional command windows on windows
+        if (IS_WIN) {
+            $self->shutdown_windows_binary;
+        }
     }
 }
 
+sub shutdown_windows_binary {
     my ($self) = @_;
 
+    my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '"';
+    system($kill);
 }
+
+before DEMOLISH => sub {
+    my ($self) = @_;
+    $self->shutdown_binary;
+};
+
+sub DEMOLISH { };
 
 sub _construct_command {
     my ($self, $executable, $port) = @_;
