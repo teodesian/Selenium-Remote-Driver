@@ -198,14 +198,20 @@ sub _build_binary_mode {
 sub shutdown_binary {
     my ($self) = @_;
 
+    # TODO: Allow user to keep browser open after test
+    $self->quit;
+
     if ($self->has_binary_mode && $self->binary_mode) {
         my $port = $self->port;
         my $ua = $self->ua;
 
         $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
 
-        # close the additional command windows on windows
+        # Close the additional command windows on windows
         if (IS_WIN) {
+            # Blech, handle a race condition that kills the driver
+            # before it's finished cleaning up its sessions
+            sleep(1);
             $self->shutdown_windows_binary;
         }
     }
@@ -213,6 +219,11 @@ sub shutdown_binary {
 
 sub shutdown_windows_binary {
     my ($self) = @_;
+
+    # Firefox doesn't have a Driver/Session architecture - the only
+    # thing running is Firefox itself, so there's no other task to
+    # kill.
+    return if $self->isa('Selenium::Firefox')
 
     my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '"';
     system($kill);
