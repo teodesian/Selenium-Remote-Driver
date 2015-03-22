@@ -269,7 +269,15 @@ sub _cmd_prefix {
     my ($self) = @_;
 
     if (IS_WIN) {
-        return 'start "' . $self->window_title . '" /MIN '
+        my $prefix = 'start "' . $self->window_title;
+
+        # Let's minimize the command windows for the drivers that have
+        # separate binaries - but let's not minimize the Firefox
+        # window itself.
+        if (! $self->isa('Selenium::Firefox')) {
+            $prefix .= '" /MIN ';
+        }
+        return $prefix;
     }
     else {
         return '';
