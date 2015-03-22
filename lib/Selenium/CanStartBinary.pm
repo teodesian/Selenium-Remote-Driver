@@ -5,7 +5,6 @@ use File::Spec;
 use Selenium::CanStartBinary::ProbePort qw/find_open_port_above probe_port/;
 use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
-use Selenium::Firefox::Profile;
 use Moo::Role;
 
 =head1 NAME
@@ -251,27 +250,26 @@ sub _construct_command {
     my @args = map { '--' . $_ . '=' . $args{$_} } keys %args;
 
     # Handle Windows vs Unix discrepancies for invoking shell commands
-    my ($prefix, $suffix) = ($self->_command_prefix(), $self->_command_suffix());
+    my ($prefix, $suffix) = ($self->_cmd_prefix, $self->_cmd_suffix);
     return join(' ', ($prefix, $executable, @args, $suffix) );
 }
 
-sub _command_prefix {
+sub _cmd_prefix {
     my ($self) = @_;
 
-    if ($^O eq 'MSWin32') {
-        my $title = ref($self) . ':' . $self->binary_port;
-        return 'start "' . $title . '" /MAX '
+    if (IS_WIN) {
+        return 'start "' . $self->window_title . '" /MIN '
     }
     else {
         return '';
     }
 }
 
-sub _command_suffix {
+sub _cmd_suffix {
     # TODO: allow users to specify whether & where they want driver
     # output to go
 
-    if ($^O eq 'MSWin32') {
+    if (IS_WIN) {
         return ' > /nul 2>&1 ';
     }
     else {
