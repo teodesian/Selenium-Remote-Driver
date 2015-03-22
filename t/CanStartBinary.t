@@ -32,14 +32,7 @@ PHANTOMJS: {
 }
 
 MANUAL: {
-    package BadBinary {
-        use Moo;
-        with 'Selenium::CanStartBinary';
-        has 'binary' => ( is => 'ro' );
-        1
-    };
-
-    ok( exception { BadBinary->new( binary => '/not/executable') },
+    ok( exception { PhantomJS->new( binary => '/bad/executable') },
         'we throw if the user specified binary is not executable');
 
   SKIP: {
