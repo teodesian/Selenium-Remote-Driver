@@ -1,5 +1,6 @@
 package Selenium::CanStartBinary::ProbePort;
 
+# ABSTRACT: Utility functions for finding open ports to eventually bind to
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
 

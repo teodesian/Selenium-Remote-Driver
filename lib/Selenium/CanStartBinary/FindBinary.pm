@@ -1,5 +1,6 @@
 package Selenium::CanStartBinary::FindBinary;
 
+# ABSTRACT: Coercions for finding webdriver binaries on your system
 use File::Which qw/which/;
 use Cwd qw/abs_path/;
 use File::Which qw/which/;
