@@ -38,7 +38,12 @@ sub coerce_firefox_binary {
 sub _validate_manual_binary {
     my ($executable) = @_;
 
-    my $abs_executable = eval { abs_path($executable) };
+    my $abs_executable = eval {
+        my $path = abs_path($executable);
+        die unless -e $path;
+        $path
+    };
+
     if ( $abs_executable ) {
         if ( -x $abs_executable ) {
             return $abs_executable;
