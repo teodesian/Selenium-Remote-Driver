@@ -2,6 +2,7 @@ package Selenium::Chrome;
 
 # ABSTRACT: A convenience package for creating a Chrome instance
 use Moo;
+use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -42,6 +43,7 @@ has '+port' => (
 
 has 'binary' => (
     is => 'lazy',
+    coerce => \&coerce_simple_binary,
     default => sub { 'chromedriver' },
     predicate => 1
 );

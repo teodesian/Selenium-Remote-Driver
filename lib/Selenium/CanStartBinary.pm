@@ -1,8 +1,6 @@
 package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
-use Cwd qw/abs_path/;
-use File::Which qw/which/;
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
 use Selenium::Firefox::Binary qw/firefox_path setup_firefox_binary_env/;
@@ -107,7 +105,6 @@ sub BUILDARGS {
         # Windows may throw a fit about invalid pointers if we try to
         # connect to localhost instead of 127.1
         $args{remote_server_addr} = '127.0.0.1';
-
     }
 
     return { %args };
@@ -134,7 +131,7 @@ sub probe_port {
 sub start_binary_on_port {
     my ($self) = @_;
 
-    my $executable = $self->_find_executable;
+    my $executable = $self->binary;
     my $port = _find_open_port_above($self->binary_port);
 
     if (ref($self) eq 'Selenium::Firefox') {
@@ -163,34 +160,8 @@ sub shutdown_binary {
     }
 }
 
-sub _find_executable {
     my ($self) = @_;
 
-    # If the user specified the full path to the binary, we don't have
-    # any work to do.
-    if ($self->has_binary) {
-        if (-x abs_path($self->binary)) {
-            return abs_path($self->binary);
-        }
-        else {
-            die 'The binary at ' . $self->binary . ' is not executable. Choose the correct file or chmod +x it as needed.';
-        }
-    }
-
-    my $binary = $self->binary;
-    if ($binary eq 'firefox') {
-        return firefox_path();
-    }
-    else {
-        my $executable = which($binary);
-
-        if (not defined $executable) {
-            warn qq(Unable to find the $binary binary in your \$PATH. We'll try falling back to standard Remote Driver);
-        }
-        else {
-            return $executable;
-        }
-    }
 }
 
 sub _construct_command {

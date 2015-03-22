@@ -2,6 +2,7 @@ package Selenium::Firefox;
 
 # ABSTRACT: A convenience package for creating a Firefox instance
 use Moo;
+use Selenium::CanStartBinary::FindBinary qw/coerce_firefox_binary/;
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -42,6 +43,7 @@ has '+port' => (
 
 has 'binary' => (
     is => 'lazy',
+    coerce => \&coerce_firefox_binary,
     default => sub { 'firefox' },
     predicate => 1
 );
