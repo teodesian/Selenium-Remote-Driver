@@ -1,7 +1,7 @@
 package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
-use IO::Socket::INET;
+use Selenium::CanStartBinary::ProbePort qw/find_open_port_above probe_port/;
 use Selenium::Waiter qw/wait_until/;
 use Selenium::Firefox::Binary qw/firefox_path setup_firefox_binary_env/;
 use Selenium::Firefox::Profile;
@@ -66,6 +66,32 @@ until we find a valid one.
 
 requires 'binary_port';
 
+=attr port
+
+The role will attempt to determine the proper port for us. Consuming
+roles should set a default port in L</binary_port> at which we will
+begin searching for an open port.
+
+Note that if we cannot locate a suitable L</binary>, port will be set
+to 4444 so we can attempt to look for a Selenium server at
+C<127.0.0.1:4444>.
+
+=cut
+
+has 'port' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        if ($self->binary) {
+            return find_open_port_above($self->binary_port);
+        }
+        else {
+            return '4444'
+        }
+    }
+);
+
 has 'binary_mode' => (
     is => 'lazy',
     init_arg => undef,
@@ -113,27 +139,11 @@ sub BUILDARGS {
 sub _build_binary_mode {
     my ($self) = @_;
 
-    my $port = $self->start_binary_on_port;
-    $self->port($port);
-    return 1;
-}
-
-sub probe_port {
-    my ($port) = @_;
-
-    return IO::Socket::INET->new(
-        PeerAddr => '127.0.0.1',
-        PeerPort => $port,
-        Timeout => 3
-    );
-}
-
-sub start_binary_on_port {
-    my ($self) = @_;
-
     my $executable = $self->binary;
-    my $port = _find_open_port_above($self->binary_port);
+    return unless $executable;
 
+    my $port = $self->port;
+    return unless $port != 4444;
     if (ref($self) eq 'Selenium::Firefox') {
         setup_firefox_binary_env($port);
     }
@@ -142,7 +152,7 @@ sub start_binary_on_port {
     system($command);
     my $success = wait_until { probe_port($port) } timeout => 10;
     if ($success) {
-        return $port;
+        return 1;
     }
     else {
         die 'Unable to connect to the ' . $executable . ' binary on port ' . $port;
@@ -217,20 +227,12 @@ sub _command_suffix {
     }
 }
 
-sub _find_open_port_above {
-    my ($port) = @_;
+=head1 SEE ALSO
 
-    my $free_port = wait_until {
-        if ( probe_port($port) ) {
-            $port++;
-            return 0;
-        }
-        else {
-            return $port;
-        }
-    };
+Selenium::Chrome
+Selenium::Firefox
+Selenium::PhantomJS
 
-    return $free_port;
-}
+=cut
 
 1;

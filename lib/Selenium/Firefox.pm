@@ -35,12 +35,6 @@ has '+browser_name' => (
     default => sub { 'firefox' }
 );
 
-# By shadowing the parent's port, we can set it in _build_binary_mode properly
-has '+port' => (
-    is => 'lazy',
-    default => sub { 4444 }
-);
-
 has 'binary' => (
     is => 'lazy',
     coerce => \&coerce_firefox_binary,

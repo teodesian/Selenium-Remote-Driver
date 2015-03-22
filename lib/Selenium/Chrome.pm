@@ -35,12 +35,6 @@ has '+browser_name' => (
     default => sub { 'chrome' }
 );
 
-# By shadowing the parent's port function, we can set the port in
-# _build_binary_mode's builder
-has '+port' => (
-    is => 'lazy'
-);
-
 has 'binary' => (
     is => 'lazy',
     coerce => \&coerce_simple_binary,
