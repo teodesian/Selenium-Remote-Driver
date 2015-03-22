@@ -5,6 +5,7 @@ requires "Data::Dumper" => "0";
 requires "Exporter" => "0";
 requires "File::Basename" => "0";
 requires "File::Copy" => "0";
+requires "File::Spec" => "0";
 requires "File::Spec::Functions" => "0";
 requires "File::Temp" => "0";
 requires "File::Which" => "0";
