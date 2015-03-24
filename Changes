@@ -1,5 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
+0.2450  03-24-2015
+        [NEW FEATURES]
+        - #189 Start webdrivers directly, removing the need for the JRE. See
+           Selenium::Chrome, Selenium::Firefox, Selenium::PhantomJS
+
 0.24    02-18-2015
         [NEW FEATURES]
         - #182 Non-crashing warn-instead-of-die parameter finders: find_element_by_class, etc
