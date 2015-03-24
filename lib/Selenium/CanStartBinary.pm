@@ -89,7 +89,7 @@ C<127.0.0.1:4444>.
 
 =cut
 
-has 'port' => (
+has '+port' => (
     is => 'lazy',
     builder => sub {
         my ($self) = @_;

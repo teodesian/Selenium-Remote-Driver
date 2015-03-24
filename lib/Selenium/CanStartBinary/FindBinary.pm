@@ -56,6 +56,7 @@ sub _validate_manual_binary {
 
 sub _naive_find_binary {
     my ($executable) = @_;
+
     my $naive_binary = which($executable);
     if (defined $naive_binary) {
         return $naive_binary;
