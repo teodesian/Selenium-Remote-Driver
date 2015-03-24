@@ -17,6 +17,7 @@ my $harness = TestHarness->new(
 );
 
 my %caps = %{ $harness->base_caps };
+$caps{remote_server_addr} = '127.0.0.1';
 delete $caps{browser_name};
 
 my $firefox = Selenium::Firefox->new( %caps );
