@@ -505,6 +505,8 @@ UPLOAD: {
     my $otherTestFile = "UEsDBBQACAAIAFtuNEYAAAAAAAAAAAAAAAAMABUAdC91cGxvYWRUZXN0VVQJAAOesb5UnrG+VFV4\nBADoA+gDK0ktLgEAUEsHCAx+f9gGAAAABAAAAFBLAQIUAxQACAAIAFtuNEYMfn/YBgAAAAQAAAAM\nAA0AAAAAAAAAAACkgQAAAAB0L3VwbG9hZFRlc3RVVAUAAZ6xvlRVeAAAUEsFBgAAAAABAAEARwAA\nAFUAAAAAAA==\n";
     like( $driver->upload_file('uploadTest',$testFile),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
     like( $driver->upload_file('t/uploadTest',$otherTestFile),qr/uploadTest$/,'upload_file returns FULL path to the file: subdir');
+    like( $driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch' );
+    like( $driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
 
     #Negative tests to verify that our expected behavior codepath is travelled by tests
     like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/,"Passing missing file terminates program");

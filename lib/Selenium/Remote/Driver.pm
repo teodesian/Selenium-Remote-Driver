@@ -23,6 +23,8 @@ use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
 use File::Basename ();
 use Sub::Install ();
+use Cwd ();
+use MIME::Base64 ();
 
 use constant FINDERS => {
     class             => 'class name',
@@ -1417,7 +1419,6 @@ sub capture_screenshot {
     my ( $self, $filename ) = @_;
     croak '$filename is required' unless $filename;
 
-    require MIME::Base64;
     open( my $fh, '>', $filename );
     binmode $fh;
     print $fh MIME::Base64::decode_base64( $self->screenshot() );
@@ -2437,6 +2438,10 @@ sub button_up {
     Passing raw data as an argument past the filename will upload
     that rather than the file's contents.
 
+    When passing raw data, be advised that it expects a zipped
+    and then base64 encoded version of a single file.
+    Multiple files are not supported by the remote server.
+
  Usage:
     my $remote_fname = $driver->upload_file( $fname );
     my $element = $driver->find_element( '//input[@id="file"]' );
@@ -2454,6 +2459,9 @@ sub upload_file {
     my $params = {
         file => $raw_content
     };
+
+    #Apparently zip chokes on non-canonical paths, creating double submissions sometimes
+    $filename = Cwd::abs_path($filename);
 
     #Otherwise, zip/base64 it.
     $params = $self->_prepare_file($filename) if !defined($raw_content);
@@ -2476,7 +2484,6 @@ sub _prepare_file {
     my $string = "";    # buffer
     zip $filename => \$string
       or die "zip failed: $ZipError\n";    # compress the file into string
-    require MIME::Base64;
 
     return {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
