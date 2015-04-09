@@ -2462,9 +2462,11 @@ sub upload_file {
     my $ret = $self->_execute_command( $res, $params );
 
     #WORKAROUND: Since this is undocumented selenium functionality, work around a bug.
-    my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
-    if ($file ne $filename) {
-        $ret = File::Spec::Functions::catpath($drive,$path,$filename);
+    if (defined($raw_content)) {
+        my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
+        if ($file ne $filename) {
+            $ret = File::Spec::Functions::catpath($drive,$path,$filename);
+        }
     }
 
     return $ret;
@@ -2474,7 +2476,7 @@ sub _prepare_file {
     my ($self,$filename) = @_;
     if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
-    zip $filename => \$string
+    zip $filename => \$string, Name => 'UploadFile'
       or die "zip failed: $ZipError\n";    # compress the file into string
     require MIME::Base64;
 
