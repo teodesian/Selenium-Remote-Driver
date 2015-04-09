@@ -29,7 +29,7 @@ $ cpanm Selenium::Remote::Driver
 If you want to install from this repository, you have a few options;
 see the [installation docs][] for more details.
 
-[installation docs]: /install.md
+[installation docs]: /INSTALL.md
 
 ## Usage
 
