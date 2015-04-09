@@ -77,6 +77,21 @@ until we find a valid one.
 
 requires 'binary_port';
 
+=attr _binary_args
+
+Required: Specify the arguments that the particular binary needs in
+order to start up correctly. In particular, you may need to tell the
+binary about the proper port when we start it up, or that it should
+use a particular prefix to match up with the behavior of the Remote
+Driver server.
+
+If your binary doesn't need any arguments, just have the default be an
+empty string.
+
+=cut
+
+requires '_binary_args';
+
 =attr port
 
 The role will attempt to determine the proper port for us. Consuming
@@ -194,7 +209,7 @@ sub _build_binary_mode {
     if ($self->isa('Selenium::Firefox')) {
         setup_firefox_binary_env($port);
     }
-    my $command = $self->_construct_command($executable, $port);
+    my $command = $self->_construct_command($executable);
 
     system($command);
     my $success = wait_until { probe_port($port) } timeout => 10;
@@ -251,30 +266,15 @@ sub DEMOLISH { };
 sub _construct_command {
     my ($self, $executable, $port) = @_;
 
-    # Handle spaces in executable path names
+    # Executable path names may have spaces
     $executable = '"' . $executable . '"';
 
-    my %args;
-    if ($executable =~ /chromedriver(\.exe)?"$/i) {
-        %args = (
-            port => $port,
-            'url-base' => 'wd/hub'
-        );
-    }
-    elsif ($executable =~ /phantomjs(\.exe)?"$/i) {
-        %args = (
-            webdriver => '127.0.0.1:' . $port
-        );
-    }
-    elsif ($executable =~ /firefox(-bin|\.exe)"$/i) {
-        $executable .= ' -no-remote ';
-    }
-
-    my @args = map { '--' . $_ . '=' . $args{$_} } keys %args;
+    # The different binaries take different arguments for proper setup
+    $executable .= $self->_binary_args;
 
     # Handle Windows vs Unix discrepancies for invoking shell commands
     my ($prefix, $suffix) = ($self->_cmd_prefix, $self->_cmd_suffix);
-    return join(' ', ($prefix, $executable, @args, $suffix) );
+    return join(' ', ($prefix, $executable, $suffix) );
 }
 
 sub _cmd_prefix {

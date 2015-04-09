@@ -68,6 +68,15 @@ has 'binary_port' => (
     default => sub { 8910 }
 );
 
+has '_binary_args' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        return ' --webdriver=127.0.0.1:' . $self->port;
+    }
+);
+
 with 'Selenium::CanStartBinary';
 
 1;

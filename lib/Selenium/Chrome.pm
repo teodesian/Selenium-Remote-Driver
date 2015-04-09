@@ -68,6 +68,15 @@ has 'binary_port' => (
     default => sub { 9515 }
 );
 
+has '_binary_args' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        return ' --port=' . $self->port . ' --url-base=wd/hub ';
+    }
+);
+
 with 'Selenium::CanStartBinary';
 
 1;
