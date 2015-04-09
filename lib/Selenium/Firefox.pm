@@ -70,6 +70,15 @@ has 'binary_port' => (
     default => sub { 9090 }
 );
 
+has '_binary_args' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        return ' -no-remote';
+    }
+);
+
 with 'Selenium::CanStartBinary';
 
 1;

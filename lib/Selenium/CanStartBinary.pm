@@ -15,6 +15,9 @@ use Moo::Role;
 
         has 'binary' => ( is => 'ro', default => 'chromedriver' );
         has 'binary_port' => ( is => 'ro', default => 9515 );
+        has '_binary_args' => ( is => 'ro', default => sub {
+            return ' --port=' . shift->port . ' --url-base=wd/hub ';
+        });
         with 'Selenium::CanStartBinary';
         1
     };
@@ -76,6 +79,21 @@ until we find a valid one.
 =cut
 
 requires 'binary_port';
+
+=attr _binary_args
+
+Required: Specify the arguments that the particular binary needs in
+order to start up correctly. In particular, you may need to tell the
+binary about the proper port when we start it up, or that it should
+use a particular prefix to match up with the behavior of the Remote
+Driver server.
+
+If your binary doesn't need any arguments, just have the default be an
+empty string.
+
+=cut
+
+requires '_binary_args';
 
 =attr port
 
@@ -179,6 +197,10 @@ sub BUILDARGS {
         # connect to localhost instead of 127.1
         $args{remote_server_addr} = '127.0.0.1';
     }
+    else {
+        $args{try_binary} = 0;
+        $args{binary_mode} = 0;
+    }
 
     return { %args };
 }
@@ -186,36 +208,40 @@ sub BUILDARGS {
 sub _build_binary_mode {
     my ($self) = @_;
 
-    my $executable = $self->binary;
-    return unless $executable;
+    # We don't know what to do without a binary driver to start up
+    return unless $self->binary;
 
+    # Either the user asked for 4444, or we couldn't find an open port
     my $port = $self->port;
     return unless $port != 4444;
+
     if ($self->isa('Selenium::Firefox')) {
         setup_firefox_binary_env($port);
     }
-    my $command = $self->_construct_command($executable, $port);
 
+    my $command = $self->_construct_command;
     system($command);
+
     my $success = wait_until { probe_port($port) } timeout => 10;
     if ($success) {
         return 1;
     }
     else {
-        die 'Unable to connect to the ' . $executable . ' binary on port ' . $port;
+        die 'Unable to connect to the ' . $self->binary . ' binary on port ' . $port;
     }
 }
 
 sub shutdown_binary {
     my ($self) = @_;
 
-    # TODO: Allow user to keep browser open after test
-    $self->quit;
+    if ( $self->auto_close && defined $self->session_id ) {
+        $self->quit();
+    }
 
     if ($self->has_binary_mode && $self->binary_mode) {
+        # Tell the binary itself to shutdown
         my $port = $self->port;
         my $ua = $self->ua;
-
         $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
 
         # Close the additional command windows on windows
@@ -240,6 +266,8 @@ sub shutdown_windows_binary {
     system($kill);
 }
 
+# We want to do things before the DEMOLISH phase, as during DEMOLISH
+# we apparently have no guarantee that anything is still around
 before DEMOLISH => sub {
     my ($self) = @_;
     $self->shutdown_binary;
@@ -248,45 +276,31 @@ before DEMOLISH => sub {
 sub DEMOLISH { };
 
 sub _construct_command {
-    my ($self, $executable, $port) = @_;
+    my ($self) = @_;
+    my $executable = $self->binary;
 
-    # Handle spaces in executable path names
+    # Executable path names may have spaces
     $executable = '"' . $executable . '"';
 
-    my %args;
-    if ($executable =~ /chromedriver(\.exe)?"$/i) {
-        %args = (
-            port => $port,
-            'url-base' => 'wd/hub'
-        );
-    }
-    elsif ($executable =~ /phantomjs(\.exe)?"$/i) {
-        %args = (
-            webdriver => '127.0.0.1:' . $port
-        );
-    }
-    elsif ($executable =~ /firefox(-bin|\.exe)"$/i) {
-        $executable .= ' -no-remote ';
-    }
-
-    my @args = map { '--' . $_ . '=' . $args{$_} } keys %args;
+    # The different binaries take different arguments for proper setup
+    $executable .= $self->_binary_args;
 
     # Handle Windows vs Unix discrepancies for invoking shell commands
     my ($prefix, $suffix) = ($self->_cmd_prefix, $self->_cmd_suffix);
-    return join(' ', ($prefix, $executable, @args, $suffix) );
+    return join(' ', ($prefix, $executable, $suffix) );
 }
 
 sub _cmd_prefix {
     my ($self) = @_;
 
     if (IS_WIN) {
-        my $prefix = 'start "' . $self->window_title;
+        my $prefix = 'start "' . $self->window_title . '"';
 
         # Let's minimize the command windows for the drivers that have
         # separate binaries - but let's not minimize the Firefox
         # window itself.
         if (! $self->isa('Selenium::Firefox')) {
-            $prefix .= '" /MIN ';
+            $prefix .= ' /MIN ';
         }
         return $prefix;
     }
