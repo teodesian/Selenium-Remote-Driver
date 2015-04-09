@@ -15,6 +15,9 @@ use Moo::Role;
 
         has 'binary' => ( is => 'ro', default => 'chromedriver' );
         has 'binary_port' => ( is => 'ro', default => 9515 );
+        has '_binary_args' => ( is => 'ro', default => sub {
+            return ' --port=' . shift->port . ' --url-base=wd/hub ';
+        });
         with 'Selenium::CanStartBinary';
         1
     };
