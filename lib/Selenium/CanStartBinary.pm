@@ -194,6 +194,10 @@ sub BUILDARGS {
         # connect to localhost instead of 127.1
         $args{remote_server_addr} = '127.0.0.1';
     }
+    else {
+        $args{try_binary} = 0;
+        $args{binary_mode} = 0;
+    }
 
     return { %args };
 }
@@ -229,9 +233,9 @@ sub shutdown_binary {
     }
 
     if ($self->has_binary_mode && $self->binary_mode) {
+        # Tell the binary itself to shutdown
         my $port = $self->port;
         my $ua = $self->ua;
-
         $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
 
         # Close the additional command windows on windows
@@ -256,6 +260,8 @@ sub shutdown_windows_binary {
     system($kill);
 }
 
+# We want to do things before the DEMOLISH phase, as during DEMOLISH
+# we apparently have no guarantee that anything is still around
 before DEMOLISH => sub {
     my ($self) = @_;
     $self->shutdown_binary;
