@@ -205,23 +205,26 @@ sub BUILDARGS {
 sub _build_binary_mode {
     my ($self) = @_;
 
-    my $executable = $self->binary;
-    return unless $executable;
+    # We don't know what to do without a binary driver to start up
+    return unless $self->binary;
 
+    # Either the user asked for 4444, or we couldn't find an open port
     my $port = $self->port;
     return unless $port != 4444;
+
     if ($self->isa('Selenium::Firefox')) {
         setup_firefox_binary_env($port);
     }
-    my $command = $self->_construct_command($executable);
 
+    my $command = $self->_construct_command;
     system($command);
+
     my $success = wait_until { probe_port($port) } timeout => 10;
     if ($success) {
         return 1;
     }
     else {
-        die 'Unable to connect to the ' . $executable . ' binary on port ' . $port;
+        die 'Unable to connect to the ' . $self->binary . ' binary on port ' . $port;
     }
 }
 
@@ -270,7 +273,8 @@ before DEMOLISH => sub {
 sub DEMOLISH { };
 
 sub _construct_command {
-    my ($self, $executable, $port) = @_;
+    my ($self) = @_;
+    my $executable = $self->binary;
 
     # Executable path names may have spaces
     $executable = '"' . $executable . '"';
