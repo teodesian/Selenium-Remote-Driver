@@ -10,3 +10,6 @@ cover_db
 Selenium-Remote-Driver-*
 .prove
 _prove
+#vim swapfiles
+*.swo
+*.swp

@@ -506,9 +506,28 @@ UPLOAD: {
     like( $driver->upload_file('uploadTest',$testFile),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
     like( $driver->upload_file('t/uploadTest',$otherTestFile),qr/uploadTest$/,'upload_file returns FULL path to the file: subdir');
 
+    my $fake_driver;
+    if ($harness->record) {
+        $fake_driver = $driver;
+    } else {
+        #Going to have to use a custom UA to test this, since bogosity ensues
+        my $ftua = Test::LWP::UserAgent->new;
+        my $fake_header = bless( {'content-type' => 'application/json; charset=utf-8'}, 'HTTP::Headers' );
+        #Seems a bit heavy handed, but shouldn't be a problem.
+        $ftua->map_response(qr{.*}, HTTP::Response->new(200, 'OK', $fake_header, '{"sessionId":"89726c41-409f-421e-95a8-8b1fa482fa33","status":0,"state":"success","value":"/tmp/89726c41-409f-421e-95a8-8b1fa482fa33/upload1105744174029267337file/uploadTest","class":"org.openqa.selenium.remote.Response","hCode":516517658}'));
+        $fake_driver = Selenium::Remote::Driver->new(
+            ua => $ftua
+        );
+
+    }
+
+    #In the case this is not mocked, it tests a real issue (.. in paths), if not, it makes sure the zip/base64 bits at least don't make us explode.
+    like( $fake_driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch' );
+    like( $fake_driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
+
     #Negative tests to verify that our expected behavior codepath is travelled by tests
     like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/,"Passing missing file terminates program");
-  SKIP: {
+    SKIP: {
         skip 'purposefully excluding this test from the recording', 1
           if $harness->record;
         like( exception { $driver->upload_file(__FILE__) },qr/501/,"Passing this file rightly fails due to mock not being present");
