@@ -33,25 +33,11 @@ see the [installation docs][] for more details.
 
 ## Usage
 
-### no standalone server
-
-- For Firefox: simply have the browser installed in the normal place
-for your OS.
-
-    ```perl
-    my $firefox = Selenium::Firefox->new;
-    $firefox->get('http://www.google.com');
-    ```
-
-- For Chrome: install the chrome browser and
-[download Chromedriver][dcd]
-
-    ```perl
-    my $chrome = Selenium::Chrome->new;
-    $chrome->get('http://www.google.com');
-    ```
-
-[dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
+You can either use this module with the standalone java server, or use
+it to directly start the webdriver binaries for you. Note that the
+latter option does _not_ require the JRE/JDK to be installed, nor does
+it require the selenium standalone server (despite the name of the
+main module!).
 
 ### with a standalone server
 
@@ -114,7 +100,43 @@ useful [example snippets][ex].
 [ie]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/IE-browser-automation
 [chrome]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Chrome-browser-automation
 [pjs]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
-[ex]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
+[ex]:
+https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
+
+### no standalone server
+
+- _Firefox_: simply have the browser installed in the normal place
+for your OS.
+
+- _Chrome_: install the Chrome browser, [download Chromedriver][dcd]
+and get it in your `$PATH`:
+
+- _PhantomJS_: install the PhantomJS binary and get it in your `$PATH`
+
+As long as the proper binary is available in your path, you should be
+able to do the following:
+
+```perl
+my $firefox = Selenium::Firefox->new;
+$firefox->get('http://www.google.com');
+
+my $chrome = Selenium::Chrome->new;
+$chrome->get('http://www.google.com');
+
+my $ghost = Selenium::PhantomJS->new;
+$ghost->get('http://www.google.com');
+```
+
+Note that you can also pass a `binary` argument to any of the above
+classes to manually specify what binary to start:
+
+```perl
+my $chrome = Selenium::Chrome->new(binary => '~/Downloads/chromedriver');
+```
+
+See the pod for the different modules for more details.
+
+[dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
 
 ## Support and Documentation
 
