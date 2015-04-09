@@ -209,8 +209,9 @@ sub _build_binary_mode {
 sub shutdown_binary {
     my ($self) = @_;
 
-    # TODO: Allow user to keep browser open after test
-    $self->quit;
+    if ( $self->auto_close && defined $self->session_id ) {
+        $self->quit();
+    }
 
     if ($self->has_binary_mode && $self->binary_mode) {
         my $port = $self->port;
