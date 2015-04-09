@@ -31,7 +31,34 @@ see the [installation docs][] for more details.
 
 [installation docs]: /install.md
 
-### Locally
+## Usage
+
+### no standalone server
+
+- For Firefox: simply have the browser installed in the normal place
+for your OS.
+
+    ```perl
+    my $firefox = Selenium::Firefox->new;
+    $firefox->get('http://www.google.com');
+    ```
+
+- For Chrome: install the chrome browser and
+[download Chromedriver][dcd]
+
+    ```perl
+    my $chrome = Selenium::Chrome->new;
+    $chrome->get('http://www.google.com');
+    ```
+
+[dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
+
+### with a standalone server
+
+Download the standalone server and have it running on port 4444; then
+the following should start up Firefox for you:
+
+#### Locally
 
 ```perl
 #! /usr/bin/perl
@@ -58,7 +85,7 @@ print $driver->get_title . "\n"; # CPAN Selenium Remote Driver - Google Search
 $driver->quit;
 ```
 
-### Saucelabs
+#### Saucelabs
 
 ```perl
 use Selenium::Remote::Driver;
