@@ -2468,16 +2468,17 @@ sub button_up {
 sub upload_file {
     my ( $self, $filename, $raw_content ) = @_;
 
-    #If no processing is passed, send the argument raw
-    my $params = {
-        file => $raw_content
-    };
-
-    #Apparently zip chokes on non-canonical paths, creating double submissions sometimes
-    $filename = Cwd::abs_path($filename);
-
-    #Otherwise, zip/base64 it.
-    $params = $self->_prepare_file($filename) if !defined($raw_content);
+    my $params;
+    if (defined $raw_content) {
+        #If no processing is passed, send the argument raw
+        $params = {
+            file => $raw_content
+        };
+    }
+    else {
+        #Otherwise, zip/base64 it.
+        $params = $self->_prepare_file($filename);
+    }
 
     my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
     my $ret = $self->_execute_command( $res, $params );
@@ -2493,6 +2494,11 @@ sub upload_file {
 
 sub _prepare_file {
     my ($self,$filename) = @_;
+
+    #Apparently zip chokes on non-canonical paths, creating double
+    #submissions sometimes
+    $filename = Cwd::abs_path($filename);
+
     if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
     zip $filename => \$string
