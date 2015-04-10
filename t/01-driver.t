@@ -503,6 +503,7 @@ UPLOAD: {
     #Webdriver only returns the full filename if there isn't any path components in it, so test both cases
     my $testFile = "UEsDBBQACAAIAFtuNEYAAAAAAAAAAAAAAAAKABUAdXBsb2FkVGVzdFVUCQADjbG+VJ6xvlRVeAQA\n6APoAytJLS4BAFBLBwgMfn/YBgAAAAQAAABQSwECFAMUAAgACABbbjRGDH5/2AYAAAAEAAAACgAN\nAAAAAAAAAAAApIEAAAAAdXBsb2FkVGVzdFVUBQABjbG+VFV4AABQSwUGAAAAAAEAAQBFAAAAUwAA\nAAAA\n";
     my $otherTestFile = "UEsDBBQACAAIAFtuNEYAAAAAAAAAAAAAAAAMABUAdC91cGxvYWRUZXN0VVQJAAOesb5UnrG+VFV4\nBADoA+gDK0ktLgEAUEsHCAx+f9gGAAAABAAAAFBLAQIUAxQACAAIAFtuNEYMfn/YBgAAAAQAAAAM\nAA0AAAAAAAAAAACkgQAAAAB0L3VwbG9hZFRlc3RVVAUAAZ6xvlRVeAAAUEsFBgAAAAABAAEARwAA\nAFUAAAAAAA==\n";
+
     like( $driver->upload_file('uploadTest',$testFile),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
     like( $driver->upload_file('t/uploadTest',$otherTestFile),qr/uploadTest$/,'upload_file returns FULL path to the file: subdir');
 
@@ -526,7 +527,7 @@ UPLOAD: {
     like( $fake_driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
 
     #Negative tests to verify that our expected behavior codepath is travelled by tests
-    like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/,"Passing missing file terminates program");
+    like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/i,"Passing missing file terminates program");
     SKIP: {
         skip 'purposefully excluding this test from the recording', 1
           if $harness->record;
