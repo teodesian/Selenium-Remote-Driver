@@ -28,6 +28,11 @@ If you're curious whether your Selenium::PhantomJS instance is using a
 separate PhantomJS binary, or through the selenium server, you can check
 the C<binary_mode> attr after instantiation.
 
+N.B. If you're on Windows, we're probably going to fail at closing the
+command window that runs the PhantomJS binary. Feel free to bug us
+over at L<Github|https://github.com/gempesaw/Selenium-Remote-Driver>
+and/or tell us how to fix it if it's a blocking issue for you. Thanks!
+
 =cut
 
 has '+browser_name' => (
