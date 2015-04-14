@@ -281,8 +281,6 @@ before DEMOLISH => sub {
     $self->shutdown_binary;
 };
 
-sub DEMOLISH { };
-
 sub _construct_command {
     my ($self) = @_;
     my $executable = $self->binary;
