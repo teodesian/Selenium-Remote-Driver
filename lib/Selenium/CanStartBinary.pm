@@ -242,28 +242,36 @@ sub shutdown_binary {
         # Tell the binary itself to shutdown
         my $port = $self->port;
         my $ua = $self->ua;
-        $ua->get('127.0.0.1:' . $port . '/wd/hub/shutdown');
+        my $res = $ua->get('http://127.0.0.1:' . $port . '/wd/hub/shutdown');
 
-        # Close the additional command windows on windows
-        if (IS_WIN) {
-            # Blech, handle a race condition that kills the driver
-            # before it's finished cleaning up its sessions
-            sleep(1);
-            $self->shutdown_windows_binary;
-        }
+        # Close the orphaned command windows on windows
+        $self->shutdown_windows_binary;
     }
 }
 
 sub shutdown_windows_binary {
     my ($self) = @_;
 
-    # Firefox doesn't have a Driver/Session architecture - the only
-    # thing running is Firefox itself, so there's no other task to
-    # kill.
-    return if $self->isa('Selenium::Firefox');
-
-    my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '"';
-    system($kill);
+    if (IS_WIN) {
+        if ($self->isa('Selenium::Firefox')) {
+            # FIXME: Blech, handle a race condition that kills the
+            # driver before it's finished cleaning up its sessions. In
+            # particular, when the perl process ends, it wants to
+            # clean up the temp directory it created for the Firefox
+            # profile. But, if the Firefox process is still running,
+            # it will have a lock on the temp profile directory, and
+            # perl will get upset. This "solution" is _very_ bad.
+            sleep(2);
+            # Firefox doesn't have a Driver/Session architecture - the
+            # only thing running is Firefox itself, so there's no
+            # other task to kill.
+            return;
+        }
+        else {
+            my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '"';
+            system($kill);
+        }
+    }
 }
 
 # We want to do things before the DEMOLISH phase, as during DEMOLISH
