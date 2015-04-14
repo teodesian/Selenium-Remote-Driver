@@ -11,6 +11,8 @@ require Exporter;
 our @ISA = qw/Exporter/;
 our @EXPORT_OK = qw/coerce_simple_binary coerce_firefox_binary/;
 
+use constant IS_WIN => $^O eq 'MSWin32';
+
 sub coerce_simple_binary {
     my ($executable) = @_;
 
@@ -45,7 +47,7 @@ sub _validate_manual_binary {
     };
 
     if ( $abs_executable ) {
-        if ( -x $abs_executable ) {
+        if ( -x $abs_executable || IS_WIN ) {
             return $abs_executable;
         }
         else {
