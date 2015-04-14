@@ -268,7 +268,7 @@ sub shutdown_windows_binary {
             return;
         }
         else {
-            my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '"';
+            my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '" > nul 2>&1';
             system($kill);
         }
     }
