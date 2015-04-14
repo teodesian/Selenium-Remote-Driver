@@ -1,6 +1,7 @@
 package Selenium::Firefox::Profile;
 
 # ABSTRACT: Use custom profiles with Selenium::Remote::Driver
+# TODO: convert this to Moo!
 
 use strict;
 use warnings;
