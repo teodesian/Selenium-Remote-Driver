@@ -116,7 +116,7 @@ has '+port' => (
             return find_open_port_above($self->binary_port);
         }
         else {
-            return '4444'
+            return 4444
         }
     }
 );
@@ -212,8 +212,8 @@ sub _build_binary_mode {
     return unless $self->binary;
 
     # Either the user asked for 4444, or we couldn't find an open port
-    my $port = $self->port;
-    return unless $port != 4444;
+    my $port = $self->port + 0;
+    return if $port == 4444;
 
     if ($self->isa('Selenium::Firefox')) {
         setup_firefox_binary_env($port);
