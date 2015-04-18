@@ -38,7 +38,7 @@ test. You will be able to tell if we leave around empty command
 windows that you didn't start yourself. The easiest way to fix this is
 to download PhantomJS manually from their
 L<website|http://phantomjs.org/download.html> and put it in your
-c<%PATH%>. If this is a blocking issue for you, let us know in
+C<%PATH%>. If this is a blocking issue for you, let us know in
 L<Github|https://github.com/gempesaw/Selenium-Remote-Driver>; thanks!
 
 =cut

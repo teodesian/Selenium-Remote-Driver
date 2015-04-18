@@ -7,7 +7,7 @@ extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
 
-my $driver = Selenium::Firefox->new;
+    my $driver = Selenium::Firefox->new;
 
 =head1 DESCRIPTION
 
