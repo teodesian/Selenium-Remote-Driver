@@ -1,9 +1,14 @@
 Revision history for Selenium-Remote-Driver
 
-0.2450  03-24-2015
+0.25  03-24-2015
+        (selenium version: 2.45.0)
+
         [NEW FEATURES]
         - #189 Start webdrivers directly, removing the need for the JRE. See
-           Selenium::Chrome, Selenium::Firefox, Selenium::PhantomJS
+           Selenium::Chrome, Selenium::Firefox, Selenium::PhantomJS.
+
+        [BUG FIXES]
+        - #194, #195: @teodesian, @jamadam: fix undocumented upload file behavior
 
 0.24    02-18-2015
         [NEW FEATURES]
