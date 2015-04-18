@@ -285,8 +285,7 @@ has 'browser_name' => (
 );
 
 has 'base_url' => (
-    is      => 'rw',
-    lazy    => 1,
+    is      => 'lazy',
     coerce  => sub {
         my $base_url = shift;
         $base_url =~ s|/$||;
@@ -413,14 +412,12 @@ has 'firefox_profile' => (
 );
 
 has 'desired_capabilities' => (
-    is        => 'rw',
-    lazy      => 1,
+    is        => 'lazy',
     predicate => 'has_desired_capabilities'
 );
 
 has 'inner_window_size' => (
-    is        => 'rw',
-    lazy      => 1,
+    is        => 'lazy',
     predicate => 1,
     coerce    => sub {
         my $size = shift;
