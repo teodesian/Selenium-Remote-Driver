@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
 use Selenium::Remote::Mock::Commands;
@@ -99,13 +99,13 @@ $successful_driver->find_element_ok('q','find_element_ok works');
 $successful_driver->default_finder('class');
 $successful_driver->find_element_ok('p','find_element_ok with a locator works');
 $successful_driver->default_finder('xpath');
-dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if element not found';
+ok( exception { $successful_driver->find_element_ok('notq') }, 'find_element_ok dies if element not found' );
 $successful_driver->find_elements_ok('abc','find_elements_ok works');
 
 # find child element ok tests 
 $successful_driver->find_child_elements_ok({id => 1},'p','find_child_elements_ok works');
 $successful_driver->find_child_element_ok({id => 1},'p','class','find_child_element_ok with a locator works');
-dies_ok{ $successful_driver->find_child_element_ok({id => 1200}) } 'find_child_element_ok dies if the element is not found';
+ok( exception { $successful_driver->find_child_element_ok({id => 1200}) }, 'find_child_element_ok dies if the element is not found' );
 
 # find no element ok test
 
