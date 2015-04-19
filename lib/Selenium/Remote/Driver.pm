@@ -486,11 +486,13 @@ sub new_from_caps {
     return $self->new(%args);
 }
 
-sub DEMOLISH {
+before 'DEMOLISH' => sub {
     my ($self) = @_;
     return if $$ != $self->pid;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
-}
+};
+
+sub DEMOLISH {}
 
 # This is an internal method used the Driver & is not supposed to be used by
 # end user. This method is used by Driver to set up all the parameters
