@@ -1,19 +1,19 @@
 #!perl
+
 use strict;
 use warnings;
 
+use LWP::UserAgent;
+use Selenium::Remote::Commands;
 use Test::More;
 
 unless($ENV{RELEASE_TESTING}) {
   plan(skip_all=>"Author tests not required for installation.");
 }
 
-eval {use LWP::Simple;};
-plan skip_all => "need LWP::Simple" if $@;
-use Selenium::Remote::Commands;
-
 my $uri  = "http://selenium.googlecode.com/svn/wiki/JsonWireProtocol.wiki";
-my $data = get($uri);
+my $ua = LWP::UserAgent->new;
+my $data = $ua->get($uri)->content;
 plan skip_all => "need internet connection to run spec test" if !$data;
 
 my $todo_list = {
