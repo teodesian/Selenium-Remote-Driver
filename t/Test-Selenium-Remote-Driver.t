@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::WebElement;
 use Selenium::Remote::Mock::Commands;
@@ -16,7 +16,7 @@ my $find_element = sub {
     {
         return { status => 'OK', return => { ELEMENT => '123457' } };
     }
-    if ( $searched_item->{value} eq '//body' && $searched_item->{using} eq 'xpath') { 
+    if ( $searched_item->{value} eq '//body' && $searched_item->{using} eq 'xpath') {
         return { status => 'OK', return => { ELEMENT => '123458' } };
     }
     return { status => 'NOK', return => 0, error => 'element not found' };
@@ -58,15 +58,15 @@ my $send_keys = sub {
     return { status => 'NOK', return => 0, error => 'cannot send keys' };
 };
 
-my $get_text = sub { 
-    my ($session_object) =@_; 
+my $get_text = sub {
+    my ($session_object) =@_;
     return 'abc' if ($session_object->{id} eq '123456');
     return 'def' if ($session_object->{id} eq '123457');
     return 'this output matches' if ($session_object->{id} eq '123458');
     return;
 };
 
-my $get_attr = sub { 
+my $get_attr = sub {
     my ($session_object) = @_;
     return 'foo';
 };
@@ -79,11 +79,11 @@ my $spec = {
     findChildElements => $find_child_element,
     getElementText => $get_text,
     sendKeysToElement => $send_keys,
-    getElementAttribute => $get_attr, 
-    clickElement => sub { return { status => 'OK', return => 1 }; }, 
-    clearElement =>  sub { return { status => 'OK', return => 1 }; }, 
-    isElementDisplayed =>  sub { return { status => 'OK', return => 1 }; }, 
-    isElementEnabled =>  sub { return { status => 'OK', return => 1 }; }, 
+    getElementAttribute => $get_attr,
+    clickElement => sub { return { status => 'OK', return => 1 }; },
+    clearElement =>  sub { return { status => 'OK', return => 1 }; },
+    isElementDisplayed =>  sub { return { status => 'OK', return => 1 }; },
+    isElementEnabled =>  sub { return { status => 'OK', return => 1 }; },
 };
 
 my $mock_commands = Selenium::Remote::Mock::Commands->new;
@@ -94,24 +94,24 @@ my $successful_driver =
     commands => $mock_commands,
 );
 
-# find element ok tests 
+# find element ok tests
 $successful_driver->find_element_ok('q','find_element_ok works');
 $successful_driver->default_finder('class');
 $successful_driver->find_element_ok('p','find_element_ok with a locator works');
 $successful_driver->default_finder('xpath');
-dies_ok { $successful_driver->find_element_ok('notq') } 'find_element_ok dies if element not found';
+ok( exception { $successful_driver->find_element_ok('notq') }, 'find_element_ok dies if element not found' );
 $successful_driver->find_elements_ok('abc','find_elements_ok works');
 
-# find child element ok tests 
+# find child element ok tests
 $successful_driver->find_child_elements_ok({id => 1},'p','find_child_elements_ok works');
 $successful_driver->find_child_element_ok({id => 1},'p','class','find_child_element_ok with a locator works');
-dies_ok{ $successful_driver->find_child_element_ok({id => 1200}) } 'find_child_element_ok dies if the element is not found';
+ok( exception { $successful_driver->find_child_element_ok({id => 1200}) }, 'find_child_element_ok dies if the element is not found' );
 
 # find no element ok test
 
 $successful_driver->find_no_element_ok('notq','xpath','find_no_element_ok works');
 
-# body and content function family 
+# body and content function family
 $successful_driver->content_like( qr/matches/, 'content_like works');
 $successful_driver->content_unlike( qr/nomatch/, 'content_unlike works');
 $successful_driver->content_contains( 'matches', 'content_contains works');
