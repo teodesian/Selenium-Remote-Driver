@@ -2479,13 +2479,6 @@ sub upload_file {
     my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
     my $ret = $self->_execute_command( $res, $params );
 
-    #WORKAROUND: Since this is undocumented selenium functionality,
-    #work around a bug.
-    my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
-    if (defined $raw_content && $file ne $filename) {
-        $ret = File::Spec::Functions::catpath($drive,$path,$filename);
-    }
-
     return $ret;
 }
 
