@@ -525,6 +525,7 @@ UPLOAD: {
     #In the case this is not mocked, it tests a real issue (.. in paths), if not, it makes sure the zip/base64 bits at least don't make us explode.
     like( $fake_driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch' );
     like( $fake_driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
+    unlike( $fake_driver->upload_file('t/../t/uploadTest'),qr/\.\./,'upload_file: zip/base64 branch with .. in path' );
 
     #Negative tests to verify that our expected behavior codepath is travelled by tests
     like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/i,"Passing missing file terminates program");

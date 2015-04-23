@@ -2474,7 +2474,7 @@ sub upload_file {
     }
     else {
         #Otherwise, zip/base64 it.
-        $params = $self->_prepare_file($filename);
+        ($params, $filename) = $self->_prepare_file($filename);
     }
 
     my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
@@ -2504,7 +2504,7 @@ sub _prepare_file {
 
     return {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
-    };
+    }, $filename;
 }
 
 =head2 get_text
