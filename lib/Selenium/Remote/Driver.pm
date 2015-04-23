@@ -21,7 +21,7 @@ use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
-use File::Basename ();
+use File::Basename qw(basename);
 use Sub::Install ();
 use Cwd ();
 use MIME::Base64 ();
