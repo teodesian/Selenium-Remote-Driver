@@ -21,7 +21,7 @@ use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
-use File::Basename ();
+use File::Basename qw(basename);
 use Sub::Install ();
 use Cwd ();
 use MIME::Base64 ();
@@ -2474,7 +2474,7 @@ sub upload_file {
     }
     else {
         #Otherwise, zip/base64 it.
-        $params = $self->_prepare_file($filename);
+        ($params, $filename) = $self->_prepare_file($filename);
     }
 
     my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
@@ -2483,7 +2483,7 @@ sub upload_file {
     #WORKAROUND: Since this is undocumented selenium functionality,
     #work around a bug.
     my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
-    if ($file ne $filename) {
+    if ($file ne basename($filename)) {
         $ret = File::Spec::Functions::catpath($drive,$path,$filename);
     }
 
@@ -2504,7 +2504,7 @@ sub _prepare_file {
 
     return {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
-    };
+    }, $filename;
 }
 
 =head2 get_text
