@@ -21,9 +21,8 @@ use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
-use File::Basename ();
+use File::Basename qw(basename);
 use Sub::Install ();
-use Cwd ();
 use MIME::Base64 ();
 
 use constant FINDERS => {
@@ -2483,7 +2482,7 @@ sub upload_file {
     #WORKAROUND: Since this is undocumented selenium functionality,
     #work around a bug.
     my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
-    if ($file ne $filename) {
+    if (defined $raw_content && $file ne $filename) {
         $ret = File::Spec::Functions::catpath($drive,$path,$filename);
     }
 
@@ -2493,13 +2492,9 @@ sub upload_file {
 sub _prepare_file {
     my ($self,$filename) = @_;
 
-    #Apparently zip chokes on non-canonical paths, creating double
-    #submissions sometimes
-    $filename = Cwd::abs_path($filename);
-
     if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
-    zip $filename => \$string
+    zip $filename => \$string, Name => basename($filename)
       or die "zip failed: $ZipError\n";    # compress the file into string
 
     return {
