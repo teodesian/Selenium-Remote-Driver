@@ -2483,7 +2483,7 @@ sub upload_file {
     #WORKAROUND: Since this is undocumented selenium functionality,
     #work around a bug.
     my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
-    if ($file ne $filename) {
+    if ($file ne basename($filename)) {
         $ret = File::Spec::Functions::catpath($drive,$path,$filename);
     }
 
