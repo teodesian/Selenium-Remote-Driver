@@ -15,7 +15,8 @@ use v5.10.0;    # Before 5.006, v5.10.0 would not be understood.
 use Carp;
 our @CARP_NOT;
 
-use IO::Compress::Zip qw(zip $ZipError);
+use IO::String;
+use Archive::Zip qw( :ERROR_CODES );
 use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
@@ -2487,8 +2488,11 @@ sub _prepare_file {
 
     if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
-    zip $filename => \$string, Name => basename($filename)
-      or die "zip failed: $ZipError\n";    # compress the file into string
+    my $zip = Archive::Zip->new();
+    $zip->addFile($filename, basename($filename));
+    if ($zip->writeToFileHandle(IO::String->new($string)) != AZ_OK) {
+        die 'zip failed';
+    }
 
     return {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
