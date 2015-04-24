@@ -525,7 +525,7 @@ UPLOAD: {
     #In the case this is not mocked, it tests a real issue (.. in paths), if not, it makes sure the zip/base64 bits at least don't make us explode.
     like( my $path2 = $fake_driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch' );
     like( my $path3 = $fake_driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
-    unlike( $fake_driver->upload_file('t/../t/uploadTest'),qr/\.\./,'upload_file: zip/base64 branch with .. in path' );
+    unlike( $path3,qr/\.\./,'upload_file: zip/base64 branch with .. in path' );
     ok(-f $path2) if $harness->record;
     ok(-f $path3) if $harness->record;
 
