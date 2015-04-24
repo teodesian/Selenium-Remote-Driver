@@ -504,8 +504,8 @@ UPLOAD: {
     my $testFile = "UEsDBBQACAAIAFtuNEYAAAAAAAAAAAAAAAAKABUAdXBsb2FkVGVzdFVUCQADjbG+VJ6xvlRVeAQA\n6APoAytJLS4BAFBLBwgMfn/YBgAAAAQAAABQSwECFAMUAAgACABbbjRGDH5/2AYAAAAEAAAACgAN\nAAAAAAAAAAAApIEAAAAAdXBsb2FkVGVzdFVUBQABjbG+VFV4AABQSwUGAAAAAAEAAQBFAAAAUwAA\nAAAA\n";
     my $otherTestFile = "UEsDBBQACAAIAFtuNEYAAAAAAAAAAAAAAAAMABUAdC91cGxvYWRUZXN0VVQJAAOesb5UnrG+VFV4\nBADoA+gDK0ktLgEAUEsHCAx+f9gGAAAABAAAAFBLAQIUAxQACAAIAFtuNEYMfn/YBgAAAAQAAAAM\nAA0AAAAAAAAAAACkgQAAAAB0L3VwbG9hZFRlc3RVVAUAAZ6xvlRVeAAAUEsFBgAAAAABAAEARwAA\nAFUAAAAAAA==\n";
 
-    like( $driver->upload_file('uploadTest',$testFile),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
-    like( $driver->upload_file('t/uploadTest',$otherTestFile),qr/uploadTest$/,'upload_file returns FULL path to the file: subdir');
+    like( my $path1 = $driver->upload_file('uploadTest',$testFile),qr/uploadTest$/,'upload_file returns FULL path to the file: cwd');
+    ok(-f $path1) if $harness->record;
 
     my $fake_driver;
     if ($harness->record) {
@@ -523,9 +523,11 @@ UPLOAD: {
     }
 
     #In the case this is not mocked, it tests a real issue (.. in paths), if not, it makes sure the zip/base64 bits at least don't make us explode.
-    like( $fake_driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch' );
-    like( $fake_driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
+    like( my $path2 = $fake_driver->upload_file('t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch' );
+    like( my $path3 = $fake_driver->upload_file('t/../t/uploadTest'),qr/uploadTest$/,'upload_file: zip/base64 branch with .. in path' );
     unlike( $fake_driver->upload_file('t/../t/uploadTest'),qr/\.\./,'upload_file: zip/base64 branch with .. in path' );
+    ok(-f $path2) if $harness->record;
+    ok(-f $path3) if $harness->record;
 
     #Negative tests to verify that our expected behavior codepath is travelled by tests
     like( exception { $driver->upload_file('@@@SomeFileThatDoesNotExist@@@')},qr/no such file/i,"Passing missing file terminates program");
