@@ -2449,7 +2449,7 @@ sub button_up {
 
     When passing raw data, be advised that it expects a zipped
     and then base64 encoded version of a single file.
-    Multiple files are not supported by the remote server.
+    Multiple files and/or directories are not supported by the remote server.
 
  Usage:
     my $remote_fname = $driver->upload_file( $fname );
