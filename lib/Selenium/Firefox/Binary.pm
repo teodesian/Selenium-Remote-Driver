@@ -64,10 +64,9 @@ sub firefox_path {
 # the end of this function.
 my $profile;
 sub setup_firefox_binary_env {
-    my ($port) = @_;
+    my ($port, $caller_profile) = @_;
 
-    # TODO: respect the user's profile instead of overwriting it
-    $profile = Selenium::Firefox::Profile->new;
+    $profile = $caller_profile || Selenium::Firefox::Profile->new;
     $profile->add_webdriver($port);
 
     $ENV{'XRE_PROFILE_PATH'} = $profile->_layout_on_disk;

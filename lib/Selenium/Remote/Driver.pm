@@ -220,7 +220,6 @@ you please.
 =head2 new_from_caps
 
  Description:
-
     For experienced users who want complete control over the desired
     capabilities, use this alternative constructor along with the
     C<desired_capabilities> hash key in the init hash. Unlike "new",
@@ -406,7 +405,7 @@ has 'firefox_profile' => (
             croak "firefox_profile should be a Selenium::Firefox::Profile\n";
         }
 
-        return $profile->_encode;
+        return $profile;
     },
     predicate => 'has_firefox_profile'
 );
@@ -554,7 +553,7 @@ sub new_session {
 
     if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
           && $self->has_firefox_profile) {
-        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile;
+        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile->_encode;
     }
 
     $self->_request_new_session($args);

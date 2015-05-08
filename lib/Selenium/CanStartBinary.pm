@@ -216,7 +216,13 @@ sub _build_binary_mode {
     return if $port == 4444;
 
     if ($self->isa('Selenium::Firefox')) {
-        setup_firefox_binary_env($port);
+        my @args = ($port);
+
+        if ($self->has_firefox_profile) {
+            push @args, $self->firefox_profile;
+        }
+
+        setup_firefox_binary_env(@args);
     }
 
     my $command = $self->_construct_command;
