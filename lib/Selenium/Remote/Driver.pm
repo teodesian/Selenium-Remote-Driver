@@ -324,6 +324,12 @@ has 'remote_conn' => (
     },
 );
 
+has 'on_error' => ( 
+    is => 'rw', 
+    predicate => 1,
+    clearer => 1,
+);
+
 has 'ua' => (
     is      => 'lazy',
     builder => sub { return LWP::UserAgent->new }
@@ -455,6 +461,26 @@ sub DEMOLISH {
     return if $$ != $self->pid;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
 }
+
+around '_execute_command' => sub { 
+    my $orig = shift; 
+    my $self = shift; 
+    # copy @_ because it gets lost in the way
+    my @args = @_;
+    my $return_value; 
+    try { 
+        $return_value = $orig->($self,@args);
+    }
+    catch { 
+        if ($self->has_on_error) { 
+            $self->on_error->($self,$_);
+        }
+        else { 
+            croak $_;
+        }
+    };
+    return $return_value;
+};
 
 # This is an internal method used the Driver & is not supposed to be used by
 # end user. This method is used by Driver to set up all the parameters

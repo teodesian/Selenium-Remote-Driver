@@ -9,6 +9,7 @@ use IO::Socket::INET;
 use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
+use Carp;
 
 use FindBin;
 use lib $FindBin::Bin . '/lib';
@@ -513,6 +514,14 @@ UPLOAD: {
           if $harness->record;
         like( exception { $driver->upload_file(__FILE__) },qr/501/,"Passing this file rightly fails due to mock not being present");
     }
+}
+
+ERROR: { 
+    # driver behaviour on error
+    $driver->on_error(sub { my ($self,$error_msg) = @_; croak("Got message: $error_msg");});
+    like( exception{ $driver->find_element("somethingthatdoesnotexist") }, qr/^Got message:/, "Error handler catches correctly an error"); 
+    $driver->clear_on_error;
+    unlike( exception{ $driver->find_element("somethingthatdoesnotexist") }, qr/^Got message:/, "Error handler was correctly cleared");
 }
 
 QUIT: {
