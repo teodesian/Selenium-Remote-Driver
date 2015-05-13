@@ -487,8 +487,9 @@ sub new_from_caps {
 }
 
 sub DEMOLISH {
-    my ($self) = @_;
+    my ($self, $in_global_destruction) = @_;
     return if $$ != $self->pid;
+    return if $in_global_destruction;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
 }
 
@@ -986,7 +987,12 @@ sub close {
 =head2 quit
 
  Description:
-    Delete the session & close open browsers.
+    Delete the session & close open browsers. We will try to call this
+    on our down when we get DEMOLISHed, but in the event that we are
+    only demolished during global destruction, we will not be able to
+    close the browser. For your own unattended and/or complicated tests,
+    we recommend explicitly calling quit to make sure you're not leaving
+    orphan browsers around.
 
  Usage:
     $driver->quit();
