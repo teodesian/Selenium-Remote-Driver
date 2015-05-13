@@ -522,6 +522,8 @@ ERROR: {
     like( exception { $driver->find_element("somethingthatdoesnotexist") }, qr/^Got message:/, "Error handler catches correctly an error");
     $driver->clear_on_error;
     unlike( exception { $driver->find_element("somethingthatdoesnotexist") }, qr/^Got message:/, "Error handler was correctly cleared");
+
+    like( exception { $driver->on_error( 'hello' ) }, qr/must be a code ref/, 'we only accept code refs as error handlers');
 }
 
 QUIT: {

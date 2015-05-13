@@ -374,10 +374,20 @@ has 'remote_conn' => (
     },
 );
 
-has 'on_error' => ( 
-    is => 'rw', 
-    predicate => 1,
+has 'on_error' => (
+    is => 'rw',
+    coerce => sub {
+        my ($maybe_coderef) = @_;
+
+        if ( ref($maybe_coderef) eq 'CODE' ) {
+            return $maybe_coderef;
+        }
+        else {
+            croak 'The error handler must be a code ref.';
+        }
+    },
     clearer => 1,
+    predicate => 1
 );
 
 has 'ua' => (
