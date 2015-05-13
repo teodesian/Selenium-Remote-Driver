@@ -149,7 +149,7 @@ available here.
         'base_url'             - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
         'default_finder'       - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'inner_window_size'    - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
-        'on_error'             - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</on_error> for more details.
+        'error_handler'        - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
         'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
 
@@ -202,27 +202,27 @@ available here.
     or
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
-=head3 on_error
+=head3 error_handler
 
-=head3 clear_on_error
+=head3 clear_error_handler
 
 OPTIONAL constructor arg & associated setter/clearer: if you wish to
 install your own error handler, you may pass a code ref in to
-C<on_error> during instantiation like follows:
+C<error_handler> during instantiation like follows:
 
     my $driver = Selenium::Remote::Driver->new(
-        on_error => sub { print $_[1]; croak 'goodbye'; }
+        error_handler => sub { print $_[1]; croak 'goodbye'; }
     );
 
 Additionally, you can set and/or clear it at any time on an
 already-instantiated driver:
 
     # later, change the error handler to something else
-    $driver->on_error( sub { print $_[1]; croak 'hello'; } );
+    $driver->error_handler( sub { print $_[1]; croak 'hello'; } );
 
     # stop handling errors manually and use the default S:R:D behavior
     # (we will croak about the exception)
-    $driver->clear_on_error;
+    $driver->clear_error_handler;
 
 Your error handler will receive two arguments: the first argument is
 the C<$driver> object itself, and the second argument is the exception
@@ -274,7 +274,7 @@ C<eval>, or use the parameterized versions find_element_*).
         default_finder       - STRING  - defaults to xpath
         webelement_class     - STRING  - defaults to Selenium::Remote::WebElement
         auto_close           - BOOLEAN - defaults to 1
-        on_error             - CODEREF - defaults to croaking on exceptions
+        error_handler        - CODEREF - defaults to croaking on exceptions
 
     Except for C<desired_capabilities>, these keys perform exactly the
     same as listed in the regular "new" constructor.
@@ -374,7 +374,7 @@ has 'remote_conn' => (
     },
 );
 
-has 'on_error' => (
+has 'error_handler' => (
     is => 'rw',
     coerce => sub {
         my ($maybe_coderef) = @_;
@@ -535,8 +535,8 @@ around '_execute_command' => sub {
         $return_value = $orig->($self,@args);
     }
     catch {
-        if ($self->has_on_error) {
-            $self->on_error->($self,$_);
+        if ($self->has_error_handler) {
+            $self->error_handler->($self,$_);
         }
         else {
             croak $_;
