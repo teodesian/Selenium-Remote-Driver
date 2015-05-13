@@ -3,7 +3,7 @@ package Selenium::ActionChains;
 use Moo; 
 
 has 'driver' => ( 
-    is => 'rw', 
+    is => 'ro', 
 );
 
 has 'actions' => ( 
