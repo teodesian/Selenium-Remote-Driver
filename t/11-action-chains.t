@@ -4,7 +4,7 @@ use warnings;
 use JSON;
 use Test::More;
 use Test::Selenium::Remote::Driver;
-use Selenium::Remote::Driver::ActionChains;
+use Selenium::ActionChains;
 use Selenium::Remote::WDKeys 'KEYS';
 
 use FindBin;
@@ -17,7 +17,7 @@ my $harness = TestHarness->new(
 my %selenium_args = %{ $harness->base_caps };
 
 my $driver = Test::Selenium::Remote::Driver->new(%selenium_args);
-my $action_chains = Selenium::Remote::Driver::ActionChains->new(driver => $driver);
+my $action_chains = Selenium::ActionChains->new(driver => $driver);
 
 $driver->get('https://www.google.com');
 my $input_text = $driver->find_element("//input[\@type='text']");

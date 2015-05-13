@@ -1,4 +1,4 @@
-package Selenium::Remote::Driver::ActionChains; 
+package Selenium::ActionChains; 
 # ABSTRACT: Action chains for Selenium::Remote::Driver
 use Moo; 
 
