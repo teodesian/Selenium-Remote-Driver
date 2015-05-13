@@ -150,6 +150,30 @@ sub send_keys_to_element {
     $self;
 }
 
-
-
 1;
+
+__END__
+=pod 
+
+=head1 SYNOPSIS
+
+    use Selenium::Remote::Driver;
+    use Selenium::ActionChains; 
+
+    my $driver = Selenium::Remote::Driver->new;
+    my $action_chains = Selenium::ActionChains->new(driver => $driver);
+
+    $driver->get("http://www.some.web/site");
+    my $elt_1 = $driver->find_element("//*[\@id='someid']");
+    my $elt_2 = $driver->find_element("//*[\@id='someotherid']");
+    $action_chains->send_keys_to_element($elt_1)->click($elt_2)->perform;
+
+=head1 DESCRIPTION
+
+Implementation in Perl of ActionChains for Selenium, which is a way of automating 
+low level interactions like mouse movements, mouse button actions , key presses and 
+context menu interactions.
+
+=cut
+
+
