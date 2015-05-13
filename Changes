@@ -1,5 +1,39 @@
 Revision history for Selenium-Remote-Driver
 
+0.25  03-24-2015
+        (selenium version: 2.45.0)
+
+        [NEW FEATURES]
+        - #189 Start webdrivers directly, removing the need for the JRE. See
+           Selenium::Chrome, Selenium::Firefox, Selenium::PhantomJS.
+
+        [BUG FIXES]
+        - #194, #195: @teodesian, @jamadam: fix undocumented upload file behavior
+
+0.24    02-18-2015
+        [NEW FEATURES]
+        - #182 Non-crashing warn-instead-of-die parameter finders: find_element_by_class, etc
+        - #183 Convenience packages for starting up browsers: Selenium::Chrome, Selenium::Firefox, etc
+        - Provide wait_until utility functionality in Selenium::Waiter
+
+        [BUG FIXES]
+        - #184 Fix bug about reverting default finder in T:S:R:D
+
+0.23   01-25-2014
+        [NEW FEATURES]
+        - #178 Fix upload_file's return value & add test suite
+        - #179 Add optional middle finder-strategy argument to T:S:R:D's find_element-like functions
+        - #174 Add new endpoints: cache status, geolocation, log types, orientation, etc
+
+        [BUG FIXES]
+        - #175 Fix find_elements
+        - #180 Stop overwriting body_text_unlike test descriptions
+        - #141 Explicitly cast height and weight to integers for set_window_size
+
+0.2203 01-18-2014
+        [BUG FIXES]
+        - #175 Fix find_elements_ok
+
 0.2202 11-26-2014
         [BUG FIXES]
         - Generalize error message for invalid finder strategies

@@ -20,72 +20,31 @@ already downloaded and started the
 
 ## Installation
 
-It's probably easiest to use cpanm:
+It's probably easiest to use the `cpanm` or `CPAN` commands:
 
 ```bash
 $ cpanm Selenium::Remote::Driver
 ```
 
-If you want to install from this repository, you have a few options:
+If you want to install from this repository, you have a few options;
+see the [installation docs][] for more details.
 
-### With Dist::Zilla
-
-If you have Dist::Zilla, it's straightforward:
-
-```bash
-$ dzil listdeps --missing | cpanm
-$ dzil install
-```
-
-### Without Dist::Zilla
-
-We maintain two branches that have `Makefile.PL`:
-[`cpan`][cpan-branch] and [`build/master`][bm-branch]. The `cpan`
-branch is only updated every time we release to the CPAN, and it is
-not kept up to date with master. The `build/master` branch is an
-up-to-date copy of the latest changes in master, and will usually
-contain changes that have not made it to a CPAN release yet.
-
-To get either of these, you can use the following, (replacing
-"build/master" with "cpan" if desired):
-
-```bash
-$ cpanm -v git://github.com/gempesaw/Selenium-Remote-Driver.git@build/master
-```
-
-Or, without `cpanm` and/or without the `git://` protocol:
-
-```bash
-$ git clone https://github.com/gempesaw/Selenium-Remote-Driver --branch build/master --single-branch --depth 1
-$ cd Selenium-Remote-Driver
-$ perl Makefile.PL
-```
-
-Note that due to POD::Weaver, the line numbers between these generated
-branches and the master branch are unfortunately completely
-incompatible.
-
-[cpan-branch]: https://github.com/gempesaw/Selenium-Remote-Driver/tree/cpan
-[bm-branch]: https://github.com/gempesaw/Selenium-Remote-Driver/tree/build/master
-
-### Viewing dependencies
-
-You can also use `cpanm` to help you with dependencies after you've
-cloned the repository:
-
-```bash
-$ cpanm --showdeps .
-```
+[installation docs]: /INSTALL.md
 
 ## Usage
 
-You'll need a Remote WebDriver Server running somewhere. You can
-download a [selenium-standalone-server.jar][standalone] and run one
-locally, or you can point your driver somewhere like [Saucelabs][s].
+You can either use this module with the standalone java server, or use
+it to directly start the webdriver binaries for you. Note that the
+latter option does _not_ require the JRE/JDK to be installed, nor does
+it require the selenium standalone server (despite the name of the
+main module!).
 
-[s]: http://saucelabs.com
+### with a standalone server
 
-### Locally
+Download the standalone server and have it running on port 4444; then
+the following should start up Firefox for you:
+
+#### Locally
 
 ```perl
 #! /usr/bin/perl
@@ -112,7 +71,7 @@ print $driver->get_title . "\n"; # CPAN Selenium Remote Driver - Google Search
 $driver->quit;
 ```
 
-### Saucelabs
+#### Saucelabs
 
 ```perl
 use Selenium::Remote::Driver;
@@ -141,20 +100,43 @@ useful [example snippets][ex].
 [ie]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/IE-browser-automation
 [chrome]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Chrome-browser-automation
 [pjs]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
-[ex]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
+[ex]:
+https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
 
-#### NB: Problems with Webdriver 2.42.x ?
+### no standalone server
 
-It appears that the standalone webdriver API for no-content successful
-responses changed slightly in 2.42.x versions, breaking things like
-`get_ok` and `set_window_size`. Your options for fixes are:
+- _Firefox_: simply have the browser installed in the normal place
+for your OS.
 
-* Upgrade your version of S::R::D via your preferred method! We've
-  released v0.2002 of S::R::D to CPAN, which contains the fixes to
-  address this.
-* Or, stick with v2.41.0 of the Selenium standalone server or lower
-  for your tests. v0.2001 of S::R::D still works with v2.41.0 of the
-  standalone server.
+- _Chrome_: install the Chrome browser, [download Chromedriver][dcd]
+and get it in your `$PATH`:
+
+- _PhantomJS_: install the PhantomJS binary and get it in your `$PATH`
+
+As long as the proper binary is available in your path, you should be
+able to do the following:
+
+```perl
+my $firefox = Selenium::Firefox->new;
+$firefox->get('http://www.google.com');
+
+my $chrome = Selenium::Chrome->new;
+$chrome->get('http://www.google.com');
+
+my $ghost = Selenium::PhantomJS->new;
+$ghost->get('http://www.google.com');
+```
+
+Note that you can also pass a `binary` argument to any of the above
+classes to manually specify what binary to start:
+
+```perl
+my $chrome = Selenium::Chrome->new(binary => '~/Downloads/chromedriver');
+```
+
+See the pod for the different modules for more details.
+
+[dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
 
 ## Support and Documentation
 

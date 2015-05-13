@@ -15,7 +15,9 @@ my $harness = TestHarness->new(
 my %selenium_args = %{ $harness->base_caps };
 
 my $driver = Selenium::Remote::Driver->new(%selenium_args);
-my $website = 'http://localhost:63636';
+my $domain = $harness->domain;
+my $website = $harness->website;
+
 $driver->get("$website/formPage.html");
 my $ret;
 my $elem;

@@ -347,7 +347,7 @@ has '_cmds' => (
             'uploadFile' => {
                 'method'             => 'POST',
                 'url'                => 'session/:sessionId/file',
-                'no_content_success' => 1
+                'no_content_success' => 0
             },
             'getLocalStorageItem' => {
                 'method'             => 'GET',
@@ -358,7 +358,42 @@ has '_cmds' => (
                 'method'             => 'DELETE',
                 'url'                => '/session/:sessionId/local_storage/key/:key',
                 'no_content_success' => 1
-            }
+            },
+            'cacheStatus' => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/application_cache/status',
+                'no_content_success' => 0
+            },
+            'setGeolocation' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/location',
+                'no_content_success' => 1
+            },
+            'getGeolocation'   => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/location',
+                'no_content_success' => 0
+            },
+            'getLog' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/log',
+                'no_content_success' => 0
+            },
+            'getLogTypes'   => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/log/types',
+                'no_content_success' => 0
+            },
+            'setOrientation' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/orientation',
+                'no_content_success' => 1
+            },
+            'getOrientation'   => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/orientation',
+                'no_content_success' => 0
+            },
 
             # /session/:sessionId/local_storage
             # /session/:sessionId/local_storage/key/:key

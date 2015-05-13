@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use Test::LWP::UserAgent;
 use IO::Socket::INET;
 
@@ -25,26 +25,24 @@ UNAVAILABLE_BROWSER: {
         '{"status":13,"sessionId":null,"value":{"message":"The path to..."} }'
     ));
 
-    throws_ok(
-        sub {
-            Selenium::Remote::Driver->new_from_caps(
-                ua => $tua,
-                desired_capabilities => {
-                    browserName => 'chrome'
-                }
-            );
-        }, qr/Could not create new session.*path to/,
-        'Errors in browser configuration are passed to user'
-    );
+    like( exception {
+        Selenium::Remote::Driver->new_from_caps(
+            ua => $tua,
+            desired_capabilities => {
+                browserName => 'chrome'
+            }
+        );
+    }, qr/Could not create new session.*path to/,
+          'Errors in browser configuration are passed to user' );
 }
 
 LOCAL: {
-    throws_ok(
-        sub {
-            Selenium::Remote::Driver->new_from_caps( port => 80 );
-        }, qr/Selenium server did not return proper status/,
-        'Error message for not finding a selenium server is helpful'
-    );
+    like( exception {
+        Selenium::Remote::Driver->new_from_caps(
+            port => 80
+        );
+    }, qr/Selenium server did not return proper status/,
+          'Error message for not finding a selenium server is helpful' );
 }
 
 SAUCE: {
@@ -59,16 +57,16 @@ SAUCE: {
         skip 'Cannot reach saucelabs for Sauce error case ', 1
           unless $sock;
 
-        throws_ok(
-            sub {
-                Selenium::Remote::Driver->new_from_caps(
-                    remote_server_addr => $host,
-                    port => $port,
-                    desired_capabilities => {
-                        browserName => 'invalid'
-                    }
-                );
-            }, qr/Sauce Labs/, 'Saucelabs errors are passed to user');
+        like(exception {
+            Selenium::Remote::Driver->new_from_caps(
+                remote_server_addr => $host,
+                port => $port,
+                desired_capabilities => {
+                    browserName => 'invalid'
+                }
+            );
+        }, qr/Sauce Labs/,
+             'Saucelabs errors are passed to user');
 
     }
 }

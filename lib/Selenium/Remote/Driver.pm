@@ -20,6 +20,11 @@ use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
+use File::Spec::Functions ();
+use File::Basename ();
+use Sub::Install ();
+use Cwd ();
+use MIME::Base64 ();
 
 use constant FINDERS => {
     class             => 'class name',
@@ -33,6 +38,7 @@ use constant FINDERS => {
     tag_name          => 'tag name',
     xpath             => 'xpath',
 };
+
 
 =head1 SYNOPSIS
 
@@ -62,7 +68,16 @@ the Selenium Server (Selenium Server is a Java application).
 
 =cut
 
-=head1 USAGE (read this first)
+=head1 USAGE
+
+=head2 Without Standalone Server
+
+As of v0.25, it's possible to use this module without a standalone
+server - that is, you would not need the JRE or the JDK to run your
+Selenium tests. See L<Selenium::Chrome>, L<Selenium::PhantomJS>, and
+L<Selenium::Firefox> for details. If you'd like additional browsers
+besides these, give us a holler over in
+L<Github|https://github.com/gempesaw/Selenium-Remote-Driver/issues>.
 
 =head2 Remote Driver Response
 
@@ -101,10 +116,14 @@ For example, a testing-subclass may extend the web-element object with testing m
 
 =head1 TESTING
 
-If are writing automated tests using this module, make sure you also see
-L<Test::Selenium::Remote::Driver> which is also included in this distribution.
-It includes convenience testing methods for many of the selenum methods
-available here.
+If are writing automated tests using this module, you may be
+interested in L<Test::Selenium::Remote::Driver> which is also included
+in this distribution. It includes convenience testing methods for many
+of the selenum methods available here.
+
+Your other option is to use this module in conjunction with your
+choice of testing modules, like L<Test::Spec> or L<Test::More> as
+you please.
 
 =head1 FUNCTIONS
 
@@ -124,7 +143,7 @@ available here.
         'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
         'javascript'           - <boolean>  - whether javascript should be supported
         'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
-        'firefox_profile'      - Profile    - Use S::R::D::Firefox::Profile to create a Firefox profile for the browser to use
+        'firefox_profile'      - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use
         'proxy'                - HASH       - Proxy configuration with the following keys:
             'proxyType' - <string> - REQUIRED, Possible values are:
                 direct     - A direct connection - no proxy in use,
@@ -201,7 +220,6 @@ available here.
 =head2 new_from_caps
 
  Description:
-
     For experienced users who want complete control over the desired
     capabilities, use this alternative constructor along with the
     C<desired_capabilities> hash key in the init hash. Unlike "new",
@@ -256,6 +274,7 @@ has 'remote_server_addr' => (
     is      => 'rw',
     coerce  => sub { ( defined($_[0]) ? $_[0] : 'localhost' )},
     default => sub {'localhost'},
+    predicate => 1
 );
 
 has 'browser_name' => (
@@ -265,8 +284,7 @@ has 'browser_name' => (
 );
 
 has 'base_url' => (
-    is      => 'rw',
-    lazy    => 1,
+    is      => 'lazy',
     coerce  => sub {
         my $base_url = shift;
         $base_url =~ s|/$||;
@@ -285,6 +303,7 @@ has 'port' => (
     is      => 'rw',
     coerce  => sub { ( defined($_[0]) ? $_[0] : '4444' )},
     default => sub {'4444'},
+    predicate => 1
 );
 
 has 'version' => (
@@ -382,24 +401,22 @@ has 'firefox_profile' => (
     coerce    => sub {
         my $profile = shift;
         unless (Scalar::Util::blessed($profile)
-          && $profile->isa('Selenium::Remote::Driver::Firefox::Profile')) {
-            croak "firefox_profile should be a Selenium::Remote::Driver::Firefox::Profile\n";
+          && $profile->isa('Selenium::Firefox::Profile')) {
+            croak "firefox_profile should be a Selenium::Firefox::Profile\n";
         }
 
-        return $profile->_encode;
+        return $profile;
     },
     predicate => 'has_firefox_profile'
 );
 
 has 'desired_capabilities' => (
-    is        => 'rw',
-    lazy      => 1,
+    is        => 'lazy',
     predicate => 'has_desired_capabilities'
 );
 
 has 'inner_window_size' => (
-    is        => 'rw',
-    lazy      => 1,
+    is        => 'lazy',
     predicate => 1,
     coerce    => sub {
         my $size = shift;
@@ -416,6 +433,8 @@ has 'inner_window_size' => (
     },
 
 );
+
+with 'Selenium::Remote::Finders';
 
 sub BUILD {
     my $self = shift;
@@ -434,6 +453,22 @@ sub BUILD {
     elsif ($self->has_inner_window_size) {
         my $size = $self->inner_window_size;
         $self->set_inner_window_size(@$size);
+    }
+
+    # Setup non-croaking, parameter versions of finders
+    foreach my $by (keys %{ $self->FINDERS }) {
+        my $finder_name = 'find_element_by_' . $by;
+        # In case we get instantiated multiple times, we don't want to
+        # install into the name space every time.
+        unless ($self->can($finder_name)) {
+            my $find_sub = $self->_build_find_by($by);
+
+            Sub::Install::install_sub({
+                code => $find_sub,
+                into => __PACKAGE__,
+                as   => $finder_name,
+            });
+        }
     }
 }
 
@@ -475,6 +510,8 @@ sub _execute_command {
                 }
                 elsif ( $resp->{cmd_return} ) {
                     if ( ref( $resp->{cmd_return} ) eq 'HASH' ) {
+                        $msg .= ": $res->{command}"
+                          if $res->{command};
                         $msg .= ": $resp->{cmd_return}->{error}->{msg}"
                           if $resp->{cmd_return}->{error}->{msg};
                         $msg .= ": $resp->{cmd_return}->{message}"
@@ -516,7 +553,7 @@ sub new_session {
 
     if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
           && $self->has_firefox_profile) {
-        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile;
+        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile->_encode;
     }
 
     $self->_request_new_session($args);
@@ -1391,7 +1428,6 @@ sub capture_screenshot {
     my ( $self, $filename ) = @_;
     croak '$filename is required' unless $filename;
 
-    require MIME::Base64;
     open( my $fh, '>', $filename );
     binmode $fh;
     print $fh MIME::Base64::decode_base64( $self->screenshot() );
@@ -1581,6 +1617,8 @@ sub set_window_size {
     if ( not defined $height and not defined $width ) {
         croak "height & width of browser are required";
     }
+    $height += 0;
+    $width += 0;
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
     my $ret = $self->_execute_command( $res, $params );
@@ -1747,8 +1785,27 @@ sub get_page_source {
 =head2 find_element
 
  Description:
-    Search for an element on the page, starting from the document root. The
-    located element will be returned as a WebElement object.
+    Search for an element on the page, starting from the document
+    root. The located element will be returned as a WebElement
+    object. If the element cannot be found, we will CROAK, killing
+    your script. If you wish for a warning instead, use the
+    parameterized version of the finders:
+
+        find_element_by_class
+        find_element_by_class_name
+        find_element_by_css
+        find_element_by_id
+        find_element_by_link
+        find_element_by_link_text
+        find_element_by_name
+        find_element_by_partial_link_text
+        find_element_by_tag_name
+        find_element_by_xpath
+
+    These functions all take a single STRING argument: the locator
+    search target of the element you want. If the element is found, we
+    will receive a WebElement. Otherwise, we will return 0. Note that
+    invoking methods on 0 will of course kill your script.
 
  Input: 2 (1 optional)
     Required:
@@ -2000,6 +2057,46 @@ sub find_child_elements {
     }
 }
 
+=head2 find_element_by_class
+
+See L</find_element>.
+
+=head2 find_element_by_class_name
+
+See L</find_element>.
+
+=head2 find_element_by_css
+
+See L</find_element>.
+
+=head2 find_element_by_id
+
+See L</find_element>.
+
+=head2 find_element_by_link
+
+See L</find_element>.
+
+=head2 find_element_by_link_text
+
+See L</find_element>.
+
+=head2 find_element_by_name
+
+See L</find_element>.
+
+=head2 find_element_by_partial_link_text
+
+See L</find_element>.
+
+=head2 find_element_by_tag_name
+
+See L</find_element>.
+
+=head2 find_element_by_xpath
+
+See L</find_element>.
+
 =head2 get_active_element
 
  Description:
@@ -2025,6 +2122,167 @@ sub get_active_element {
         return $self->webelement_class->new( id => $ret_data->{ELEMENT},
             driver => $self );
     }
+}
+
+=head2 cache_status
+
+ Description:
+    Get the status of the html5 application cache.
+
+ Usage:
+    print $driver->cache_status;
+
+ Output:
+    <number> - Status code for application cache: {UNCACHED = 0, IDLE = 1, CHECKING = 2, DOWNLOADING = 3, UPDATE_READY = 4, OBSOLETE = 5}
+
+=cut
+
+sub cache_status {
+    my ($self) = @_;
+    my $res = { 'command' => 'cacheStatus' };
+    return $self->_execute_command($res);
+}
+
+=head2 set_geolocation
+
+ Description:
+    Set the current geographic location - note that your driver must
+    implement this endpoint, or else it will crash your session. At the
+    very least, it works in v2.12 of Chromedriver.
+
+ Input:
+    Required:
+        HASH: A hash with key C<location> whose value is a Location hashref. See
+        usage section for example.
+
+ Usage:
+    $driver->set_geolocation( location => {
+        latitude  => 40.714353,
+        longitude => -74.005973,
+        altitude  => 0.056747
+    });
+
+ Output:
+    BOOLEAN - success or failure
+
+=cut
+
+sub set_geolocation {
+    my ( $self, %params ) = @_;
+    my $res = { 'command' => 'setGeolocation' };
+    return $self->_execute_command( $res, \%params );
+}
+
+=head2 get_geolocation
+
+ Description:
+    Get the current geographic location. Note that your webdriver must
+    implement this endpoint - otherwise, it will crash your session. At
+    the time of release, we couldn't get this to work on the desktop
+    FirefoxDriver or desktop Chromedriver.
+
+ Usage:
+    print $driver->get_geolocation;
+
+ Output:
+    { latitude: number, longitude: number, altitude: number } - The current geo location.
+
+=cut
+
+sub get_geolocation {
+    my ($self) = @_;
+    my $res = { 'command' => 'getGeolocation' };
+    return $self->_execute_command($res);
+}
+
+=head2 get_log
+
+ Description:
+    Get the log for a given log type. Log buffer is reset after each request.
+
+ Input:
+    Required:
+        <STRING> - Type of log to retrieve:
+        {client|driver|browser|server}. There may be others available; see
+        get_log_types for a full list for your driver.
+
+ Usage:
+    $driver->get_log( $log_type );
+
+ Output:
+    <ARRAY|ARRAYREF> - An array of log entries since the most recent request.
+
+=cut
+
+sub get_log {
+    my ( $self, $type ) = @_;
+    my $res = { 'command' => 'getLog' };
+    return $self->_execute_command( $res, { type => $type });
+}
+
+=head2 get_log_types
+
+ Description:
+    Get available log types. By default, every driver should have client,
+    driver, browser, and server types, but there may be more available,
+    depending on your driver.
+
+ Usage:
+    my @types = $driver->get_log_types;
+    $driver->get_log($types[0]);
+
+ Output:
+    <ARRAYREF> - The list of log types.
+
+=cut
+
+sub get_log_types {
+    my ($self) = @_;
+    my $res = { 'command' => 'getLogTypes' };
+    return $self->_execute_command($res);
+}
+
+
+=head2 set_orientation
+
+ Description:
+    Set the browser orientation.
+
+ Input:
+    Required:
+        <STRING> - Orientation {LANDSCAPE|PORTRAIT}
+
+ Usage:
+    $driver->set_orientation( $orientation  );
+
+ Output:
+    BOOLEAN - success or failure
+
+=cut
+
+sub set_orientation {
+    my ( $self, $orientation ) = @_;
+    my $res = { 'command' => 'setOrientation' };
+    return $self->_execute_command( $res, { orientation => $orientation } );
+}
+
+=head2 get_orientation
+
+ Description:
+    Get the current browser orientation. Returns either LANDSCAPE|PORTRAIT.
+
+ Usage:
+    print $driver->get_orientation;
+
+ Output:
+    <STRING> - your orientation.
+
+=cut
+
+sub get_orientation {
+    my ($self) = @_;
+    my $res = { 'command' => 'getOrientation' };
+    return $self->_execute_command($res);
 }
 
 =head2 send_modifier
@@ -2186,6 +2444,13 @@ sub button_up {
     machine. That file then can be used for testing file upload on web
     forms. Returns the remote-server's path to the file.
 
+    Passing raw data as an argument past the filename will upload
+    that rather than the file's contents.
+
+    When passing raw data, be advised that it expects a zipped
+    and then base64 encoded version of a single file.
+    Multiple files are not supported by the remote server.
+
  Usage:
     my $remote_fname = $driver->upload_file( $fname );
     my $element = $driver->find_element( '//input[@id="file"]' );
@@ -2197,18 +2462,48 @@ sub button_up {
 # org.openqa.selenium.remote.RemoteWebElement java class.
 
 sub upload_file {
-    my ( $self, $filename ) = @_;
+    my ( $self, $filename, $raw_content ) = @_;
+
+    my $params;
+    if (defined $raw_content) {
+        #If no processing is passed, send the argument raw
+        $params = {
+            file => $raw_content
+        };
+    }
+    else {
+        #Otherwise, zip/base64 it.
+        $params = $self->_prepare_file($filename);
+    }
+
+    my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
+    my $ret = $self->_execute_command( $res, $params );
+
+    #WORKAROUND: Since this is undocumented selenium functionality,
+    #work around a bug.
+    my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
+    if ($file ne $filename) {
+        $ret = File::Spec::Functions::catpath($drive,$path,$filename);
+    }
+
+    return $ret;
+}
+
+sub _prepare_file {
+    my ($self,$filename) = @_;
+
+    #Apparently zip chokes on non-canonical paths, creating double
+    #submissions sometimes
+    $filename = Cwd::abs_path($filename);
+
     if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
     zip $filename => \$string
       or die "zip failed: $ZipError\n";    # compress the file into string
-    my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
-    require MIME::Base64;
 
-    my $params = {
+    return {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
     };
-    return $self->_execute_command( $res, $params );
 }
 
 =head2 get_text

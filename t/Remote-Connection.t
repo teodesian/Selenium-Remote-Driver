@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use Test::LWP::UserAgent;
 
 BEGIN: {
@@ -32,7 +32,8 @@ REDIRECT: {
         url => 'http://localhost/redirect'
     };
 
-    lives_ok(sub { $conn->request($redirect_endpoint) }, '303 redirects no longer kill us');
+    is( exception { $conn->request($redirect_endpoint) }, undef,
+        '303 redirects no longer kill us');
 }
 
 

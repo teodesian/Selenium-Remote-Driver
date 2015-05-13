@@ -1,19 +1,19 @@
 #!perl
+
 use strict;
 use warnings;
 
+use LWP::UserAgent;
+use Selenium::Remote::Commands;
 use Test::More;
 
 unless($ENV{RELEASE_TESTING}) {
   plan(skip_all=>"Author tests not required for installation.");
 }
 
-eval {use LWP::Simple;};
-plan skip_all => "need LWP::Simple" if $@;
-use Selenium::Remote::Commands;
-
 my $uri  = "http://selenium.googlecode.com/svn/wiki/JsonWireProtocol.wiki";
-my $data = get($uri);
+my $ua = LWP::UserAgent->new;
+my $data = $ua->get($uri)->content;
 plan skip_all => "need internet connection to run spec test" if !$data;
 
 my $todo_list = {
@@ -35,6 +35,7 @@ my $todo_list = {
    'POST session/:sessionId/keys'                          => 1,
    'GET session/:sessionId/location'                       => 1,
    'POST session/:sessionId/location'                      => 1,
+   'POST session/:sessionId/window/:windowHandle/maximize' => 1,
    'GET session/:sessionId/local_storage'                  => 1,
    'POST session/:sessionId/local_storage'                 => 1,
    'DELETE session/:sessionId/local_storage'               => 1,
@@ -47,9 +48,6 @@ my $todo_list = {
    'GET session/:sessionId/session_storage/key/:key'       => 1,
    'DELETE session/:sessionId/session_storage/key/:key'    => 1,
    'GET session/:sessionId/session_storage/size'           => 1,
-   'POST session/:sessionId/log'                           => 1,
-   'GET session/:sessionId/log/types'                      => 1,
-   'GET session/:sessionId/application_cache/status'       => 1,
 };
 my @lines = split(/\n/, $data);
 my @methods;

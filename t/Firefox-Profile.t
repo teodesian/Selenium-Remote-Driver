@@ -7,7 +7,7 @@ use Selenium::Remote::Driver;
 use Test::More;
 
 use MIME::Base64 qw/decode_base64/;
-use Archive::Extract;
+use IO::Uncompress::Unzip qw(unzip $UnzipError);
 use File::Temp;
 use JSON;
 use Selenium::Remote::Mock::RemoteConnection;
@@ -26,7 +26,8 @@ my $fixture_dir = $FindBin::Bin . '/www/';
 
 CUSTOM_EXTENSION_LOADED: {
     my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
-    my $website = 'http://localhost:63636';
+    my $domain = $harness->domain;
+    my $website = $harness->website;
     my $mock_encoded_profile = $fixture_dir . 'encoded_profile.b64';
     my $encoded;
 
@@ -74,7 +75,7 @@ CUSTOM_EXTENSION_LOADED: {
     # elements)
     $driver->set_implicit_wait_timeout(30000);
     $driver->find_element("h1", "tag_name");
-    cmp_ok($driver->get_current_url, '=~', qr/localhost/i,
+    cmp_ok($driver->get_current_url, '=~', qr/$domain/i,
            "profile loaded and preference respected!");
 
     $driver->get($website . '/index.html');
@@ -125,6 +126,15 @@ PREFERENCES: {
             cmp_ok($profile->get_preference($_), "eq", $expected->{$_},
                    "$_ pref is formatted correctly");
         }
+
+        $profile->set_preference(
+            'boolean.true.2' => JSON::true,
+            'boolean.false.2' => JSON::false
+        );
+        is($profile->get_preference('boolean.true.2'), 'true',
+           'format true booleans via set_preference & JSON::true');
+        is($profile->get_preference('boolean.false.2'), 'false',
+           'format false booleans via set_preference & JSON::false');
     }
 
   PACK_AND_UNPACK: {
@@ -132,19 +142,10 @@ PREFERENCES: {
         my $fh = File::Temp->new();
         print $fh decode_base64($encoded);
         close $fh;
-        my $zip = Archive::Extract->new(
-            archive => $fh->filename,
-            type => "zip"
-        );
-        my $tempdir = File::Temp->newdir();
-        my $ok = $zip->extract( to => $tempdir );
-        my $outdir = $zip->extract_path;
 
-        my $filename = $tempdir . "/user.js";
-        open ($fh, "<", $filename);
-        my (@file) = <$fh>;
-        close ($fh);
-        my $userjs = join('', @file);
+        my $userjs;
+        unzip $fh->filename => \$userjs, Name => "user.js"
+          or die "unzip failed: $UnzipError\n";
 
         foreach (keys %$expected) {
             my $value = $expected->{$_};

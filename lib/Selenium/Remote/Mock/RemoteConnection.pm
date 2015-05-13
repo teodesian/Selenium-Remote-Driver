@@ -52,12 +52,16 @@ has 'session_id' => (
     default => sub { undef },
 );
 
+has 'remote_server_addr' => (
+    is => 'lazy',
+    default => sub { 'localhost' }
+);
+
 sub BUILD {
     my $self = shift;
     croak 'Cannot define replay and record attributes at the same time' if (($self->replay) && ($self->record));
     croak 'replay_file attribute needs to be defined' if (($self->replay) && !($self->replay_file));
     croak 'replay attribute needs to be defined' if (!($self->replay) && ($self->replay_file));
-    $self->remote_server_addr('localhost');
     $self->port('4444');
     if ($self->replay) {
         $self->load_session_store($self->replay_file);
@@ -113,6 +117,9 @@ sub request {
         $content = $json->allow_nonref->utf8->canonical(1)->encode($params);
     }
     my $url_params = $resource->{url_params};
+
+    print "REQ: $method, $url, $content\n" if $self->debug;
+
     if ( $self->record ) {
         my $response = $self->SUPER::request( $resource, $params, 1 );
         push @{$self->session_store->{"$method $url $content"}},$response->as_string;
@@ -140,10 +147,6 @@ sub request {
     my $ret = { cmd_status => 'OK', cmd_return => 1 };
     if ( defined( $spec->{$cmd} ) ) {
         my $return_sub = $spec->{$cmd};
-        if ($no_content_success) {
-            $ret->{cmd_return} = 1;
-        }
-        else {
             my $mock_return = $return_sub->( $url_params, $params );
             if ( ref($mock_return) eq 'HASH' ) {
                 $ret->{cmd_status} = $mock_return->{status};
@@ -153,7 +156,6 @@ sub request {
             else {
                 $ret = $mock_return;
             }
-        }
         $ret->{session_id} = $self->fake_session_id if ( ref($ret) eq 'HASH' );
     }
     else {
