@@ -3,44 +3,40 @@ use warnings;
 
 use JSON;
 use Test::More;
-use Selenium::Remote::Driver;
-use Selenium::Remote::Mock::Commands;
-use Selenium::Remote::Mock::RemoteConnection;
+use Test::Selenium::Remote::Driver;
 use Selenium::Remote::Driver::ActionChains;
+use Selenium::Remote::WDKeys 'KEYS';
 
-my $record = (defined $ENV{'WD_MOCKING_RECORD'} && ($ENV{'WD_MOCKING_RECORD'}==1))?1:0;
-my $os  = $^O;
-if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-    $os = 'linux';
-}
-my %selenium_args = ( 
-    browser_name => 'firefox'
+use FindBin;
+use lib $FindBin::Bin . '/lib';
+use TestHarness;
+
+my $harness = TestHarness->new(
+    this_file => $FindBin::Script
 );
+my %selenium_args = %{ $harness->base_caps };
 
-
-my $mock_file = "11-action-chains-mock-$os.json";
-if (!$record && !(-e "t/mock-recordings/$mock_file")) {
-    plan skip_all => "Mocking of tests is not been enabled for this platform";
-}
-
-if ($record) { 
-    $selenium_args{remote_conn} = Selenium::Remote::Mock::RemoteConnection->new(record => 1);
-}
-else { 
-    $selenium_args{remote_conn} =
-      Selenium::Remote::Mock::RemoteConnection->new( replay => 1,
-        replay_file => "t/mock-recordings/$mock_file" );
-}
-
-my $driver = Selenium::Remote::Driver->new(%selenium_args);
+my $driver = Test::Selenium::Remote::Driver->new(%selenium_args);
 my $action_chains = Selenium::Remote::Driver::ActionChains->new(driver => $driver);
-$driver->get('http://html5demos.com/drag');
-$driver->pause('1000');
-my $src = $driver->find_element('a#two', 'css'); 
-my $tgt = $driver->find_element('div#bin','css');
-$action_chains->drag_and_drop($src,$tgt)->perform();
-if ($record) { 
-    $driver->remote_conn->dump_session_store("t/mock-recordings/$mock_file");
-}
+
+$driver->get('https://www.google.com');
+my $input_text = $driver->find_element("//input[\@type='text']");
+# type text to search on Google and press 'Enter'
+$action_chains->send_keys_to_element( $input_text, "test" )
+  ->key_down([KEYS->{'enter'}])->key_up([KEYS->{'enter'}])->perform;
+$driver->find_elements_ok("//*[\@class='hdtb-mitem']","We found Google's navbar");
+$driver->quit;
+
+$driver = Test::Selenium::Remote::Driver->new(%selenium_args);
+$action_chains->driver($driver);
+$action_chains->clear_actions;
+
+$driver->get("http://medialize.github.io/jQuery-contextMenu/demo.html"); 
+my $right_click_zone = $driver->find_element("//*[contains(text(),'right click me')]");
+$action_chains->context_click($right_click_zone)->perform;
+$driver->find_element("//*[text()='Paste']")->is_displayed_ok("The menu is correctly displayed on right click");
+$driver->quit;
+
+
 
 done_testing;

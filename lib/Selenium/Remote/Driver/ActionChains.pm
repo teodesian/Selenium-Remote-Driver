@@ -3,12 +3,13 @@ package Selenium::Remote::Driver::ActionChains;
 use Moo; 
 
 has 'driver' => ( 
-    is => 'ro', 
+    is => 'rw', 
 );
 
 has 'actions' => ( 
     is => 'lazy', 
     builder => sub { [] },
+    clearer => 1,
 );
 
 sub perform { 
@@ -25,7 +26,7 @@ sub click {
        $self->move_to_element($element); 
     }
     # left click
-    push @{$self->actions}, sub { $self->driver->click(0) };
+    push @{$self->actions}, sub { $self->driver->click('LEFT') };
     $self; 
 }
 
@@ -46,7 +47,7 @@ sub context_click {
        $self->move_to_element($element); 
     }
     # right click
-    push @{$self->actions}, sub { $self->driver->click(2) }; 
+    push @{$self->actions}, sub { $self->driver->click('RIGHT') }; 
     $self; 
 }
 
@@ -121,7 +122,8 @@ sub key_down {
     if (defined($element)) { 
         $self->click($element);
     }
-    push @{ $self->actions }, $self->driver->send_keys_to_active_element(@$value);
+    push @{ $self->actions }, sub { $self->driver->send_keys_to_active_element(@$value) };
+    $self;
 }
 
 sub key_up { 
@@ -130,7 +132,24 @@ sub key_up {
     if (defined($element)) { 
         $self->click($element);
     }
-    push @{ $self->actions }, $self->driver->send_keys_to_active_element(@$value);
+    push @{ $self->actions }, sub { $self->driver->send_keys_to_active_element(@$value) };
+    $self;
 }
+
+sub send_keys { 
+    my $self = shift; 
+    my $keys = shift; 
+    push @{ $self->actions} , sub { $self->driver->get_active_element->send_keys($keys) };
+    $self;
+}
+
+sub send_keys_to_element { 
+    my $self = shift; 
+    my ($element,$keys) = @_;
+    push @{ $self->actions }, sub { $element->send_keys($keys) };
+    $self;
+}
+
+
 
 1;
