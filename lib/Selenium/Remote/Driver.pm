@@ -15,15 +15,15 @@ use v5.10.0;    # Before 5.006, v5.10.0 would not be understood.
 use Carp;
 our @CARP_NOT;
 
-use IO::Compress::Zip qw(zip $ZipError);
+use IO::String;
+use Archive::Zip qw( :ERROR_CODES );
 use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
 use Selenium::Remote::WebElement;
 use File::Spec::Functions ();
-use File::Basename ();
+use File::Basename qw(basename);
 use Sub::Install ();
-use Cwd ();
 use MIME::Base64 ();
 
 use constant FINDERS => {
@@ -2449,7 +2449,7 @@ sub button_up {
 
     When passing raw data, be advised that it expects a zipped
     and then base64 encoded version of a single file.
-    Multiple files are not supported by the remote server.
+    Multiple files and/or directories are not supported by the remote server.
 
  Usage:
     my $remote_fname = $driver->upload_file( $fname );
@@ -2479,27 +2479,19 @@ sub upload_file {
     my $res = { 'command' => 'uploadFile' };    # /session/:SessionId/file
     my $ret = $self->_execute_command( $res, $params );
 
-    #WORKAROUND: Since this is undocumented selenium functionality,
-    #work around a bug.
-    my ($drive, $path, $file) = File::Spec::Functions::splitpath($ret);
-    if ($file ne $filename) {
-        $ret = File::Spec::Functions::catpath($drive,$path,$filename);
-    }
-
     return $ret;
 }
 
 sub _prepare_file {
     my ($self,$filename) = @_;
 
-    #Apparently zip chokes on non-canonical paths, creating double
-    #submissions sometimes
-    $filename = Cwd::abs_path($filename);
-
     if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
-    zip $filename => \$string
-      or die "zip failed: $ZipError\n";    # compress the file into string
+    my $zip = Archive::Zip->new();
+    $zip->addFile($filename, basename($filename));
+    if ($zip->writeToFileHandle(IO::String->new($string)) != AZ_OK) {
+        die 'zip failed';
+    }
 
     return {
         file => MIME::Base64::encode_base64($string)          # base64-encoded string
