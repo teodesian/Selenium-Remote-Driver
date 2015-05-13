@@ -161,11 +161,12 @@ you please.
     not part of the browser-related desired capabilities. These items
     are also optional.
 
-        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
-        'base_url'             - <string>   - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
-        'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
-        'inner_window_size'    - <aref[Int]>- An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
-        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
+        'auto_close'           - <boolean>   - whether driver should end session on remote server on close.
+        'base_url'             - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
+        'default_finder'       - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+        'inner_window_size'    - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
+        'error_handler'        - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
+        'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
 
     If no values are provided, then these defaults will be assumed:
@@ -217,6 +218,55 @@ you please.
     or
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
+=head3 error_handler
+
+=head3 clear_error_handler
+
+OPTIONAL constructor arg & associated setter/clearer: if you wish to
+install your own error handler, you may pass a code ref in to
+C<error_handler> during instantiation like follows:
+
+    my $driver = Selenium::Remote::Driver->new(
+        error_handler => sub { print $_[1]; croak 'goodbye'; }
+    );
+
+Additionally, you can set and/or clear it at any time on an
+already-instantiated driver:
+
+    # later, change the error handler to something else
+    $driver->error_handler( sub { print $_[1]; croak 'hello'; } );
+
+    # stop handling errors manually and use the default S:R:D behavior
+    # (we will croak about the exception)
+    $driver->clear_error_handler;
+
+Your error handler will receive two arguments: the first argument is
+the C<$driver> object itself, and the second argument is the exception
+message and stack trace in one multiline string.
+
+B<N.B.>: If you set your own error handler, you are entirely
+responsible for handling webdriver exceptions, _including_ croaking
+behavior. That is, when you set an error handler, we will no longer
+croak on Webdriver exceptions - it's up to you to do so. For
+consistency with the standard S:R:D behavior, we recommend your error
+handler also croak when it's done, especially since your test
+shouldn't be running into unexpected errors. Catching specific or
+desired errors in your error handler makes sense, but not croaking at
+all can leave you in unfamiliar territory. Reaching an unexpected
+exception might mean your test has gone off the rails, and the further
+your test gets from the source of the of the exception, the harder it
+will be to debug.
+
+B<N.B.>: Four methods will still croak on their own: L</find_element>,
+L</find_elements>, L</find_child_element>, and
+L</find_child_elements>. If these methods throw a Webdriver Exception,
+your error handler _will still be_ invoked inside an C<eval>, and then
+they'll croak with their own error message that indicates the locator
+and strategy used. So, your strategies for avoiding exceptions when
+finding elements do not change (either use find_elements and check
+the returned array size, wrap your calls to find_element* in an
+C<eval>, or use the parameterized versions find_element_*).
+
 =head2 new_from_caps
 
  Description:
@@ -240,6 +290,7 @@ you please.
         default_finder       - STRING  - defaults to xpath
         webelement_class     - STRING  - defaults to Selenium::Remote::WebElement
         auto_close           - BOOLEAN - defaults to 1
+        error_handler        - CODEREF - defaults to croaking on exceptions
 
     Except for C<desired_capabilities>, these keys perform exactly the
     same as listed in the regular "new" constructor.
@@ -338,6 +389,22 @@ has 'remote_conn' => (
                 ua                 => $self->ua
             );
     },
+);
+
+has 'error_handler' => (
+    is => 'rw',
+    coerce => sub {
+        my ($maybe_coderef) = @_;
+
+        if ( ref($maybe_coderef) eq 'CODE' ) {
+            return $maybe_coderef;
+        }
+        else {
+            croak 'The error handler must be a code ref.';
+        }
+    },
+    clearer => 1,
+    predicate => 1
 );
 
 has 'ua' => (
@@ -488,6 +555,29 @@ sub DEMOLISH {
     return if $in_global_destruction;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
 }
+
+# We install an 'around' because we can catch more exceptions this way
+# than simply wrapping the explicit croaks in _execute_command.
+
+around '_execute_command' => sub {
+    my $orig = shift;
+    my $self = shift;
+    # copy @_ because it gets lost in the way
+    my @args = @_;
+    my $return_value;
+    try {
+        $return_value = $orig->($self,@args);
+    }
+    catch {
+        if ($self->has_error_handler) {
+            $self->error_handler->($self,$_);
+        }
+        else {
+            croak $_;
+        }
+    };
+    return $return_value;
+};
 
 # This is an internal method used the Driver & is not supposed to be used by
 # end user. This method is used by Driver to set up all the parameters
