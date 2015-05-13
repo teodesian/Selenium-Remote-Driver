@@ -145,12 +145,12 @@ available here.
     not part of the browser-related desired capabilities. These items
     are also optional.
 
-        'auto_close'           - <boolean>  - whether driver should end session on remote server on close.
-        'base_url'             - <string>   - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
-        'default_finder'       - <string>   - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
-        'inner_window_size'    - <aref[Int]>- An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
-        'webelement_class'     - <string>   - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
+        'auto_close'           - <boolean>   - whether driver should end session on remote server on close.
+        'base_url'             - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
+        'default_finder'       - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+        'inner_window_size'    - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
         'on_error'             - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</on_error> for more details.
+        'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
 
     If no values are provided, then these defaults will be assumed:
@@ -254,7 +254,6 @@ C<eval>, or use the parameterized versions find_element_*).
 =head2 new_from_caps
 
  Description:
-
     For experienced users who want complete control over the desired
     capabilities, use this alternative constructor along with the
     C<desired_capabilities> hash key in the init hash. Unlike "new",
@@ -516,20 +515,20 @@ sub DEMOLISH {
 # We install an 'around' because we can catch more exceptions this way
 # than simply wrapping the explicit croaks in _execute_command.
 
-around '_execute_command' => sub { 
-    my $orig = shift; 
-    my $self = shift; 
+around '_execute_command' => sub {
+    my $orig = shift;
+    my $self = shift;
     # copy @_ because it gets lost in the way
     my @args = @_;
-    my $return_value; 
-    try { 
+    my $return_value;
+    try {
         $return_value = $orig->($self,@args);
     }
-    catch { 
-        if ($self->has_on_error) { 
+    catch {
+        if ($self->has_on_error) {
             $self->on_error->($self,$_);
         }
-        else { 
+        else {
             croak $_;
         }
     };
