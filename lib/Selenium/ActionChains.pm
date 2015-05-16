@@ -1,4 +1,5 @@
 package Selenium::ActionChains;
+
 # ABSTRACT: Action chains for Selenium::Remote::Driver
 use Moo;
 
@@ -153,6 +154,7 @@ sub send_keys_to_element {
 1;
 
 __END__
+
 =pod
 
 =head1 SYNOPSIS
@@ -319,6 +321,7 @@ Releases a mofifier key.
 
 
 =head2 move_by_offset
+
 Moves the mouse to an offset from current mouse position.
 
     Args:
@@ -329,6 +332,7 @@ Moves the mouse to an offset from current mouse position.
         $action_chains->move_by_offset(10,100);
 
 =head2 move_to_element
+
 Moves the mouse to the middle of an element
 
     Args:
@@ -341,6 +345,7 @@ Moves the mouse to the middle of an element
 
 
 =head2 move_to_element_with_offset
+
 Moves the mouse by an offset of the specified element.
 Offsets are relative to the top-left corner of the element
 
@@ -355,6 +360,7 @@ Offsets are relative to the top-left corner of the element
 
 
 =head2 release
+
 Releases a held mouse_button
 
     Args:
@@ -365,6 +371,7 @@ Releases a held mouse_button
         $action_chains->release($element);
 
 =head2 send_keys
+
 Sends keys to the currently focused element
 
     Args:
@@ -374,6 +381,7 @@ Sends keys to the currently focused element
         $action_chains->send_keys('abcd');
 
 =head2 send_keys_to_element
+
 Sends keys to an element
 
     Args:
