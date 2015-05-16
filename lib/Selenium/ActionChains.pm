@@ -1,91 +1,91 @@
-package Selenium::ActionChains; 
+package Selenium::ActionChains;
 # ABSTRACT: Action chains for Selenium::Remote::Driver
-use Moo; 
+use Moo;
 
-has 'driver' => ( 
-    is => 'ro', 
+has 'driver' => (
+    is => 'ro',
 );
 
-has 'actions' => ( 
-    is => 'lazy', 
+has 'actions' => (
+    is => 'lazy',
     builder => sub { [] },
     clearer => 1,
 );
 
-sub perform { 
-    my $self = shift; 
-    foreach my $action (@{$self->actions}) { 
+sub perform {
+    my $self = shift;
+    foreach my $action (@{$self->actions}) {
         $action->();
     }
 }
 
-sub click { 
-    my $self = shift; 
-    my $element = shift; 
-    if ($element) { 
-       $self->move_to_element($element); 
+sub click {
+    my $self = shift;
+    my $element = shift;
+    if ($element) {
+       $self->move_to_element($element);
     }
     # left click
     push @{$self->actions}, sub { $self->driver->click('LEFT') };
-    $self; 
+    $self;
 }
 
-sub click_and_hold { 
-    my $self = shift; 
-    my $element = shift; 
-    if ($element) { 
-       $self->move_to_element($element); 
+sub click_and_hold {
+    my $self = shift;
+    my $element = shift;
+    if ($element) {
+       $self->move_to_element($element);
     }
     push @{$self->actions}, sub { $self->driver->button_down };
-    $self; 
+    $self;
 }
 
-sub context_click { 
-    my $self = shift; 
-    my $element = shift; 
-    if ($element) { 
-       $self->move_to_element($element); 
+sub context_click {
+    my $self = shift;
+    my $element = shift;
+    if ($element) {
+       $self->move_to_element($element);
     }
     # right click
-    push @{$self->actions}, sub { $self->driver->click('RIGHT') }; 
-    $self; 
+    push @{$self->actions}, sub { $self->driver->click('RIGHT') };
+    $self;
 }
 
 
-sub double_click { 
-    my $self = shift; 
-    my $element = shift; 
-    if ($element) { 
-       $self->move_to_element($element); 
+sub double_click {
+    my $self = shift;
+    my $element = shift;
+    if ($element) {
+       $self->move_to_element($element);
     }
     push @{$self->actions}, sub { $self->driver->double_click };
-    $self; 
+    $self;
 }
 
-sub release { 
-    my $self = shift; 
-    my $element = shift; 
-    if ($element) { 
-       $self->move_to_element($element); 
+sub release {
+    my $self = shift;
+    my $element = shift;
+    if ($element) {
+       $self->move_to_element($element);
     }
     push @{$self->actions}, sub { $self->driver->button_up };
-    $self; 
+    $self;
 }
 
-sub drag_and_drop { 
-    my $self = shift; 
+sub drag_and_drop {
+    my $self = shift;
     my ($source,$target) = @_;
     $self->click_and_hold($source);
     $self->release($target);
-    $self; 
+    $self;
 }
 
-sub drag_and_drop_by_offset { 
-    my $self = shift; 
+sub drag_and_drop_by_offset {
+    my $self = shift;
     my ($source,$xoffset,$yoffset) = @_;
-    $self->click_and_hold($source); 
+    $self->click_and_hold($source);
     $self->move_by_offset($xoffset,$yoffset);
-    $self->release($source); 
+    $self->release($source);
     $self;
 }
 
@@ -116,35 +116,35 @@ sub move_to_element_with_offset {
     $self;
 }
 
-sub key_down { 
-    my $self = shift; 
+sub key_down {
+    my $self = shift;
     my ($value ,$element) = @_;
-    if (defined($element)) { 
+    if (defined($element)) {
         $self->click($element);
     }
     push @{ $self->actions }, sub { $self->driver->send_keys_to_active_element(@$value) };
     $self;
 }
 
-sub key_up { 
-    my $self = shift; 
+sub key_up {
+    my $self = shift;
     my ($value ,$element) = @_;
-    if (defined($element)) { 
+    if (defined($element)) {
         $self->click($element);
     }
     push @{ $self->actions }, sub { $self->driver->send_keys_to_active_element(@$value) };
     $self;
 }
 
-sub send_keys { 
-    my $self = shift; 
-    my $keys = shift; 
+sub send_keys {
+    my $self = shift;
+    my $keys = shift;
     push @{ $self->actions} , sub { $self->driver->get_active_element->send_keys($keys) };
     $self;
 }
 
-sub send_keys_to_element { 
-    my $self = shift; 
+sub send_keys_to_element {
+    my $self = shift;
     my ($element,$keys) = @_;
     push @{ $self->actions }, sub { $element->send_keys($keys) };
     $self;
@@ -153,12 +153,12 @@ sub send_keys_to_element {
 1;
 
 __END__
-=pod 
+=pod
 
 =head1 SYNOPSIS
 
     use Selenium::Remote::Driver;
-    use Selenium::ActionChains; 
+    use Selenium::ActionChains;
 
     my $driver = Selenium::Remote::Driver->new;
     my $action_chains = Selenium::ActionChains->new(driver => $driver);
@@ -170,36 +170,36 @@ __END__
 
 =head1 DESCRIPTION
 
-This module implements ActionChains for Selenium, which is a way of automating 
-low level interactions like mouse movements, mouse button actions , key presses and 
+This module implements ActionChains for Selenium, which is a way of automating
+low level interactions like mouse movements, mouse button actions , key presses and
 context menu interactions.
 The code was inspired by the L<Python implementation|http://selenium.googlecode.com/svn/trunk/docs/api/py/_modules/selenium/webdriver/common/action_chains.html#ActionChains>.
 
 
-=head1 DRAG AND DROP IS NOT WORKING ! 
+=head1 DRAG AND DROP IS NOT WORKING !
 
 The implementation contains a drag_and_drop function, but due to Selenium limitations, it is L<not working|https://code.google.com/p/selenium/issues/detail?id=3604>.
 
-Nevertheless, we decided to implement the function, because eventually one day it will work. 
+Nevertheless, we decided to implement the function, because eventually one day it will work.
 
 In the meantime, there are workarounds that can be used to simulate drag and drop, like L<this StackOverflow post|http://stackoverflow.com/questions/29381233/how-to-simulate-html5-drag-and-drop-in-selenium-webdriver-in-python>.
 
 =head1 FUNCTIONS
 
-=head2 new 
+=head2 new
 
 Creates a new ActionChains object. Requires a Selenium::Remote::Driver as a mandatory parameter:
-    
+
     my $driver = Selenium::Remote::Driver->new;
-    my $action_chains = Selenium::ActionChains->new(driver => $driver); 
+    my $action_chains = Selenium::ActionChains->new(driver => $driver);
 
 =head2 perform
 
-Performs all the actions stored in the ActionChains object in the order they were called: 
+Performs all the actions stored in the ActionChains object in the order they were called:
 
     Args: None
-    
-    Usage: 
+
+    Usage:
         my $action_chains = Selenium::ActionChains->new(driver => $driver);
         # assuming that $some_element and $other_element are valid
         # Selenium::Remote::WebElement objects
@@ -211,25 +211,25 @@ Performs all the actions stored in the ActionChains object in the order they wer
 
 
 
-=head2 click 
+=head2 click
 
 Clicks an element. If none specified, clicks on current mouse position.
 
     Args: A Selenium::Remote::WebElement object
 
-    Usage: 
+    Usage:
         my $element = $driver->find_element("//div[\@id='some_id']");
         $action_chains->click($element);
 
 
-=head2 click_and_hold 
+=head2 click_and_hold
 
 Holds down the left mouse button on an element. If none specified, clicks on current
-mouse position. 
+mouse position.
 
     Args: A Selenium::Remote::WebElement object
 
-    Usage: 
+    Usage:
         my $element = $driver->find_element("//div[\@id='some_id']");
         $action_chains->click_and_hold($element);
 
@@ -240,34 +240,34 @@ position.
 
     Args: A Selenium::Remote::WebElement object
 
-    Usage: 
+    Usage:
         my $element = $driver->find_element("//div[\@id='some_id']");
         $action_chains->context_click($element);
 
 
 
-=head2 double_click 
+=head2 double_click
 
 Double clicks an element. If none specified, double clicks on current mouse
 position.
 
     Args: A Selenium::Remote::WebElement object
 
-    Usage: 
+    Usage:
         my $element = $driver->find_element("//div[\@id='some_id']");
         $action_chains->double_click($element);
 
-=head2 drag_and_drop - NOT WORKING 
+=head2 drag_and_drop - NOT WORKING
 
 Holds down the left mouse button on the source element, then moves to the target
 element and releases the mouse button. IT IS NOT WORKING DUE TO CURRENT SELENIUM
 LIMITATIONS.
 
-    Args: 
+    Args:
        A source Selenium::Remote::WebElement object
        A target Selenium::Remote::WebElement object
 
-    Usage: 
+    Usage:
         my $src_element = $driver->find_element("//*[\@class='foo']");
         my $tgt_element = $driver->find_element("//*[\@class='bar']");
         $action_chains->drag_and_drop($src_element,$tgt_element);
@@ -278,37 +278,37 @@ Holds down the left mouse button on the source element, then moves to the offset
 specified and releases the mouse button. IT IS NOT WORKING DUE TO CURRENT SELENIUM
 LIMITATIONS.
 
-    Args: 
+    Args:
        A source Selenium::Remote::WebElement object
        An integer X offset
        An integer Y offset
 
-    Usage: 
+    Usage:
         my $src_element = $driver->find_element("//*[\@class='foo']");
         my $xoffset = 10;
         my $yoffset = 10;
         $action_chains->drag_and_drop($src_element,$xoffset,$yoffset);
 
 
-=head2 key_down 
+=head2 key_down
 
-Sends key presses only, without releasing them. 
+Sends key presses only, without releasing them.
 Should be used only with modifier keys (Control, Alt, Shift)
 
-    Args: 
+    Args:
         An array ref to keys to send. Use the KEY constant from Selenium::Remote::WDKeys
         The element to send keys to. If none, sends keys to the current focused element
 
     Usage:
         use Selenium::Remote::WDKeys 'KEYS';
         $action_chains->key_down( [ KEYS->{'alt'} ] );
-        
 
-=head2 key_up 
+
+=head2 key_up
 
 Releases a mofifier key.
 
-    Args: 
+    Args:
         An array ref to keys to send. Use the KEY constant from Selenium::Remote::WDKeys
         The element to send keys to. If none, sends keys to the current focused element
 
@@ -319,66 +319,66 @@ Releases a mofifier key.
 
 
 =head2 move_by_offset
-Moves the mouse to an offset from current mouse position. 
+Moves the mouse to an offset from current mouse position.
 
-    Args: 
+    Args:
         An integer X offset
         An integer Y offset
 
-    Usage: 
+    Usage:
         $action_chains->move_by_offset(10,100);
 
 =head2 move_to_element
 Moves the mouse to the middle of an element
 
-    Args: 
+    Args:
         A Selenium::Remote::WebElement to move to
 
     Usage:
         my $element = $driver->find_element('foo','id');
         $action_chains->move_to_element($element);
-        
+
 
 
 =head2 move_to_element_with_offset
-Moves the mouse by an offset of the specified element. 
-Offsets are relative to the top-left corner of the element 
+Moves the mouse by an offset of the specified element.
+Offsets are relative to the top-left corner of the element
 
-    Args: 
+    Args:
         A Selenium::Remote::WebElement
-        An integer X offset 
-        An integer Y offset 
+        An integer X offset
+        An integer Y offset
 
     Usage:
         my $element = $driver->find_element('foo','id');
         $action_chains->move_to_element_with_offset($element,10,10);
-        
+
 
 =head2 release
 Releases a held mouse_button
 
-    Args: 
+    Args:
         A Selenium::Remote::WebElement, the element to mouse up
 
-    Usage: 
+    Usage:
         my $element = $driver->find_element('foo','id');
         $action_chains->release($element);
 
-=head2 send_keys 
+=head2 send_keys
 Sends keys to the currently focused element
 
-    Args: 
-        The keys to send 
+    Args:
+        The keys to send
 
-    Usage: 
+    Usage:
         $action_chains->send_keys('abcd');
 
 =head2 send_keys_to_element
-Sends keys to an element 
+Sends keys to an element
 
-    Args: 
+    Args:
         A Selenium::Remote::WebElement
-        The keys to send 
+        The keys to send
 
     Usage:
         my $element = $driver->find_element('foo','id');
@@ -386,5 +386,3 @@ Sends keys to an element
 
 
 =cut
-
-
