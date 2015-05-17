@@ -1,6 +1,19 @@
 Revision history for Selenium-Remote-Driver
 
-0.25  03-24-2015
+0.2550 05-16-215
+        (selenium version: 2.45.0)
+
+        [NEW FEATURES]
+        - #203: Allow users to install a custom error handler
+        - #204: Implement action chains
+
+        [BUG FIXES]
+        - #147: Allow for inflation to a full Moose class
+        - #192: Stop assuming objects are around during global destruction
+        - #200: Fix undocumented upload_file endpoint bug for paths with ".."
+        - Refactor to remove some unnecessary dependencies
+
+0.25   03-24-2015
         (selenium version: 2.45.0)
 
         [NEW FEATURES]
