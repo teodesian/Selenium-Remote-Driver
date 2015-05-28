@@ -33,7 +33,8 @@ has func_list => (
             'send_modifier_ok', 'accept_alert_ok', 'dismiss_alert_ok',
             'get_ok', 'go_back_ok', 'go_forward_ok', 'add_cookie_ok',
             'get_page_source_ok', 'find_element_ok', 'find_elements_ok',
-            'find_child_element_ok', 'find_child_elements_ok', 'find_no_element_ok',
+            'find_child_element_ok', 'find_child_elements_ok',
+            'find_no_element_ok',
             'compare_elements_ok', 'click_ok', 'double_click_ok',
             'body_like',
         ];
@@ -44,14 +45,14 @@ sub has_args {
     my $self          = shift;
     my $fun_name      = shift;
     my $hash_fun_args = {
-        'find_element'     => 2,
-        'find_no_element' => 2,
-        'find_child_element'     => 3,
-        'find_child_elements'     => 3,
-        'find_element'     => 2,
-        'find_elements'     => 2,
-        'compare_elements' => 2,
-        'get' => 1,
+        'find_element'        => 2,
+        'find_no_element'     => 2,
+        'find_child_element'  => 3,
+        'find_child_elements' => 3,
+        'find_element'        => 2,
+        'find_elements'       => 2,
+        'compare_elements'    => 2,
+        'get'                 => 1,
     };
     return ( $hash_fun_args->{$fun_name} // 0 );
 }
@@ -238,41 +239,47 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
 
 # function composing a find_element with locator with a webelement test
 
-sub _find_element_with_action { 
-    my $self = shift; 
+sub _find_element_with_action {
+    my $self   = shift;
     my $method = shift;
-    my ($locator,$locator_strategy,$params,$desc) = @_;
-    # case 4 args 
-    if ($desc) { 
-        $self->croak('Invalid locator strategy') unless ($self->FINDERS->{$locator_strategy});
+    my ( $locator, $locator_strategy, $params, $desc ) = @_;
+
+    # case 4 args
+    if ($desc) {
+        $self->croak('Invalid locator strategy')
+          unless ( $self->FINDERS->{$locator_strategy} );
     }
-    else { 
-        if ($params) { 
+    else {
+        if ($params) {
+
             # means that we called it the 'old way' (no locator strategy)
-            if (!defined($self->FINDERS->{$locator_strategy})) { 
-                $desc = $params; 
-                $params = $locator_strategy; 
-                $locator_strategy = $self->_get_finder_key($self->default_finder);
+            if ( !defined( $self->FINDERS->{$locator_strategy} ) ) {
+                $desc   = $params;
+                $params = $locator_strategy;
+                $locator_strategy =
+                  $self->_get_finder_key( $self->default_finder );
             }
         }
-        else { 
-            # means it was called with no locator strategy and no desc 
-            if ($locator_strategy) { 
-                if (!defined($self->FINDERS->{$locator_strategy})) { 
-                    $params = $locator_strategy; 
-                    $locator_strategy = $self->_get_finder_key($self->default_finder);
+        else {
+            # means it was called with no locator strategy and no desc
+            if ($locator_strategy) {
+                if ( !defined( $self->FINDERS->{$locator_strategy} ) ) {
+                    $params = $locator_strategy;
+                    $locator_strategy =
+                      $self->_get_finder_key( $self->default_finder );
                 }
             }
-            else { 
+            else {
                 $self->croak('Not enough arguments');
             }
         }
     }
     unless ($desc) {
         $desc = $method;
-        $desc .= "'" . join( " ", ($params // '') ) . "'";
+        $desc .= "'" . join( " ", ( $params // '' ) ) . "'";
     }
-    return $self->find_element($locator,$locator_strategy)->$method( $params, $desc );
+    return $self->find_element( $locator, $locator_strategy )
+      ->$method( $params, $desc );
 }
 
 
@@ -288,9 +295,9 @@ label.
 =cut
 
 sub type_element_ok {
-    my $self    = shift;
-    my $method = 'send_keys_ok'; 
-    return $self->_find_element_with_action($method,@_);
+    my $self   = shift;
+    my $method = 'send_keys_ok';
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 
@@ -301,9 +308,9 @@ sub type_element_ok {
 =cut
 
 sub element_text_is {
-    my $self = shift; 
+    my $self   = shift;
     my $method = 'text_is';
-    return $self->_find_element_with_action($method,@_);
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 =head2 $twd->element_value_is($search_target[,$finder],$expected_value [,$desc]);
@@ -313,9 +320,9 @@ sub element_text_is {
 =cut
 
 sub element_value_is {
-    my $self = shift; 
+    my $self   = shift;
     my $method = 'value_is';
-    return $self->_find_element_with_action($method,@_);
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 =head2 $twd->click_element_ok($search_target [,$desc]);
@@ -327,9 +334,9 @@ Find an element and then click on it.
 =cut
 
 sub click_element_ok {
-    my $self = shift; 
+    my $self   = shift;
     my $method = 'click_ok';
-    return $self->_find_element_with_action($method,@_);
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 =head2 $twd->clear_element_ok($search_target [,$desc]);
@@ -341,9 +348,9 @@ Find an element and then clear on it.
 =cut
 
 sub clear_element_ok {
-    my $self = shift; 
+    my $self   = shift;
     my $method = 'clear_ok';
-    return $self->_find_element_with_action($method,@_);
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 =head2 $twd->is_element_displayed_ok($search_target [,$desc]);
@@ -355,9 +362,9 @@ Find an element and check to confirm that it is displayed. (visible)
 =cut
 
 sub is_element_displayed_ok {
-    my $self = shift; 
+    my $self   = shift;
     my $method = 'is_displayed_ok';
-    return $self->_find_element_with_action($method,@_);
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 =head2 $twd->is_element_enabled_ok($search_target [,$desc]);
@@ -369,9 +376,9 @@ Find an element and check to confirm that it is enabled.
 =cut
 
 sub is_element_enabled_ok {
-    my $self = shift; 
+    my $self   = shift;
     my $method = 'is_enabled_ok';
-    return $self->_find_element_with_action($method,@_);
+    return $self->_find_element_with_action( $method, @_ );
 }
 
 
@@ -421,15 +428,23 @@ sub content_like {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
+    my $ret;
 
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Content is like "$regex"} if ( not defined $desc );
-        return like_string( $content, $regex, $desc );
+        $ret = like_string( $content, $regex, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $regex");
+        }
+        return $ret;
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
             $desc = qq{Content is like "$re"} if ( not defined $desc );
-            like_string( $content, $re, $desc );
+            $ret = like_string( $content, $re, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $re");
+            }
         }
     }
 }
@@ -455,15 +470,22 @@ sub content_unlike {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
+    my $ret;
 
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Content is unlike "$regex"} if ( not defined $desc );
-        return unlike_string( $content, $regex, $desc );
+        $ret = unlike_string( $content, $regex, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $regex");
+        }
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
             $desc = qq{Content is unlike "$re"} if ( not defined $desc );
-            unlike_string( $content, $re, $desc );
+            $ret = unlike_string( $content, $re, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $re");
+            }
         }
     }
 }
@@ -493,15 +515,23 @@ sub body_text_like {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
+    my $ret;
 
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Text is like "$regex"} if ( not defined $desc );
-        return like_string( $text, $regex, $desc );
+        $ret = like_string( $text, $regex, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $regex");
+        }
+        return $ret;
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
             $desc = qq{Text is like "$re"} if ( not defined $desc );
-            like_string( $text, $re, $desc );
+            $ret = like_string( $text, $re, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $re");
+            }
         }
     }
 }
@@ -531,15 +561,24 @@ sub body_text_unlike {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
+    my $ret;
 
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Text is unlike "$regex"} if ( not defined $desc );
-        return unlike_string( $text, $regex, $desc );
+        $ret = unlike_string( $text, $regex, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $regex");
+        }
+        return $ret;
+
     }
     elsif ( ref $regex eq 'ARRAY' ) {
         for my $re (@$regex) {
             $desc = qq{Text is unlike "$re"} if ( not defined $desc );
-            unlike_string( $text, $re, $desc );
+            $ret = unlike_string( $text, $re, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $re");
+            }
         }
     }
 }
@@ -568,15 +607,24 @@ sub content_contains {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
+    my $ret;
 
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Content contains "$str"} if ( not defined $desc );
-        return contains_string( $content, $str, $desc );
+        $ret = contains_string( $content, $str, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $str");
+        }
+        return $ret;
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
             $desc = qq{Content contains "$s"} if ( not defined $desc );
-            contains_string( $content, $s, $desc );
+            $ret = contains_string( $content, $s, $desc );
+
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $s");
+            }
         }
     }
 }
@@ -603,15 +651,23 @@ sub content_lacks {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $content = $self->get_page_source();
+    my $ret;
 
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Content lacks "$str"} if ( not defined $desc );
-        return lacks_string( $content, $str, $desc );
+        $ret = lacks_string( $content, $str, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $str");
+        }
+        return $ret;
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
             $desc = qq{Content lacks "$s"} if ( not defined $desc );
-            lacks_string( $content, $s, $desc );
+            $ret = lacks_string( $content, $s, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $s");
+            }
         }
     }
 }
@@ -641,15 +697,23 @@ sub body_text_contains {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
+    my $ret;
 
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Text contains "$str"} if ( not defined $desc );
-        return contains_string( $text, $str, $desc );
+        $ret = contains_string( $text, $str, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $str");
+        }
+        return $ret;
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
             $desc = qq{Text contains "$s"} if ( not defined $desc );
-            contains_string( $text, $s, $desc );
+            $ret = contains_string( $text, $s, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $s");
+            }
         }
     }
 }
@@ -679,15 +743,23 @@ sub body_text_lacks {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $text = $self->get_body();
+    my $ret;
 
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Text is lacks "$str"} if ( not defined $desc );
-        return lacks_string( $text, $str, $desc );
+        $ret = lacks_string( $text, $str, $desc );
+        if ( !$ret ) {
+            $self->error_handler->($self,"Failed to find $str");
+        }
+        return $ret;
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
             $desc = qq{Text is lacks "$s"} if ( not defined $desc );
-            lacks_string( $text, $s, $desc );
+            $ret = lacks_string( $text, $s, $desc );
+            if ( !$ret ) {
+                $self->error_handler->($self,"Failed to find $s");
+            }
         }
     }
 }
