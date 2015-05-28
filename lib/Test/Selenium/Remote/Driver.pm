@@ -62,13 +62,6 @@ has verbose => (
     is => 'rw',
 );
 
-has error_callback => (
-    is      => 'rw',
-    default => sub {
-        sub { }
-    },
-);
-
 
 sub BUILD {
     my $self = shift;
