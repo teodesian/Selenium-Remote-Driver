@@ -239,6 +239,7 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
 
     click_ok
     double_click_ok
+
 =cut
 
 
@@ -385,21 +386,19 @@ sub is_element_enabled_ok {
 
    $twd->find_element_ok( $search_target [,$finder, $desc ] );
 
-Returns true if C<$search_target> is successfully found on the page. L<$search_target>
+Returns true if C<$search_target> is successfully found on the page. C<$search_target>
 is passed to L<Selenium::Remote::Driver/find_element> using a finder or the C<default_finder>
 if none passed.
 See there for more details on the format for C<find_element_ok()>.
 
 =cut
 
-# Eventually, it would be nice to support other finds like Test::WWW::Selenium does, like this:
-# 'xpath=//foo', or 'css=.foo', etc.
 
 =head2 $twd->find_no_element_ok($search_target [,$finder, $desc ]);
 
    $twd->find_no_element_ok( $search_target [,$finder, $desc ] );
 
-Returns true if C<$search_target> is I<not> found on the page. L<$search_target>
+Returns true if C<$search_target> is I<not> found on the page. C<$search_target>
 is passed to L<Selenium::Remote::Driver/find_element> using a finder or the
 C<default_finder> if none passed.See there for more details on the format. 
 for C<find_no_element_ok()>.
