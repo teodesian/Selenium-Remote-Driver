@@ -728,7 +728,7 @@ Tells if the text of the page (as returned by C<< get_body() >>)
 are provided, one 'test' is run for each regex against the content of the
 current page.
 
-A default description of 'Text is lacks "$str"' will be provided if there
+A default description of 'Text lacks "$str"' will be provided if there
 is no description.
 
 To also match the HTML see, C<< content_lacks() >>.
@@ -746,7 +746,7 @@ sub body_text_lacks {
     my $ret;
 
     if ( not ref $str eq 'ARRAY' ) {
-        $desc = qq{Text is lacks "$str"} if ( not defined $desc );
+        $desc = qq{Text lacks "$str"} if ( not defined $desc );
         $ret = lacks_string( $text, $str, $desc );
         if ( !$ret ) {
             $self->error_handler->($self,"Failed to find $str");
@@ -755,7 +755,7 @@ sub body_text_lacks {
     }
     elsif ( ref $str eq 'ARRAY' ) {
         for my $s (@$str) {
-            $desc = qq{Text is lacks "$s"} if ( not defined $desc );
+            $desc = qq{Text lacks "$s"} if ( not defined $desc );
             $ret = lacks_string( $text, $s, $desc );
             if ( !$ret ) {
                 $self->error_handler->($self,"Failed to find $s");
