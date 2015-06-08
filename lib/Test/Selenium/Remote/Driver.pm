@@ -325,9 +325,9 @@ sub element_value_is {
     return $self->_find_element_with_action($method,@_);
 }
 
-=head2 $twd->click_element_ok($search_target [,$desc]);
+=head2 $twd->click_element_ok($search_target [,$finder ,$desc]);
 
-    $twd->click_element_ok($search_target [,$desc]);
+    $twd->click_element_ok($search_target [,$finder ,$desc]);
 
 Find an element and then click on it.
 
@@ -339,9 +339,9 @@ sub click_element_ok {
     return $self->_find_element_with_action($method,@_);
 }
 
-=head2 $twd->clear_element_ok($search_target [,$desc]);
+=head2 $twd->clear_element_ok($search_target [,$finder ,$desc]);
 
-    $twd->clear_element_ok($search_target [,$desc]);
+    $twd->clear_element_ok($search_target [,$finder ,$desc]);
 
 Find an element and then clear on it.
 
@@ -353,9 +353,9 @@ sub clear_element_ok {
     return $self->_find_element_with_action($method,@_);
 }
 
-=head2 $twd->is_element_displayed_ok($search_target [,$desc]);
+=head2 $twd->is_element_displayed_ok($search_target [,$finder ,$desc]);
 
-    $twd->is_element_displayed_ok($search_target [,$desc]);
+    $twd->is_element_displayed_ok($search_target [,$finder ,$desc]);
 
 Find an element and check to confirm that it is displayed. (visible)
 
@@ -367,9 +367,9 @@ sub is_element_displayed_ok {
     return $self->_find_element_with_action($method,@_);
 }
 
-=head2 $twd->is_element_enabled_ok($search_target [,$desc]);
+=head2 $twd->is_element_enabled_ok($search_target [,$finder ,$desc]);
 
-    $twd->is_element_enabled_ok($search_target [,$desc]);
+    $twd->is_element_enabled_ok($search_target [,$finder ,$desc]);
 
 Find an element and check to confirm that it is enabled.
 
@@ -402,8 +402,7 @@ See there for more details on the format for C<find_element_ok()>.
 
 Returns true if C<$search_target> is I<not> found on the page. C<$search_target>
 is passed to L<Selenium::Remote::Driver/find_element> using a finder or the
-C<default_finder> if none passed.See there for more details on the format. 
-for C<find_no_element_ok()>.
+C<default_finder> if none passed. See there for more details on the format for C<find_no_element_ok()>.
 
 =cut
 
