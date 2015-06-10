@@ -113,6 +113,7 @@ ok( exception { $successful_driver->find_child_element_ok({id => 1200}) }, 'find
 # find no element ok test
 
 $successful_driver->find_no_element_ok('notq','xpath','find_no_element_ok works');
+ok(exception { $successful_driver->find_no_element_ok('q','xpath','find_no_element_ok works') }, 'find no element dies when an element is found');
 
 # body and content function family
 $successful_driver->content_like( qr/matches/, 'content_like works');
