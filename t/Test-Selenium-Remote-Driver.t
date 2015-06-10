@@ -2,9 +2,11 @@
 use Test::More;
 use Test::Fatal;
 use Test::Selenium::Remote::Driver;
+use Test::Builder::Tester;
 use Selenium::Remote::WebElement;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
+use Carp;
 
 my $find_element = sub {
     my ( undef, $searched_item ) = @_;
@@ -93,6 +95,7 @@ my $successful_driver =
     remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
+$successful_driver->error_handler(sub { my ($self,$msg) = @_; croak "Got message: $msg";}); 
 
 # find element ok tests
 $successful_driver->find_element_ok('q','find_element_ok works');
@@ -133,6 +136,38 @@ $successful_driver->click_element_ok('p','class','click_element_ok works');
 $successful_driver->clear_element_ok('q','element is cleared ok');
 $successful_driver->is_element_enabled_ok('p','class','element is enabled');
 $successful_driver->is_element_displayed_ok('q','element is displayed');
+
+test_out('not ok 1 - Content is ok'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->content_like( qr/nomatch/, 'Content is ok') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'content_like'",skip_err => 1);
+
+test_out('not ok 1 - Content is ok'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->content_unlike(qr/matches/, 'Content is ok') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'content_unlike'",skip_err => 1);
+
+test_out('not ok 1 - Content is ok'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->content_contains('blah', 'Content is ok') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'content_contains'",skip_err => 1);
+
+test_out('not ok 1 - Content is ok'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->content_lacks('matches', 'Content is ok') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'content_lacks'",skip_err => 1);
+
+test_out('not ok 1 - Body is ok'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->body_text_like( qr/nomatch/, 'Body is ok') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'body_text_like'",skip_err => 1);
+
+test_out('not ok 1 - Body is ok'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->body_text_unlike(qr/matches/, 'Body is ok') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'body_text_unlike'",skip_err => 1);
+
+test_out('not ok 1 - Text contains "nomatch"'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->body_text_contains('nomatch') },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'body_text_contains'",skip_err => 1);
+
+test_out('not ok 1 - Text lacks "match"'."\n".'ok 2 - Error callback triggered');
+like(exception { $successful_driver->body_text_lacks(['match','bar']) },qr/^Got message/,'Error callback triggered');
+test_test(title => "Error handler works with 'body_text_lacks'",skip_err => 1);
 
 
 done_testing();
