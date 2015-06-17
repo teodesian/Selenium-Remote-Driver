@@ -1,6 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
-0.26   05-16-215
+0.2651 06-17-2015
+        (selenium version: 2.46.0)
+
+0.26   05-16-2015
         (selenium version: 2.45.0)
 
         [NEW FEATURES]
