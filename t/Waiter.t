@@ -5,14 +5,15 @@ use warnings;
 use Test::More;
 use Test::Warn;
 use Test::Fatal;
-use Time::Mock throttle => 100;
+use Test::Time;
 use Selenium::Waiter;
 
 SIMPLE_WAIT: {
     my $ret;
-    waits_ok( sub { $ret = wait_until { 1 } }, '<', 5, 'immediately true returns quickly' );
+    waits_ok( sub { $ret = wait_until { 1 } }, '<', 2, 'immediately true returns quickly' );
     ok($ret == 1, 'return value for a true wait_until is passed up');
-    waits_ok( sub { $ret = wait_until { 0 } }, '>', 25, 'never true expires the timeout' );
+
+    waits_ok( sub { $ret = wait_until { 0 } }, '==', 30, 'never true expires the timeout' );
     ok($ret eq '', 'return value for a false wait is an empty string');
 }
 
