@@ -228,7 +228,7 @@ sub _build_binary_mode {
     my $command = $self->_construct_command;
     system($command);
 
-    my $success = wait_until { probe_port($port) } timeout => 10;
+    my $success = wait_until { probe_port($port) } timeout => 16;
     if ($success) {
         return 1;
     }
