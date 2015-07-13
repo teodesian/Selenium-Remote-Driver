@@ -7,6 +7,7 @@ use Selenium::Chrome;
 use Selenium::Firefox;
 use Selenium::Firefox::Binary;
 use Selenium::PhantomJS;
+use Sub::Install;
 use Test::Fatal;
 use Test::More;
 
@@ -77,6 +78,29 @@ FIREFOX: {
         ok( Selenium::CanStartBinary::probe_port( $firefox->port ), 'the firefox binary is listening on its port');
     }
 }
+
+TIMEOUT: {
+    my $binary = Selenium::Firefox::Binary::firefox_path();
+    skip 'Firefox binary not found in path', 3
+      unless $binary;
+
+    # Force the port check to exhaust the wait_until timeout.
+    Sub::Install::reinstall_sub({
+        code => sub { 0 },
+        into => 'Selenium::CanStartBinary',
+        as => 'probe_port'
+    });
+
+    my $start = time;
+    eval { Selenium::Firefox->new( startup_timeout => 1 ) };
+    # The test leaves a bit of a cushion to handle any unexpected
+    # latency issues when starting up the browser - the important part
+    # is that our timeout duration is _not_ the default 10 seconds.
+    ok( time - $start < 5, 'We can specify how long to wait for a binary to be available'  );
+
+}
+
+
 
 sub is_proper_phantomjs_available {
     my $ver = `phantomjs --version` // '';
