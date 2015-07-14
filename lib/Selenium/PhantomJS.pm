@@ -92,4 +92,17 @@ has '_binary_args' => (
 
 with 'Selenium::CanStartBinary';
 
+=attr startup_timeout
+
+Optional: specify how long to wait for the binary to start itself and
+listen on its port. The default duration is arbitrarily 10 seconds. It
+accepts an integer number of seconds to wait: the following will wait
+up to 20 seconds:
+
+    Selenium::PhantomJS->new( startup_timeout => 20 );
+
+See L<Selenium::CanStartBinary/startup_timeout> for more information.
+
+=cut
+
 1;
