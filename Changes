@@ -1,6 +1,18 @@
 Revision history for Selenium-Remote-Driver
 
-0.26   05-16-215
+0.2650 07-13-2015
+        (selenium version: 2.45.0)
+
+        [NEW FEATURES]
+        - #219: Add `startup_timeout` to CanStartBinary role
+        - #211: @peroumal1: Document locator usage for Test::SRD functions
+
+        [BUG FIXES]
+        - #215: Replace Time::Mock with the more reliable & tested Test::Time
+        - #212: @peroumal1: Fix bug in find_no_element_ok
+        - #209: @peroumal1: Make error_handler catch non-webdriver exceptions in Test::SRD
+
+0.26   05-16-2015
         (selenium version: 2.45.0)
 
         [NEW FEATURES]
