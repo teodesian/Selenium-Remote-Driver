@@ -10,11 +10,6 @@ perl:
 matrix:
    fast_finish: true
 before_install:
-   - export AUTOMATED_TESTING=1 NONINTERACTIVE_TESTING=1 HARNESS_OPTIONS=j10:c HARNESS_TIMER=1
-   - git clone git://github.com/haarg/perl-travis-helper
-   - source perl-travis-helper/init
-   - build-perl
-   - perl -V
    - git config --global user.name "TravisCI"
    - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
 install:
