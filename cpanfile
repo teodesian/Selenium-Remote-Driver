@@ -39,6 +39,7 @@ requires "warnings" => "0";
 on 'test' => sub {
   requires "File::stat" => "0";
   requires "FindBin" => "0";
+  requires "Test::Builder::Tester" => "0";
   requires "Test::Fatal" => "0";
   requires "Test::LWP::UserAgent" => "0";
   requires "Test::More" => "0";
