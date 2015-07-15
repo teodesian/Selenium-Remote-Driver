@@ -2754,14 +2754,12 @@ sub delete_local_storage_item {
 sub _coerce_timeout_ms {
     my ($ms) = @_;
 
-    if ( not defined $ms ) {
-        my @caller = caller(1);
-        my $subroutine_name = $caller[3];
-
+    if ( defined $ms ) {
+        return _coerce_number( $ms );
+    }
+    else {
         croak 'Expecting a timeout in ms';
     }
-
-    return _coerce_number( $ms );
 }
 
 sub _coerce_number {
