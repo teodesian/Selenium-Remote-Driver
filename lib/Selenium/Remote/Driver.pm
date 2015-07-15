@@ -2748,6 +2748,30 @@ sub delete_local_storage_item {
     return $self->_execute_command($res, $params);
 }
 
+sub _coerce_timeout_ms {
+    my ($ms) = @_;
+
+    if ( not defined $ms ) {
+        my @caller = caller(1);
+        my $subroutine_name = $caller[3];
+
+        croak 'Expecting a timeout in ms';
+    }
+
+    return _coerce_number( $ms );
+}
+
+sub _coerce_number {
+    my ($maybe_number) = @_;
+
+    if ( Scalar::Util::looks_like_number( $maybe_number )) {
+        return $maybe_number + 0;
+    }
+    else {
+        croak "Expecting a number, not: $maybe_number";
+    }
+}
+
 
 1;
 

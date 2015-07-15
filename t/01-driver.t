@@ -554,4 +554,22 @@ QUIT: {
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');
 }
 
+COERCION: {
+    my $string = 'string';
+    like( exception { Selenium::Remote::Driver::_coerce_number( $string ) },
+          qr/Expecting a number/,
+          'Can coerce numbers'
+      );
+
+    like( exception { Selenium::Remote::Driver::_coerce_timeout_ms() },
+          qr/Expecting a timeout/,
+          'Can coerce missing timeouts'
+      );
+
+    like( exception { Selenium::Remote::Driver::_coerce_timeout_ms( $string ) },
+          qr/Expecting a number/,
+          'Can coerce non-numeric timeouts'
+      );
+}
+
 done_testing;
