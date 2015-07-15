@@ -84,7 +84,9 @@ TIMEOUT: {
     skip 'Firefox binary not found in path', 3
       unless $binary;
 
-    # Force the port check to exhaust the wait_until timeout.
+    # Force the port check to exhaust the wait_until timeout so that
+    # we can exercise the startup_timeout constructor option
+    # functionality.
     Sub::Install::reinstall_sub({
         code => sub { 0 },
         into => 'Selenium::CanStartBinary',
