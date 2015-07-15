@@ -2581,7 +2581,7 @@ sub upload_file {
 sub _prepare_file {
     my ($self,$filename) = @_;
 
-    if ( not -r $filename ) { die "upload_file: no such file: $filename"; }
+    if ( not -r $filename ) { croak "upload_file: no such file: $filename"; }
     my $string = "";    # buffer
     my $zip = Archive::Zip->new();
     $zip->addFile($filename, basename($filename));
