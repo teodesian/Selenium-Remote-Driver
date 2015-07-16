@@ -195,10 +195,22 @@ WINDOW: {
 
     $ret = $driver->get_page_source();
     ok($ret =~ m/^<html/i, 'Received page source');
-    eval {$driver->set_implicit_wait_timeout(20001);};
-    ok(!$@,"Set implicit wait timeout");
+
+    # Using a string instead of an int exercises the
+    # _coerce_timeout_ms functionality
+    eval {$driver->set_implicit_wait_timeout("20001");};
+    ok(!$@,"Set implicit wait timeout with string");
     eval {$driver->set_implicit_wait_timeout(0);};
-    ok(!$@,"Reset implicit wait timeout");
+    ok(!$@,"Reset implicit wait timeout with integer");
+
+    my $invalid_ms = 'invalid timeout ms';
+    ok( exception{ $driver->set_timeout('script', $invalid_ms) },
+        'Coerce ms arguments for set_timeout' );
+    ok( exception{ $driver->set_async_script_timeout( $invalid_ms ) },
+        'Coerce ms arguments for set_async_script_timeout' );
+    ok( exception{ $driver->set_implicit_wait_timeout( $invalid_ms ) },
+        'Coerce ms arguments for set_implicit_wait_timeout' );
+
     $ret = $driver->get("$website/frameset.html");
     $ret = $driver->switch_to_frame('second');
 
@@ -552,6 +564,24 @@ ERROR: {
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');
+}
+
+COERCION: {
+    my $string = 'string';
+    like( exception { Selenium::Remote::Driver::_coerce_number( $string ) },
+          qr/Expecting a number/,
+          'Can coerce numbers'
+      );
+
+    like( exception { Selenium::Remote::Driver::_coerce_timeout_ms() },
+          qr/Expecting a timeout/,
+          'Can coerce missing timeouts'
+      );
+
+    like( exception { Selenium::Remote::Driver::_coerce_timeout_ms( $string ) },
+          qr/Expecting a number/,
+          'Can coerce non-numeric timeouts'
+      );
 }
 
 done_testing;

@@ -968,9 +968,11 @@ sub get_capabilities {
 
 sub set_timeout {
     my ( $self, $type, $ms ) = @_;
-    if ( not defined $type or not defined $ms ) {
-        croak "Expecting type & timeout in ms";
+    if ( not defined $type  ) {
+        croak "Expecting type";
     }
+    $ms = _coerce_timeout_ms( $ms );
+
     my $res = { 'command' => 'setTimeout' };
     my $params = { 'type' => $type, 'ms' => $ms };
     return $self->_execute_command( $res, $params );
@@ -994,9 +996,8 @@ sub set_timeout {
 
 sub set_async_script_timeout {
     my ( $self, $ms ) = @_;
-    if ( not defined $ms ) {
-        croak "Expecting timeout in ms";
-    }
+    $ms = _coerce_timeout_ms( $ms );
+
     my $res    = { 'command' => 'setAsyncScriptTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -1026,6 +1027,8 @@ sub set_async_script_timeout {
 
 sub set_implicit_wait_timeout {
     my ( $self, $ms ) = @_;
+    $ms = _coerce_timeout_ms( $ms );
+
     my $res    = { 'command' => 'setImplicitWaitTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -2746,6 +2749,28 @@ sub delete_local_storage_item {
     my $res = { 'command' => 'deleteLocalStorageItem' };
     my $params = { 'key' => $key };
     return $self->_execute_command($res, $params);
+}
+
+sub _coerce_timeout_ms {
+    my ($ms) = @_;
+
+    if ( defined $ms ) {
+        return _coerce_number( $ms );
+    }
+    else {
+        croak 'Expecting a timeout in ms';
+    }
+}
+
+sub _coerce_number {
+    my ($maybe_number) = @_;
+
+    if ( Scalar::Util::looks_like_number( $maybe_number )) {
+        return $maybe_number + 0;
+    }
+    else {
+        croak "Expecting a number, not: $maybe_number";
+    }
 }
 
 
