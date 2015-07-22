@@ -47,7 +47,7 @@ the following should start up Firefox for you:
 #### Locally
 
 ```perl
-#! /usr/bin/perl
+#!/bin/env perl
 
 use strict;
 use warnings;

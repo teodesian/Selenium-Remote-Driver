@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 use Selenium::Remote::Driver;
 use Test::More tests=>4;
 

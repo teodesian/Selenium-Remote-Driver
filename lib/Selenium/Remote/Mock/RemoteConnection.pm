@@ -191,7 +191,7 @@ mock responses to specific functions
 
 =head2 Record interactions
 
-    #!perl
+    #!/bin/env perl
     use strict;
     use warnings;
     use Selenium::Remote::Driver;

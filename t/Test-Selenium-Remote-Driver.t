@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+
 use Test::More;
 use Test::Fatal;
 use Test::Selenium::Remote::Driver;
