@@ -47,8 +47,6 @@ the following should start up Firefox for you:
 #### Locally
 
 ```perl
-#!/bin/env perl
-
 use strict;
 use warnings;
 use Selenium::Remote::Driver;
