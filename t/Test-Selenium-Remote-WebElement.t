@@ -1,4 +1,3 @@
-
 use Test::More;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;

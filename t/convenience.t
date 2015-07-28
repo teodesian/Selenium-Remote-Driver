@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 use Selenium::Chrome;

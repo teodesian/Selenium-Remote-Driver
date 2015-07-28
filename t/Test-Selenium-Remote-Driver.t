@@ -1,4 +1,3 @@
-
 use Test::More;
 use Test::Fatal;
 use Test::Selenium::Remote::Driver;
@@ -95,7 +94,7 @@ my $successful_driver =
     remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
-$successful_driver->error_handler(sub { my ($self,$msg) = @_; croak "Got message: $msg";}); 
+$successful_driver->error_handler(sub { my ($self,$msg) = @_; croak "Got message: $msg";});
 
 # find element ok tests
 $successful_driver->find_element_ok('q','find_element_ok works');
