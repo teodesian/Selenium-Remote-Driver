@@ -306,10 +306,11 @@ sub shutdown_windows_binary {
     }
 }
 
-# We want to do things before the DEMOLISH phase, as during DEMOLISH
-# we apparently have no guarantee that anything is still around
-before DEMOLISH => sub {
-    my ($self) = @_;
+sub DEMOLISH {
+    my ($self, $in_gd) = @_;
+
+    # if we're in global destruction, all bets are off.
+    return if $in_gd;
     $self->shutdown_binary;
 };
 
