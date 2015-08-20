@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-0.2650 07-13-2015
+0.2651 07-13-2015
         (selenium version: 2.45.0)
 
         [NEW FEATURES]
@@ -11,6 +11,8 @@ Revision history for Selenium-Remote-Driver
         - #215: Replace Time::Mock with the more reliable & tested Test::Time
         - #212: @peroumal1: Fix bug in find_no_element_ok
         - #209: @peroumal1: Make error_handler catch non-webdriver exceptions in Test::SRD
+        - #222: Describe demolish/destroy behavior.
+        - Stop trying to do things during global destruction
 
 0.26   05-16-2015
         (selenium version: 2.45.0)
