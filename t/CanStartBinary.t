@@ -9,9 +9,9 @@ use Sub::Install;
 use Test::Fatal;
 use Test::More;
 
-# unless ( $ENV{RELEASE_TESTING} ) {
-#     plan skip_all => "Author tests not required for installation.";
-# }
+unless ( $ENV{RELEASE_TESTING} ) {
+    plan skip_all => "Author tests not required for installation.";
+}
 
 PHANTOMJS: {
   SKIP: {
