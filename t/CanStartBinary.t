@@ -96,7 +96,7 @@ TIMEOUT: {
     # The test leaves a bit of a cushion to handle any unexpected
     # latency issues when starting up the browser - the important part
     # is that our timeout duration is _not_ the default 10 seconds.
-    ok( time - $start < 5, 'We can specify how long to wait for a binary to be available'  );
+    ok( time - $start < 10, 'We can specify how long to wait for a binary to be available'  );
 
 }
 
