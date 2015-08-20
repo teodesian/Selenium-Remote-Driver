@@ -9,9 +9,9 @@ use Sub::Install;
 use Test::Fatal;
 use Test::More;
 
-unless ( $ENV{RELEASE_TESTING} ) {
-    plan skip_all => "Author tests not required for installation.";
-}
+# unless ( $ENV{RELEASE_TESTING} ) {
+#     plan skip_all => "Author tests not required for installation.";
+# }
 
 PHANTOMJS: {
   SKIP: {
@@ -86,7 +86,7 @@ TIMEOUT: {
     # we can exercise the startup_timeout constructor option
     # functionality.
     Sub::Install::reinstall_sub({
-        code => sub { 0 },
+        code => sub { return 0 },
         into => 'Selenium::CanStartBinary',
         as => 'probe_port'
     });
@@ -99,8 +99,6 @@ TIMEOUT: {
     ok( time - $start < 10, 'We can specify how long to wait for a binary to be available'  );
 
 }
-
-
 
 sub is_proper_phantomjs_available {
     my $ver = `phantomjs --version` // '';
