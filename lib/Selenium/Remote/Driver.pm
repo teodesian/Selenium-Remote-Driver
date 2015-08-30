@@ -151,7 +151,7 @@ you please.
                 pac        - Proxy autoconfiguration from a URL,
                 autodetect - proxy autodetection, probably with WPAD,
                 system     - Use system settings
-            'proxyAutoconfigUrl' - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile.
+            'proxyAutoconfigUrl' - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile or file:///path/to/pacfile
             'ftpProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
             'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
@@ -446,12 +446,22 @@ has 'proxy' => (
     is     => 'rw',
     coerce => sub {
         my $proxy = $_[0];
-        if ( $proxy->{proxyType} eq 'pac' ) {
+        if ( $proxy->{proxyType} =~ /^pac$/i ) {
             if ( not defined $proxy->{proxyAutoconfigUrl} ) {
                 croak "proxyAutoconfigUrl not provided\n";
             }
-            elsif ( not( $proxy->{proxyAutoconfigUrl} =~ /^http/g ) ) {
-                croak "proxyAutoconfigUrl should be of format http://";
+            elsif ( not( $proxy->{proxyAutoconfigUrl} =~ /^(http|file)/g ) ) {
+                croak "proxyAutoconfigUrl should be of format http:// or file://";
+            }
+
+            if ( $proxy->{proxyAutoconfigUrl} =~ /^file/ ) {
+                my $pac_url = $proxy->{proxyAutoconfigUrl};
+                my $file = $pac_url;
+                $file =~ s{^file://}{};
+
+                if (! -e $file) {
+                    warn "proxyAutoConfigUrl file does not exist: '$pac_url'";
+                }
             }
         }
         $proxy;
