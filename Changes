@@ -10,7 +10,7 @@ Revision history for Selenium-Remote-Driver
         - #212: @peroumal1: Fix bug in find_no_element_ok
         - #209: @peroumal1: Make error_handler catch non-webdriver exceptions in Test::SRD
         - #222: Describe demolish/destroy behavior.
-        - #206: Allow local file URLs for PAC url
+        - #226: Allow local file URLs for PAC url
         - Stop trying to do things during global destruction
 
 0.26   05-16-2015
