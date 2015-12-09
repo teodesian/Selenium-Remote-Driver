@@ -2126,7 +2126,8 @@ sub find_child_element {
 
  Usage:
     my $elem1 = $driver->find_element("//select[\@name='ned']");
-    my $child = $driver->find_child_elements($elem1, "//option");
+    # note the usage of ./ when searching for a child element instead of //
+    my $child = $driver->find_child_elements($elem1, "./option");
 
 =cut
 
