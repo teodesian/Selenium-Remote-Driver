@@ -1,8 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
 0.2701 01-07-2015
+        (firefox driver version: 2.48.2)
         [BUG FIXES]
         - #239: Respect existing prefs when using custom profile with Selenium::Firefox
+        - #238: Update firefox driver extension to latest 2.48.2
 
 0.27   08-30-2015
         [NEW FEATURES]
