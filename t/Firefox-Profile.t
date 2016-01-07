@@ -151,6 +151,19 @@ PREFERENCES: {
                    "$_ preference is formatted properly after packing and unpacking");
         }
     }
+
+  MUTABLE_WEBDRIVER: {
+        my $prefs = {
+            'browser.startup.homepage' => 'mutable!'
+        };
+
+        my $profile = Selenium::Firefox::Profile->new;
+        $profile->set_preference(%$prefs);
+        $profile->add_webdriver('port');
+
+        my $homepage_pref = $profile->get_preference('browser.startup.homepage');
+        is($homepage_pref, '"mutable!"', 'can mutate webdriver.json preferences');
+    }
 }
 
 CROAKING: {

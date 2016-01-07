@@ -199,10 +199,12 @@ sub add_webdriver {
         close ($fh);
     }
     my $webdriver_prefs = decode_json($json);
+    my $current_user_prefs = $self->{user_prefs};
 
-    # TODO: Let the user's mutable preferences persist instead of
-    # overwriting them here.
-    $self->set_preference(%{ $webdriver_prefs->{mutable} });
+    $self->set_preference(
+        %{ $webdriver_prefs->{mutable} },
+        %{ $current_user_prefs }
+    );
     $self->set_preference(%{ $webdriver_prefs->{frozen} });
 
     $self->add_extension($webdriver_extension);
