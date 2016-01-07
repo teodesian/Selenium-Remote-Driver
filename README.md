@@ -10,9 +10,7 @@ module is a Perl implementation of the client for the Webdriver
 
 This module sends commands directly to the server using HTTP. Using
 this module together with the Selenium Server, you can automatically
-control any supported browser. To use this module, you need to have
-already downloaded and started the
-[standalone Selenium Server][standalone].
+control any supported browser.
 
 [wd]: https://code.google.com/p/selenium/
 [jsonwire]: https://code.google.com/p/selenium/wiki/JsonWireProtocol
@@ -41,8 +39,11 @@ main module!).
 
 ### with a standalone server
 
-Download the standalone server and have it running on port 4444; then
-the following should start up Firefox for you:
+Download the standalone server and have it running on port 4444:
+
+    $ java -jar selenium-server-standalone-X.XX.X.jar
+
+Then the following should start up Firefox for you:
 
 #### Locally
 
@@ -70,6 +71,9 @@ $driver->quit;
 ```
 
 #### Saucelabs
+
+If using Saucelabs, there's no need to have the standalone server
+running on a local port, since Saucelabs provides it.
 
 ```perl
 use Selenium::Remote::Driver;
@@ -107,9 +111,10 @@ https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
 for your OS.
 
 - _Chrome_: install the Chrome browser, [download Chromedriver][dcd]
-and get it in your `$PATH`:
+and get `chromedriver` in your `$PATH`:
 
-- _PhantomJS_: install the PhantomJS binary and get it in your `$PATH`
+- _PhantomJS_: install the PhantomJS binary and get `phantomjs` in
+  your `$PATH`
 
 As long as the proper binary is available in your path, you should be
 able to do the following:
@@ -138,7 +143,7 @@ See the pod for the different modules for more details.
 
 ## Support and Documentation
 
-There is a new mailing list available at
+There is a mailing list available at
 
 https://groups.google.com/forum/#!forum/selenium-remote-driver
 
