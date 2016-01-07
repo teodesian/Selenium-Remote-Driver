@@ -289,10 +289,11 @@ sub _extract_install_rdf {
             while ((my $status = $unzipped->read($buffer)) > 0) {
                 $install_rdf .= $buffer;
             }
+            return $install_rdf;
         }
     }
 
-    return $install_rdf;
+    croak 'Invalid Firefox extension: could not find install.rdf in the .XPI at: ' . $xpi
 }
 
 1;
