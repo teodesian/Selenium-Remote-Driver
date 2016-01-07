@@ -1,6 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
-0.27 08-30-2015
+0.2701 01-07-2015
+        [BUG FIXES]
+        - #239: Respect existing prefs when using custom profile with Selenium::Firefox
+
+0.27   08-30-2015
         [NEW FEATURES]
         - #219: Add `startup_timeout` to CanStartBinary role
         - #211: @peroumal1: Document locator usage for Test::SRD functions
