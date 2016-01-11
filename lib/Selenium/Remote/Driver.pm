@@ -382,13 +382,19 @@ has 'session_id' => (
 has 'remote_conn' => (
     is      => 'lazy',
     builder => sub {
-            my $self = shift;
-            return Selenium::Remote::RemoteConnection->new(
-                remote_server_addr => $self->remote_server_addr,
-                port               => $self->port,
-                ua                 => $self->ua
-            );
+        my $self = shift;
+        return Selenium::Remote::RemoteConnection->new(
+            remote_server_addr => $self->remote_server_addr,
+            port               => $self->port,
+            ua                 => $self->ua,
+            wd_context_prefix  => $self->wd_context_prefix
+        );
     },
+);
+
+has 'wd_context_prefix' => (
+    is => 'lazy',
+    default => sub { '/wd/hub' }
 );
 
 has 'error_handler' => (
