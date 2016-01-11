@@ -12,7 +12,7 @@ use Cwd qw(abs_path);
 use File::Copy qw(copy);
 use File::Temp;
 use File::Basename qw(dirname);
-use IO::Uncompress::Unzip qw($UnzipError);
+use IO::Uncompress::Unzip 2.030 qw($UnzipError);
 use JSON qw(decode_json);
 use MIME::Base64;
 use Scalar::Util qw(blessed looks_like_number);
