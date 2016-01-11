@@ -392,11 +392,6 @@ has 'remote_conn' => (
     },
 );
 
-has 'wd_context_prefix' => (
-    is => 'lazy',
-    default => sub { '/wd/hub' }
-);
-
 has 'error_handler' => (
     is => 'rw',
     coerce => sub {
@@ -518,6 +513,7 @@ has 'inner_window_size' => (
 );
 
 with 'Selenium::Remote::Finders';
+with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 
 sub BUILD {
     my $self = shift;

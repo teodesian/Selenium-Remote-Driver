@@ -36,10 +36,7 @@ has 'error_handler' => (
     builder => sub { return Selenium::Remote::ErrorHandler->new; }
 );
 
-has 'wd_context_prefix' => (
-    is => 'lazy',
-    default => sub { '/wd/hub' }
-);
+with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 
 sub check_status {
     my $self = shift;
