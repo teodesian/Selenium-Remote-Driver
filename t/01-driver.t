@@ -140,6 +140,8 @@ GRID_STARTUP: {
 CHECK_DRIVER: {
     ok(defined $driver, 'Object loaded fine...');
     ok($driver->isa('Selenium::Remote::Driver'), '...and of right type');
+    ok($driver->does('Selenium::Remote::Driver::CanSetWebdriverContext'),
+       'and can set webdriver context prefix');
     ok(defined $driver->{'session_id'}, 'Established session on remote server');
     $ret = $driver->get_capabilities;
     is($ret->{'browserName'}, 'firefox', 'Right capabilities');

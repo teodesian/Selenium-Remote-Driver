@@ -34,5 +34,28 @@ REDIRECT: {
         '303 redirects no longer kill us');
 }
 
+WD_CONTEXT: {
+    my $tua = Test::LWP::UserAgent->new;
+    my $hit_custom_context = 0;
+    my $response = sub {
+        is($_[0]->uri, 'http://addr:port/test/anything', 'can construct url with custom wd_context' );
+        $hit_custom_context++;
+        return HTTP::Response->new(200, 'OK', undef, '')
+    };
+    $tua->map_response(qr/test/, $response);
+
+    my $conn = Selenium::Remote::RemoteConnection->new(
+        remote_server_addr => 'addr',
+        port => 'port',
+        wd_context_prefix => '/test',
+        ua => $tua
+    );
+
+    my $endpoint = { method => 'GET', url => 'anything' };
+
+    $conn->request($endpoint);
+    ok($hit_custom_context, 'wd_context is set up properly');
+}
+
 
 done_testing;
