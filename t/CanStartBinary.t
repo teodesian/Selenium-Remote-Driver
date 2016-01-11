@@ -55,7 +55,8 @@ CHROME: {
 
         my $chrome = Selenium::Chrome->new;
         ok( $chrome->browser_name eq 'chrome', 'convenience chrome is okay' );
-        isnt( $chrome->port, 4444, 'chrome can start up its own binary');
+        isnt( $chrome->port, 4444, 'chrome can start up its own binary' );
+        like( $chrome->_binary_args, qr/--url-base=wd\/hub/, 'chrome has correct webdriver context' );
 
         ok( Selenium::CanStartBinary::probe_port( $chrome->port ), 'the chrome binary is listening on its port');
     }

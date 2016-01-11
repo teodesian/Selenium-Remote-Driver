@@ -73,7 +73,10 @@ has '_binary_args' => (
     builder => sub {
         my ($self) = @_;
 
-        return ' --port=' . $self->port . ' --url-base=wd/hub ';
+        my $context = $self->wd_context_prefix;
+        $context =~ s{^/}{};
+
+        return ' --port=' . $self->port . ' --url-base=' . $context . ' ';
     }
 );
 
