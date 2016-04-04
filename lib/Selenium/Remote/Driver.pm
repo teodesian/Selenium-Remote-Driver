@@ -2614,6 +2614,107 @@ sub _prepare_file {
     };
 }
 
+=head2 get_base64(uri)
+
+Description:
+
+    Fetches a file URL via the remote Selenium session and returns a base 64 encoding of the requested file.
+    Waits 30s to fetch file.
+
+    Note: Due to browser security restrictions, this will not work across different domains, as this is done with an XMLHttpRequest.
+    As such, the URL should be relative to the currently open page.
+    In practice, this means you'll be feeding it url attributes taken from DOM nodes (href, src, etc).
+
+Input:
+
+    STRING - Relative URL of the file to download
+
+Output:
+
+    STRING - Base64 encoded file
+
+Usage:
+
+    require MIME::Base64 qw{ decode_base64 };
+    $driver->open('http://example.com/');
+    my $output = $driver->get_base64('/images/test.jpg');
+    open(my $FH,'>','test.jpg');
+    binmode $FH;
+    print $FH decode_base64($output);
+    close $FH;
+
+=cut
+
+sub get_base64 {
+    my ( $self, @args ) = @_;
+    my ($p_url) = @args;
+
+    $self->set_async_script_timeout(30000);
+    my $base64js = qq{
+        function getRaw(file) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', file, true);
+            xhr.overrideMimeType('text/plain; charset=x-user-defined');
+            xhr.onloadend = function(e) {
+                if (!xhr.responseText) {
+                    window.callback(false);
+                } else {
+                    window.getbase64output = base64encode(xhr.responseText);
+                    window.callback(window.getbase64output);
+                }
+            };
+            xhr.send();
+        }
+
+        function base64encode(str) {
+            if (!str) {
+                return false;
+            }
+            var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+            var out = '', i = 0, len = str.length, c1, c2, c3;
+            while (i < len)
+            {
+                c1 = str.charCodeAt(i++) & 0xff;
+                if (i == len)
+                {
+                    out += CHARS.charAt(c1 >> 2);
+                    out += CHARS.charAt((c1 & 0x3) << 4);
+                    out += '==';
+                    break;
+                }
+                c2 = str.charCodeAt(i++);
+                if (i == len)
+                {
+                    out += CHARS.charAt(c1 >> 2);
+                    out += CHARS.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+                    out += CHARS.charAt((c2 & 0xF) << 2);
+                    out += '=';
+                    break;
+                }
+                c3 = str.charCodeAt(i++);
+                out += CHARS.charAt(c1 >> 2);
+                out += CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+                out += CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
+                out += CHARS.charAt(c3 & 0x3F);
+            }
+            console.log('alldone');
+            return out;
+        }
+
+        var arg1 = arguments[0];
+        window.callback = arguments[arguments.length-1];
+        window.getbase64output = undefined;
+        getRaw(arg1);
+    };
+
+    my $callbackjs = qq{
+        function (arg) {
+            return arg;
+        }
+    };
+    return $self->execute_async_script( $base64js, $p_url, $callbackjs );
+}
+
 =head2 get_text
 
  Description:
