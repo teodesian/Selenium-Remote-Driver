@@ -53,14 +53,20 @@ new Selenium::Remote::Driver.
 
 sub new {
     my $class = shift;
+    my %args  = @_;
 
-    # TODO: add handling for a pre-existing profile folder passed into
-    # the constructor
+    my $profile_dir;
+    if ( $args{profile_dir} && -d $args{profile_dir} ) {
+        $profile_dir = $args{profile_dir};
+    }
+    else {
+        $profile_dir = File::Temp->newdir();
+    }
 
     # TODO: accept user prefs, boolean prefs, and extensions in
     # constructor
     my $self = {
-        profile_dir => File::Temp->newdir(),
+        profile_dir => $profile_dir,
         user_prefs => {},
         extensions => []
       };
