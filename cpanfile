@@ -22,7 +22,6 @@ requires "List::MoreUtils" => "0";
 requires "MIME::Base64" => "0";
 requires "Moo" => "1.005";
 requires "Moo::Role" => "0";
-requires "Net::Ping" => "0";
 requires "Scalar::Util" => "0";
 requires "Sub::Install" => "0";
 requires "Test::Builder" => "0";
