@@ -191,4 +191,15 @@ CROAKING: {
     ok ($@ =~ /coercion.*failed/, "caught invalid extension in driver constructor");
 }
 
+PROFILE_DIR: {
+    my $tempdir = File::Temp->newdir;
+    my $dirname = $tempdir->dirname;
+
+    my $profile = Selenium::Firefox::Profile->new( profile_dir => $dirname );
+    ok( $profile->{profile_dir} eq $dirname, "profile_dir passed to constructor" );
+
+    $profile->_layout_on_disk;
+    ok( -f $dirname . '/user.js', "wrote to profile_dir" );
+}
+
 done_testing;
