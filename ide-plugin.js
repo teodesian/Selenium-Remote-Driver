@@ -362,8 +362,14 @@ WDAPI.Element.prototype.isDisplayed = function() {
   return this.ref + "->is_displayed";
 };
 
+
 WDAPI.Element.prototype.isSelected = function() {
   return this.ref + "->is_selected";
+};
+
+WDAPI.Element.prototype.select = function(selectLocator) {
+  return "$driver->find_child_element(" + this.ref + 
+  ", \"//*[text()='" + selectLocator.string+ "']\", \"xpath\")->click";
 };
 
 WDAPI.Element.prototype.sendKeys = function(text) {
