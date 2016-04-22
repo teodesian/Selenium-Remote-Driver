@@ -75,13 +75,27 @@ has '_binary_args' => (
     builder => sub {
         my ($self) = @_;
 
-        return ' -no-remote';
+        my $args = ' -no-remote';
+        if( $self->marionette_enabled ) {
+            $args .= ' -marionette';
+        }
+        return $args;
     }
 );
 
 has '+wd_context_prefix' => (
     is => 'ro',
     default => sub { '/hub' }
+);
+
+has 'marionette_binary_port' => (
+    is => 'lazy',
+    default => sub { 2828 }
+);
+
+has 'marionette_enabled' => (
+    is  => 'lazy',
+    default => 0
 );
 
 with 'Selenium::CanStartBinary';
