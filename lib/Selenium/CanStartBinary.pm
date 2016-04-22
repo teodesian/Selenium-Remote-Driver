@@ -280,7 +280,7 @@ sub _build_binary_mode {
     $self->marionette_port : 0;
 
     if ($self->isa('Selenium::Firefox')) {
-        my @args = ($port);
+        my @args = ($port, $marionette_port);
 
         if ($self->has_firefox_profile) {
             push @args, $self->firefox_profile;
