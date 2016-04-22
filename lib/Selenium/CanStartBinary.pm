@@ -142,6 +142,20 @@ has custom_args => (
     default => sub { '' }
 );
 
+has 'marionette_port' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        if ($self->isa('Selenium::Firefox') && $self->marionette_enabled) {
+            return find_open_port_above($self->marionette_binary_port);
+        }
+        else {
+            return;
+        }
+    }
+);
+
 =attr startup_timeout
 
 Optional: you can modify how long we will wait for the binary to start
@@ -261,6 +275,9 @@ sub _build_binary_mode {
     # Either the user asked for 4444, or we couldn't find an open port
     my $port = $self->port + 0;
     return if $port == 4444;
+
+    my $marionette_port = $self->marionette_enabled ?
+    $self->marionette_port : 0;
 
     if ($self->isa('Selenium::Firefox')) {
         my @args = ($port);
