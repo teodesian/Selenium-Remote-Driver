@@ -217,6 +217,19 @@ sub add_webdriver {
     $self->set_preference('webdriver_firefox_port', $port);
 }
 
+=method add_marionette
+
+Primarily for internal use, configure Marionette to the
+current Firefox profile.
+
+=cut
+
+sub add_marionette {
+    my ($self, $port) = @_;
+    return if !$port;
+    $self->set_preference('marionette.defaultPrefs.port', $port);
+}
+
 sub _encode {
     my $self = shift;
 
