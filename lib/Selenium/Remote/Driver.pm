@@ -1529,7 +1529,7 @@ sub screenshot {
 
  Description:
     Capture a screenshot and save as a PNG to provided file name.
-    (The method is compatible with the WWW::Selenium method fo the same name)
+    (The method is compatible with the WWW::Selenium method of the same name)
 
  Output:
     TRUE - (Screenshot is written to file)
