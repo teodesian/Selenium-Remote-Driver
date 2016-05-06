@@ -491,7 +491,7 @@ sub content_like {
         for my $re (@$regex) {
             $desc = qq{Content is like "$re"} if ( not defined $desc );
             $ret = like_string( $content, $re, $desc );
-			if ( !$ret && $self->has_error_handler ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $re");
             }
         }
