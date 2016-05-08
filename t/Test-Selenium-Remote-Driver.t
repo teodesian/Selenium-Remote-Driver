@@ -94,7 +94,6 @@ my $successful_driver =
     remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
-$successful_driver->error_handler(sub { my ($self,$msg) = @_; croak "Got message: $msg";});
 
 # find element ok tests
 $successful_driver->find_element_ok('q','find_element_ok works');
@@ -137,6 +136,40 @@ $successful_driver->clear_element_ok('q','element is cleared ok');
 $successful_driver->is_element_enabled_ok('p','class','element is enabled');
 $successful_driver->is_element_displayed_ok('q','element is displayed');
 
+test_out('not ok 1 - Content is ok', 'ok 2 - No error checking content');
+ok(!exception { $successful_driver->content_like( qr/nomatch/, 'Content is ok') }, 'No error checking content');
+test_test(title => "Can fail 'content_like'",skip_err => 1);
+
+test_out('not ok 1 - Content is ok', 'ok 2 - No error checking content');
+ok(!exception { $successful_driver->content_unlike(qr/matches/, 'Content is ok') }, 'No error checking content');
+test_test(title => "Can fail 'content_unlike'",skip_err => 1);
+
+test_out('not ok 1 - Content is ok', 'ok 2 - No error checking content');
+ok(!exception { $successful_driver->content_contains('blah', 'Content is ok') }, 'No error checking content');
+test_test(title => "Can fail 'content_contains'",skip_err => 1);
+
+test_out('not ok 1 - Content is ok', 'ok 2 - No error checking content');
+ok(!exception { $successful_driver->content_lacks('matches', 'Content is ok') }, 'No error checking content');
+test_test(title => "Error handler works with 'content_lacks'",skip_err => 1);
+
+test_out('not ok 1 - Body is ok', 'ok 2 - No error checking body text');
+ok(!exception { $successful_driver->body_text_like( qr/nomatch/, 'Body is ok') }, 'No error checking body text');
+test_test(title => "Error handler works with 'body_text_like'",skip_err => 1);
+
+test_out('not ok 1 - Body is ok', 'ok 2 - No error checking body text');
+ok(!exception { $successful_driver->body_text_unlike(qr/matches/, 'Body is ok') }, 'No error checking body text');
+test_test(title => "Error handler works with 'body_text_unlike'",skip_err => 1);
+
+test_out('not ok 1 - Body is ok', 'ok 2 - No error checking body text');
+ok(!exception { $successful_driver->body_text_contains('nomatch', 'Body is ok') }, 'No error checking body text');
+test_test(title => "Error handler works with 'body_text_contains'",skip_err => 1);
+
+# This one is just a little tricky: 'match' is a match, so body_text_lacks should report failure, and the opposite for 'bar'
+test_out('not ok 1 - Body is ok','ok 2 - Body is ok', 'ok 3 - No error checking body text');
+ok(!exception { $successful_driver->body_text_lacks(['match','bar'], 'Body is ok') }, 'No error checking body text');
+test_test(title => "Error handler works with 'body_text_lacks'",skip_err => 1);
+
+$successful_driver->error_handler(sub { my ($self,$msg) = @_; croak "Got message: $msg";});
 test_out('not ok 1 - Content is ok'."\n".'ok 2 - Error callback triggered');
 like(exception { $successful_driver->content_like( qr/nomatch/, 'Content is ok') },qr/^Got message/,'Error callback triggered');
 test_test(title => "Error handler works with 'content_like'",skip_err => 1);
