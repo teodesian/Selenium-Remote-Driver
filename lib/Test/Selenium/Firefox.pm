@@ -17,7 +17,7 @@ Test::Selenium::Firefox
     $test_driver->get_ok('https://duckduckgo.com', "Firefox can load page");
 	$test_driver->quit();
 
-=head1 DESCRITION
+=head1 DESCRIPTION
 
 A subclass of L<Selenium::Firefox> which provides useful testing functions.  Please see L<Selenium::Firefox> and L<Test::Selenium::Remote::Driver> for usage information.
 

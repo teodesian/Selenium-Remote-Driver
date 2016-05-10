@@ -17,7 +17,7 @@ Test::Selenium::InternetExplorer
     $test_driver->get_ok('https://duckduckgo.com', "InternetExplorer can load page");
 	$test_driver->quit();
 
-=head1 DESCRITION
+=head1 DESCRIPTION
 
 A subclass of L<Selenium::InternetExplorer> which provides useful testing functions.  Please see L<Selenium::InternetExplorer> and L<Test::Selenium::Remote::Driver> for usage information.
 
