@@ -15,7 +15,7 @@ Test::Selenium::PhantomJS
 
     my $test_driver = Test::Selenium::PhantomJS->new;
     $test_driver->get_ok('https://duckduckgo.com', "PhantomJS can load page");
-	$test_driver->quit();
+    $test_driver->quit();
 
 =head1 DESCRIPTION
 

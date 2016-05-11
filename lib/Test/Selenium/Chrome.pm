@@ -15,7 +15,7 @@ Test::Selenium::Chrome
 
     my $test_driver = Test::Selenium::Chrome->new;
     $test_driver->get_ok('https://duckduckgo.com', "Chrome can load page");
-	$test_driver->quit();
+    $test_driver->quit();
 
 =head1 DESCRIPTION
 

@@ -15,7 +15,7 @@ Test::Selenium::Firefox
 
     my $test_driver = Test::Selenium::Firefox->new;
     $test_driver->get_ok('https://duckduckgo.com', "Firefox can load page");
-	$test_driver->quit();
+    $test_driver->quit();
 
 =head1 DESCRIPTION
 
