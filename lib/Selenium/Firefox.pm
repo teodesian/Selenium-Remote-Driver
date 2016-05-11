@@ -88,10 +88,31 @@ has '+wd_context_prefix' => (
     default => sub { '/hub' }
 );
 
+=attr marionette_binary_port
+
+Optional: specify the port that we should bind Marionette to. If you don't
+specify anything, we'll default to the driver's default port. Since
+there's no a priori guarantee that this will be an open port, this is
+_not_ necessarily the port that we end up using - if the port here is
+already bound, we'll search above it until we find an open one.
+
+See L<Selenium::CanStartBinary/port> for more details, and
+L<Selenium::Remote::Driver/port> after instantiation to see what the
+actual port turned out to be.
+
+=cut
+
 has 'marionette_binary_port' => (
     is => 'lazy',
     default => sub { 2828 }
 );
+
+=attr marionette_binary_port
+
+Optional: specify whether Marionette should be enabled or not. The
+firefox binary must have been built with this funtionality.
+
+=cut
 
 has 'marionette_enabled' => (
     is  => 'lazy',
