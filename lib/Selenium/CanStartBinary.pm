@@ -255,10 +255,10 @@ sub _build_binary_mode {
     my $port = $self->port + 0;
     return if $port == 4444;
 
-    my $marionette_port = $self->marionette_enabled ?
-    $self->marionette_port : 0;
-
     if ($self->isa('Selenium::Firefox')) {
+        my $marionette_port = $self->marionette_enabled ?
+        $self->marionette_port : 0;
+
         my @args = ($port, $marionette_port);
 
         if ($self->has_firefox_profile) {
