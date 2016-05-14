@@ -107,7 +107,7 @@ has 'marionette_binary_port' => (
     default => sub { 2828 }
 );
 
-=attr marionette_binary_port
+=attr marionette_enabled
 
 Optional: specify whether Marionette should be enabled or not. The
 firefox binary must have been built with this funtionality.
