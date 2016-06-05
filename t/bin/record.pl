@@ -51,10 +51,8 @@ sub kill_server {
 
 
 sub reset_env {
-    if (@ARGV && $ARGV[0] eq 'reset') {
-        print 'Cleaning. ';
-        `cd $repo_root && dzil clean`;
-    }
-    print 'Taking out any existing servers. ' . "\n";
+    print 'dzil cleaning...';
+    `cd $repo_root && dzil clean`;
+    print 'and taking out any existing servers. ' . "\n";
     kill_server();
 }
