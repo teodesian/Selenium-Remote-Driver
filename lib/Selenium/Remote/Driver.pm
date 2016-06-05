@@ -2077,10 +2077,11 @@ sub find_child_element {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists $self->FINDERS->{$using} ) {
+    my $using =
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
+    if ( defined $using ) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
@@ -2138,10 +2139,11 @@ sub find_child_elements {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists $self->FINDERS->{$using} ) {
+    my $using =
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
+    if ( defined $using ) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
