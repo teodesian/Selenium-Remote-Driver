@@ -163,12 +163,8 @@ $ perldoc Selenium::Remote::WebElement
 ## Contributing
 
 Thanks for considering contributing! The contributing guidelines are
-[also in the wiki][contrib]. The documentation there also includes
-information on generating new recordings via
-
-```bash
-$ perl t/bin/record.pl
-```
+[in the wiki][contrib]. The documentation there also includes
+information on generating new Linux recordings for Travis.
 
 [contrib]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Contribution-Guide
 
@@ -176,7 +172,7 @@ $ perl t/bin/record.pl
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014 Daniel Gempesaw
+Copyright (c) 2014-2016 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
