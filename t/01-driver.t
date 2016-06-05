@@ -270,6 +270,12 @@ FIND: {
     $elem = $driver->find_element('checky', 'name');
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Name');
 
+    $driver->default_finder('css');
+    $elem = $driver->find_element('#multi');
+    $elem = $driver->find_child_element($elem, "option[selected]");
+    ok($elem->isa('Selenium::Remote::WebElement'), 'Got child WebElement...');
+    $driver->default_finder('xpath');
+
     $elem = $driver->find_element('multi', 'id');
     $elem = $driver->find_child_element($elem, "option");
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got child WebElement...');
