@@ -267,6 +267,7 @@ sub _build_binary_mode {
 
         if ($self->has_firefox_profile) {
             push @args, $self->firefox_profile;
+            $self->clear_firefox_profile;
         }
 
         setup_firefox_binary_env(@args);

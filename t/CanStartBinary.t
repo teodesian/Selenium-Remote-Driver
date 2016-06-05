@@ -79,6 +79,25 @@ FIREFOX: {
         my $firefox = Selenium::Firefox->new;
         isnt( $firefox->port, 4444, 'firefox can start up its own binary');
         ok( Selenium::CanStartBinary::probe_port( $firefox->port ), 'the firefox binary is listening on its port');
+        $firefox->shutdown_binary;
+
+      PROFILE: {
+            my $encoded = 0;
+            {
+                package FFProfile;
+                use Moo;
+                extends 'Selenium::Firefox::Profile';
+
+                sub _encode { $encoded++ };
+                1;
+            }
+
+            my $p = FFProfile->new;
+            my $firefox_with_profile = Selenium::Firefox->new(firefox_profile => $p);
+            $firefox_with_profile->shutdown_binary;
+            is($encoded, 0, 'Binary firefox does not encode profile unnecessarily');
+        }
+
     }
 }
 
