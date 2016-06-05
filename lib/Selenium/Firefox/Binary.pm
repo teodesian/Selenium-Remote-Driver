@@ -64,10 +64,11 @@ sub firefox_path {
 # the end of this function.
 my $profile;
 sub setup_firefox_binary_env {
-    my ($port, $caller_profile) = @_;
+    my ($port, $marionette_port, $caller_profile) = @_;
 
     $profile = $caller_profile || Selenium::Firefox::Profile->new;
     $profile->add_webdriver($port);
+    $profile->add_marionette($marionette_port);
 
     $ENV{'XRE_PROFILE_PATH'} = $profile->_layout_on_disk;
     $ENV{'MOZ_NO_REMOTE'} = '1';             # able to launch multiple instances
