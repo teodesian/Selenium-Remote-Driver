@@ -1026,6 +1026,9 @@ sub set_async_script_timeout {
     will return an empty list. If this method is never called, the driver will
     default to an implicit wait of 0ms.
 
+    This is exactly equivalent to calling L</set_timeout> with a type
+    arg of C<"implicit">.
+
  Input:
     Time in milliseconds.
 
