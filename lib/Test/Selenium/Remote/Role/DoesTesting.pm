@@ -83,9 +83,24 @@ sub _check_ok {
         # quick hack to fit 'find_no_element' into check_ok logic
         if ($method eq 'find_no_element') { 
             $real_method = $method;
-            $method = 'find_element'; 
+
+            # If we use `find_element` and find nothing, the error
+            # handler is incorrectly invoked. Doing a `find_elements`
+            # and checking that it returns an empty array does not
+            # invoke the error_handler. See
+            # https://github.com/gempesaw/Selenium-Remote-Driver/issues/253
+            $method = 'find_elements';
+            my $elements = $self->$method(@r_args);
+            if (scalar(@$elements)) {
+                $rv = $elements->[0];
+            }
+            else {
+                $rv = 1;
         }
+        }
+        else {
         $rv = $self->$method(@r_args);
+    }
     }
     catch {
         if ($real_method) {

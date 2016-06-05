@@ -109,9 +109,14 @@ $successful_driver->find_child_element_ok({id => 1},'p','class','find_child_elem
 ok( exception { $successful_driver->find_child_element_ok({id => 1200}) }, 'find_child_element_ok dies if the element is not found' );
 
 # find no element ok test
-
 $successful_driver->find_no_element_ok('notq','xpath','find_no_element_ok works');
-ok(exception { $successful_driver->find_no_element_ok('q','xpath','find_no_element_ok works') }, 'find no element dies when an element is found');
+ok(exception { $successful_driver->find_no_element_ok('abc','xpath','find_no_element_ok works') }, 'find no element dies when an element is found');
+
+my $called = 0;
+$successful_driver->error_handler(sub { my ($self,$msg) = @_; $called++; croak});
+$successful_driver->find_no_element_ok('notq','xpath');
+is($called, 0, 'find_no_element_ok does not call error handler when finding no element');
+$successful_driver->clear_error_handler;
 
 # body and content function family
 $successful_driver->content_like( qr/matches/, 'content_like works');
