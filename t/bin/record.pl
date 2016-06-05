@@ -15,7 +15,11 @@ my $built_lib = find_built_lib();
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
 my $wait = $^O eq 'MSWin32' ? 'START /WAIT' : '';
 my $prove_opts = '-I' . $built_lib .' -j9 -r --verbose --trap --merge --state=save,slow';
-print `$export WD_MOCKING_RECORD=1 && cd $repo_root && perl -Ilib t/01-driver.t`;
+my $default_prove = "prove $prove_opts t/";
+my $executable = $ARGV[0] ? "perl -I$built_lib $ARGV[0]" : $default_prove;
+my $command = "$export WD_MOCKING_RECORD=1 && cd $repo_root && $executable";
+print "Executing: $command\n";
+print `$command`;
 reset_env();
 
 sub find_built_lib {
