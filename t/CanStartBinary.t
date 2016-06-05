@@ -53,7 +53,11 @@ CHROME: {
         skip 'Chrome binary not found in path', 3
           unless $has_chromedriver;
 
-        my $chrome = Selenium::Chrome->new;
+        my $chrome = Selenium::Chrome->new(
+            custom_args => ' --fake-arg'
+        );
+
+        like( $chrome->_construct_command, qr/--fake-arg/, 'can pass custom args');
         ok( $chrome->browser_name eq 'chrome', 'convenience chrome is okay' );
         isnt( $chrome->port, 4444, 'chrome can start up its own binary' );
         like( $chrome->_binary_args, qr/--url-base=wd\/hub/, 'chrome has correct webdriver context' );
