@@ -34,6 +34,12 @@ EXCEPTIONS: {
       'exceptions usually only warn once';
 }
 
+NO_FINALLY_WAIT: {
+    waits_ok( sub { wait_until { 1 }, interval => 10 }, '<', 1,
+              'does not do interval wait on success')
+
+}
+
 sub waits_ok  {
     my ($sub, $cmp, $expected_duration, $test_desc) = @_;
 
