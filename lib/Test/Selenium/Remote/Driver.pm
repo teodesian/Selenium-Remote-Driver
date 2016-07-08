@@ -482,7 +482,7 @@ sub content_like {
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Content is like "$regex"} if ( not defined $desc );
         $ret = like_string( $content, $regex, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $regex");
         }
         return $ret;
@@ -491,7 +491,7 @@ sub content_like {
         for my $re (@$regex) {
             $desc = qq{Content is like "$re"} if ( not defined $desc );
             $ret = like_string( $content, $re, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $re");
             }
         }
@@ -524,7 +524,7 @@ sub content_unlike {
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Content is unlike "$regex"} if ( not defined $desc );
         $ret = unlike_string( $content, $regex, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $regex");
         }
     }
@@ -532,7 +532,7 @@ sub content_unlike {
         for my $re (@$regex) {
             $desc = qq{Content is unlike "$re"} if ( not defined $desc );
             $ret = unlike_string( $content, $re, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $re");
             }
         }
@@ -569,7 +569,7 @@ sub body_text_like {
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Text is like "$regex"} if ( not defined $desc );
         $ret = like_string( $text, $regex, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $regex");
         }
         return $ret;
@@ -578,7 +578,7 @@ sub body_text_like {
         for my $re (@$regex) {
             $desc = qq{Text is like "$re"} if ( not defined $desc );
             $ret = like_string( $text, $re, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $re");
             }
         }
@@ -615,7 +615,7 @@ sub body_text_unlike {
     if ( not ref $regex eq 'ARRAY' ) {
         $desc = qq{Text is unlike "$regex"} if ( not defined $desc );
         $ret = unlike_string( $text, $regex, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $regex");
         }
         return $ret;
@@ -625,7 +625,7 @@ sub body_text_unlike {
         for my $re (@$regex) {
             $desc = qq{Text is unlike "$re"} if ( not defined $desc );
             $ret = unlike_string( $text, $re, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $re");
             }
         }
@@ -661,7 +661,7 @@ sub content_contains {
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Content contains "$str"} if ( not defined $desc );
         $ret = contains_string( $content, $str, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $str");
         }
         return $ret;
@@ -671,7 +671,7 @@ sub content_contains {
             $desc = qq{Content contains "$s"} if ( not defined $desc );
             $ret = contains_string( $content, $s, $desc );
 
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $s");
             }
         }
@@ -705,7 +705,7 @@ sub content_lacks {
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Content lacks "$str"} if ( not defined $desc );
         $ret = lacks_string( $content, $str, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $str");
         }
         return $ret;
@@ -714,7 +714,7 @@ sub content_lacks {
         for my $s (@$str) {
             $desc = qq{Content lacks "$s"} if ( not defined $desc );
             $ret = lacks_string( $content, $s, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $s");
             }
         }
@@ -751,7 +751,7 @@ sub body_text_contains {
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Text contains "$str"} if ( not defined $desc );
         $ret = contains_string( $text, $str, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $str");
         }
         return $ret;
@@ -760,7 +760,7 @@ sub body_text_contains {
         for my $s (@$str) {
             $desc = qq{Text contains "$s"} if ( not defined $desc );
             $ret = contains_string( $text, $s, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $s");
             }
         }
@@ -797,7 +797,7 @@ sub body_text_lacks {
     if ( not ref $str eq 'ARRAY' ) {
         $desc = qq{Text lacks "$str"} if ( not defined $desc );
         $ret = lacks_string( $text, $str, $desc );
-        if ( !$ret ) {
+        if ( !$ret && $self->has_error_handler ) {
             $self->error_handler->($self,"Failed to find $str");
         }
         return $ret;
@@ -806,7 +806,7 @@ sub body_text_lacks {
         for my $s (@$str) {
             $desc = qq{Text lacks "$s"} if ( not defined $desc );
             $ret = lacks_string( $text, $s, $desc );
-            if ( !$ret ) {
+            if ( !$ret && $self->has_error_handler ) {
                 $self->error_handler->($self,"Failed to find $s");
             }
         }

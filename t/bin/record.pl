@@ -10,13 +10,16 @@ my $repo_root = abs_path($this_folder) . '/';
 
 reset_env();
 start_server();
-output_linux_help();
 
 my $built_lib = find_built_lib();
 my $export = $^O eq 'MSWin32' ? 'set' : 'export';
 my $wait = $^O eq 'MSWin32' ? 'START /WAIT' : '';
 my $prove_opts = '-I' . $built_lib .' -j9 -r --verbose --trap --merge --state=save,slow';
-print `$export WD_MOCKING_RECORD=1 && cd $repo_root && prove $prove_opts t/`;
+my $default_prove = "prove $prove_opts t/";
+my $executable = $ARGV[0] ? "perl -I$built_lib $ARGV[0]" : $default_prove;
+my $command = "$export WD_MOCKING_RECORD=1 && cd $repo_root && $executable";
+print "Executing: $command\n";
+print `$command`;
 reset_env();
 
 sub find_built_lib {
@@ -29,12 +32,6 @@ sub find_built_lib {
     # for it again.
     $built_lib ||= glob($repo_root . 'Selenium-Remote-Driver-*/lib');
     return $built_lib;
-}
-
-sub output_linux_help {
-    if ($^O eq 'linux') {
-        print "Headless and need a webdriver server started? Try\n\n\tDISPLAY=:1 xvfb-run --auto-servernum java -jar /usr/lib/node_modules/protractor/selenium/selenium-server-standalone-*.jar\n\n";
-    }
 }
 
 sub start_server {
@@ -58,10 +55,8 @@ sub kill_server {
 
 
 sub reset_env {
-    if (@ARGV && $ARGV[0] eq 'reset') {
-        print 'Cleaning. ';
-        `cd $repo_root && dzil clean`;
-    }
-    print 'Taking out any existing servers. ' . "\n";
+    print 'dzil cleaning...';
+    `cd $repo_root && dzil clean`;
+    print 'and taking out any existing servers. ' . "\n";
     kill_server();
 }

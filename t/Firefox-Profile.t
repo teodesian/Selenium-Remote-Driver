@@ -9,7 +9,7 @@ use IO::Uncompress::Unzip qw(unzip $UnzipError);
 use File::Temp;
 use JSON;
 use Selenium::Remote::Mock::RemoteConnection;
-use Selenium::Remote::Driver::Firefox::Profile;
+use Selenium::Firefox::Profile;
 
 use FindBin;
 use lib $FindBin::Bin . '/lib';
@@ -23,7 +23,7 @@ my %selenium_args = %{ $harness->base_caps };
 my $fixture_dir = $FindBin::Bin . '/www/';
 
 CUSTOM_EXTENSION_LOADED: {
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
+    my $profile = Selenium::Firefox::Profile->new;
     my $domain = $harness->domain;
     my $website = $harness->website;
     my $mock_encoded_profile = $fixture_dir . 'encoded_profile.b64';
@@ -82,7 +82,7 @@ CUSTOM_EXTENSION_LOADED: {
 }
 
 PREFERENCES: {
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new();
+    my $profile = Selenium::Firefox::Profile->new();
     # We're keeping the expected values together as we accumulate them
     # so we can validate them all at the end in the pack_and_unpack
     # section
@@ -167,7 +167,7 @@ PREFERENCES: {
 }
 
 CROAKING: {
-    my $profile = Selenium::Remote::Driver::Firefox::Profile->new;
+    my $profile = Selenium::Firefox::Profile->new;
 
     eval { $profile->add_extension('gibberish'); };
     cmp_ok($@, '=~', qr/File not found/i, 'throws on missing file');

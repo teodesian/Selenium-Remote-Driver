@@ -1,0 +1,9 @@
+#! /bin/bash
+
+REPO=$(git rev-parse --show-toplevel)
+cd $REPO
+
+docker pull gempesaw/docker-selenium-remote-driver
+docker run --security-opt=seccomp=unconfined \
+       -v $REPO:/opt/Selenium-Remote-Driver \
+       -it --rm gempesaw/docker-selenium-remote-driver $1

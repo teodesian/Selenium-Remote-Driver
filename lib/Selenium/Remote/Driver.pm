@@ -485,7 +485,8 @@ has 'firefox_profile' => (
 
         return $profile;
     },
-    predicate => 'has_firefox_profile'
+    predicate => 'has_firefox_profile',
+    clearer => 1
 );
 
 has 'desired_capabilities' => (
@@ -1026,6 +1027,9 @@ sub set_async_script_timeout {
     will return an empty list. If this method is never called, the driver will
     default to an implicit wait of 0ms.
 
+    This is exactly equivalent to calling L</set_timeout> with a type
+    arg of C<"implicit">.
+
  Input:
     Time in milliseconds.
 
@@ -1529,7 +1533,7 @@ sub screenshot {
 
  Description:
     Capture a screenshot and save as a PNG to provided file name.
-    (The method is compatible with the WWW::Selenium method fo the same name)
+    (The method is compatible with the WWW::Selenium method of the same name)
 
  Output:
     TRUE - (Screenshot is written to file)
@@ -2077,10 +2081,11 @@ sub find_child_element {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists $self->FINDERS->{$using} ) {
+    my $using =
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
+    if ( defined $using ) {
         my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
@@ -2138,10 +2143,11 @@ sub find_child_elements {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using = ( defined $method ) ? $method : $self->default_finder;
-    if ( exists $self->FINDERS->{$using} ) {
+    my $using =
+      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
+    if ( defined $using ) {
         my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-        my $params = { 'using' => $self->FINDERS->{$using}, 'value' => $query };
+        my $params = { 'using' => $using, 'value' => $query };
         my $ret_data = eval { $self->_execute_command( $res, $params ); };
         if ($@) {
             if ( $@
