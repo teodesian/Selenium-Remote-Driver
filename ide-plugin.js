@@ -362,7 +362,6 @@ WDAPI.Element.prototype.isDisplayed = function() {
   return this.ref + "->is_displayed";
 };
 
-
 WDAPI.Element.prototype.isSelected = function() {
   return this.ref + "->is_selected";
 };
