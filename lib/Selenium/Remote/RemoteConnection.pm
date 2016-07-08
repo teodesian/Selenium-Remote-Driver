@@ -7,7 +7,6 @@ use Try::Tiny;
 use LWP::UserAgent;
 use HTTP::Headers;
 use HTTP::Request;
-use Net::Ping;
 use Carp qw(croak);
 use JSON;
 use Data::Dumper;

@@ -64,7 +64,7 @@ sub _naive_find_binary {
         return $naive_binary;
     }
     else {
-        warn qq(Unable to find the $naive_binary binary in your \$PATH. We'll try falling back to standard Remote Driver);
+        warn qq(Unable to find the $executable binary in your \$PATH. We'll try falling back to standard Remote Driver);
         return;
     }
 }

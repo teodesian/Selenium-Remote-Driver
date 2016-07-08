@@ -86,6 +86,12 @@ has '+wd_context_prefix' => (
 
 with 'Selenium::CanStartBinary';
 
+=attr custom_args
+
+Optional: specify any additional command line arguments you'd like
+invoked during the binary startup. See
+L<Selenium::CanStartBinary/custom_args> for more information.
+
 =attr startup_timeout
 
 Optional: specify how long to wait for the binary to start itself and

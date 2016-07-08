@@ -270,6 +270,12 @@ FIND: {
     $elem = $driver->find_element('checky', 'name');
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got WebElement via Name');
 
+    $driver->default_finder('css');
+    $elem = $driver->find_element('#multi');
+    $elem = $driver->find_child_element($elem, "option[selected]");
+    ok($elem->isa('Selenium::Remote::WebElement'), 'Got child WebElement...');
+    $driver->default_finder('xpath');
+
     $elem = $driver->find_element('multi', 'id');
     $elem = $driver->find_child_element($elem, "option");
     ok($elem->isa('Selenium::Remote::WebElement'), 'Got child WebElement...');
@@ -555,10 +561,10 @@ UPLOAD: {
 
 ERROR: {
     # driver behaviour on error
-    $driver->error_handler(sub { my ($self,$error_msg) = @_; croak("Got message: $error_msg");});
-    like( exception { $driver->find_element("somethingthatdoesnotexist") }, qr/^Got message:/, "Error handler catches correctly an error");
+    $driver->error_handler(sub {my ($self,$error_msg) = @_; croak("Got message: $error_msg");});
+    like( exception { $driver->accept_alert }, qr/^Got message:/, "Error handler catches correctly an error");
     $driver->clear_error_handler;
-    unlike( exception { $driver->find_element("somethingthatdoesnotexist") }, qr/^Got message:/, "Error handler was correctly cleared");
+    unlike( exception { $driver->accept_alert }, qr/^Got message:/, "Error handler was correctly cleared");
 
     like( exception { $driver->error_handler( 'hello' ) }, qr/must be a code ref/, 'we only accept code refs as error handlers');
 }
