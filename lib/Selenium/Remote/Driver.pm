@@ -192,7 +192,7 @@ you please.
                                                'port'               => '2222',
                                                'auto_close'         => 0);
     or
-    my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome'
+    my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome',
                                                'extra_capabilities' => {
                                                    'chromeOptions' => {
                                                        'args'  => [
