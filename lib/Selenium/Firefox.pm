@@ -8,6 +8,7 @@ extends 'Selenium::Remote::Driver';
 =head1 SYNOPSIS
 
     my $driver = Selenium::Firefox->new;
+    my $driver = Selenium::Firefox->new( marionette_enabled => 1 );
 
 =head1 DESCRIPTION
 
