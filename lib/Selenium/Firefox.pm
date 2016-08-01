@@ -90,8 +90,8 @@ has '+wd_context_prefix' => (
 
 =attr marionette_binary_port
 
-Optional: specify the port that we should bind Marionette to. If you don't
-specify anything, we'll default to the driver's default port. Since
+Optional: specify the port that we should bind marionette to. If you don't
+specify anything, we'll default to the marionette's default port. Since
 there's no a priori guarantee that this will be an open port, this is
 _not_ necessarily the port that we end up using - if the port here is
 already bound, we'll search above it until we find an open one.
@@ -99,6 +99,11 @@ already bound, we'll search above it until we find an open one.
 See L<Selenium::CanStartBinary/port> for more details, and
 L<Selenium::Remote::Driver/port> after instantiation to see what the
 actual port turned out to be.
+
+    Selenium::Firefox->new(
+        marionette_enabled     => 1,
+        marionette_binary_port => 12345,
+    );
 
 =cut
 
@@ -109,8 +114,26 @@ has 'marionette_binary_port' => (
 
 =attr marionette_enabled
 
-Optional: specify whether Marionette should be enabled or not. The
-firefox binary must have been built with this funtionality.
+Optional: specify whether L<marionette|https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette>
+should be enabled or not. If you enable the marionette_enabled flag,
+Firefox is launched with marionette server listening to
+C<marionette_binary_port>.
+
+The firefox binary must have been built with this funtionality and it's
+available in L<all recent Firefox binaries|https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/Builds>.
+
+Note: L<Selenium::Remote::Driver> does not yet provide a marionette
+client. It's up to the user to use a client or a marionette-to-webdriver
+proxy to communicate with the marionette server.
+
+    Selenium::Firefox->new( marionette_enabled => 1 );
+
+and Firefox will have 2 ports open. One for webdriver and one
+for marionette:
+
+    netstat -tlp | grep firefox
+    tcp    0    0    localhost:9090    *:*    LISTEN    23456/firefox
+    tcp    0    0    localhost:2828    *:*    LISTEN    23456/firefox
 
 =cut
 
