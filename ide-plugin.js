@@ -366,6 +366,19 @@ WDAPI.Element.prototype.isSelected = function() {
   return this.ref + "->is_selected";
 };
 
+WDAPI.Element.prototype.select = function(selectLocator) {
+  if (selectLocator.type == 'index') { 
+    return "$driver->find_child_element(" + this.ref + 
+    ", \"//option[" +  selectLocator.string + "]\" , \"xpath\")->click";
+  } 
+  if (selectLocator.type == 'value') { 
+    return "$driver->find_child_element(" + this.ref + 
+    ", \"//*[\\@value='" + selectLocator.string+ "']\" , \"xpath\")->click";
+  } 
+  return "$driver->find_child_element(" + this.ref + 
+  ", \"//*[text()='" + selectLocator.string+ "']\" , \"xpath\")->click";
+};
+
 WDAPI.Element.prototype.sendKeys = function(text) {
   return this.ref + "->send_keys(" + xlateArgument(text) + ")";
 };
