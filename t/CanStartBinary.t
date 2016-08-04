@@ -79,6 +79,7 @@ FIREFOX: {
         my $firefox = Selenium::Firefox->new;
         isnt( $firefox->port, 4444, 'firefox can start up its own binary');
         ok( Selenium::CanStartBinary::probe_port( $firefox->port ), 'the firefox binary is listening on its port');
+        $firefox->shutdown_binary;
 
         my $firefox_marionette = Selenium::Firefox->new(
             marionette_enabled => 1

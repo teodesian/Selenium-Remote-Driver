@@ -285,10 +285,13 @@ sub _build_binary_mode {
 
         if ($self->has_firefox_profile) {
             push @args, $self->firefox_profile;
-            $self->clear_firefox_profile;
         }
 
-        setup_firefox_binary_env(@args);
+        my $profile = setup_firefox_binary_env(@args);
+        # For geckodriver, setting env variable XRE_PROFILE_PATH does
+        # not seem to work anymore. Instead, geckodriver accepts an
+        # encoded firefox profile, so we need to set it on the Driver.
+        $self->firefox_profile($profile);
     }
 
     my $command = $self->_construct_command;
