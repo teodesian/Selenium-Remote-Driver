@@ -2,7 +2,7 @@ package Selenium::Firefox;
 
 # ABSTRACT: Use FirefoxDriver without a Selenium server
 use Moo;
-use Selenium::CanStartBinary::FindBinary qw/coerce_firefox_binary/;
+use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -47,8 +47,8 @@ able to find it, so you may be well served by specifying it yourself.
 
 has 'binary' => (
     is => 'lazy',
-    coerce => \&coerce_firefox_binary,
-    default => sub { 'firefox' },
+    coerce => \&coerce_simple_binary,
+    default => sub { 'geckodriver' },
     predicate => 1
 );
 
@@ -76,9 +76,9 @@ has '_binary_args' => (
     builder => sub {
         my ($self) = @_;
 
-        my $args = ' -no-remote';
+        my $args = ' --log trace --port ' . $self->port;
         if( $self->marionette_enabled ) {
-            $args .= ' -marionette';
+            $args .= ' --marionette-port ' . $self->marionette_binary_port;
         }
         return $args;
     }
@@ -86,7 +86,7 @@ has '_binary_args' => (
 
 has '+wd_context_prefix' => (
     is => 'ro',
-    default => sub { '/hub' }
+    default => sub { '' }
 );
 
 =attr marionette_binary_port
@@ -140,7 +140,7 @@ for marionette:
 
 has 'marionette_enabled' => (
     is  => 'lazy',
-    default => 0
+    default => 1
 );
 
 with 'Selenium::CanStartBinary';

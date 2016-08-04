@@ -25,18 +25,6 @@ sub coerce_simple_binary {
     }
 }
 
-sub coerce_firefox_binary {
-    my ($executable) = @_;
-
-    my $manual_binary = _validate_manual_binary($executable);
-    if ($manual_binary) {
-        return $manual_binary;
-    }
-    else {
-        return firefox_path();
-    }
-}
-
 sub _validate_manual_binary {
     my ($executable) = @_;
 
