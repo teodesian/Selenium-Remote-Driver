@@ -70,10 +70,7 @@ sub setup_firefox_binary_env {
     $profile->add_webdriver($port);
     $profile->add_marionette($marionette_port);
 
-    $ENV{'XRE_PROFILE_PATH'} = $profile->_layout_on_disk;
-    $ENV{'MOZ_NO_REMOTE'} = '1';             # able to launch multiple instances
-    $ENV{'MOZ_CRASHREPORTER_DISABLE'} = '1'; # disable breakpad
-    $ENV{'NO_EM_RESTART'} = '1';             # prevent the binary from detaching from the console.log
+    return $profile;
 }
 
 
