@@ -25,17 +25,64 @@ If you want to install from this repository, see the
 
 ## Usage
 
-You can use this module to directly start the webdriver binaries in
-your `$PATH` (after having [downloaded the driver servers][dl]). This
-method does not require the JRE/JDK to be installed, nor does it
-require the standalone server jar, despite the name of the module.
+You can use this module to directly start the webdriver servers, after
+[downloading the appropriate ones][dl] and putting the servers in your
+`$PATH`. This method does not require the JRE/JDK to be installed, nor
+does it require the standalone server jar, despite the name of the
+module.
 
 You can also use this module with the `selenium-standalone-server.jar`
 to let it handle browser start up for you, and also manage Remote
 connections where the server jar is not running on the same machine as
 your test script is executing.
 
-[dl]: #download-servers
+[dl]: #no-standalone-server
+
+### no standalone server
+
+- _Firefox 48 & newer_: install the Firefox browser, download
+  [geckodriver][gd] and put it in your `$PATH`. If the Firefox browser
+  binary is not in the default place for your OS and we cannot locate
+  it via `which`, you may have to specify the binary location during
+  startup.
+
+- _Firefox 47 & older_: install the Firefox browser in the default
+  place for your OS. If the Firefox browser binary is not in the
+  default place for your OS, you may have to specify the binary
+  location during startup.
+
+- _Chrome_: install the Chrome browser, [download Chromedriver][dcd]
+  and get `chromedriver` in your `$PATH`
+
+- _PhantomJS_: install the PhantomJS binary and get `phantomjs` in
+  your `$PATH`
+
+When the browser(s) are installed and you have the appropriate binary
+in your path, you should be able to do the following:
+
+```perl
+my $firefox = Selenium::Firefox->new;
+$firefox->get('http://www.google.com');
+
+my $chrome = Selenium::Chrome->new;
+$chrome->get('http://www.google.com');
+
+my $ghost = Selenium::PhantomJS->new;
+$ghost->get('http://www.google.com');
+```
+
+Note that you can also pass a `binary` argument to any of the above
+classes to manually specify what binary to start. Note that this
+`binary` refers to the driver server, _not_ the browser executable.
+
+```perl
+my $chrome = Selenium::Chrome->new(binary => '~/Downloads/chromedriver');
+```
+
+See the pod for the different modules for more details.
+
+[dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
+[gd]: https://github.com/mozilla/geckodriver/releases
 
 ### with a standalone server
 
@@ -107,56 +154,10 @@ useful [example snippets][ex].
 [ex]:
 https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
 
-### [no standalone server](#download-servers)
-
-- _Firefox 48 & newer_: install the Firefox browser, download
-  [geckodriver][gd] and put it in your `$PATH`. If the Firefox browser
-  binary is not in the default place for your OS and we cannot locate
-  it via `which`, you may have to specify the binary location during
-  startup.
-
-- _Firefox 47 & older_: install the Firefox browser in the default
-  place for your OS. If the Firefox browser binary is not in the
-  default place for your OS, you may have to specify the binary
-  location during startup.
-
-- _Chrome_: install the Chrome browser, [download Chromedriver][dcd]
-  and get `chromedriver` in your `$PATH`
-
-- _PhantomJS_: install the PhantomJS binary and get `phantomjs` in
-  your `$PATH`
-
-When the browser(s) are installed and you have the appropriate binary
-in your path, you should be able to do the following:
-
-```perl
-my $firefox = Selenium::Firefox->new;
-$firefox->get('http://www.google.com');
-
-my $chrome = Selenium::Chrome->new;
-$chrome->get('http://www.google.com');
-
-my $ghost = Selenium::PhantomJS->new;
-$ghost->get('http://www.google.com');
-```
-
-Note that you can also pass a `binary` argument to any of the above
-classes to manually specify what binary to start. Note that this
-`binary` refers to the driver server, _not_ the browser executable.
-
-```perl
-my $chrome = Selenium::Chrome->new(binary => '~/Downloads/chromedriver');
-```
-
-See the pod for the different modules for more details.
-
-[dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
-[gd]: https://github.com/mozilla/geckodriver/releases
-
 ## Selenium IDE Plugin
 
-[ide-plugin.js](./ide-plugin.js) is a Selenium IDE Plugin which allows you to export tests recorded 
-in Selenium IDE to a perl script.
+[ide-plugin.js](./ide-plugin.js) is a Selenium IDE Plugin which allows
+you to export tests recorded in Selenium IDE to a perl script.
 
 ### Installation in Selenium IDE
 
