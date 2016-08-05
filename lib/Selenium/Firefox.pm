@@ -77,9 +77,14 @@ has '_binary_args' => (
         my ($self) = @_;
 
         my $args = ' --log trace --port ' . $self->port;
-        if( $self->marionette_enabled ) {
+        if ( $self->marionette_enabled ) {
             $args .= ' --marionette-port ' . $self->marionette_binary_port;
+
+            if ( $self->has_firefox_binary ) {
+                $args .= ' --binary ' . $self->firefox_binary;
+            }
         }
+
         return $args;
     }
 );
@@ -96,10 +101,6 @@ specify anything, we'll default to the marionette's default port. Since
 there's no a priori guarantee that this will be an open port, this is
 _not_ necessarily the port that we end up using - if the port here is
 already bound, we'll search above it until we find an open one.
-
-See L<Selenium::CanStartBinary/port> for more details, and
-L<Selenium::Remote::Driver/port> after instantiation to see what the
-actual port turned out to be.
 
     Selenium::Firefox->new(
         marionette_enabled     => 1,
@@ -139,9 +140,16 @@ for marionette:
 =cut
 
 has 'marionette_enabled' => (
-    is  => 'lazy',
+    is => 'lazy',
     default => 1
 );
+
+has 'firefox_binary' => (
+    is => 'lazy',
+    predicate => 1,
+    default => sub { '' }
+);
+
 
 with 'Selenium::CanStartBinary';
 
