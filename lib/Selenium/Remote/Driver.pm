@@ -2617,7 +2617,7 @@ sub _prepare_file {
     }
 
     return {
-        file => MIME::Base64::encode_base64($string)          # base64-encoded string
+        file => MIME::Base64::encode_base64($string, '')
     };
 }
 

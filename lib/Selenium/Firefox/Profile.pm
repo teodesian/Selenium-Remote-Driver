@@ -247,7 +247,7 @@ sub _encode {
         die 'write error';
     }
 
-    return encode_base64($string);
+    return encode_base64($string, '');
 }
 
 sub _layout_on_disk {
