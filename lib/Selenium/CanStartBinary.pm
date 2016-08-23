@@ -276,23 +276,7 @@ sub _build_binary_mode {
     my $port = $self->port + 0;
     return if $port == 4444;
 
-    if ($self->isa('Selenium::Firefox')) {
-        my $marionette_port = $self->marionette_enabled
-          ? $self->marionette_port
-          : 0;
-
-        my @args = ($port, $marionette_port);
-
-        if ($self->has_firefox_profile) {
-            push @args, $self->firefox_profile;
-        }
-
-        my $profile = setup_firefox_binary_env(@args);
-        # For geckodriver, setting env variable XRE_PROFILE_PATH does
-        # not seem to work anymore. Instead, geckodriver accepts an
-        # encoded firefox profile, so we need to set it on the Driver.
-        $self->firefox_profile($profile);
-    }
+    $self->_handle_firefox_setup;
 
     my $command = $self->_construct_command;
     system($command);
@@ -303,6 +287,38 @@ sub _build_binary_mode {
     }
     else {
         die 'Unable to connect to the ' . $self->binary . ' binary on port ' . $port;
+    }
+}
+
+sub _handle_firefox_setup {
+    # This is a no-op for other browsers
+    return unless $self->isa('Selenium::Firefox');
+
+    my $marionette_port = $self->marionette_enabled
+      ? $self->marionette_port
+      : 0;
+
+    my $user_profile = $self->has_firefox_profile
+      ? $self->firefox_profile
+      : 0;
+
+    my $profile = setup_firefox_binary_env(
+        $port,
+        $self->marionette_port,
+        $user_profile
+    );
+
+    if ($self->marionette_enabled) {
+        # For geckodriver/marionette, we keep the enhanced profile around because
+        # we need to send it to geckodriver as a zipped b64-encoded
+        # directory.
+        $self->firefox_profile($profile);
+    }
+    else {
+        # For non-geckodriver/non-marionette, we want to get rid of
+        # the profile so that we don't accidentally zip it and encode
+        # it down the line while Firefox is trying to read from it.
+        $self->clear_firefox_profile;
     }
 }
 
@@ -355,7 +371,7 @@ sub DEMOLISH {
     # if we're in global destruction, all bets are off.
     return if $in_gd;
     $self->shutdown_binary;
-};
+}
 
 sub _construct_command {
     my ($self) = @_;
