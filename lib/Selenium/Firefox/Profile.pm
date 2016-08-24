@@ -191,7 +191,7 @@ for a new geckodriver session.
 =cut
 
 sub add_webdriver {
-    my ($self, $port) = @_;
+    my ($self, $port, $is_marionette) = @_;
 
     my $prefs = $self->_load_prefs;
     my $current_user_prefs = $self->{user_prefs};
@@ -202,10 +202,13 @@ sub add_webdriver {
         # mutable loaded prefs
         %{ $current_user_prefs },
         # but the frozen ones cannot be overwritten
-        %{ $prefs->{frozen} }
+        %{ $prefs->{frozen} },
+        'webdriver_firefox_port' => $port
     );
 
-    $self->set_preference('webdriver_firefox_port', $port);
+    if (! $is_marionette) {
+        $self->_add_webdriver_xpi;
+    }
 
     return $self;
 }
@@ -235,11 +238,11 @@ sub _load_prefs {
 
 =method add_webdriver_xpi
 
-Obsolete; primarily for internal use. This adds the fxgoogle .xpi that
-was used for webdriver communication in FF47 and older. For FF48 and
-newer, the old method using an extension to orchestrate the webdriver
+Primarily for internal use. This adds the fxgoogle .xpi that is used
+for webdriver communication in FF47 and older. For FF48 and newer, the
+old method using an extension to orchestrate the webdriver
 communication with the Firefox browser has been obsoleted by the
-introduction of geckodriver aka wires aka Marionette.
+introduction of C<geckodriver>.
 
 =cut
 

@@ -67,7 +67,7 @@ sub setup_firefox_binary_env {
     my ($port, $marionette_port, $caller_profile) = @_;
 
     $profile = $caller_profile || Selenium::Firefox::Profile->new;
-    $profile->add_webdriver($port);
+    $profile->add_webdriver($port, $marionette_port);
     $profile->add_marionette($marionette_port);
 
     # For non-geckodriver/marionette startup, we instruct Firefox to
