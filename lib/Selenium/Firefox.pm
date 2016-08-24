@@ -121,7 +121,17 @@ has '_binary_args' => (
 
 has '+wd_context_prefix' => (
     is => 'ro',
-    default => sub { '' }
+    default => sub {
+        my ($self) = @_;
+
+        if ($self->marionette_enabled) {
+            return '';
+        }
+        else {
+            return '/hub';
+        }
+
+    }
 );
 
 =attr marionette_binary_port
@@ -186,7 +196,7 @@ has 'firefox_binary' => (
     is => 'lazy',
     coerce => \&coerce_firefox_binary,
     predicate => 1,
-    default => sub { '' }
+    default => sub { 'firefox' }
 );
 
 
