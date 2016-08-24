@@ -171,10 +171,10 @@ has 'marionette_port' => (
         my ($self) = @_;
 
         if ($self->_is_old_ff) {
-            return find_open_port_above($self->marionette_binary_port);
+            return 0;
         }
         else {
-            return;
+            return find_open_port_above($self->marionette_binary_port);
         }
     }
 );
@@ -319,17 +319,13 @@ sub _handle_firefox_setup {
     # This is a no-op for other browsers
     return unless $self->isa('Selenium::Firefox');
 
-    my $marionette_port = $self->_is_old_ff
-      ? 0
-      : $self->marionette_port;
-
     my $user_profile = $self->has_firefox_profile
       ? $self->firefox_profile
       : 0;
 
     my $profile = setup_firefox_binary_env(
         $port,
-        $marionette_port,
+        $self->marionette_port,
         $user_profile
     );
 
