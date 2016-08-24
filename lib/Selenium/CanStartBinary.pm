@@ -107,12 +107,35 @@ C<127.0.0.1:4444>.
 
 =cut
 
+has '_real_binary' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        if ($self->_is_old_ff) {
+            return $self->firefox_binary;
+        }
+        else {
+            return $self->binary;
+        }
+    }
+);
+
+has '_is_old_ff' => (
+    is => 'lazy',
+    builder => sub {
+        my ($self) = @_;
+
+        return $self->isa('Selenium::Firefox') && !$self->marionette_enabled;
+    }
+);
+
 has '+port' => (
     is => 'lazy',
     builder => sub {
         my ($self) = @_;
 
-        if ($self->binary) {
+        if ($self->_real_binary) {
             return find_open_port_above($self->binary_port);
         }
         else {
@@ -147,7 +170,7 @@ has 'marionette_port' => (
     builder => sub {
         my ($self) = @_;
 
-        if ($self->isa('Selenium::Firefox') && $self->marionette_enabled) {
+        if ($self->_is_old_ff) {
             return find_open_port_above($self->marionette_binary_port);
         }
         else {
@@ -270,13 +293,13 @@ sub _build_binary_mode {
     my ($self) = @_;
 
     # We don't know what to do without a binary driver to start up
-    return unless $self->binary;
+    return unless $self->_real_binary;
 
     # Either the user asked for 4444, or we couldn't find an open port
     my $port = $self->port + 0;
     return if $port == 4444;
 
-    $self->_handle_firefox_setup;
+    $self->_handle_firefox_setup($port);
 
     my $command = $self->_construct_command;
     system($command);
@@ -286,17 +309,19 @@ sub _build_binary_mode {
         return 1;
     }
     else {
-        die 'Unable to connect to the ' . $self->binary . ' binary on port ' . $port;
+        die 'Unable to connect to the ' . $self->_real_binary . ' binary on port ' . $port;
     }
 }
 
 sub _handle_firefox_setup {
+    my ($self, $port) = @_;
+
     # This is a no-op for other browsers
     return unless $self->isa('Selenium::Firefox');
 
-    my $marionette_port = $self->marionette_enabled
-      ? $self->marionette_port
-      : 0;
+    my $marionette_port = $self->_is_old_ff
+      ? 0
+      : $self->marionette_port;
 
     my $user_profile = $self->has_firefox_profile
       ? $self->firefox_profile
@@ -304,21 +329,21 @@ sub _handle_firefox_setup {
 
     my $profile = setup_firefox_binary_env(
         $port,
-        $self->marionette_port,
+        $marionette_port,
         $user_profile
     );
 
-    if ($self->marionette_enabled) {
+    if ($self->_is_old_ff) {
+        # For non-geckodriver/non-marionette, we want to get rid of
+        # the profile so that we don't accidentally zip it and encode
+        # it down the line while Firefox is trying to read from it.
+        $self->clear_firefox_profile if $self->has_firefox_profile;
+    }
+    else {
         # For geckodriver/marionette, we keep the enhanced profile around because
         # we need to send it to geckodriver as a zipped b64-encoded
         # directory.
         $self->firefox_profile($profile);
-    }
-    else {
-        # For non-geckodriver/non-marionette, we want to get rid of
-        # the profile so that we don't accidentally zip it and encode
-        # it down the line while Firefox is trying to read from it.
-        $self->clear_firefox_profile;
     }
 }
 
@@ -375,7 +400,7 @@ sub DEMOLISH {
 
 sub _construct_command {
     my ($self) = @_;
-    my $executable = $self->binary;
+    my $executable = $self->_real_binary;
 
     # Executable path names may have spaces
     $executable = '"' . $executable . '"';
@@ -395,8 +420,20 @@ sub _cmd_prefix {
     my ($self) = @_;
 
     if (IS_WIN) {
-        my $prefix = 'start "' . $self->window_title . '" /MIN';
-        return $prefix;
+        my $prefix = 'start "' . $self->window_title . '"';
+
+        if ($self->_is_old_ff) {
+            # For older versions of Firefox that run without
+            # marionette, the command we're running actually starts up
+            # the browser itself, so we don't want to minimize it.
+            return $prefix;
+        }
+        else {
+            # If we're firefox with marionette, or any other browser,
+            # the command we're running is the driver, and we don't
+            # need want the command window in the foreground.
+            return $prefix . ' /MIN ';
+        }
     }
     else {
         return '';
