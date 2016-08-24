@@ -141,6 +141,23 @@ See the pod for the different modules for more details.
 
 [dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
 
+## Selenium IDE Plugin
+
+[ide-plugin.js](./ide-plugin.js) is a Selenium IDE Plugin which allows you to export tests recorded 
+in Selenium IDE to a perl script.
+
+### Installation in Selenium IDE
+
+  1. Open Selenium IDE
+  2. Options >> Options
+  3. Formats Tab
+  4. Click Add at the bottom
+  5. In the name field call it 'Perl-Webdriver'
+  6. Paste this entire source in the main textbox
+  7. Click 'Save'
+  8. Click 'Ok'
+  9. Close Selenium IDE and open it again.
+
 ## Support and Documentation
 
 There is a mailing list available at
