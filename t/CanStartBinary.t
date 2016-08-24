@@ -68,24 +68,66 @@ CHROME: {
 
 FIREFOX: {
   SKIP: {
-        skip 'Firefox will not start up on UNIX without a display', 3
+        skip 'Firefox will not start up on UNIX without a display', 6
           if ($^O ne 'MSWin32' && ! $ENV{DISPLAY});
-        my $binary = Selenium::Firefox::Binary::firefox_path();
-        skip 'Firefox binary not found in path', 3
-          unless $binary;
 
-        ok(-x $binary, 'we can find some sort of firefox');
+      NEWER: {
+            my $has_chromedriver = which('geckodriver');
+            skip 'Firefox geckodriver not found in path', 3
+              unless $has_chromedriver;
 
-        my $firefox = Selenium::Firefox->new;
-        isnt( $firefox->port, 4444, 'firefox can start up its own binary');
-        ok( Selenium::CanStartBinary::probe_port( $firefox->port ), 'the firefox binary is listening on its port');
-        $firefox->shutdown_binary;
+            my $firefox = Selenium::Firefox->new;
+            isnt( $firefox->port, 4444, 'firefox can start up its own binary');
+            ok(Selenium::CanStartBinary::probe_port($firefox->port),
+               'the firefox binary is listening on its port');
 
-        my $firefox_marionette = Selenium::Firefox->new(
-            marionette_enabled => 1
-        );
-        isnt( $firefox->port, 4444, 'firefox can start up its own binary');
-        ok( Selenium::CanStartBinary::probe_port( $firefox_marionette->marionette_port ), 'the firefox binary with marionette enabled is listening on its marionette port');
+            ok(Selenium::CanStartBinary::probe_port($firefox->marionette_port),
+               'the firefox binary is listening on its marionette port');
+            $firefox->shutdown_binary;
+        }
+
+      OLDER: {
+            # These are admittedly a very brittle test, so it's getting
+            # skipped almost all the time.
+            my $ff47_binary = '/Applications/Firefox47.app/Contents/MacOS/firefox-bin';
+            skip 'Firefox 47 compatibility tests require FF47 to be installed', 3
+              unless -x $ff47_binary;
+
+            my $ff47 = Selenium::Firefox->new(
+                marionette_enabled => 0,
+                firefox_binary => $ff47_binary
+            );
+            isnt( $ff47->port, 4444, 'older Firefox47 can start up its own binary');
+            ok( Selenium::CanStartBinary::probe_port( $ff47->port ),
+                'the older Firefox47 is listening on its port');
+            $ff47->quit;
+
+
+          PROFILE: {
+                my $encoded = 0;
+                {
+                    package FFProfile;
+                    use Moo;
+                    extends 'Selenium::Firefox::Profile';
+
+                    sub _encode { $encoded++ };
+                    1;
+                }
+
+                my $p = FFProfile->new;
+
+                # we don't need to keep this browser object around at all,
+                # we just want to run through the construction and confirm
+                # that nothing gets encoded
+                Selenium::Firefox->new(
+                    marionette_enabled => 0,
+                    firefox_binary => $ff47_binary,
+                    firefox_profile => $p
+                )->quit;
+                is($encoded, 0, 'older Firefox47 does not encode profile unnecessarily');
+            }
+
+        }
     }
 }
 
