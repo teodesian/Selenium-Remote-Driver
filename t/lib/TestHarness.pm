@@ -66,19 +66,6 @@ has record => (
     }
 );
 
-has os => (
-    is => 'ro',
-    init_args => undef,
-    default => sub {
-        my $os  = $^O;
-        if ($os =~ m/(aix|freebsd|openbsd|sunos|solaris)/) {
-            $os = 'linux';
-        }
-
-        return $os;
-    }
-);
-
 has base_caps => (
     is => 'rw',
     lazy => 1,
@@ -126,7 +113,7 @@ has mock_file => (
         my $test_name = lc($self->calling_file);
         $test_name =~ s/\.t$//;
 
-        my $mock_file = $mock_folder . $test_name . '-mock-' . $self->os . '.json';
+        my $mock_file = $mock_folder . $test_name . '-mock.json';
 
         # If we're replaying, we need a mock to read from. Otherwise,
         # we can't do anything
