@@ -248,7 +248,7 @@ has 'window_title' => (
     init_arg => undef,
     builder => sub {
         my ($self) = @_;
-        my (undef, undef, $file) = File::Spec->splitpath( $self->binary );
+        my (undef, undef, $file) = File::Spec->splitpath( $self->_real_binary );
         my $port = $self->port;
 
         return $file . ':' . $port;
