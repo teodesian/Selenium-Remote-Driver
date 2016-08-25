@@ -72,9 +72,9 @@ FIREFOX: {
           if ($^O ne 'MSWin32' && ! $ENV{DISPLAY});
 
       NEWER: {
-            my $has_chromedriver = which('geckodriver');
+            my $has_geckodriver = which('geckodriver');
             skip 'Firefox geckodriver not found in path', 3
-              unless $has_chromedriver;
+              unless $has_geckodriver;
 
             my $firefox = Selenium::Firefox->new;
             isnt( $firefox->port, 4444, 'firefox can start up its own binary');
@@ -100,7 +100,7 @@ FIREFOX: {
             isnt( $ff47->port, 4444, 'older Firefox47 can start up its own binary');
             ok( Selenium::CanStartBinary::probe_port( $ff47->port ),
                 'the older Firefox47 is listening on its port');
-            $ff47->quit;
+            $ff47->shutdown_binary;
 
 
           PROFILE: {
@@ -123,7 +123,7 @@ FIREFOX: {
                     marionette_enabled => 0,
                     firefox_binary => $ff47_binary,
                     firefox_profile => $p
-                )->quit;
+                )->shutdown_binary;
                 is($encoded, 0, 'older Firefox47 does not encode profile unnecessarily');
             }
 
@@ -132,17 +132,20 @@ FIREFOX: {
 }
 
 TIMEOUT: {
+    my $has_geckodriver = which('geckodriver');
+    skip 'Firefox geckodriver not found in path', 1
+      unless $has_geckodriver;
+
     my $binary = Selenium::Firefox::Binary::firefox_path();
-    skip 'Firefox binary not found in path', 3
+    skip 'Firefox browser not found in path', 1
       unless $binary;
 
-    # Force the port check to exhaust the wait_until timeout so that
-    # we can exercise the startup_timeout constructor option
-    # functionality.
+    # Override the binary command construction so that no web driver
+    # will start up.
     Sub::Install::reinstall_sub({
-        code => sub { return 0 },
+        code => sub { return '' },
         into => 'Selenium::CanStartBinary',
-        as => 'probe_port'
+        as => '_construct_command'
     });
 
     my $start = time;

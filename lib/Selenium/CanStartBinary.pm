@@ -365,7 +365,7 @@ sub shutdown_windows_binary {
     my ($self) = @_;
 
     if (IS_WIN) {
-        if ($self->isa('Selenium::Firefox')) {
+        if ($self->_is_old_ff) {
             # FIXME: Blech, handle a race condition that kills the
             # driver before it's finished cleaning up its sessions. In
             # particular, when the perl process ends, it wants to
