@@ -104,7 +104,7 @@ has '_binary_args' => (
         my ($self) = @_;
 
         if ( $self->marionette_enabled ) {
-            my $args = ' --log trace --port ' . $self->port;
+            my $args = ' --port ' . $self->port;
             $args .= ' --marionette-port ' . $self->marionette_binary_port;
 
             if ( $self->has_firefox_binary ) {
