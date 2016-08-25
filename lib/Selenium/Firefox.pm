@@ -2,6 +2,7 @@ package Selenium::Firefox;
 
 # ABSTRACT: Use FirefoxDriver without a Selenium server
 use Moo;
+use Selenium::Firefox::Binary qw/firefox_path/;
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary coerce_firefox_binary/;
 extends 'Selenium::Remote::Driver';
 
@@ -108,7 +109,7 @@ has '_binary_args' => (
             $args .= ' --marionette-port ' . $self->marionette_binary_port;
 
             if ( $self->has_firefox_binary ) {
-                $args .= ' --binary ' . $self->firefox_binary;
+                $args .= ' --binary "' . $self->firefox_binary . '"';
             }
 
             return $args;
@@ -193,10 +194,10 @@ directly start up.
 =cut
 
 has 'firefox_binary' => (
-    is => 'lazy',
+    is => 'ro',
     coerce => \&coerce_firefox_binary,
     predicate => 1,
-    default => sub { 'firefox' }
+    builder => 'firefox_path'
 );
 
 
