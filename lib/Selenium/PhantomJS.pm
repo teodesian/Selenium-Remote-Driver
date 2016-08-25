@@ -8,6 +8,8 @@ extends 'Selenium::Remote::Driver';
 =head1 SYNOPSIS
 
     my $driver = Selenium::PhantomJS->new;
+    # when you're done
+    $driver->shutdown_binary;
 
 =head1 DESCRIPTION
 
@@ -108,6 +110,23 @@ up to 20 seconds:
     Selenium::PhantomJS->new( startup_timeout => 20 );
 
 See L<Selenium::CanStartBinary/startup_timeout> for more information.
+
+=method shutdown_binary
+
+Call this method instead of L<Selenium::Remote::Driver/quit> to ensure
+that the binary executable is also closed, instead of simply closing
+the browser itself. If the browser is still around, it will call
+C<quit> for you. After that, it will try to shutdown the browser
+binary by making a GET to /shutdown and on Windows, it will attempt to
+do a C<taskkill> on the binary CMD window.
+
+    $self->shutdown_binary;
+
+It doesn't take any arguments, and it doesn't return anything.
+
+We do our best to call this when the C<$driver> option goes out of
+scope, but if that happens during global destruction, there's nothing
+we can do.
 
 =cut
 
