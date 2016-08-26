@@ -657,7 +657,7 @@ sub new_session {
     }
 
     if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
-          && $self->has_firefox_profile) {
+        && $self->has_firefox_profile) {
         $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile->_encode;
     }
 
@@ -674,7 +674,12 @@ sub new_desired_session {
 
 sub _request_new_session {
     my ( $self, $args ) = @_;
-    $self->remote_conn->check_status();
+
+    # geckodriver has not yet implemented the GET /status endpoint
+    # https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status
+    if (! $self->isa('Selenium::Firefox')) {
+        $self->remote_conn->check_status();
+    }
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
     my $resource_new_session = {

@@ -23,7 +23,7 @@ use XML::Simple;
 You can use this module to create a custom Firefox Profile for your
 Selenium tests. Currently, you can set browser preferences and add
 extensions to the profile before passing it in the constructor for a
-new Selenium::Remote::Driver.
+new L</Selenium::Remote::Driver> or L</Selenium::Firefox>.
 
 =head1 SYNPOSIS
 
@@ -185,16 +185,42 @@ sub add_extension {
 
 =method add_webdriver
 
-Primarily for internal use, we add the webdriver extension to the
-current Firefox profile.
+Primarily for internal use, we set the appropriate firefox preferences
+for a new geckodriver session.
 
 =cut
 
 sub add_webdriver {
-    my ($self, $port) = @_;
+    my ($self, $port, $is_marionette) = @_;
+
+    my $prefs = $self->_load_prefs;
+    my $current_user_prefs = $self->{user_prefs};
+
+    $self->set_preference(
+        %{ $prefs->{mutable} },
+        # having the user prefs here allows them to overwrite the
+        # mutable loaded prefs
+        %{ $current_user_prefs },
+        # but the frozen ones cannot be overwritten
+        %{ $prefs->{frozen} },
+        'webdriver_firefox_port' => $port
+    );
+
+    if (! $is_marionette) {
+        $self->_add_webdriver_xpi;
+    }
+
+    return $self;
+}
+
+sub _load_prefs {
+    # The appropriate webdriver preferences are stored in an adjacent
+    # JSON file; it's useful things like disabling default browser
+    # checks and setting an empty single page as the start up tab
+    # configuration. Unfortunately, these change with each version of
+    # webdriver.
 
     my $this_dir = dirname(abs_path(__FILE__));
-    my $webdriver_extension = $this_dir . '/webdriver.xpi';
     my $default_prefs_filename = $this_dir . '/webdriver_prefs.json';
 
     my $json;
@@ -204,17 +230,29 @@ sub add_webdriver {
         $json = <$fh>;
         close ($fh);
     }
-    my $webdriver_prefs = decode_json($json);
-    my $current_user_prefs = $self->{user_prefs};
 
-    $self->set_preference(
-        %{ $webdriver_prefs->{mutable} },
-        %{ $current_user_prefs }
-    );
-    $self->set_preference(%{ $webdriver_prefs->{frozen} });
+    my $prefs = decode_json($json);
+
+    return $prefs;
+}
+
+=method add_webdriver_xpi
+
+Primarily for internal use. This adds the fxgoogle .xpi that is used
+for webdriver communication in FF47 and older. For FF48 and newer, the
+old method using an extension to orchestrate the webdriver
+communication with the Firefox browser has been obsoleted by the
+introduction of C<geckodriver>.
+
+=cut
+
+sub _add_webdriver_xpi {
+    my ($self) = @_;
+
+    my $this_dir = dirname(abs_path(__FILE__));
+    my $webdriver_extension = $this_dir . '/webdriver.xpi';
 
     $self->add_extension($webdriver_extension);
-    $self->set_preference('webdriver_firefox_port', $port);
 }
 
 =method add_marionette

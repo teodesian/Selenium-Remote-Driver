@@ -1,7 +1,6 @@
 package Selenium::CanStartBinary::FindBinary;
 
 # ABSTRACT: Coercions for finding webdriver binaries on your system
-use File::Which qw/which/;
 use Cwd qw/abs_path/;
 use File::Which qw/which/;
 use IO::Socket::INET;
@@ -64,7 +63,7 @@ sub _naive_find_binary {
         return $naive_binary;
     }
     else {
-        warn qq(Unable to find the $executable binary in your \$PATH. We'll try falling back to standard Remote Driver);
+        warn qq(Unable to find the $executable binary in your \$PATH.);
         return;
     }
 }
