@@ -1,13 +1,20 @@
 Revision history for Selenium-Remote-Driver
 
-0.28   04-08-2016
-        (bundled firefox driver version: 2.48.2)
+0.2750   04-08-2016
+        (bundled firefox driver version: 3.0.0b2)
 
         [NEW FEATURES]
-        - #259 Allow users to pass in existing FF profile dir
+        - #271: Support geckodriver & FF48
+        - #260: Update firefox artifacts to 3.0.0b2 to support FF47
+        - #259: Allow users to pass in existing FF profile dir
+        - #276: Simplify recordings to enable easier releases
 
         [BUG FIXES]
-        - #260 Update firefox driver artifacts to 2.53.0
+        - #272: Remove unnecessary sleeps for successful waits
+        - #270: Fix bug in find_child_element default finder
+        - #263, #275: Address various documentation issues
+        - #253: Fix error_handler being called incorrectly
+
 
 0.2701 01-11-2016
         (firefox driver version: 2.48.2)
