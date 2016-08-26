@@ -71,7 +71,7 @@ FIREFOX: {
         skip 'Firefox will not start up on UNIX without a display', 6
           if ($^O ne 'MSWin32' && ! $ENV{DISPLAY});
 
-      NEWER: {
+      SKIP: {
             my $has_geckodriver = which('geckodriver');
             skip 'Firefox geckodriver not found in path', 3
               unless $has_geckodriver;
@@ -86,7 +86,7 @@ FIREFOX: {
             $firefox->shutdown_binary;
         }
 
-      OLDER: {
+      SKIP: {
             # These are admittedly a very brittle test, so it's getting
             # skipped almost all the time.
             my $ff47_binary = '/Applications/Firefox47.app/Contents/MacOS/firefox-bin';
@@ -132,29 +132,30 @@ FIREFOX: {
 }
 
 TIMEOUT: {
-    my $has_geckodriver = which('geckodriver');
-    skip 'Firefox geckodriver not found in path', 1
-      unless $has_geckodriver;
+  SKIP: {
+        my $has_geckodriver = which('geckodriver');
+        skip 'Firefox geckodriver not found in path', 1
+          unless $has_geckodriver;
 
-    my $binary = Selenium::Firefox::Binary::firefox_path();
-    skip 'Firefox browser not found in path', 1
-      unless $binary;
+        my $binary = Selenium::Firefox::Binary::firefox_path();
+        skip 'Firefox browser not found in path', 1
+          unless $binary;
 
-    # Override the binary command construction so that no web driver
-    # will start up.
-    Sub::Install::reinstall_sub({
-        code => sub { return '' },
-        into => 'Selenium::CanStartBinary',
-        as => '_construct_command'
-    });
+        # Override the binary command construction so that no web driver
+        # will start up.
+        Sub::Install::reinstall_sub({
+            code => sub { return '' },
+            into => 'Selenium::CanStartBinary',
+            as => '_construct_command'
+        });
 
-    my $start = time;
-    eval { Selenium::Firefox->new( startup_timeout => 1 ) };
-    # The test leaves a bit of a cushion to handle any unexpected
-    # latency issues when starting up the browser - the important part
-    # is that our timeout duration is _not_ the default 10 seconds.
-    ok( time - $start < 10, 'We can specify how long to wait for a binary to be available'  );
-
+        my $start = time;
+        eval { Selenium::Firefox->new( startup_timeout => 1 ) };
+        # The test leaves a bit of a cushion to handle any unexpected
+        # latency issues when starting up the browser - the important part
+        # is that our timeout duration is _not_ the default 10 seconds.
+        ok( time - $start < 10, 'We can specify how long to wait for a binary to be available'  );
+    }
 }
 
 sub is_proper_phantomjs_available {
