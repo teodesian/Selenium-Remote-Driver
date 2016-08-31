@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-0.2750   04-08-2016
+0.2751   04-08-2016
         (bundled firefox driver version: 3.0.0b2)
 
         [NEW FEATURES]
@@ -10,6 +10,7 @@ Revision history for Selenium-Remote-Driver
         - #276: Simplify recordings to enable easier releases
 
         [BUG FIXES]
+        - Encode Firefox profiles without newlines for Sel 3.0 compatibility
         - #272: Remove unnecessary sleeps for successful waits
         - #270: Fix bug in find_child_element default finder
         - #263, #275: Address various documentation issues
