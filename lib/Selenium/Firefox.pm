@@ -108,12 +108,9 @@ has '_binary_args' => (
         my ($self) = @_;
 
         if ( $self->marionette_enabled ) {
-            my $args = ' --port ' . $self->port;
-            $args .= ' --marionette-port ' . $self->marionette_binary_port;
-
-            if ( $self->has_firefox_binary ) {
-                $args .= ' --binary "' . $self->firefox_binary . '"';
-            }
+            my $args = ' --port ' . $self->port
+              . ' --marionette-port ' . $self->marionette_binary_port
+              . ' --binary "' . $self->firefox_binary . '"';
 
             return $args;
         }
@@ -191,13 +188,13 @@ and is executable, or we will croak.
 For Firefox 48 and newer, this will be passed to C<geckodriver> such
 that it will attempt to start up the Firefox at the specified path.
 
-For Firefox 47 and older, this browser path will be the file that we
+For Firefox 47 and older, this browser path should be the file that we
 directly start up.
 
 =cut
 
 has 'firefox_binary' => (
-    is => 'ro',
+    is => 'lazy',
     coerce => \&coerce_firefox_binary,
     predicate => 1,
     builder => 'firefox_path'
