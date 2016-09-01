@@ -55,15 +55,17 @@ elements would be the same.
 ### no standalone server
 
 - _Firefox 48 & newer_: install the Firefox browser, download
-  [geckodriver][gd] and [put it in your `$PATH`][fxpath]. If the Firefox browser
-  binary is not in the default place for your OS and we cannot locate
-  it via `which`, you may have to specify the binary location during
-  startup.
+  [geckodriver][gd] and [put it in your `$PATH`][fxpath]. If the
+  Firefox browser binary is not in the default place for your OS and
+  we cannot locate it via `which`, you may have to specify the binary
+  location during startup. We also will need to locate the Firefox
+  browser; if the Firefox browser isn't in the default location, you
+  must provide it during startup in the `firefox_binary` attr.
 
 - _Firefox 47 & older_: install the Firefox browser in the default
   place for your OS. If the Firefox browser binary is not in the
-  default place for your OS, you may have to specify the binary
-  location during startup.
+  default place for your OS, you may have to specify the
+  `firefox_binary` constructor option during startup.
 
 - _Chrome_: install the Chrome browser, [download Chromedriver][dcd]
   and get `chromedriver` in your `$PATH`.
@@ -99,6 +101,35 @@ See the pod for the different modules for more details.
 [dcd]: https://sites.google.com/a/chromium.org/chromedriver/downloads
 [fxpath]: https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver#Add_executable_to_system_path
 [gd]: https://github.com/mozilla/geckodriver/releases
+
+#### Breaking Changes for Selenium::Firefox in v1.0+
+
+There are breaking changes for Selenium::Firefox from v0.2701 of S:F
+to v1.0+. This is because in FF47 and older, Firefox didn't have a
+separate webdriver server executable - local startup was accomplished
+by starting your actual Firefox browser with a webdriver
+extension. However, in FF48 and newer, Mozilla have switched to using
+`geckodriver` to handle the Webdriver communication. Accordingly,
+v1.0+ of Selenium::Firefox assumes the geckodriver setup which only
+works for FF48 and higher:
+
+```perl
+# marionette_enabled defaults to 1 === assumes you're running FF48
+my $fx48 = Selenium::Firefox->new;
+my $fx48 = Selenium::Firefox->new( marionette_enabled => 1 );
+```
+
+To drive FF47 with v1.0+ of Selenium::Firefox, you must manually
+disable marionette:
+
+```perl
+my $fx47 = Selenium::Firefox->new( marionette_enabled => 0 );
+```
+
+Doing so will start up your Firefox browser with the webdriver
+extension. Note that in our tests, doing the old
+"webdriver-extension-startup" for Firefox 48 does not work. Likewise,
+`geckodriver` does not work with FF47.
 
 ### with a standalone server
 

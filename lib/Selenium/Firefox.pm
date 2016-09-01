@@ -8,11 +8,10 @@ extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
 
-    # these two are the same, and will only work with Firefox 48 and
-    # greater
+    # These two are the same, and will only work with Firefox 48+
     my $driver = Selenium::Firefox->new;
     my $driver = Selenium::Firefox->new( marionette_enabled => 1 );
-    # execute your test as usual
+    ...
     $driver->shutdown_binary;
 
     # For Firefox 47 and older, disable marionette:
@@ -20,6 +19,11 @@ extends 'Selenium::Remote::Driver';
     $driver->shutdown_binary;
 
 =head1 DESCRIPTION
+
+B<Breaking Changes:> There are breaking changes in v1.0+ of this
+module if you're using it to start FF47; please see L</"Breaking
+Changes">. You can ignore this if you're using v1.0+ of this module to
+start FF48.
 
 This class allows you to use the FirefoxDriver without needing the JRE
 or a selenium server running. Unlike starting up an instance of
@@ -39,6 +43,43 @@ any binary startup.
 If you're curious whether your Selenium::Firefox instance is using a
 separate Firefox binary, or through the selenium server, you can check
 the value of the C<binary_mode> attr after instantiation.
+
+=head1 BREAKING CHANGES
+
+In version v1.0+ and newer, the default behavior is to enable
+marionette & geckodriver mode. This means that an existing script that
+works with v0.2701 and Firefox v47 will require modification if you
+upgrade Selenium::Firefox to v1.0+. That is,
+
+    # v0.2701 of Selenium::Firefox works with FF47 like such; this will not
+    # work for FF47 after upgrade:
+    my $fx47_old = Selenium::Firefox->new;
+    ...
+    $fx47_old->shutdown_binary;
+
+    # v1.0 of Selenium::Firefox works with FF47 like this
+    my $fx47_new = Selenium::Firefox->new( marionette_enabled => 0);
+    ...
+    $fx47_new->shutdown_binary;
+
+We default to assuming FF48 and geckodriver mode because all
+forthcoming versions of the Firefox browser will be using the
+geckodriver architecture, and also because that's consistent with the
+rest of the driver setups, which all have separate driver binaries
+apart from the browser itself. This means that:
+
+    # v0.2701 of Selenium::Firefox cannot start up FF48 at all
+
+    # v1.0+ of Selenium::Firefox works with FF48+ like this:
+    my $fx48 = Selenium::Firefox->new;
+
+As with the other drivers, Selenium::Firefox in marionette/geckodriver
+mode requires a `geckodriver` executable in the path or provided
+during startup, and it will also attempt to find the path to your
+Firefox browser. During testing, we found that it was necessary for us
+to pass the Firefox browser file path to the `geckodriver` executable
+during start up, or else `geckodriver` would have trouble finding
+Firefox.
 
 =cut
 
@@ -186,7 +227,10 @@ explicitly here. Note that path here must point to a file that exists
 and is executable, or we will croak.
 
 For Firefox 48 and newer, this will be passed to C<geckodriver> such
-that it will attempt to start up the Firefox at the specified path.
+that it will attempt to start up the Firefox at the specified path. If
+you do not specify anything, we will look for the Firefox browser on
+our own in the normal places, but if the browser cannot be found,
+we'll probably C<die> during instantiation.
 
 For Firefox 47 and older, this browser path should be the file that we
 directly start up.
