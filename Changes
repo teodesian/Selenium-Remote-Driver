@@ -1,7 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
-0.2751   04-08-2016
+1.00   09-01-2016
         (bundled firefox driver version: 3.0.0b2)
+
+        [BREAKING]
+        - For users of Selenium::Firefox, FF support defaults to v48;
+          if you have FF47 installed, your existing scripts will require
+          modification. See docs in Selenium::Firefox for more info.
 
         [NEW FEATURES]
         - #271: Support geckodriver & FF48
@@ -15,7 +20,6 @@ Revision history for Selenium-Remote-Driver
         - #270: Fix bug in find_child_element default finder
         - #263, #275: Address various documentation issues
         - #253: Fix error_handler being called incorrectly
-
 
 0.2701 01-11-2016
         (firefox driver version: 2.48.2)
