@@ -200,8 +200,7 @@ useful [example snippets][ex].
 [ie]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/IE-browser-automation
 [chrome]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Chrome-browser-automation
 [pjs]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
-[ex]:
-https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
+[ex]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
 
 ## Selenium IDE Plugin
 
