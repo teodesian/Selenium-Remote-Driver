@@ -241,7 +241,7 @@ this.options = {
       '                                               browser_name => "${environment}");\n' +
       "\n",
   footer:
-      "${receiver}->quit();\n" +
+      "$driver->quit();\n" +
       "done_testing();\n",
   indent: "0",
   initialIndents: "0"
