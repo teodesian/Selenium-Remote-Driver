@@ -234,14 +234,12 @@ this.options = {
       "use strict;\n" +
       "use warnings;\n" +
       "use Selenium::Remote::Driver;\n" +
+      "use Selenium::Firefox;\n" +
       "use Test::More;\n" +
       "\n" +
-      'my ${receiver} = Selenium::Remote::Driver->new( remote_server_addr => "${rcHost}",\n' +
-      '                                               port => ${rcPort},\n' +
-      '                                               browser_name => "${environment}");\n' +
-      "\n",
+      'my $driver = Selenium::Firefox->new();\n\n',
   footer:
-      "${receiver}->quit();\n" +
+      "\n$driver->quit();\n" +
       "done_testing();\n",
   indent: "0",
   initialIndents: "0"
