@@ -607,7 +607,7 @@ sub _execute_command {
             if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
                 return $resp->{cmd_return};
             }
-            else {
+            elsif ( !$self->has_error_handler ){
                 my $msg = "Error while executing command";
                 if ( $resp->{cmd_error} ) {
                     $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
