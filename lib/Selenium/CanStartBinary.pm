@@ -16,7 +16,7 @@ use Moo::Role;
         has 'binary' => ( is => 'ro', default => 'chromedriver' );
         has 'binary_port' => ( is => 'ro', default => 9515 );
         has '_binary_args' => ( is => 'ro', default => sub {
-            return ' --port=' . shift->port . ' --url-base=wd/hub ';
+            return [ '--port', shift->port, '--url-base' , 'wd/hub' ];
         });
         with 'Selenium::CanStartBinary';
         1
@@ -235,6 +235,10 @@ has 'try_binary' => (
     }
 );
 
+has 'binary_pid' => (
+    is => 'rw',
+);
+
 =attr window_title
 
 Intended for internal use: this will build us a unique title for the
@@ -301,8 +305,14 @@ sub _build_binary_mode {
 
     $self->_handle_firefox_setup($port);
 
-    my $command = $self->_construct_command;
-    system($command);
+    my @command = $self->_construct_command;
+
+    my $pid = fork();
+    die 'Forking to launch binary failed' if not defined $pid;
+    if (not $pid) {
+        exec(@command) or die $!;
+    }
+    $self->binary_pid($pid);
 
     my $success = wait_until { probe_port($port) } timeout => $self->startup_timeout;
     if ($success) {
@@ -359,6 +369,10 @@ sub shutdown_binary {
         # Close the orphaned command windows on windows
         $self->shutdown_windows_binary;
     }
+
+    if($self->has_signal_shutdown_binary && $self->signal_shutdown_binary) {
+        kill(15, $self->binary_pid);
+    }
 }
 
 sub shutdown_windows_binary {
@@ -396,43 +410,49 @@ sub DEMOLISH {
 
 sub _construct_command {
     my ($self) = @_;
-    my $executable = $self->_real_binary;
+
+    my @cmd;
+    # Handle Windows vs Unix discrepancies for invoking shell commands
+    push(@cmd, $self->_cmd_prefix);
 
     # Executable path names may have spaces
-    $executable = '"' . $executable . '"';
+    push(@cmd, $self->_real_binary );
 
     # The different binaries take different arguments for proper setup
-    $executable .= $self->_binary_args;
+    push(@cmd, @{ $self->_binary_args });
+
     if ($self->has_custom_args) {
-        $executable .= ' ' . $self->custom_args;
+        push(@cmd, $self->custom_args);
     }
 
     # Handle Windows vs Unix discrepancies for invoking shell commands
-    my ($prefix, $suffix) = ($self->_cmd_prefix, $self->_cmd_suffix);
-    return join(' ', ($prefix, $executable, $suffix) );
+    push(@cmd, $self->_cmd_suffix);
+
+    return @cmd;
 }
 
 sub _cmd_prefix {
     my ($self) = @_;
 
     if (IS_WIN) {
-        my $prefix = 'start "' . $self->window_title . '"';
+        my @prefix = ('start', '"' . $self->window_title . '"');
 
         if ($self->_is_old_ff) {
             # For older versions of Firefox that run without
             # marionette, the command we're running actually starts up
             # the browser itself, so we don't want to minimize it.
-            return $prefix;
+            return @prefix;
         }
         else {
             # If we're firefox with marionette, or any other browser,
             # the command we're running is the driver, and we don't
             # need want the command window in the foreground.
-            return $prefix . ' /MIN ';
+            push(@prefix, '/MIN');
+            return @prefix;
         }
     }
     else {
-        return '';
+        return ();
     }
 }
 
@@ -441,10 +461,10 @@ sub _cmd_suffix {
     # output to go
 
     if (IS_WIN) {
-        return ' > /nul 2>&1 ';
+        return ('>', '/nul', '2>&1');
     }
     else {
-        return ' > /dev/null 2>&1 &';
+        return ();
     }
 }
 

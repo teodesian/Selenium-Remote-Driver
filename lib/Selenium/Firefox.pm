@@ -145,18 +145,16 @@ result some options may be overwritten or ignored.
 
 has '_binary_args' => (
     is => 'lazy',
-    builder => sub {
+    default => sub {
         my ($self) = @_;
 
         if ( $self->marionette_enabled ) {
-            my $args = ' --port ' . $self->port
-              . ' --marionette-port ' . $self->marionette_binary_port
-              . ' --binary "' . $self->firefox_binary . '"';
-
-            return $args;
+            return ['--port', $self->port,
+                    '--marionette-port', $self->marionette_binary_port,
+                    '--binary', $self->firefox_binary];
         }
         else {
-            return ' -no-remote';
+            return ['-no-remote'];
         }
     }
 );
@@ -244,6 +242,11 @@ has 'firefox_binary' => (
     builder => 'firefox_path'
 );
 
+has 'signal_shutdown_binary' => (
+    is => 'ro',
+    default => sub { 1 },
+    predicate => 1
+);
 
 with 'Selenium::CanStartBinary';
 

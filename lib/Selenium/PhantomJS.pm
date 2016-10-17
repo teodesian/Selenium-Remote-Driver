@@ -85,10 +85,10 @@ has 'binary_port' => (
 
 has '_binary_args' => (
     is => 'lazy',
-    builder => sub {
+    default => sub {
         my ($self) = @_;
 
-        return ' --webdriver=127.0.0.1:' . $self->port;
+        return ['--webdriver', '127.0.0.1:' . $self->port];
     }
 );
 
