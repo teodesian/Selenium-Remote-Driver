@@ -394,6 +394,17 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/orientation',
                 'no_content_success' => 0
             },
+            # firefox extension
+            'setContext' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/moz/context',
+                'no_content_success' => 1
+            },
+            'getContext' => {
+                'method'             => 'GET',
+                'url'                => 'session/:sessionId/moz/context',
+                'no_content_success' => 0
+            },
 
             # /session/:sessionId/local_storage
             # /session/:sessionId/local_storage/key/:key

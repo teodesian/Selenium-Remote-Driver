@@ -1188,6 +1188,67 @@ sub get_window_size {
     return $self->_execute_command($res);
 }
 
+=head2 get_context
+
+ Description:
+    Firefox extension: Retrieve browser's scope (chrome or content).
+    Chrome is a privileged scope where you can access things like the
+    Firefox UI itself. Content scope is where things like webpages live.
+
+ Output:
+    STRING - context (values: chrome or content)
+
+ Usage:
+    print $firefox_driver->get_context();
+
+=cut
+
+sub get_context {
+    my $self = shift;
+
+    if ( $self->isa('Selenium::Firefox') && $self->_is_old_ff ) {
+        return 0;
+    }
+    my $res = { 'command' => 'getContext' };
+    return $self->_execute_command($res);
+}
+
+=head2 set_context
+
+ Description:
+    Firefox extension: Set browser's scope (chrome or content).
+    Chrome is a privileged scope where you can access things like the
+    Firefox UI itself. Content scope is where things like webpages live.
+
+ Input:
+    Required:
+        <STRING> - Orientation {CHROME|CONTENT}
+
+ Usage:
+    $firefox_driver->set_context( $context  );
+
+ Output:
+    BOOLEAN - success or failure
+
+=cut
+
+sub set_context {
+    my ( $self, $context ) = @_;
+
+    if ( $self->isa('Selenium::Firefox') && $self->_is_old_ff ) {
+		return 0;
+	}
+
+    if ( not defined $context ) {
+        croak "Expecting context";
+    }
+    if ( $context !~ m/chrome|content/i ) {
+        croak "Expecting context value: chrome or content";
+    }
+    my $res = { 'command' => 'setContext' };
+    return $self->_execute_command( $res, { context => $context } );
+}
+
 =head2 get_window_position
 
  Description:
