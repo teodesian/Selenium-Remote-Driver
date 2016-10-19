@@ -310,6 +310,10 @@ sub _build_binary_mode {
     my $pid = fork();
     die 'Forking to launch binary failed' if not defined $pid;
     if (not $pid) {
+        # TODO: allow users to specify whether & where they want driver
+        # output to go
+        open(STDOUT, '>', IS_WIN ? '/nul' : '/dev/null') or die $!;
+        open(STDERR, '>&', \*STDOUT) or die $!;
         exec(@command) or die $!;
     }
     $self->binary_pid($pid);
@@ -425,9 +429,6 @@ sub _construct_command {
         push(@cmd, $self->custom_args);
     }
 
-    # Handle Windows vs Unix discrepancies for invoking shell commands
-    push(@cmd, $self->_cmd_suffix);
-
     return @cmd;
 }
 
@@ -450,18 +451,6 @@ sub _cmd_prefix {
             push(@prefix, '/MIN');
             return @prefix;
         }
-    }
-    else {
-        return ();
-    }
-}
-
-sub _cmd_suffix {
-    # TODO: allow users to specify whether & where they want driver
-    # output to go
-
-    if (IS_WIN) {
-        return ('>', '/nul', '2>&1');
     }
     else {
         return ();
