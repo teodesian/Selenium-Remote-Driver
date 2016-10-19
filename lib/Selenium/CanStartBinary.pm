@@ -375,7 +375,10 @@ sub shutdown_binary {
     }
 
     if($self->has_signal_shutdown_binary && $self->signal_shutdown_binary) {
-        kill(15, $self->binary_pid);
+        for my $sig (15, 2, 9) {
+            kill($sig, $self->binary_pid) or last;
+            sleep 1;
+        }
     }
 }
 
