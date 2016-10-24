@@ -244,6 +244,17 @@ has 'firefox_binary' => (
     builder => 'firefox_path'
 );
 
+# geckodriver doesn't use "ELEMENT" to indicate elements in the returned
+# data, but the magic string "element-6066-11e4-a52e-4f735466cecf"
+has '_element_key' => (
+    is      => 'ro',
+    builder => sub {
+		my ($self) = @_;
+        $self->_is_old_ff ? 'ELEMENT'
+                          : 'element-6066-11e4-a52e-4f735466cecf';
+    }
+);
+
 
 with 'Selenium::CanStartBinary';
 

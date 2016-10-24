@@ -513,6 +513,12 @@ has 'inner_window_size' => (
 
 );
 
+has '_element_key' => (
+    is      => 'ro',
+    builder => sub { return 'ELEMENT' }
+);
+
+
 with 'Selenium::Remote::Finders';
 with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 
@@ -1405,19 +1411,19 @@ sub execute_async_script {
             if ( Scalar::Util::blessed( $args[$i] )
                 and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                $args[$i] = { $self->_element_key => ( $args[$i] )->{id} };
             }
         }
 
         my $params = { 'script' => $script, 'args' => \@args };
         my $ret = $self->_execute_command( $res, $params );
 
-        # replace any ELEMENTS with WebElement
+        # replace any element keys with WebElement
         if (    ref($ret)
             and ( ref($ret) eq 'HASH' )
-            and exists $ret->{'ELEMENT'} )
+            and exists $ret->{$self->_element_key} )
         {
-            $ret = $self->webelement_class->new( id => $ret->{ELEMENT},
+            $ret = $self->webelement_class->new( id => $ret->{$self->_element_key},
                 driver => $self );
         }
         return $ret;
@@ -1469,7 +1475,7 @@ sub execute_script {
             if ( Scalar::Util::blessed( $args[$i] )
                 and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                $args[$i] = { $self->_element_key => ( $args[$i] )->{id} };
             }
         }
 
@@ -1485,16 +1491,16 @@ sub execute_script {
 
 # _convert_to_webelement
 # An internal method used to traverse a data structure
-# and convert any ELEMENTS with WebElements
+# and convert any element keys with WebElements
 
 sub _convert_to_webelement {
     my ( $self, $ret ) = @_;
 
     if ( ref($ret) and ( ref($ret) eq 'HASH' ) ) {
-        if ( ( keys %$ret == 1 ) and exists $ret->{'ELEMENT'} ) {
+        if ( ( keys %$ret == 1 ) and exists $ret->{$self->_element_key} ) {
 
-            # replace an ELEMENT with WebElement
-            return $self->webelement_class->new( id => $ret->{ELEMENT},
+            # replace an element key with WebElement
+            return $self->webelement_class->new( id => $ret->{$self->_element_key},
                 driver => $self );
         }
 
@@ -1607,7 +1613,7 @@ sub switch_to_frame {
 
     my $res = { 'command' => 'switchToFrame' };
     if ( ref $id eq $self->webelement_class ) {
-        $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
+        $params = { 'id' => { $self->_element_key => $id->{'id'} } };
     }
     else {
         $params = { 'id' => $id };
@@ -1945,7 +1951,7 @@ sub find_element {
                 die $@;
             }
         }
-        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+        return $self->webelement_class->new( id => $ret_data->{$self->_element_key},
             driver => $self );
     }
     else {
@@ -2009,7 +2015,7 @@ sub find_elements {
             push(
                 @$elem_obj_arr,
                 $self->webelement_class->new(
-                    id => $_->{ELEMENT}, driver => $self
+                    id => $_->{$self->_element_key}, driver => $self
                 )
             );
         }
@@ -2077,7 +2083,7 @@ sub find_child_element {
                 die $@;
             }
         }
-        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+        return $self->webelement_class->new( id => $ret_data->{$self->_element_key},
             driver => $self );
     }
     else {
@@ -2143,7 +2149,7 @@ sub find_child_elements {
         my $i = 0;
         foreach (@$ret_data) {
             $elem_obj_arr->[$i] =
-              $self->webelement_class->new( id => $_->{ELEMENT},
+              $self->webelement_class->new( id => $_->{$self->_element_key},
                 driver => $self );
             $i++;
         }
@@ -2216,7 +2222,7 @@ sub get_active_element {
         croak $@;
     }
     else {
-        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+        return $self->webelement_class->new( id => $ret_data->{$self->_element_key},
             driver => $self );
     }
 }
