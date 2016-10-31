@@ -1417,8 +1417,10 @@ sub execute_async_script {
             and ( ref($ret) eq 'HASH' )
             and exists $ret->{'ELEMENT'} )
         {
-            $ret = $self->webelement_class->new( id => $ret->{ELEMENT},
-                driver => $self );
+            $ret = $self->webelement_class->new(
+                id => $ret,
+                driver => $self
+            );
         }
         return $ret;
     }
@@ -1494,8 +1496,10 @@ sub _convert_to_webelement {
         if ( ( keys %$ret == 1 ) and exists $ret->{'ELEMENT'} ) {
 
             # replace an ELEMENT with WebElement
-            return $self->webelement_class->new( id => $ret->{ELEMENT},
-                driver => $self );
+            return $self->webelement_class->new(
+                id => $ret,
+                driver => $self
+            );
         }
 
         my %hash;
@@ -1945,8 +1949,10 @@ sub find_element {
                 die $@;
             }
         }
-        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
-            driver => $self );
+        return $self->webelement_class->new(
+            id => $ret_data,
+            driver => $self
+        );
     }
     else {
         croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
@@ -2009,7 +2015,8 @@ sub find_elements {
             push(
                 @$elem_obj_arr,
                 $self->webelement_class->new(
-                    id => $_->{ELEMENT}, driver => $self
+                    id => $_,
+                    driver => $self
                 )
             );
         }
@@ -2077,7 +2084,7 @@ sub find_child_element {
                 die $@;
             }
         }
-        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
+        return $self->webelement_class->new( id => $ret_data,
             driver => $self );
     }
     else {
@@ -2143,8 +2150,10 @@ sub find_child_elements {
         my $i = 0;
         foreach (@$ret_data) {
             $elem_obj_arr->[$i] =
-              $self->webelement_class->new( id => $_->{ELEMENT},
-                driver => $self );
+              $self->webelement_class->new(
+                  id => $_,
+                  driver => $self
+              );
             $i++;
         }
         return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
@@ -2216,8 +2225,10 @@ sub get_active_element {
         croak $@;
     }
     else {
-        return $self->webelement_class->new( id => $ret_data->{ELEMENT},
-            driver => $self );
+        return $self->webelement_class->new(
+            id => $ret_data,
+            driver => $self
+        );
     }
 }
 

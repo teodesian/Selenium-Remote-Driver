@@ -19,14 +19,16 @@ $spec->{getElementValue} = sub { return { status => 'OK', return => 'my_value' }
 $spec->{getElementText} = sub { return { status => 'OK', return => "my_text\nis fantastic" }};
 $spec->{getElementAttribute}  = sub { my @args = @_; my $name = $args[0]->{name};  return { status => 'OK', return => "my_$name" }};
 
-my $driver =
-  Test::Selenium::Remote::Driver->new(
+my $driver = Test::Selenium::Remote::Driver->new(
     remote_conn => Selenium::Remote::Mock::RemoteConnection->new( spec => $spec, mock_cmds => $mock_commands ),
     commands => $mock_commands,
 );
 
 
-my $successful_element = Test::Selenium::Remote::WebElement->new(driver => $driver);
+my $successful_element = Test::Selenium::Remote::WebElement->new(
+    id => 'placeholder_id',
+    driver => $driver
+);
 $successful_element->clear_ok;
 $successful_element->click_ok;
 $successful_element->submit_ok;
