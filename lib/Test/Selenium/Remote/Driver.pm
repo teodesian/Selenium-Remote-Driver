@@ -174,11 +174,11 @@ already-instantiated driver:
 Your error handler will receive two arguments,
 The first argument is the C<$driver> object itself.
 Due to some specificities of this class, the second argument passed to the
-handler can be: 
+handler can be:
 
 =over
 
-=item the error message from the Webdriver 
+=item the error message from the Webdriver
 
 This is the case when the error message is raised by a WebDriver failure
 
@@ -191,13 +191,13 @@ C<content_like>, C<content_unlike>, C<content_contains>, C<content_lacks>.
 
 =back
 
-If you set your own handler, you should not rely that much on the message returned. 
-You should also remember that you are entirely responsible for handling exceptions, 
+If you set your own handler, you should not rely that much on the message returned.
+You should also remember that you are entirely responsible for handling exceptions,
 which means that should the error handler be called, it means that the test you are
-doing has failed, so you should croak. 
+doing has failed, so you should croak.
 
-You should also call fail() in your handler, in case the function called raised a 
-webdriver error, because, as exceptions are not caught anymore when you specify a 
+You should also call fail() in your handler, in case the function called raised a
+webdriver error, because, as exceptions are not caught anymore when you specify a
 handler, the function will not fail anymore, which translates to a 'ok' in your TAP
 output if you do not handle it properly.
 
