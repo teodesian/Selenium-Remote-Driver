@@ -14,7 +14,16 @@ use TestHarness;
 my $harness = TestHarness->new(
     this_file => $FindBin::Script
 );
-my %selenium_args = %{ $harness->base_caps };
+
+# while Firefox is transferring to geckodriver, it doesn't support the
+# entire JSONWireProtocol - at the time of writing, this test depends
+# on `POST sendKeysToActiveElement` and `POST
+# /session/:sessionId/moveTo`, neither of which are in geckodriver.
+my %selenium_args = (
+    %{ $harness->base_caps },
+    browser_name => 'chrome'
+);
+
 {
     my $driver = Test::Selenium::Remote::Driver->new(%selenium_args);
     my $action_chains = Selenium::ActionChains->new( driver => $driver );
