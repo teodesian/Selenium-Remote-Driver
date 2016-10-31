@@ -104,6 +104,23 @@ VISIBILITY: {
     ok($elem->is_hidden(), 'Hidden elements are hidden.');
 }
 
+EXECUTE_SCRIPT: {
+    $driver->get("$website/index.html");
+
+    my $elem = $driver->find_element('div', 'css');
+    my $script_elem = $driver->execute_script('return arguments[0]', $elem);
+    isa_ok($script_elem, 'Selenium::Remote::WebElement', 'execute_script element return');
+    is($elem->id, $script_elem->id, 'Sync script returns identical WebElement id');
+
+    my $async = q{
+        var callback = arguments[arguments.length - 1];
+        callback(arguments[0]);
+    };
+    my $async_elem = $driver->execute_async_script($async, $elem);
+    isa_ok($async_elem, 'Selenium::Remote::WebElement', 'execute_async_script element return');
+    is($elem->id, $async_elem->id, 'Async script returns identical WebElement id');
+}
+
 QUIT: {
     $ret = $driver->quit();
     ok((not defined $driver->{'session_id'}), 'Killed the remote session');

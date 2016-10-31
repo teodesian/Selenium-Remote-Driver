@@ -83,6 +83,24 @@ FIREFOX: {
 
             ok(Selenium::CanStartBinary::probe_port($firefox->marionette_port),
                'the firefox binary is listening on its marionette port');
+
+            EXECUTE_SCRIPT: {
+                  $firefox->get("https://www.google.com");
+
+                  my $elem = $firefox->find_element('div', 'css');
+                  my $script_elem = $firefox->execute_script('return arguments[0]', $elem);
+                  isa_ok($script_elem, 'Selenium::Remote::WebElement', 'execute_script element return');
+                  is($elem->id, $script_elem->id, 'Sync script returns identical WebElement id');
+
+                  my $async = q{
+var callback = arguments[arguments.length - 1];
+callback(arguments[0]);
+};
+                  my $async_elem = $firefox->execute_async_script($async, $elem);
+                  isa_ok($async_elem, 'Selenium::Remote::WebElement', 'execute_async_script element return');
+                  is($elem->id, $async_elem->id, 'Async script returns identical WebElement id');
+              }
+
             $firefox->shutdown_binary;
         }
 
