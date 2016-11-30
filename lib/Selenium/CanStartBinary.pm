@@ -2,7 +2,7 @@ package Selenium::CanStartBinary;
 
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
 use File::Spec;
-use Selenium::CanStartBinary::ProbePort qw/find_open_port_above probe_port/;
+use Selenium::CanStartBinary::ProbePort qw/find_open_port_above find_open_port probe_port/;
 use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
 use Moo::Role;
@@ -136,12 +136,41 @@ has '+port' => (
         my ($self) = @_;
 
         if ($self->_real_binary) {
-            return find_open_port_above($self->binary_port);
+            if ($self->fixed_ports) {
+                return find_open_port($self->binary_port);
+			}
+            else {
+                return find_open_port_above($self->binary_port);
+            }
         }
         else {
             return 4444
         }
     }
+);
+
+=attr fixed_ports
+
+Optional: By default, if binary_port and marionette_port are not free
+a higher free port is probed and acquired if possible, until a free one
+if found or a timeout is exceeded.
+
+    my $driver1 = Selenium::Chrome->new;
+    my $driver2 = Selenium::Chrome->new( port => 1234 );
+
+The default behavior can be overridden. In this case, only the default
+or given binary_port and marionette_port are probed, without probing 
+higher ports. This ensures that either the default or given port will be
+assigned, or no port will be assigned at all.
+
+    my $driver1 = Selenium::Chrome->new( fixed_ports => 1 );
+    my $driver2 = Selenium::Chrome->new( port => 1234, fixed_ports => 1);
+
+=cut
+
+has 'fixed_ports' => (
+    is => 'lazy',
+    default => sub { 0 }
 );
 
 =attr custom_args
@@ -174,7 +203,12 @@ has 'marionette_port' => (
             return 0;
         }
         else {
-            return find_open_port_above($self->marionette_binary_port);
+            if ($self->fixed_ports) {
+                return find_open_port($self->marionette_binary_port);
+			}
+            else {
+                return find_open_port_above($self->marionette_binary_port);
+            }
         }
     }
 );
