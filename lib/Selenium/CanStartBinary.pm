@@ -333,7 +333,7 @@ sub _build_binary_mode {
     my $port = $self->port + 0;
     return if $port == 4444;
     if( $self->fixed_ports && $port == 0 ){
-        die "fixed port is not free";
+        die 'port ' . $self->binary_port . ' is not free and have requested fixed ports';
     }
 
     $self->_handle_firefox_setup($port);
