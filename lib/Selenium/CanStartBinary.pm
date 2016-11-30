@@ -332,6 +332,9 @@ sub _build_binary_mode {
     # Either the user asked for 4444, or we couldn't find an open port
     my $port = $self->port + 0;
     return if $port == 4444;
+    if( $self->fixed_ports && $port == 0 ){
+        die "fixed port is not free";
+    }
 
     $self->_handle_firefox_setup($port);
 
