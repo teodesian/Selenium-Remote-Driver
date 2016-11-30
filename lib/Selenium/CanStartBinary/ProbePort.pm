@@ -6,7 +6,7 @@ use Selenium::Waiter qw/wait_until/;
 
 require Exporter;
 our @ISA = qw/Exporter/;
-our @EXPORT_OK = qw/find_open_port_above probe_port/;
+our @EXPORT_OK = qw/find_open_port_above find_open_port probe_port/;
 
 sub find_open_port_above {
     my ($port) = @_;
@@ -22,6 +22,12 @@ sub find_open_port_above {
     };
 
     return $free_port;
+}
+
+sub find_open_port {
+    my ($port) = @_;
+
+    probe_port($port) ? return 0 : return $port;
 }
 
 sub probe_port {
