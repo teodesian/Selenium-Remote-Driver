@@ -14,7 +14,8 @@ for my $command (keys %{$comm}) {
   my $found_command = 0;
   for my $file (
     qw{lib/Selenium/Remote/Driver.pm
-    lib/Selenium/Remote/WebElement.pm}
+    lib/Selenium/Remote/WebElement.pm
+    lib/Selenium/Firefox.pm}
     ) {
     open(my $fh, '<', $file) or die "Couldn't open file $file";
     for (<$fh>) {
