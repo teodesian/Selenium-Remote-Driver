@@ -1,5 +1,15 @@
 Revision history for Selenium-Remote-Driver
 
+1.01   12-13-2016
+        (bundled firefox driver version: 3.0.0b2)
+
+        [NEW FEATURES]
+        - #288: @vkatsikaris: Add context endpoints for Firefox
+
+        [BUG FIXES]
+        - #279, #281: @richi235: Fix errors in IDE plugin script generator
+        - #291, #292, #299: Handle spec element key format
+
 1.00   09-01-2016
         (bundled firefox driver version: 3.0.0b2)
 
