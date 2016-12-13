@@ -164,9 +164,15 @@ sub send_keys {
     my ( $self, @strings ) = @_;
     croak "no keys to send" unless scalar @strings >= 1;
     my $res = { 'command' => 'sendKeysToElement', 'id' => $self->id };
-    map { $_ .= "" } @strings;
+
+    # We need to send an array of single characters to be WebDriver
+    # spec compatible. That is, for @strings = ('hel', 'lo'), the
+    # corresponding value must be ('h', 'e', 'l', 'l', 'o' ). This
+    # format conforms with the Spec AND works with the Selenium
+    # standalone server.
+    my $strings = join('', map { $_ .= "" } @strings);
     my $params = {
-        'value' => \@strings,
+        'value' => [ split('', $strings) ]
     };
     return $self->_execute_command( $res, $params );
 }

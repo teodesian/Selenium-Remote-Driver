@@ -54,7 +54,7 @@ my $find_elements = sub {
 
 my $send_keys = sub {
     my ( $session_object, $val ) = @_;
-    my $keys = shift @{ $val->{value} };
+    my $keys = join('', @{$val->{value}});
     return { status => 'OK', return => 1 } if ( $keys =~ /abc|def/ );
     return { status => 'NOK', return => 0, error => 'cannot send keys' };
 };
