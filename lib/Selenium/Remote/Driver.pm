@@ -81,12 +81,16 @@ L<Github|https://github.com/gempesaw/Selenium-Remote-Driver/issues>.
 
 =head2 Remote Driver Response
 
-Selenium::Remote::Driver uses the L<JsonWireProtocol|http://code.google.com/p/selenium/wiki/JsonWireProtocol> to communicate with the
-Selenium Server. If an error occurs while executing the command then the server
-sends back an HTTP error code with a JSON encoded reponse that indicates the
-precise L<Response Error Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>. The module will then croak with the error message
-associated with this code. If no error occurred, then the subroutine called will
-return the value sent back from the server (if a return value was sent).
+Selenium::Remote::Driver uses the
+L<JsonWireProtocol|http://code.google.com/p/selenium/wiki/JsonWireProtocol>
+to communicate with the Selenium Server. If an error occurs while
+executing the command then the server sends back an HTTP error code
+with a JSON encoded reponse that indicates the precise L<Response
+Error
+Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>. The
+module will then croak with the error message associated with this
+code. If no error occurred, then the subroutine called will return the
+value sent back from the server (if a return value was sent).
 
 So a rule of thumb while invoking methods on the driver is if the method did not
 croak when called, then you can safely assume the command was successful even if
@@ -113,6 +117,44 @@ by providing that class name as an option the constructor:
    my $driver = Selenium::Remote::Driver->new( webelement_class => ... );
 
 For example, a testing-subclass may extend the web-element object with testing methods.
+
+=head2 LWP Read Timeout errors
+
+It's possible to make Selenium calls that take longer than the default
+L<LWP::UserAgent> timeout. For example, setting the asynchronous
+script timeout greater than the LWP::UserAgent timeout and then
+executing a long running asynchronous snippet of javascript will
+immediately trigger an error like:
+
+    Error while executing command: executeAsyncScript: Server returned
+    error message read timeout at...
+
+You can get around this by configuring LWP's timeout value, either by
+constructing your own LWP and passing it in to ::Driver during
+instantiation
+
+    my $timeout_ua = LWP::UserAgent->new;
+    $timeout_ua->timeout(360); # this value is in seconds!
+    my $d = Selenium::Remote::Driver->new( ua => $timeout_ua );
+
+or by configuring the timeout on the fly as necessary:
+
+    use feature qw/say/;
+    use Selenium::Remote::Driver;
+
+    my $d = Selenium::Remote::Driver->new;
+    say $d->ua->timeout; # 180 seconds is the default
+
+    $d->ua->timeout(2); # LWP wants seconds, not milliseconds!
+    $d->set_timeout('script', 1000); # S::R::D wants milliseconds!
+
+    # Async scripts only return when the callback is invoked. Since there
+    # is no callback here, Selenium will block for the entire duration of
+    # the async timeout script. This will hit Selenium's async script
+    # timeout before hitting LWP::UserAgent's read timeout
+    $d->execute_async_script('return "hello"');
+
+    $d->quit;
 
 =head1 TESTING
 
