@@ -347,6 +347,11 @@ We do our best to call this when the C<$driver> option goes out of
 scope, but if that happens during global destruction, there's nothing
 we can do.
 
+=attr fixed_ports
+
+Optional: Throw instead of searching for additional ports; see
+L<Selenium::CanStartBinary/fixed_ports> for more info.
+
 =cut
 
 1;
