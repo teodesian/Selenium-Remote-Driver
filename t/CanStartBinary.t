@@ -176,6 +176,40 @@ TIMEOUT: {
     }
 }
 
+FIXED_PORTS: {
+    my $driver;
+    my $port = 50000;
+
+    my $socket = IO::Socket::INET->new(
+        LocalHost => '127.0.0.1',
+        LocalPort => $port,
+        Proto => 'tcp',
+        Listen => 5,
+    ) or BAIL_OUT("Can't bind tcp port $port: $!");
+
+    isa_ok(
+        exception {
+            Selenium::Firefox->new(
+                binary_port => $port,
+                fixed_ports => 1,
+            );
+        },
+        qr/port $port is not free and have requested fixed ports/,
+        "Driver failed to be created because input port $port is already occupied and flag fixed_ports is true"
+    );
+
+    $driver = try {
+        Selenium::Firefox->new(
+            binary_port => $port,
+        );
+    };
+    my $non_fixed_port = $driver->port;
+    cmp_ok($non_fixed_port, '>=', $port, "Driver could not acquire already occupied $port and a higer port $non_fixed_port was acquired");
+
+    $driver->shutdown_binary();
+    $socket->close();
+}
+
 sub is_proper_phantomjs_available {
     my $ver = `phantomjs --version` // '';
     chomp $ver;
