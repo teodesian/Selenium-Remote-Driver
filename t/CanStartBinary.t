@@ -182,7 +182,6 @@ FIXED_PORTS: {
         skip 'Firefox geckodriver not found in path', 1
           unless $has_geckodriver;
 
-        my $firefox;
         my $port = 50000;
 
         my $socket = IO::Socket::INET->new(
@@ -192,27 +191,19 @@ FIXED_PORTS: {
             Listen => 5,
         ) or BAIL_OUT("Can't bind tcp port $port: $!");
 
-        isa_ok(
-            exception {
-                Selenium::Firefox->new(
-                    binary_port => $port,
-                    fixed_ports => 1,
-                );
-            },
+        like(
+            exception { Selenium::Firefox->new(binary_port => $port, fixed_ports => 1) },
             qr/port $port is not free and have requested fixed ports/,
             "Driver failed to be created because input port $port is already occupied and flag fixed_ports is true"
         );
 
-        $firefox = try {
-            Selenium::Firefox->new(
-                binary_port => $port,
-            );
-        };
+        # successful startup with skipping taken port
+        my $firefox = Selenium::Firefox->new(binary_port => $port);
         my $non_fixed_port = $firefox->port;
         cmp_ok($non_fixed_port, '>=', $port, "Driver could not acquire already occupied $port and a higer port $non_fixed_port was acquired");
 
-        $firefox->shutdown_binary();
-        $socket->close();
+        $firefox->shutdown_binary;
+        $socket->close;
     }
 }
 
