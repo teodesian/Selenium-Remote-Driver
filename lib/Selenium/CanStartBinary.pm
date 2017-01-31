@@ -138,7 +138,7 @@ has '+port' => (
         if ($self->_real_binary) {
             if ($self->fixed_ports) {
                 return find_open_port($self->binary_port);
-			}
+            }
             else {
                 return find_open_port_above($self->binary_port);
             }
@@ -159,7 +159,7 @@ if found or a timeout is exceeded.
     my $driver2 = Selenium::Chrome->new( port => 1234 );
 
 The default behavior can be overridden. In this case, only the default
-or given binary_port and marionette_port are probed, without probing 
+or given binary_port and marionette_port are probed, without probing
 higher ports. This ensures that either the default or given port will be
 assigned, or no port will be assigned at all.
 
@@ -205,7 +205,7 @@ has 'marionette_port' => (
         else {
             if ($self->fixed_ports) {
                 return find_open_port($self->marionette_binary_port);
-			}
+            }
             else {
                 return find_open_port_above($self->marionette_binary_port);
             }
