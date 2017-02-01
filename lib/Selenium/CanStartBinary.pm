@@ -289,6 +289,26 @@ has 'window_title' => (
     }
 );
 
+=attr command
+
+Intended for internal use: this read-only attribute is built by us,
+but it can be useful after instantiation to see exactly what command
+was run to start the webdriver server.
+
+    my $f = Selenium::Firefox->new;
+    say $f->_command;
+
+=cut
+
+has '_command' => (
+    is => 'lazy',
+    init_arg => undef,
+    builder => sub {
+        my ($self) = @_;
+        return $self->_construct_command;
+    }
+);
+
 use constant IS_WIN => $^O eq 'MSWin32';
 
 sub BUILDARGS {
@@ -338,8 +358,7 @@ sub _build_binary_mode {
 
     $self->_handle_firefox_setup($port);
 
-    my $command = $self->_construct_command;
-    system($command);
+    system($self->_command);
 
     my $success = wait_until { probe_port($port) } timeout => $self->startup_timeout;
     if ($success) {
