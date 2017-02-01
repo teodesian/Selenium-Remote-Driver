@@ -79,6 +79,24 @@ sub setup_firefox_binary_env {
         $ENV{'MOZ_CRASHREPORTER_DISABLE'} = '1'; # disable breakpad
         $ENV{'NO_EM_RESTART'} = '1'; # prevent the binary from detaching from the console.log
     }
+    else {
+        # In case the user created an old Firefox, which would've set
+        # those ENV variables, and then wanted to create a new Firefox
+        # afterwards, the env variables would still be around, and the
+        # new Firefox would respect the XRE_PROFILE_PATH and try to
+        # load it in the new geckodriver Firefox, which would cause an
+        # extension compatibility check
+        my @env_vars = qw/
+                             XRE_PROFILE_PATH
+                             MOZ_NO_REMOTE
+                             MOZ_CRASHREPORTER_DISABLE
+                             NO_EM_RESTART
+                         /;
+
+        foreach (@env_vars) {
+            delete $ENV{$_};
+        }
+    }
 
     return $profile;
 }
