@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-1.10   02-01-2017
+1.11   02-01-2017
         [NEW FEATURES]
         - #298: @vkatsikaris: fixed ports option (long overdue on my part, thanks)!
 
