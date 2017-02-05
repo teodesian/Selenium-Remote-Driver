@@ -171,7 +171,6 @@ LOAD_PAGE: {
 
 WINDOW: {
     $ret = $driver->get_current_window_handle();
-    ok($ret =~ m/^{.*}$/, 'Proper window handle received');
     $ret = $driver->get_window_handles();
     is(ref $ret, 'ARRAY', 'Received all window handles');
     $ret = $driver->set_window_position(100,100);
