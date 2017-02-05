@@ -1708,7 +1708,7 @@ sub switch_to_window {
         return 'Window name not provided';
     }
     my $res    = { 'command' => 'switchToWindow' };
-    my $params = { 'handle'  => $name };
+    my $params = { 'name'  => $name, 'handle' => $name };
     return $self->_execute_command( $res, $params );
 }
 
