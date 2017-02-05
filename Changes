@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.12   02-05-2017
+        [BUG FIXES]
+        - #303: Restore switchWindow functionality in Chrome
+
 1.11   02-01-2017
         [NEW FEATURES]
         - #298: @vkatsikaris: fixed ports option (long overdue on my part, thanks)!
