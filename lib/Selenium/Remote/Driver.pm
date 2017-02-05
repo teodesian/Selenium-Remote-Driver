@@ -229,6 +229,12 @@ you please.
     or
     my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
                                                'platform'     => 'MAC');
+    or (for Firefox 47 or lower on Selenium 3+)
+    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
+                                               'platform'     => 'MAC',
+                                               'extra_capabilities' => {
+                                                    'marionette' => \\0,
+                                              });
     or
     my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
                                                'port'               => '2222',
