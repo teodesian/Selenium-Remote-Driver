@@ -9,6 +9,7 @@ use IO::Socket::INET;
 use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
+use Selenium::Waiter;
 use Carp;
 
 use FindBin;
@@ -346,18 +347,18 @@ ALERT: {
     $driver->send_keys_to_prompt("Larry Wall");
     eval {$driver->accept_alert;};
     ok(!$@,"accepted prompt");
-    is($driver->get_alert_text,'Larry Wall','keys sent to prompt');
+    is(wait_until { $driver->get_alert_text },'Larry Wall','keys sent to prompt');
     $driver->dismiss_alert;
     $driver->find_element("confirm",'id')->click;
     is($driver->get_alert_text,"Are you sure?",'confirm text match');
     eval {$driver->dismiss_alert;};
     ok(!$@,"dismissed confirm");
-    is($driver->get_alert_text,'false',"dismissed confirmed correct");
+    is(wait_until { $driver->get_alert_text },'false',"dismissed confirmed correct");
     $driver->accept_alert;
     $driver->find_element("confirm",'id')->click;
     eval {$driver->accept_alert;};
     ok(!$@,"accepted confirm");
-    is($driver->get_alert_text,'true',"accept confirm correct");
+    is(wait_until { $driver->get_alert_text } ,'true',"accept confirm correct");
     $driver->accept_alert;
 }
 
@@ -499,22 +500,21 @@ HTML5: {
         });
         ok($ret, 'can set geolocation');
 
-      TODO: {
-            local $TODO = 'GET geolocation has a cast Long to Double error in Chromedriver';
-            my $ret = {};
-            eval { $ret = $chrome->get_geolocation };
-            ok(exists $ret->{location}, 'get_geolocation returns a location dictionary.');
-        }
+        # GET geolocation has a cast Long to Double error in Chromedriver
+        # my $ret = {};
+        # eval { $ret = $chrome->get_geolocation };
+        # ok(exists $ret->{location}, 'get_geolocation returns a location dictionary.');
     }
 }
 
 LOGS: {
-    $driver->get($website);
+    skip 'Log Types requires Chrome to test', 5 unless $chrome;
+    $chrome->get($website);
 
-    my $types = $driver->get_log_types;
+    my $types = $chrome->get_log_types;
     ok(scalar @$types >= 4, 'Can get log types');
     foreach (@$types) {
-        my $log = $driver->get_log($_);
+        my $log = $chrome->get_log($_);
         ok(defined $log, 'Can get logs from the ' . $_);
     }
 }
