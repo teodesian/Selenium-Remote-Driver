@@ -233,7 +233,7 @@ you please.
     my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
                                                'platform'     => 'MAC',
                                                'extra_capabilities' => {
-                                                    'marionette' => \\0,
+                                                    'marionette' => \0,
                                               });
     or
     my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
