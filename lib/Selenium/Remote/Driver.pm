@@ -210,6 +210,7 @@ you please.
         'error_handler'        - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
         'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
+        'session_id'           - <string>    - prevent create new session, reuse previous (but not finished) session, previous session should have 'auto_close' => 0
 
     If no values are provided, then these defaults will be assumed:
         'remote_server_addr' => 'localhost'
@@ -220,6 +221,7 @@ you please.
         'javascript'         => 1
         'auto_close'         => 1
         'default_finder'     => 'xpath'
+        'session_id'         => undef
 
  Output:
     Remote Driver object
@@ -567,12 +569,14 @@ with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 sub BUILD {
     my $self = shift;
 
-    if ($self->has_desired_capabilities) {
-        $self->new_desired_session( $self->desired_capabilities );
-    }
-    else {
-        # Connect to remote server & establish a new session
-        $self->new_session( $self->extra_capabilities );
+    if ( !( defined $self->session_id ) ) {
+        if ($self->has_desired_capabilities) {
+            $self->new_desired_session( $self->desired_capabilities );
+        }
+        else {
+            # Connect to remote server & establish a new session
+            $self->new_session( $self->extra_capabilities );
+        }
     }
 
     if ( !( defined $self->session_id ) ) {
