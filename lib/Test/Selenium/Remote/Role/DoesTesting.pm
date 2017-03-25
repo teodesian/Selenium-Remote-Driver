@@ -6,7 +6,7 @@ use Moo::Role;
 use Test::Builder;
 use Try::Tiny;
 use Scalar::Util 'blessed';
-use List::MoreUtils qw/any/;
+use List::Util qw/any/;
 use namespace::clean;
 
 requires qw(func_list has_args);
