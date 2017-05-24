@@ -152,6 +152,10 @@ sub _process_response {
                 }
                 else {
                     $data->{'cmd_return'} = $decoded_json->{'value'};
+                    if (ref($data->{cmd_return}) eq 'HASH'
+                        && exists $data->{cmd_return}->{sessionId}) {
+                        $data->{sessionId} = $data->{cmd_return}->{sessionId};
+                    }
                 }
             }
             else {
