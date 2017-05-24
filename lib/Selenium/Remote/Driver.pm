@@ -1989,35 +1989,28 @@ sub find_element {
     if ( not defined $query ) {
         croak 'Search string to find element not provided.';
     }
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-    if ( defined $using ) {
-        my $res = { 'command' => 'findElement' };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+
+    my $res = { 'command' => 'findElement' };
+    my $params = $self->_build_find_params($method, $query);
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@
+             =~ /(An element could not be located on the page using the given search parameters)/
+         ) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        return $self->webelement_class->new(
-            id => $ret_data,
-            driver => $self
-        );
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+        }
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
-    }
+    return $self->webelement_class->new(
+        id => $ret_data,
+        driver => $self
+    );
 }
 
 =head2 find_elements
@@ -2049,43 +2042,34 @@ sub find_elements {
         croak 'Search string to find element not provided.';
     }
 
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-
-    if ( defined $using ) {
-        my $res = { 'command' => 'findElements' };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+    my $res = { 'command' => 'findElements' };
+    my $params = $self->_build_find_params($method, $query);
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@
+             =~ /(An element could not be located on the page using the given search parameters)/
+         ) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        my $elem_obj_arr = [];
-        foreach (@$ret_data) {
-            push(
-                @$elem_obj_arr,
-                $self->webelement_class->new(
-                    id => $_,
-                    driver => $self
-                )
-            );
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
         }
-        return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
+    my $elem_obj_arr = [];
+    foreach (@$ret_data) {
+        push(
+            @$elem_obj_arr,
+            $self->webelement_class->new(
+                id => $_,
+                driver => $self
+            )
+        );
     }
+    return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
 }
 
 =head2 find_child_element
@@ -2124,33 +2108,27 @@ sub find_child_element {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-    if ( defined $using ) {
-        my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+    my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
+    my $params = $self->_build_find_params($method, $query);
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@
+             =~ /(An element could not be located on the page using the given search parameters)/
+         ) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        return $self->webelement_class->new( id => $ret_data,
-            driver => $self );
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+        }
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
-    }
+    return $self->webelement_class->new(
+        id => $ret_data,
+        driver => $self
+    );
 }
 
 =head2 find_child_elements
@@ -2186,42 +2164,35 @@ sub find_child_elements {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-    if ( defined $using ) {
-        my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+
+    my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
+    my $params = $self->_build_find_params($method, $query);
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@
+             =~ /(An element could not be located on the page using the given search parameters)/
+         ) {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        my $elem_obj_arr = [];
-        my $i = 0;
-        foreach (@$ret_data) {
-            $elem_obj_arr->[$i] =
-              $self->webelement_class->new(
-                  id => $_,
-                  driver => $self
-              );
-            $i++;
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
         }
-        return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
+    my $elem_obj_arr = [];
+    my $i = 0;
+    foreach (@$ret_data) {
+        $elem_obj_arr->[$i] =
+          $self->webelement_class->new(
+              id => $_,
+              driver => $self
+          );
+        $i++;
     }
+    return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
 }
 
 =head2 find_element_by_class
@@ -2277,6 +2248,42 @@ See L</find_element>.
     $driver->get_active_element();
 
 =cut
+
+sub _build_find_params {
+    my ($self, $method, $query) = @_;
+
+    my $using = $self->_build_using($method);
+
+    # geckodriver doesn't accept name as a valid selector
+    if ($self->isa('Selenium::Firefox') && $using eq 'name') {
+        return {
+            using => 'css',
+            value => '[name=$query]'
+        };
+    }
+    else {
+        return {
+            using => $using,
+            value => $query
+        };
+    }
+}
+
+sub _build_using {
+    my ($self, $method) = @_;
+
+    if ($method) {
+        if ($self->FINDERS->{$method}) {
+            return $self->FINDERS->{$method};
+        }
+        else {
+            croak 'Bad method, expected: ' . join(', ', keys %{ $self->FINDERS });
+        }
+    }
+    else {
+        return $self->default_finder;
+    }
+}
 
 sub get_active_element {
     my ($self) = @_;
