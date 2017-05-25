@@ -72,6 +72,14 @@ sub request {
     if ($url =~ m/^http/g) {
         $fullurl = $url;
     }
+    elsif ($url =~ m/^\//) {
+        # This is used when we get a 302 Redirect with a Location header.
+        $fullurl =
+           "http://"
+          . $self->remote_server_addr . ":"
+          . $self->port
+          . $url;
+    }
     elsif ($url =~ m/grid/g) {
         $fullurl =
             "http://"
