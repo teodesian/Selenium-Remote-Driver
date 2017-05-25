@@ -1,10 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
-1.19   05-24-2017
+1.20   05-54-2017
         [BUG FIXES]
         - Shim use of name as find method for geckodriver
         - Start up geckodriver/binary Firefox properly
         - #309, #310: @syspete: Fix issues with dependencies
+        - #313, #312: @lukec: Handle saucelabs redirect during session create
 
         [NEW FEATURES]
         - #307: @vitstradal: Re-use an existing session
