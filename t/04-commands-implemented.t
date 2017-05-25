@@ -26,7 +26,7 @@ for my $command (keys %{$comm}) {
       }
     }
   }
-  if (!$found_command) {
+  if (!$found_command && $command !~ /Gecko/) {
     fail("find $command");
   }
 }

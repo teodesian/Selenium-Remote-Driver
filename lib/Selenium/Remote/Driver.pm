@@ -563,6 +563,18 @@ has 'inner_window_size' => (
 
 );
 
+# At the time of writing, Geckodriver uses a different endpoint than
+# the java bindings for executing synchronous and asynchronous
+# scripts. As a matter of fact, Geckodriver does conform to the W3C
+# spec, but as are bound to support both while the java bindings
+# transition to full spec support, we need some way to handle the
+# difference.
+
+has '_execute_script_suffix' => (
+    is => 'lazy',
+    default => ''
+);
+
 with 'Selenium::Remote::Finders';
 with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 
@@ -1449,7 +1461,7 @@ sub execute_async_script {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res = { 'command' => 'executeAsyncScript' };
+        my $res = { 'command' => 'executeAsyncScript' . $self->_execute_script_suffix};
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
@@ -1515,7 +1527,7 @@ sub execute_script {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res = { 'command' => 'executeScript' };
+        my $res = { 'command' => 'executeScript' . $self->_execute_script_suffix };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation

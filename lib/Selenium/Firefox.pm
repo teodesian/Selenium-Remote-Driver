@@ -245,6 +245,11 @@ has 'firefox_binary' => (
     builder => 'firefox_path'
 );
 
+has '_execute_script_suffix' => (
+    is => 'lazy',
+    default => 'Gecko'
+);
+
 =head2 get_context
 
  Description:

@@ -406,6 +406,18 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
 
+            # geckodriver workarounds
+            'executeScriptGecko' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/execute/sync',
+                'no_content_success' => 0
+            },
+            'executeAsyncScriptGecko' => {
+                'method'             => 'POST',
+                'url'                => 'session/:sessionId/execute/async',
+                'no_content_success' => 0
+            },
+
             # /session/:sessionId/local_storage
             # /session/:sessionId/local_storage/key/:key
             # /session/:sessionId/local_storage/size
