@@ -11,6 +11,32 @@ BEGIN: {
     }
 }
 
+ABSOLUTE_PATH_REDIRECTS: {
+    my $tua = Test::LWP::UserAgent->new(max_redirect => 0);
+
+    $tua->map_response(qr/redirect/, HTTP::Response->new(303, undef, ['Location' => '/elsewhere']));
+    $tua->map_response(qr/^http:\/\/localhost:80\/elsewhere$/, HTTP::Response->new(
+        200,
+        'OK',
+        ['Content-Type' => 'application/json'],
+        ''
+    ));
+
+    my $conn = Selenium::Remote::RemoteConnection->new(
+        remote_server_addr => 'localhost',
+        port => '80',
+        ua => $tua
+    );
+
+    my $redirect_endpoint = {
+        method => 'GET',
+        url => 'http://localhost/redirect'
+    };
+
+    my $resp = $conn->request($redirect_endpoint);
+    is($resp->{cmd_status}, 'OK', 'can redirect to absolute path');
+}
+
 REDIRECT: {
     my $tua = Test::LWP::UserAgent->new(
         max_redirect => 0
