@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 
-use Carp::Always;
 use Test::More;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::Mock::RemoteConnection;
