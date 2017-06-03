@@ -349,7 +349,7 @@ WDAPI.Element.prototype.click = function() {
 };
 
 WDAPI.Element.prototype.getAttribute = function(attributeName) {
-  return this.ref + "->attribute(" + xlateArgument(attributeName) + ")";
+  return this.ref + "->get_attribute(" + xlateArgument(attributeName) + ")";
 };
 
 WDAPI.Element.prototype.getText = function() {
