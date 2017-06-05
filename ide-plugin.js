@@ -198,6 +198,19 @@ function formatComment(comment) {
 }
 
 /**
+ * Escapes special characters used for Perl variables.
+ *
+ * @param str   the string to have special characters (mainly variable identifiers) escaped
+ * @example
+ * // returns "email\@gmail.com"
+ * stringSanitize("email@gmail.com");
+ */
+function stringSanitize(str) {
+    var escapes = ["@", "$", "%", "&"];
+    return str.replace(RegExp("[" + escapes.join("\\") + "]", "g"), "\\$&");
+}
+
+/**
  * Returns a string representing the suite for this formatter language.
  *
  * @param testSuite  the suite to format
@@ -333,7 +346,7 @@ WDAPI.Driver.prototype.refresh = function() {
 };
 
 WDAPI.Driver.prototype.frame = function(locator) {
-  return this.ref + "->switch_to_frame(" + xlateArgument(locator) + ")";
+  return this.ref + "->switch_to_frame(" + stringSanitize(xlateArgument(locator)) + ")";
 }
 
 WDAPI.Element = function(ref) {
@@ -349,7 +362,7 @@ WDAPI.Element.prototype.click = function() {
 };
 
 WDAPI.Element.prototype.getAttribute = function(attributeName) {
-  return this.ref + "->get_attribute(" + xlateArgument(attributeName) + ")";
+  return this.ref + "->get_attribute(" + stringSanitize(xlateArgument(attributeName)) + ")";
 };
 
 WDAPI.Element.prototype.getText = function() {
@@ -378,7 +391,7 @@ WDAPI.Element.prototype.select = function(selectLocator) {
 };
 
 WDAPI.Element.prototype.sendKeys = function(text) {
-  return this.ref + "->send_keys(" + xlateArgument(text) + ")";
+  return this.ref + "->send_keys(" + stringSanitize(xlateArgument(text)) + ")";
 };
 
 WDAPI.Element.prototype.submit = function() {
@@ -406,5 +419,5 @@ WDAPI.Utils = function() {
 };
 
 WDAPI.Utils.isElementPresent = function(how, what) {
-  return this.ref + "->is_element_present(" + xlateArgument(what) + ", \"" + how + "\")";
+  return this.ref + "->is_element_present(" + stringSanitize(xlateArgument(what)) + ", \"" + how + "\")";
 };
