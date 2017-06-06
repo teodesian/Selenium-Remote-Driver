@@ -76,6 +76,7 @@ sub wait_until (&%) {
         timeout => 30,
         interval => 1,
         debug => 0,
+        exception => 0,
         @_
     };
 
@@ -95,6 +96,7 @@ sub wait_until (&%) {
         catch {
             $exception = $_;
             warn $_ if $args->{debug};
+            die $_ if $args->{exception};
             return '';
         }
         finally {

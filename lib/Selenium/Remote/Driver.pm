@@ -208,6 +208,7 @@ you please.
         'default_finder'       - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
         'inner_window_size'    - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
         'error_handler'        - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
+        'returns_exceptions    - <boolean>   - whether driver should returns exceptions instead of croaking with a nice message
         'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
         'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
         'session_id'           - <string>    - prevent create new session, reuse previous (but not finished) session, previous session should have 'auto_close' => 0
@@ -220,6 +221,7 @@ you please.
         'platform'           => 'ANY'
         'javascript'         => 1
         'auto_close'         => 1
+        'returns_exceptions' => 0
         'default_finder'     => 'xpath'
         'session_id'         => undef
 
@@ -340,6 +342,7 @@ C<eval>, or use the parameterized versions find_element_*).
         default_finder       - STRING  - defaults to xpath
         webelement_class     - STRING  - defaults to Selenium::Remote::WebElement
         auto_close           - BOOLEAN - defaults to 1
+        returns_exceptions   - BOOLEAN - defaults to 0
         error_handler        - CODEREF - defaults to croaking on exceptions
 
     Except for C<desired_capabilities>, these keys perform exactly the
@@ -474,6 +477,12 @@ has 'auto_close' => (
     is      => 'rw',
     coerce  => sub { ( defined($_[0]) ? $_[0] : 1 )},
     default => sub {1},
+);
+
+has 'returns_exceptions' => (
+    is => 'rw',
+    coerce  => sub { ( defined($_[0]) ? $_[0] : 1 )},
+    default => sub {0},
 );
 
 has 'pid' => (
@@ -671,7 +680,7 @@ sub _execute_command {
             if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
                 return $resp->{cmd_return};
             }
-            else {
+            elsif ( !$self->returns_exceptions ){
                 my $msg = "Error while executing command";
                 if ( $resp->{cmd_error} ) {
                     $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
@@ -690,6 +699,9 @@ sub _execute_command {
                     }
                 }
                 croak $msg;
+            }
+            else {
+                die $resp;
             }
         }
         return $resp;
