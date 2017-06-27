@@ -1096,7 +1096,7 @@ sub set_timeout {
     $ms = _coerce_timeout_ms( $ms );
 
     my $res = { 'command' => 'setTimeout' };
-    my $params = { 'type' => $type, 'ms' => $ms };
+    my $params = { 'type' => $type, 'ms' => $ms, $type => $ms };
     return $self->_execute_command( $res, $params );
 }
 
