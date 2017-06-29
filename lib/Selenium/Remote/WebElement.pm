@@ -172,7 +172,8 @@ sub send_keys {
     # standalone server.
     my $strings = join('', map { $_ .= "" } @strings);
     my $params = {
-        'value' => [ split('', $strings) ]
+        'value' => [ split('', $strings) ],
+        text => $strings,
     };
     return $self->_execute_command( $res, $params );
 }
