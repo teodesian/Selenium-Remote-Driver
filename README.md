@@ -1,4 +1,4 @@
-# Selenium::Remote::Driver [![Build Status](https://travis-ci.org/teodesian/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/teodesian/Selenium-Remote-Driver)
+# Selenium::Remote::Driver [![Build Status](https://travis-ci.org/teodesian/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/teodesian/Selenium-Remote-Driver) [![Coverage Status](https://coveralls.io/repos/github/teodesian/Selenium-Remote-Driver/badge.svg?branch=master)](https://coveralls.io/github/teodesian/Selenium-Remote-Driver?branch=master)
 
 [Selenium WebDriver][wd] is a test tool that allows you to write
 automated web application UI tests in any programming language against

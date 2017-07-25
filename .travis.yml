@@ -1,6 +1,7 @@
 sudo: false
 language: perl
 perl:
+   - '5.22'
    - '5.20'
    - '5.18'
    - '5.16'
@@ -9,12 +10,27 @@ perl:
    - '5.10'
 matrix:
    fast_finish: true
+   include:
+     - perl: '5.24'
+       env: COVERAGE=1
 before_install:
    - git config --global user.name "TravisCI"
    - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
+   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+   - source ~/travis-perl-helpers/init
+   - build-perl
+   - perl -V
 install:
+   - cpan-install --coverage   # installs converage prereqs, if enabled
+   - cpanm --quiet --notest Devel::Cover::Report::Coveralls #send to coveralls
+   - cpanm --quiet --notest Dist::Zilla::App::Command::cover #make sure we can dzil cover
    - cpanm --quiet --notest --skip-satisfied Dist::Zilla
    - "dzil authordeps          --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"
    - "dzil listdeps   --author --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"
+before_script:
+  - coverage-setup
 script:
-   - dzil smoke --release --author
+   - AUTHOR_TESTING=1 RELEASE_TESTING=1 dzil cover
+   - export BUILDDIR=`find .build -name cover_db`; cd `dirname $BUILDDIR`
+after_success:
+  - coverage-report
