@@ -1,4 +1,4 @@
-# Selenium::Remote::Driver [![Build Status](https://travis-ci.org/gempesaw/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/gempesaw/Selenium-Remote-Driver)
+# Selenium::Remote::Driver [![Build Status](https://travis-ci.org/teodesian/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/teodesian/Selenium-Remote-Driver)
 
 [Selenium WebDriver][wd] is a test tool that allows you to write
 automated web application UI tests in any programming language against
@@ -195,12 +195,12 @@ There are additional usage examples on [metacpan][meta], and also
 [Internet Explorer][ie], [Chrome][chrome], [PhantomJS][pjs], and other
 useful [example snippets][ex].
 
-[wiki]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki
-[setup]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Getting-Started-with-Selenium%3A%3ARemote%3A%3ADriver
-[ie]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/IE-browser-automation
-[chrome]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Chrome-browser-automation
-[pjs]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
-[ex]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Example-Snippets
+[wiki]: https://github.com/teodesian/Selenium-Remote-Driver/wiki
+[setup]: https://github.com/teodesian/Selenium-Remote-Driver/wiki/Getting-Started-with-Selenium%3A%3ARemote%3A%3ADriver
+[ie]: https://github.com/teodesian/Selenium-Remote-Driver/wiki/IE-browser-automation
+[chrome]: https://github.com/teodesian/Selenium-Remote-Driver/wiki/Chrome-browser-automation
+[pjs]: https://github.com/teodesian/Selenium-Remote-Driver/wiki/PhantomJS-Headless-Browser-Automation
+[ex]: https://github.com/teodesian/Selenium-Remote-Driver/wiki/Example-Snippets
 
 ## Selenium IDE Plugin
 
@@ -242,7 +242,7 @@ $ perldoc Selenium::Remote::Driver
 $ perldoc Selenium::Remote::WebElement
 ```
 
-[issue]: https://github.com/gempesaw/Selenium-Remote-Driver/issues
+[issue]: https://github.com/teodesian/Selenium-Remote-Driver/issues
 [meta]: https://metacpan.org/pod/Selenium::Remote::Driver
 
 ## Contributing
@@ -251,7 +251,7 @@ Thanks for considering contributing! The contributing guidelines are
 [in the wiki][contrib]. The documentation there also includes
 information on generating new Linux recordings for Travis.
 
-[contrib]: https://github.com/gempesaw/Selenium-Remote-Driver/wiki/Contribution-Guide
+[contrib]: https://github.com/teodesian/Selenium-Remote-Driver/wiki/Contribution-Guide
 
 ## Copyright and License
 
