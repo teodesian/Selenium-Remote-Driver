@@ -10,10 +10,6 @@ module is a Perl implementation of the client for the Webdriver
 [jsonwire]: https://code.google.com/p/selenium/wiki/JsonWireProtocol
 [standalone]: http://selenium-release.storage.googleapis.com/index.html
 
-## Notice: Seeking Maintainer
-
-If you're interested in maintaining this project, [let me know.](https://github.com/gempesaw/Selenium-Remote-Driver/issues/324)
-
 ## Installation
 
 It's probably easiest to use the `cpanm` or `CPAN` commands:
