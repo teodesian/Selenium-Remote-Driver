@@ -121,10 +121,15 @@ sub process_error {
     # let the end user handle it or we can save it an image file at a temp
     # location & return the path.
 
+    # handle stacktrace-only responses by assuming unknown error
+    my $is_stacktrace = !$resp->{status};
+    $resp->{status} = 13 unless $resp->{status};
+
     my $ret;
-    $ret->{'stackTrace'} = $resp->{'value'}->{'stackTrace'};
-    $ret->{'error'} = $self->STATUS_CODE->{$resp->{'status'}};
-    $ret->{'message'} = $resp->{'value'}->{'message'};
+    #XXX capitalization is inconsistent among geckodriver versions
+    $ret->{'stackTrace'} = $resp->{'value'}->{'stacktrace'} // $resp->{'value'}->{'stackTrace'};
+    $ret->{'error'}      = $is_stacktrace ? $resp->{value}->{error} : $self->STATUS_CODE->{$resp->{'status'}};
+    $ret->{'message'}    = $resp->{'value'}->{'message'};
 
     return $ret;
 }
