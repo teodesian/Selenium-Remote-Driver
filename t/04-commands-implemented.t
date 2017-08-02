@@ -20,7 +20,7 @@ for my $command (keys %{$comm}) {
     open(my $fh, '<', $file) or die "Couldn't open file $file";
     for (<$fh>) {
       if (/'?command'?\s*=>\s*'$command'/
-       or /{'?commands'?}->{'?$command'?}/) {
+       or /{'?commands'?}->\{'?$command'?}/) {
         pass("find $command");
         $found_command = 1;
       }
