@@ -23,7 +23,7 @@ use XML::Simple;
 You can use this module to create a custom Firefox Profile for your
 Selenium tests. Currently, you can set browser preferences and add
 extensions to the profile before passing it in the constructor for a
-new L</Selenium::Remote::Driver> or L</Selenium::Firefox>.
+new L<Selenium::Remote::Driver> or L<Selenium::Firefox>.
 
 =head1 SYNPOSIS
 
@@ -51,6 +51,14 @@ new L</Selenium::Remote::Driver> or L</Selenium::Firefox>.
 
 =cut
 
+=head1 CONSTRUCTOR
+
+=head2 new (%args)
+
+profile_dir - <string> directory to look for the firefox profile. Defaults to a Tempdir.
+
+=cut
+
 sub new {
     my $class = shift;
     my %args  = @_;
@@ -75,7 +83,9 @@ sub new {
     return $self;
 }
 
-=method set_preference
+=head1 METHODS
+
+=head2 set_preference
 
 Set string and integer preferences on the profile object. You can set
 multiple preferences at once. If you need to set a boolean preference,
@@ -119,7 +129,7 @@ sub set_preference {
     }
 }
 
-=method set_boolean_preference
+=head2 set_boolean_preference
 
 Set preferences that require boolean values of 'true' or 'false'. You
 can set multiple preferences at once. For string or integer
@@ -143,7 +153,7 @@ sub set_boolean_preference {
     }
 }
 
-=method get_preference
+=head2 get_preference
 
 Retrieve the computed value of a preference. Strings will be double
 quoted and boolean values will be single quoted as "true" or "false"
@@ -163,7 +173,7 @@ sub get_preference {
     return $self->{user_prefs}->{$pref};
 }
 
-=method add_extension
+=head2 add_extension
 
 Add an existing C<.xpi> to the profile by providing its path. This
 only works with packaged C<.xpi> files, not plain/un-packed extension
@@ -183,7 +193,7 @@ sub add_extension {
     push (@{$self->{extensions}}, $xpi_abs_path);
 }
 
-=method add_webdriver
+=head2 add_webdriver
 
 Primarily for internal use, we set the appropriate firefox preferences
 for a new geckodriver session.
@@ -236,7 +246,7 @@ sub _load_prefs {
     return $prefs;
 }
 
-=method add_webdriver_xpi
+=head2 add_webdriver_xpi
 
 Primarily for internal use. This adds the fxgoogle .xpi that is used
 for webdriver communication in FF47 and older. For FF48 and newer, the
@@ -255,7 +265,7 @@ sub _add_webdriver_xpi {
     $self->add_extension($webdriver_extension);
 }
 
-=method add_marionette
+=head2 add_marionette
 
 Primarily for internal use, configure Marionette to the
 current Firefox profile.
@@ -276,7 +286,7 @@ sub _encode {
     $self->_layout_on_disk();
 
     my $zip = Archive::Zip->new();
-    my $dir_member = $zip->addTree( $self->{profile_dir} );
+    $zip->addTree( $self->{profile_dir} );
 
     my $string = "";
     open (my $fh, ">", \$string);

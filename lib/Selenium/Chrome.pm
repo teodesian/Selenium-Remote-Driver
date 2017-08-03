@@ -1,5 +1,8 @@
 package Selenium::Chrome;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Use ChromeDriver without a Selenium server
 use Moo;
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
@@ -10,6 +13,8 @@ extends 'Selenium::Remote::Driver';
     my $driver = Selenium::Chrome->new;
     # when you're done
     $driver->shutdown_binary;
+
+=for Pod::Coverage has_binary
 
 =head1 DESCRIPTION
 

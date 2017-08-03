@@ -1,6 +1,17 @@
 Revision history for Selenium-Remote-Driver
 
-1.20   05-54-2017
+1.21   08-??-27 TEODESIAN
+        [NEW MAINTAINER]
+        - George S. Baugh (@teodesian on github, TEODESIAN on CPAN) is now the maintainer.
+
+        [BUG FIXES]
+        - Fix warnings thrown in release testsuite by unescaped regexes on perl 5.24
+        - Expand POD for some modules
+
+        [DEPRECATIONS]
+        - Selenium::Remote::Driver::pause() - There are plenty of other ways to sleep().
+
+1.20   05-25-2017
         [BUG FIXES]
         - Shim use of name as find method for geckodriver
         - Start up geckodriver/binary Firefox properly
@@ -443,5 +454,6 @@ Revision history for Selenium-Remote-Driver
         supported as the server itself is alpha & mocking its behavior doesn't
         help our cause.
         - Added POD for Driver & WebElement
+
 0.01    2-21-2010
-        First version, released on an unsuspecting world.
+        - First version, released on an unsuspecting world.

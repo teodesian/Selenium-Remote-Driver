@@ -1,5 +1,8 @@
 package Selenium::CanStartBinary::FindBinary;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Coercions for finding webdriver binaries on your system
 use Cwd qw/abs_path/;
 use File::Which qw/which/;
@@ -11,6 +14,10 @@ our @ISA = qw/Exporter/;
 our @EXPORT_OK = qw/coerce_simple_binary coerce_firefox_binary/;
 
 use constant IS_WIN => $^O eq 'MSWin32';
+
+=for Pod::Coverage *EVERYTHING*
+
+=cut
 
 sub coerce_simple_binary {
     my ($executable) = @_;

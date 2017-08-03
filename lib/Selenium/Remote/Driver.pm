@@ -1,5 +1,8 @@
 package Selenium::Remote::Driver;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Perl Client for Selenium Remote Driver
 
 use Moo;
@@ -25,6 +28,7 @@ use File::Spec::Functions ();
 use File::Basename qw(basename);
 use Sub::Install ();
 use MIME::Base64 ();
+use Time::HiRes qw(usleep);
 
 use constant FINDERS => {
     class             => 'class name',
@@ -39,6 +43,9 @@ use constant FINDERS => {
     xpath             => 'xpath',
 };
 
+=for Pod::Coverage BUILD
+
+=for Pod::Coverage DEMOLISH
 
 =head1 SYNOPSIS
 
@@ -167,106 +174,131 @@ Your other option is to use this module in conjunction with your
 choice of testing modules, like L<Test::Spec> or L<Test::More> as
 you please.
 
-=head1 FUNCTIONS
+=head1 CONSTRUCTOR
 
 =head2 new
 
- Description:
-    Constructor for Driver. It'll instantiate the object if it can communicate
-    with the Selenium Webdriver server.
+Dies if communication with the selenium server cannot be established.
 
- Input: (all optional)
-    Desired capabilities - HASH - Following options are accepted:
-      Optional:
-        'remote_server_addr'   - <string>   - IP or FQDN of the Webdriver server machine
-        'port'                 - <string>   - Port on which the Webdriver server is listening
-        'browser_name'         - <string>   - desired browser string: {phantomjs|firefox|internet explorer|htmlunit|iphone|chrome}
-        'version'              - <string>   - desired browser version number
-        'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
-        'javascript'           - <boolean>  - whether javascript should be supported
-        'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
-        'firefox_profile'      - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use
-        'proxy'                - HASH       - Proxy configuration with the following keys:
-            'proxyType' - <string> - REQUIRED, Possible values are:
-                direct     - A direct connection - no proxy in use,
-                manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
-                pac        - Proxy autoconfiguration from a URL,
-                autodetect - proxy autodetection, probably with WPAD,
-                system     - Use system settings
-            'proxyAutoconfigUrl' - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile or file:///path/to/pacfile
-            'ftpProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-        'extra_capabilities'   - HASH       - Any other extra capabilities
+Input: (all optional)
 
-    You can also specify some options in the constructor hash that are
-    not part of the browser-related desired capabilities. These items
-    are also optional.
+Desired capabilities - HASH - Following options are accepted:
 
-        'auto_close'           - <boolean>   - whether driver should end session on remote server on close.
-        'base_url'             - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
-        'default_finder'       - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
-        'inner_window_size'    - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
-        'error_handler'        - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
-        'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
-        'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
-        'session_id'           - <string>    - prevent create new session, reuse previous (but not finished) session, previous session should have 'auto_close' => 0
+=over 4
 
-    If no values are provided, then these defaults will be assumed:
-        'remote_server_addr' => 'localhost'
-        'port'               => '4444'
-        'browser_name'       => 'firefox'
-        'version'            => ''
-        'platform'           => 'ANY'
-        'javascript'         => 1
-        'auto_close'         => 1
-        'default_finder'     => 'xpath'
-        'session_id'         => undef
+=item B<remote_server_addr> - <string>   - IP or FQDN of the Webdriver server machine. Default: 'localhost'
 
- Output:
-    Remote Driver object
+=item B<port>               - <string>   - Port on which the Webdriver server is listening. Default: 4444
 
- Usage:
-    my $driver = Selenium::Remote::Driver->new;
-    or
-    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
-                                               'platform'     => 'MAC');
-    or (for Firefox 47 or lower on Selenium 3+)
-    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
-                                               'platform'     => 'MAC',
-                                               'extra_capabilities' => {
-                                                    'marionette' => \0,
-                                              });
-    or
-    my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
-                                               'port'               => '2222',
-                                               'auto_close'         => 0);
-    or
-    my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome',
-                                               'extra_capabilities' => {
-                                                   'chromeOptions' => {
-                                                       'args'  => [
-                                                           'window-size=1260,960',
-                                                           'incognito'
-                                                       ],
-                                                       'prefs' => {
-                                                           'session' => {
-                                                               'restore_on_startup' => 4,
-                                                               'urls_to_restore_on_startup' => [
-                                                                   'http://www.google.com',
-                                                                   'http://docs.seleniumhq.org'
-                                                               ]},
-                                                           'first_run_tabs' => [
+=item B<browser_name>       - <string>   - desired browser string: {phantomjs|firefox|internet explorer|htmlunit|iphone|chrome}
+
+=item B<version>            - <string>   - desired browser version number
+
+=item B<platform>           - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
+
+=item B<accept_ssl_certs>   - <boolean>  - whether SSL certs should be accepted, default is true.
+
+=item B<firefox_profile>    - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use
+
+=item B<proxy>              - HASH       - Proxy configuration with the following keys:
+
+=item B<javascript>         - <boolean> - Whether or not to use Javascript.  You probably won't disable this, as you would be using L<WWW::Mechanize> instead.  Default: True
+
+=item B<auto_close>         - <boolean> - Whether to automatically close the browser session on the server when the object goes out of scope. Default: False.
+
+=item B<default_finder>     - <string> - Default method by which to evaluate selectors.  Default: 'xpath'
+
+=item B<session_id>         - <string> - Provide a Session ID to highjack a browser session on the remote server.  Useful for micro-optimizers.  Default: undef
+
+=over 4
+
+=item B<proxyType> - <string> - REQUIRED, Possible values are:
+
+    direct     - A direct connection - no proxy in use,
+    manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
+    pac        - Proxy autoconfiguration from a URL,
+    autodetect - proxy autodetection, probably with WPAD,
+    system     - Use system settings
+
+=item B<proxyAutoconfigUrl> - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile or file:///path/to/pacfile
+
+=item B<ftpProxy>           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
+=item B<httpProxy>          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
+=item B<sslProxy>           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
+=back
+
+=item B<extra_capabilities>   - HASH       - Any other extra capabilities.  Accepted keys will vary by browser.
+
+=back
+
+You can also specify some options in the constructor hash that are
+not part of the browser-related desired capabilities.
+
+=over 4
+
+=item B<auto_close>        - <boolean>   - whether driver should end session on remote server on close.
+
+=item B<base_url>          - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
+
+=item B<default_finder>    - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+
+=item B<inner_window_size> - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
+
+=item B<error_handler>     - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
+
+=item B<webelement_class>  - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
+
+=item B<ua>                - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
+
+=back
+
+Output:
+Remote Driver object
+
+Usage:
+my $driver = Selenium::Remote::Driver->new;
+or
+my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
+                                           'platform'     => 'MAC');
+or (for Firefox 47 or lower on Selenium 3+)
+my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
+                                           'platform'     => 'MAC',
+                                           'extra_capabilities' => {
+                                                'marionette' => \0,
+                                          });
+or
+my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
+                                           'port'               => '2222',
+                                           'auto_close'         => 0);
+or
+my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome',
+                                           'extra_capabilities' => {
+                                               'chromeOptions' => {
+                                                   'args'  => [
+                                                       'window-size=1260,960',
+                                                       'incognito'
+                                                   ],
+                                                   'prefs' => {
+                                                       'session' => {
+                                                           'restore_on_startup' => 4,
+                                                           'urls_to_restore_on_startup' => [
                                                                'http://www.google.com',
                                                                'http://docs.seleniumhq.org'
-                                                           ]
-                                                       }
+                                                           ]},
+                                                       'first_run_tabs' => [
+                                                           'http://www.google.com',
+                                                           'http://docs.seleniumhq.org'
+                                                       ]
                                                    }
-                                               });
-    or
-    my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
-    or
-    my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
+                                               }
+                                           });
+or
+my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
+or
+my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
 =head3 error_handler
 
@@ -368,6 +400,23 @@ C<eval>, or use the parameterized versions find_element_*).
     The above would generate a POST to the webdriver server at
     localhost:4444 with the exact payload of '{"desiredCapabilities":
     {"browserName": "firefox" }}'.
+
+
+=for Pod::Coverage has_base_url
+
+=for Pod::Coverage has_desired_capabilities
+
+=for Pod::Coverage has_error_handler
+
+=for Pod::Coverage has_firefox_profile
+
+=for Pod::Coverage has_inner_window_size
+
+=for Pod::Coverage has_javascript
+
+=for Pod::Coverage has_port
+
+=for Pod::Coverage has_remote_server_addr
 
 =cut
 
@@ -699,8 +748,17 @@ sub _execute_command {
     }
 }
 
-# A method that is used by the Driver itself. It'll be called to set the
-# desired capabilities on the server.
+=head1 METHODS
+
+=head2 new_session (extra_capabilities)
+
+Make a new session on the server.
+Called by new(), not intended for regular use.
+
+Occaisonally handy for recovering from brower crashes.
+
+=cut
+
 sub new_session {
     my ( $self, $extra_capabilities ) = @_;
     $extra_capabilities ||= {};
@@ -726,6 +784,13 @@ sub new_session {
 
     $self->_request_new_session($args);
 }
+
+=head2 new_desired_session(capabilities)
+
+Basically the same as new_session, but with caps.
+Sort of an analog to new_from_caps.
+
+=cut
 
 sub new_desired_session {
     my ( $self, $caps ) = @_;
@@ -1168,12 +1233,14 @@ sub set_implicit_wait_timeout {
     $driver->pause(10000);  # 10 second delay
     $driver->pause();       #  1 second delay default
 
+ DEPRECATED: consider using Time::HiRes instead.
+
 =cut
 
 sub pause {
     my $self = shift;
-    my $timeout = ( shift // 1000 ) / 1000;
-    select( undef, undef, undef, $timeout );    # Fractional-second sleep
+    my $timeout = ( shift // 1000 ) * 1000;
+    usleep($timeout);
 }
 
 =head2 close
@@ -1641,7 +1708,7 @@ sub _convert_to_webelement {
  Usage:
     print $driver->screenshot();
 
-To conveniently write the screenshot to a file, see L<capture_screenshot()>.
+To conveniently write the screenshot to a file, see L</capture_screenshot>.
 
 =cut
 

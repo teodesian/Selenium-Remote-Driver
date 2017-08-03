@@ -1,0 +1,5 @@
+MANIFEST.SKIP
+cover_db/*
+.travis.yml
+weaver.ini
+.git/*

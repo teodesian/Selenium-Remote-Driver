@@ -1,5 +1,8 @@
 package Selenium::Remote::ErrorHandler;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Error handler for Selenium::Remote::Driver
 
 use Moo;
@@ -111,10 +114,17 @@ has STATUS_CODE => (
     }
 );
 
+=head1 SUBROUTINES
 
-# Instead of just returning the end user a server returned error code, we will
-# put a more human readable & usable error message & that is what this method
-# is going to do.
+=head2 process_error (Selenium::Remote::Driver $driver, HTTP::Response $response)
+
+Instead of just returning the end user a server returned error code, this returns a more human readable & usable error message.
+
+Used internally in Selenium::Remote::Driver, but overriding this might be useful in some situations.
+You could additionally alter the STATUS_CODE parameter of this module to add extra handlers if the situation warrants it.
+
+=cut
+
 sub process_error {
     my ($self, $resp) = @_;
     # TODO: Handle screen if it sent back with the response. Either we could
@@ -133,7 +143,6 @@ sub process_error {
 
     return $ret;
 }
-
 
 1;
 

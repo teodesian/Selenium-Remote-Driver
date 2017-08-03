@@ -1,7 +1,14 @@
 package Selenium::ActionChains;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Action chains for Selenium::Remote::Driver
 use Moo;
+
+=for Pod::Coverage driver
+
+=cut
 
 has 'driver' => (
     is => 'ro',

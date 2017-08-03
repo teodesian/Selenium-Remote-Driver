@@ -1,5 +1,8 @@
 package Selenium::Waiter;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Provides a utility wait_until function
 use Try::Tiny;
 require Exporter;
@@ -11,16 +14,18 @@ our @EXPORT = qw/wait_until/;
     use Selenium::Waiter qw/wait_until/;
     my $d = Selenium::Remote::Driver->new;
 
-    my $div = wait_until { $d->find_element('div', css') };
+    my $div = wait_until { $d->find_element('div', 'css') };
 
-=func wait_until
+=head1 FUNCTIONS
+
+=head2 wait_until
 
 Exported by default, it takes a BLOCK (required) and optionally a
 hash of configuration params. It uses a prototype to take its
 arguments, so usage looks look like:
 
     use Selenium::Waiter;
-    my $div = wait_until { $driver->find_element('div', css') };
+    my $div = wait_until { $driver->find_element('div', 'css') };
 
 The above snippet will search for C<css=div> for thirty seconds; if it
 ever finds the element, it will immediately return. More generally,

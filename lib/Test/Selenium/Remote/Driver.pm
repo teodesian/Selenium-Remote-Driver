@@ -41,6 +41,10 @@ has func_list => (
     },
 );
 
+=for Pod::Coverage has_args
+
+=cut
+
 sub has_args {
     my $self          = shift;
     my $fun_name      = shift;
@@ -59,10 +63,9 @@ sub has_args {
 
 with 'Test::Selenium::Remote::Role::DoesTesting';
 
-has verbose => (
-    is => 'rw',
-);
+=for Pod::Coverage BUILD
 
+=cut
 
 sub BUILD {
     my $self = shift;
@@ -108,12 +111,14 @@ Set the Selenium server address with C<$TWD_HOST> and C<$TWD_PORT>.
 Pick which browser is used using the  C<$TWD_BROWSER>, C<$TWD_VERSION>,
 C<$TWD_PLATFORM>, C<$TWD_JAVASCRIPT>, C<$TWD_EXTRA_CAPABILITIES>.
 
-See L<Selenium::Driver::Remote> for the meanings of these options.
+See L<Selenium::Remote::Driver> for the meanings of these options.
+
+=for Pod::Coverage BUILDARGS
 
 =cut
 
 sub BUILDARGS {
-    my ( $class, %p ) = @_;
+    my ( undef, %p ) = @_;
 
     for my $opt (
         qw/remote_server_addr port browser_name version platform
@@ -128,6 +133,16 @@ sub BUILDARGS {
     return \%p;
 }
 
+=head2 verbose
+
+Enable/disable debugging output, or view the status of verbosity.
+
+=cut
+
+has verbose => (
+    is => 'rw',
+);
+
 =head2 server_is_running( $host, $port )
 
 Returns true if a Selenium server is running.  The host and port
@@ -139,7 +154,6 @@ determine the server to check.
 =cut
 
 sub server_is_running {
-    my $class_or_self = shift;
     my $host          = $ENV{TWD_HOST} || shift || 'localhost';
     my $port          = $ENV{TWD_PORT} || shift || 4444;
 
@@ -149,7 +163,6 @@ sub server_is_running {
         PeerPort => $port,
       );
     return;
-
 }
 
 =head2 error_handler

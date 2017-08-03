@@ -1,5 +1,8 @@
 package Selenium::InternetExplorer;
 
+use strict;
+use warnings;
+
 # ABSTRACT: A convenience package for creating a IE instance
 use Moo;
 extends 'Selenium::Remote::Driver';

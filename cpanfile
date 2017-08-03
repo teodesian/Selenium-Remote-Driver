@@ -26,6 +26,7 @@ requires "Scalar::Util" => "0";
 requires "Sub::Install" => "0";
 requires "Test::Builder" => "0";
 requires "Test::LongString" => "0";
+requires "Time::HiRes" => "0";
 requires "Try::Tiny" => "0";
 requires "XML::Simple" => "0";
 requires "base" => "0";
@@ -36,14 +37,18 @@ requires "strict" => "0";
 requires "warnings" => "0";
 
 on 'test' => sub {
+  requires "File::Spec" => "0";
   requires "File::stat" => "0";
   requires "FindBin" => "0";
+  requires "IO::Handle" => "0";
+  requires "IPC::Open3" => "0";
   requires "Test::Builder::Tester" => "0";
   requires "Test::Fatal" => "0";
   requires "Test::LWP::UserAgent" => "0";
   requires "Test::More" => "0";
   requires "Test::Time" => "0";
   requires "Test::Warn" => "0";
+  requires "blib" => "1.01";
   requires "lib" => "0";
 };
 
@@ -53,7 +58,18 @@ on 'configure' => sub {
 
 on 'develop' => sub {
   requires "Pod::Coverage::TrustPod" => "0";
-  requires "Test::More" => "0";
+  requires "Test::CPAN::Changes" => "0.19";
+  requires "Test::CPAN::Meta" => "0";
+  requires "Test::CPAN::Meta::JSON" => "0.16";
+  requires "Test::EOL" => "0";
+  requires "Test::Kwalitee" => "1.21";
+  requires "Test::Mojibake" => "0";
+  requires "Test::More" => "0.88";
+  requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";
   requires "Test::Pod::Coverage" => "1.08";
+  requires "Test::Pod::LinkCheck" => "0";
+  requires "Test::Portability::Files" => "0";
+  requires "Test::Synopsis" => "0";
+  requires "Test::Version" => "1";
 };

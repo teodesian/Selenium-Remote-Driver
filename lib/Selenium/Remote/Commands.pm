@@ -1,6 +1,20 @@
 package Selenium::Remote::Commands;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Implement commands for Selenium::Remote::Driver
+
+=head1 DESCRIPTION
+
+Defines all the HTTP endpoints available to execute on a selenium server.
+
+If you have either a customized Selenium Server, or want new features
+you should update the _cmds hash.
+
+=for Pod::Coverage *EVERYTHING*
+
+=cut
 
 use Moo;
 

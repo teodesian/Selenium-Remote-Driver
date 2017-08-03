@@ -5,6 +5,9 @@ use Moo;
 use Sub::Install;
 extends 'Selenium::Remote::WebElement';
 
+=for Pod::Coverage *EVERYTHING*
+
+=cut
 
 # list of test functions to be built
 

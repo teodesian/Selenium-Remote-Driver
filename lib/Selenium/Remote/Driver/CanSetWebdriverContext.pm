@@ -1,6 +1,10 @@
 package Selenium::Remote::Driver::CanSetWebdriverContext;
 
 # ABSTRACT: Customize the webdriver context prefix for various drivers
+
+use strict;
+use warnings;
+
 use Moo::Role;
 
 =head1 DESCRIPTION

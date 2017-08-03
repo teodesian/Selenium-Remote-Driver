@@ -2,6 +2,9 @@ package Selenium::Remote::Mock::RemoteConnection;
 
 # ABSTRACT: utility class to mock the responses from Selenium server
 
+use strict;
+use warnings;
+
 use Moo;
 use JSON;
 use Carp;
@@ -56,6 +59,10 @@ has 'remote_server_addr' => (
     is => 'lazy',
     default => sub { 'localhost' }
 );
+
+=for Pod::Coverage *EVERYTHING*
+
+=cut
 
 sub BUILD {
     my $self = shift;
@@ -220,10 +227,10 @@ mock responses to specific functions
 This code, above doing some basic Selenium interactions, will end up generating a JSON file containing all the requests and their responses for your Selenium session.
 The JSON file looks like this :
 
-    {
-        "HTTP_REQUEST URL {request_parameters}":[ARRAY_OF_RESPONSES]
+    '{
+        "HTTP_REQUEST_URL {request_parameters}":[response1,response2,...],
         ...
-    }
+    }'
 
 The reason why we store array of responses is that the exact same request can be made more than once during a session, so we have to store every response to the same requests.
 
@@ -293,7 +300,7 @@ To accomplish this we need :
 =over
 
 =item *
-a spec: a HASHREF which keys are the name of the methods we want to mock. Note that those keys should also be valid keys from the _cmds attribute in L<Selenium::Remote::Command>.
+a spec: a HASHREF which keys are the name of the methods we want to mock. Note that those keys should also be valid keys from the _cmds attribute in L<Selenium::Remote::Commands>.
 The value of each key is a sub which will be given two parameters:
 
 =over

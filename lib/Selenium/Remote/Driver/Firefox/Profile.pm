@@ -3,6 +3,7 @@ package Selenium::Remote::Driver::Firefox::Profile;
 # ABSTRACT: Use custom profiles with Selenium::Remote::Driver
 use strict;
 use warnings;
+
 use Selenium::Firefox::Profile;
 
 BEGIN {

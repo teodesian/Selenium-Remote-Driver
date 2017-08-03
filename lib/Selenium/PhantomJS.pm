@@ -1,9 +1,14 @@
 package Selenium::PhantomJS;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Use GhostDriver without a Selenium server
 use Moo;
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
 extends 'Selenium::Remote::Driver';
+
+=for Pod::Coverage has_binary
 
 =head1 SYNOPSIS
 

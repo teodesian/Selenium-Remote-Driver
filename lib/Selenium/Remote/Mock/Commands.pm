@@ -1,10 +1,16 @@
 package Selenium::Remote::Mock::Commands;
 
 # ABSTRACT: utility class to mock Selenium::Remote::Commands
-#
+
+use strict;
+use warnings;
+
 use Moo;
 extends 'Selenium::Remote::Commands';
 
+=for Pod::Coverage *EVERYTHING*
+
+=cut
 
 # override get_params so we do not rewrite the parameters
 

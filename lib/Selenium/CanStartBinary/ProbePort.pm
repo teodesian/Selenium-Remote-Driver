@@ -1,12 +1,20 @@
 package Selenium::CanStartBinary::ProbePort;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Utility functions for finding open ports to eventually bind to
+
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
 
 require Exporter;
 our @ISA = qw/Exporter/;
 our @EXPORT_OK = qw/find_open_port_above find_open_port probe_port/;
+
+=for Pod::Coverage *EVERYTHING*
+
+=cut
 
 sub find_open_port_above {
     my ($port) = @_;

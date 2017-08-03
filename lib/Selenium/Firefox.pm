@@ -1,5 +1,8 @@
 package Selenium::Firefox;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Use FirefoxDriver without a Selenium server
 use Moo;
 use Carp;
@@ -11,13 +14,19 @@ extends 'Selenium::Remote::Driver';
 
     # These two are the same, and will only work with Firefox 48+
     my $driver = Selenium::Firefox->new;
-    my $driver = Selenium::Firefox->new( marionette_enabled => 1 );
-    ...
+    $driver = Selenium::Firefox->new( marionette_enabled => 1 );
+
+    #Do stuff...
+
     $driver->shutdown_binary;
 
     # For Firefox 47 and older, disable marionette:
-    my $driver = Selenium::Firefox->new( marionette_enabled => 0 );
+    $driver = Selenium::Firefox->new( marionette_enabled => 0 );
     $driver->shutdown_binary;
+
+=for Pod::Coverage has_binary
+
+=for Pod::Coverage has_firefox_binary
 
 =head1 DESCRIPTION
 

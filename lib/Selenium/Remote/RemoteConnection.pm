@@ -1,5 +1,8 @@
 package Selenium::Remote::RemoteConnection;
 
+use strict;
+use warnings;
+
 #ABSTRACT: Connect to a selenium server
 
 use Moo;
@@ -37,6 +40,46 @@ has 'error_handler' => (
 
 with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 
+=head1 DESCRIPTION
+
+You shouldn't really need to use this module unless debugging or checking connections when testing dangerous things.
+
+=head1 SYNOPSIS
+
+    my $driver = Selenium::Remote::Driver->new();
+    eval { $driver->remote_conn->check_status() };
+    die "do something to kick the server" if $@;
+
+=head1 CONSTRUCTOR
+
+=head2 new(%parameters)
+
+Accepts 5 parameters:
+
+=over 4
+
+=item B<remote_server_addr> - address of selenium server
+
+=item B<port> - port of selenium server
+
+=item B<ua> - Useful to override with Test::LWP::UserAgent in unit tests
+
+=item B<debug> - Should be self-explanatory
+
+=item B<error_handler> - Defaults to Selenium::Remote::ErrorHandler.
+
+=back
+
+These can be set any time later by getter/setters with the same name.
+
+=head1 METHODS
+
+=head2 check_status
+
+Croaks unless the selenium server is responsive.  Sometimes is useful to call in-between tests (the server CAN die on you...)
+
+=cut
+
 sub check_status {
     my $self = shift;
     my $status;
@@ -58,6 +101,12 @@ sub check_status {
         croak "Selenium server did not return proper status";
     }
 }
+
+=head2 request
+
+Make a request of the Selenium server.  Mostly useful for debugging things going wrong with Selenium::Remote::Driver when not in normal operation.
+
+=cut
 
 sub request {
     my ($self,$resource,$params,$dont_process_response) = @_;

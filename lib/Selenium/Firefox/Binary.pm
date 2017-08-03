@@ -1,5 +1,8 @@
 package Selenium::Firefox::Binary;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Subroutines for locating and properly initializing the Firefox Binary
 use File::Which qw/which/;
 use Selenium::Firefox::Profile;
@@ -41,6 +44,14 @@ sub _firefox_unix_path {
     return which('firefox') || '/usr/bin/firefox';
 }
 
+=head1 SUBROUTINES
+
+=head2 firefox_path
+
+Return the path to the firefox binary on your system.
+
+=cut
+
 sub firefox_path {
     my $path;
     if ($^O eq 'MSWin32') {
@@ -59,6 +70,12 @@ sub firefox_path {
 
     return $path;
 }
+
+=head2 setup_firefox_binary_env
+
+Sets various environment variables to make firefox work correctly with webDriver.
+
+=cut
 
 # We want the profile to persist to the end of the session, not just
 # the end of this function.
@@ -100,6 +117,5 @@ sub setup_firefox_binary_env {
 
     return $profile;
 }
-
 
 1;

@@ -1,5 +1,8 @@
 package Selenium::CanStartBinary;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Teach a WebDriver how to start its own binary aka no JRE!
 use File::Spec;
 use Selenium::CanStartBinary::ProbePort qw/find_open_port_above find_open_port probe_port/;
@@ -7,25 +10,7 @@ use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
 use Moo::Role;
 
-=head1 SYNOPSIS
-
-    package My::Selenium::Chrome {
-        use Moo;
-        extends 'Selenium::Remote::Driver';
-
-        has 'binary' => ( is => 'ro', default => 'chromedriver' );
-        has 'binary_port' => ( is => 'ro', default => 9515 );
-        has '_binary_args' => ( is => 'ro', default => sub {
-            return ' --port=' . shift->port . ' --url-base=wd/hub ';
-        });
-        with 'Selenium::CanStartBinary';
-        1
-    };
-
-    my $chrome_via_binary = My::Selenium::Chrome->new;
-    my $chrome_with_path  = My::Selenium::Chrome->new(
-        binary => './chromedriver'
-    );
+=for Pod::Coverage *EVERYTHING*
 
 =head1 DESCRIPTION
 
@@ -326,7 +311,7 @@ sub BUILDARGS {
     # Since we can't force an order, we introduced try_binary which gets
     # decided during BUILDARGS to tip us off as to whether we should try
     # binary mode or not.
-    my ( $class, %args ) = @_;
+    my ( undef, %args ) = @_;
 
     if ( ! exists $args{remote_server_addr} && ! exists $args{port} ) {
         $args{try_binary} = 1;
@@ -410,7 +395,7 @@ sub shutdown_binary {
         # Tell the binary itself to shutdown
         my $port = $self->port;
         my $ua = $self->ua;
-        my $res = $ua->get('http://127.0.0.1:' . $port . '/wd/hub/shutdown');
+        $ua->get('http://127.0.0.1:' . $port . '/wd/hub/shutdown');
 
         # Close the orphaned command windows on windows
         $self->shutdown_windows_binary;
@@ -435,10 +420,7 @@ sub shutdown_windows_binary {
             # other task to kill.
             return;
         }
-        else {
-            my $kill = 'taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '" > nul 2>&1';
-            system($kill);
-        }
+        system('taskkill /FI "WINDOWTITLE eq ' . $self->window_title . '" > nul 2>&1');
     }
 }
 
@@ -471,8 +453,9 @@ sub _construct_command {
 sub _cmd_prefix {
     my ($self) = @_;
 
+    my $prefix = '';
     if (IS_WIN) {
-        my $prefix = 'start "' . $self->window_title . '"';
+        $prefix = 'start "' . $self->window_title . '"';
 
         if ($self->_is_old_ff) {
             # For older versions of Firefox that run without
@@ -487,9 +470,7 @@ sub _cmd_prefix {
             return $prefix . ' /MIN ';
         }
     }
-    else {
-        return '';
-    }
+    return $prefix;
 }
 
 sub _cmd_suffix {

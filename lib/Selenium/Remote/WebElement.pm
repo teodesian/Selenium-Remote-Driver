@@ -2,6 +2,9 @@ package Selenium::Remote::WebElement;
 
 # ABSTRACT: Representation of an HTML Element used by Selenium Remote Driver
 
+use strict;
+use warnings;
+
 use Moo;
 use Carp qw(carp croak);
 
@@ -19,11 +22,17 @@ What is probably most useful on this page is the list of methods below
 that you can perform on an element once you've found one and S::R::D
 has made an instance of this for you.
 
-=attr id
+=head1 CONSTRUCTOR
+
+=head2 new
+
+=over 4
+
+=item B<id>
 
 Required: Pass in a string representing the ID of the object. The
 string should be obtained from the response object of making one of
-the C<find_element> calls from L</Selenium::Remote::Driver>.
+the C<find_element> calls from L<Selenium::Remote::Driver>.
 
 The attribute is also set up to handle spec compliant element response
 objects via its `coerce` such that any of the following will work and
@@ -49,7 +58,15 @@ and then after instantiation, all three would give the following for
 
     print $elem->id; # prints 1
 
-Again, for typical usage of S::R::D and this module, none of this
+=item B<driver>
+
+Required: Pass in a Selenium::Remote::Driver instance or one of its
+subclasses. The WebElement needs the appropriate Driver session to
+execute its commands properly.
+
+=back
+
+For typical usage of S::R::D and this module, none of this
 matters and it should Just Work without you having to worry about it
 at all. For further reading, the L<W3C
 spec|https://www.w3.org/TR/webdriver/#elements> strictly dictates the
@@ -85,14 +102,6 @@ has 'id' => (
         }
     }
 );
-
-=attr driver
-
-Required: Pass in a Selenium::Remote::Driver instance or one of its
-subclasses. The WebElement needs the appropriate Driver session to
-execute its commands properly.
-
-=cut
 
 has 'driver' => (
     is => 'ro',
@@ -170,7 +179,7 @@ sub send_keys {
     # corresponding value must be ('h', 'e', 'l', 'l', 'o' ). This
     # format conforms with the Spec AND works with the Selenium
     # standalone server.
-    my $strings = join('', map { $_ .= "" } @strings);
+    my $strings = join('', map { $_."" } @strings);
     my $params = {
         'value' => [ split('', $strings) ],
         text => $strings,

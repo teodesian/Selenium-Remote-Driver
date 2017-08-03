@@ -1,5 +1,8 @@
 package Selenium::Remote::Finders;
 
+use strict;
+use warnings;
+
 # ABSTRACT: Handle construction of generic parameter finders
 use Try::Tiny;
 use Carp qw/carp/;
