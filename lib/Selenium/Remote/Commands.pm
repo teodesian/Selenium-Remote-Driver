@@ -455,6 +455,8 @@ sub get_params {
     my $command = $args->{'command'};
     my $url     = $self->get_url($command);
 
+    # Issue 329 -- Suppress unint value warns
+    $args = { map { $_ => $args->{$_} ? $args->{$_} : "" } qw{session_id id name property_name other window_handle} };
     # Do the var substitutions.
     $url =~ s/:sessionId/$args->{'session_id'}/;
     $url =~ s/:id/$args->{'id'}/;
