@@ -206,9 +206,8 @@ has 'marionette_binary_port' => (
 Optional: specify whether
 L<marionette|https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette>
 should be enabled or not. By default, marionette is enabled, which
-assumes you are running with Firefox 48 or newer. To use this module
-to start Firefox 47 or older, you must pass C<<<marionette_enabled =>
-0>>>.
+assumes you are running with Firefox 48 or newer. To use this module to
+start Firefox 47 or older, you must pass C<< marionette_enabled => 0 >>.
 
     my $ff48 = Selenium::Firefox->new( marionette_enabled => 1 ); # defaults to 1
     my $ff47 = Selenium::Firefox->new( marionette_enabled => 0 );
