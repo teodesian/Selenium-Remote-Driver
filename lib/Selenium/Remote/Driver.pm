@@ -1008,6 +1008,46 @@ sub move_to {
     return shift->mouse_move_to_location(@_);
 }
 
+=head2 move_action
+
+ Description:
+    Move the mouse similarly to the mouse_move_to_location. But uses the
+    new webdriver actions API which is supported by geckodriver.
+
+ Output:
+    STRING -
+
+ Usage:
+    # element - the element to move to. Must be specified.
+    # xoffset - X offset to move to, relative to the center of the element. If not specified, the mouse will move to the middle of the element.
+    # yoffset - Y offset to move to, relative to the center of the element. If not specified, the mouse will move to the middle of the element.
+
+    print $driver->move_action(element => e, xoffset => x, yoffset => y);
+
+=cut
+
+sub move_action {
+    my ( $self, %args ) = @_;
+    my $params = {
+        actions => [{
+            type => "pointer",
+            id => 'my pointer move',
+            "parameters" => { "pointerType" => "mouse" },
+            actions => [
+                {
+                    type => "pointerMove",
+                    duration => 0,
+                    x => $args{xoffset} // 0,
+                    y => $args{yoffset} // 0,
+                    origin => {'element-6066-11e4-a52e-4f735466cecf' => $args{element}{id}},
+                },
+            ],
+        }],
+    };
+    my $res = { 'command' => 'generalAction' };
+    return $self->_execute_command( $res, $params );
+}
+
 =head2 get_capabilities
 
  Description:
@@ -1056,7 +1096,7 @@ sub set_timeout {
     $ms = _coerce_timeout_ms( $ms );
 
     my $res = { 'command' => 'setTimeout' };
-    my $params = { 'type' => $type, 'ms' => $ms };
+    my $params = { 'type' => $type, 'ms' => $ms, $type => $ms };
     return $self->_execute_command( $res, $params );
 }
 
