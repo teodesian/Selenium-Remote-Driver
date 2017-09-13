@@ -201,12 +201,13 @@ webdriver error, because, as exceptions are not caught anymore when you specify 
 handler, the function will not fail anymore, which translates to a 'ok' in your TAP
 output if you do not handle it properly.
 
-
 =head1 Testing Methods
 
 The following testing methods are available. For
 more documentation, see the related test methods in L<Selenium::Remote::Driver>
 (And feel free to submit a patch to flesh out the documentation for these here).
+Defaults for optional arguments B<should> be the same as for their analogues in
+L<Selenium::Remote::Driver> and L<Selenium::Remote::WebElement>.
 
     alert_text_is
     alert_text_isnt
@@ -286,13 +287,13 @@ more documentation, see the related test methods in L<Selenium::Remote::Driver>
 
 =cut
 
-
 # function composing a find_element with locator with a webelement test
 
 sub _find_element_with_action {
     my $self   = shift;
     my $method = shift;
     my ( $locator, $locator_strategy, $params, $desc ) = @_;
+    $locator_strategy //= 'xpath';
 
     # case 4 args
     if ($desc) {
@@ -332,7 +333,6 @@ sub _find_element_with_action {
       ->$method( $params, $desc );
 }
 
-
 =head2 $twd->type_element_ok($search_target [,$locator], $keys, [, $desc ]);
 
    $twd->type_element_ok( $search_target [,$locator], $keys [, $desc ] );
@@ -341,7 +341,6 @@ Use L<Selenium::Remote::Driver/find_element> to resolve the C<$search_target>
 to a web element and an optional locator, and then type C<$keys> into it, providing an optional test
 label.
 
-
 =cut
 
 sub type_element_ok {
@@ -349,7 +348,6 @@ sub type_element_ok {
     my $method = 'send_keys_ok';
     return $self->_find_element_with_action( $method, @_ );
 }
-
 
 =head2 $twd->element_text_is($search_target[,$finder],$expected_text [,$desc]);
 
@@ -441,9 +439,6 @@ is passed to L<Selenium::Remote::Driver/find_element> using a finder or the C<de
 if none passed.
 See there for more details on the format for C<find_element_ok()>.
 
-=cut
-
-
 =head2 $twd->find_no_element_ok($search_target [,$finder, $desc ]);
 
    $twd->find_no_element_ok( $search_target [,$finder, $desc ] );
@@ -451,9 +446,6 @@ See there for more details on the format for C<find_element_ok()>.
 Returns true if C<$search_target> is I<not> found on the page. C<$search_target>
 is passed to L<Selenium::Remote::Driver/find_element> using a finder or the
 C<default_finder> if none passed. See there for more details on the format for C<find_no_element_ok()>.
-
-=cut
-
 
 =head2 $twd->content_like( $regex [, $desc ] )
 

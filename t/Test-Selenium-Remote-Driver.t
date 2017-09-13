@@ -1,3 +1,6 @@
+use strict;
+use warnings;
+
 use Test::More;
 use Test::Fatal;
 use Test::Selenium::Remote::Driver;
@@ -19,6 +22,13 @@ my $find_element = sub {
     }
     if ( $searched_item->{value} eq '//body' && $searched_item->{using} eq 'xpath') {
         return { status => 'OK', return => { ELEMENT => '123458' } };
+    }
+
+    if (   $searched_item->{value} eq '//p'
+        && $searched_item->{using} eq 'xpath' )
+    {
+        return { status => 'OK',
+            return => [ { ELEMENT => '123456' }, { ELEMENT => '12341234' } ] };
     }
     return { status => 'NOK', return => 0, error => 'element not found' };
 };
@@ -137,6 +147,10 @@ $successful_driver->element_text_is('p','class','def');
 
 $successful_driver->element_value_is('p','class','foo');
 $successful_driver->click_element_ok('p','class','click_element_ok works');
+
+#Test for regression of #340
+is(exception { $successful_driver->click_element_ok('//p') }, undef, "1-arg click_element_ok call does not croak");
+
 $successful_driver->clear_element_ok('q','element is cleared ok');
 $successful_driver->is_element_enabled_ok('p','class','element is enabled');
 $successful_driver->is_element_displayed_ok('q','element is displayed');
