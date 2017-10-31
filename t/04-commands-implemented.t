@@ -4,38 +4,29 @@ use warnings;
 use Test::More tests => 3 + 1;
 use Test::NoWarnings;
 
-# Assume we're not using dzil test unless we're doing that
-if( !grep { index( $_, ".build" ) != -1 } @INC ) {
-  require Cwd;
-  require File::Basename;
-  push( @INC, File::Basename::dirname(Cwd::abs_path(__FILE__)) . "/../lib" );
-}
-
-require_ok( "Selenium::Remote::Commands" ) || die;
+require_ok( "Selenium::Remote::Commands" ) || die "Module couldn't be loaded, can't continue with testing!";
 
 subtest "All implemented commands are found" => sub {
   plan skip_all => "Author tests not required for installation." unless $ENV{'RELEASE_TESTING'};
-  my $comm = Selenium::Remote::Commands->new->get_cmds;
-  for my $command (keys %{$comm}) {
-    my $found_command = 0;
-    for my $file (
-      qw{lib/Selenium/Remote/Driver.pm
-      lib/Selenium/Remote/WebElement.pm
-      lib/Selenium/Firefox.pm}
-      ) {
-      open(my $fh, '<', $file) or die "Couldn't open file $file";
-      for (<$fh>) {
-        if ( /'?command'?\s*=>\s*'$command'/ or /{'?commands'?}->\{'?$command'?}/) {
-          pass("find $command");
-          $found_command = 1;
-        }
-      }
-    }
-    if (!$found_command && $command !~ /Gecko/) {
-      fail("find $command");
-    }
+  my @cmds2see = keys( %{ Selenium::Remote::Commands->new->get_cmds } );
+  # You won't find the Gecko command in Selenium::Rmeote::Commands. This is intentional, so remove it from consideration.
+  @cmds2see = grep { $_ !~ /Gecko/ } @cmds2see;
+  plan 'tests' => scalar( @cmds2see );
+  my @files = map { _get_file_contents($_) } qw{lib/Selenium/Remote/Driver.pm lib/Selenium/Remote/WebElement.pm lib/Selenium/Firefox.pm};
+  for my $command (@cmds2see) {
+    my $detector = q/['"]?command['"]?\s*[=-]{1}>\s*\{?['"]/ . $command . q/['"]\}?/;
+    my $found = grep { my $contents = $_; grep { $_ =~ qr/$detector/ } @$contents } @files;
+    ok( $found, "Found $command" );
   }
 };
+
+sub _get_file_contents {
+  my $file = shift;
+  my @contents;
+  open(my $fh, '<', $file) or die "Couldn't open file $file";
+  for (<$fh>) { push( @contents, $_ ) }
+  return \@contents;
+}
 
 subtest "get_params() works as intended" => sub {
   no warnings qw{redefine once};
