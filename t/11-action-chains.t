@@ -31,10 +31,15 @@ my %selenium_args = (
     $driver->get('https://www.google.com');
     my $input_text = $driver->find_element("//input[\@type='text']");
 
+    use Carp::Always;
     # type text to search on Google and press 'Enter'
-    $action_chains->send_keys_to_element( $input_text, "test" )
-      ->key_down( [ KEYS->{'enter'} ] )->key_up( [ KEYS->{'enter'} ] )
-      ->perform;
+    {
+        no warnings qw{redefine once};
+        local *Selenium::Remote::WebElement::send_keys            = sub { return $_[0] };
+        $action_chains->send_keys_to_element( $input_text, "test" )
+          ->key_down( [ KEYS->{'enter'} ] )->key_up( [ KEYS->{'enter'} ] )
+          ->perform;
+    }
     $driver->find_elements_ok( "//*[\@class='hdtb-mitem']",
         "We found Google's navbar" );
     $driver->quit;

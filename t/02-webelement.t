@@ -23,6 +23,8 @@ my $ret;
 my $elem;
 
 LINK: {
+    no warnings 'redefine';
+    local *Selenium::Remote::WebElement::click = sub { return; };
     $driver->find_element("//a[\@href='/index.html']")->click;
     pass('Click Link...');
     isa_ok($driver->get_active_element,"Selenium::Remote::WebElement","get_active_element");

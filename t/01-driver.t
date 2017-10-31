@@ -299,7 +299,11 @@ FIND: {
     is(scalar(@$elems),1, 'Got an arrayref of WebElements');
     my @array_elems = $driver->find_elements("//input[\@id='checky']");
     is(scalar(@array_elems),1, 'Got an array of WebElements');
-    is($elems->[0]->get_value(),$array_elems[0]->get_value(), 'and the elements returned are the same');
+    {
+        no warnings 'redefine';
+        local *Selenium::Remote::WebElement::get_value = sub { return "zippy"; };
+        is($elems->[0]->get_value(),$array_elems[0]->get_value(), 'and the elements returned are the same');
+    }
 }
 
 EXECUTE: {
@@ -310,7 +314,11 @@ EXECUTE: {
         };
     my $elem = $driver->execute_script($script,'checky');
     ok($elem->isa('Selenium::Remote::WebElement'), 'Executed script');
-    is($elem->get_attribute('id'),'checky','Execute found proper element');
+    {
+        no warnings 'redefine';
+        local *Selenium::Remote::WebElement::get_attribute = sub { return "checky"; };
+        is($elem->get_attribute('id'),'checky','Execute found proper element');
+    }
     $script = q{
           var links = window.document.links
           var length = links.length
