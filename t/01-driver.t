@@ -17,6 +17,8 @@ use lib $FindBin::Bin . '/lib';
 use TestHarness;
 use Test::Fatal;
 
+$Selenium::Remote::Driver::FORCE_WD2 = 1;
+
 my $harness = TestHarness->new(
     this_file => $FindBin::Script
 );
@@ -237,6 +239,7 @@ COOKIES: {
     pass('Deleting cookies...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 0, 'Deleted all cookies.');
+    $driver->debug_on();
     $ret = $driver->add_cookie('foo', 'bar', '/', $domain, 0);
     pass('Adding cookie foo...');
     $ret = $driver->get_all_cookies();

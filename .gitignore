@@ -8,6 +8,7 @@ cover_db
 *.sublime*
 .build
 Selenium-Remote-Driver-*
+selenium*.jar
 .prove
 _prove
 #vim swapfiles

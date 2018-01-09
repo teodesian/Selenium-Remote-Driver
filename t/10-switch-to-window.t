@@ -15,6 +15,8 @@ my $harness = TestHarness->new(
 
 my @browsers = qw/chrome firefox/;
 
+$Selenium::Remote::Driver::FORCE_WD2 = 1;
+
 foreach (@browsers) {
     my %selenium_args = (
         default_finder => 'css',

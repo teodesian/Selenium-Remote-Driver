@@ -6,8 +6,6 @@ perl:
    - '5.18'
    - '5.16'
    - '5.14'
-   - '5.12'
-   - '5.10'
 matrix:
    fast_finish: true
    include:
@@ -24,7 +22,7 @@ install:
    - cpan-install --coverage   # installs converage prereqs, if enabled
    - cpanm --quiet --notest Devel::Cover::Report::Coveralls #send to coveralls
    - cpanm --quiet --notest Dist::Zilla::App::Command::cover #make sure we can dzil cover
-   - cpanm --quiet --notest --skip-satisfied Dist::Zilla
+   - cpanm --quiet --notest --skip-satisfied Dist::Zilla #unfortunately, we need a very new (6.0 or better) dzil, so no perl < 5.14
    - cpanm --quiet --notest --skip-satisfied Test::Spec WWW::Mechanize Test::WWW::Selenium #Test::Pod::Coverage can be stupid
    - "dzil authordeps          --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"
    - "dzil listdeps   --author --missing | grep -vP '[^\\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest"

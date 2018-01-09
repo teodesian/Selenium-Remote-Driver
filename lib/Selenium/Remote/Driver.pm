@@ -23,12 +23,16 @@ use Archive::Zip qw( :ERROR_CODES );
 use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
+use Selenium::Remote::Spec;
 use Selenium::Remote::WebElement;
+use Selenium::Remote::WDKeys;
 use File::Spec::Functions ();
 use File::Basename qw(basename);
 use Sub::Install ();
 use MIME::Base64 ();
 use Time::HiRes qw(usleep);
+use Clone qw{clone};
+use List::Util qw{any};
 
 use constant FINDERS => {
     class             => 'class name',
@@ -42,6 +46,9 @@ use constant FINDERS => {
     tag_name          => 'tag name',
     xpath             => 'xpath',
 };
+
+our $FORCE_WD2 = 0;
+our %CURRENT_ACTION_CHAIN = ( actions => [] );
 
 =for Pod::Coverage BUILD
 
@@ -84,18 +91,19 @@ server - that is, you would not need the JRE or the JDK to run your
 Selenium tests. See L<Selenium::Chrome>, L<Selenium::PhantomJS>, and
 L<Selenium::Firefox> for details. If you'd like additional browsers
 besides these, give us a holler over in
-L<Github|https://github.com/gempesaw/Selenium-Remote-Driver/issues>.
+L<Github|https://github.com/teodesian/Selenium-Remote-Driver/issues>.
 
 =head2 Remote Driver Response
 
 Selenium::Remote::Driver uses the
 L<JsonWireProtocol|http://code.google.com/p/selenium/wiki/JsonWireProtocol>
+And the
+L<WC3 WebDriver Protocol|https://www.w3.org/TR/webdriver/>
 to communicate with the Selenium Server. If an error occurs while
 executing the command then the server sends back an HTTP error code
-with a JSON encoded reponse that indicates the precise L<Response
-Error
-Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>. The
-module will then croak with the error message associated with this
+with a JSON encoded reponse that indicates the precise
+L<Response Error Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>.
+The module will then croak with the error message associated with this
 code. If no error occurred, then the subroutine called will return the
 value sent back from the server (if a return value was sent).
 
@@ -174,6 +182,34 @@ Your other option is to use this module in conjunction with your
 choice of testing modules, like L<Test::Spec> or L<Test::More> as
 you please.
 
+=head1 WC3 WEBDRIVER COMPATIBILITY
+
+WC3 Webdriver is a constantly evolving standard, so some things may or may not work at any given time.
+That said, the following 'sanity tests' in the at/ (acceptance test) directory of the module passed on the following versions:
+
+=over 4
+
+=item Selenium Server: 3.8.1 - all tests
+
+=item geckodriver: 0.19.1 - at/sanity.test
+
+=item chromedriver: 2.35 - at/sanity-chrome.test
+
+=item edgedriver: 5.16299 - at/sanity-edge.test
+
+=back
+
+These tests are intended to be run directly against a working selenium server on the local host with said drivers configured.
+
+If you are curious as to what 'works and does not' on your driver versions (and a few other quirks),
+it is strongly encouraged you look at where the test calls the methods you are interested in.
+
+While other browsers/drivers (especially legacy ones) likely work fine as well,
+any new browser/driver will likely have problems if it's not listed above.
+
+There is also a 'legacy.test' file available to run against old browsers/selenium (2.x servers, pre geckodriver).
+This should only be used to verify backwards-compatibility has not been broken.
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -190,7 +226,7 @@ Desired capabilities - HASH - Following options are accepted:
 
 =item B<port>               - <string>   - Port on which the Webdriver server is listening. Default: 4444
 
-=item B<browser_name>       - <string>   - desired browser string: {phantomjs|firefox|internet explorer|htmlunit|iphone|chrome}
+=item B<browser_name>       - <string>   - desired browser string: {phantomjs|firefox|internet explorer|MicrosoftEdge|htmlunit|iphone|chrome}
 
 =item B<version>            - <string>   - desired browser version number
 
@@ -198,7 +234,7 @@ Desired capabilities - HASH - Following options are accepted:
 
 =item B<accept_ssl_certs>   - <boolean>  - whether SSL certs should be accepted, default is true.
 
-=item B<firefox_profile>    - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use
+=item B<firefox_profile>    - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use.  Optionally can pass a base64'd zip data of a profile directory if you don't like Selenium::Firefox::Profile.
 
 =item B<proxy>              - HASH       - Proxy configuration with the following keys:
 
@@ -228,11 +264,22 @@ Desired capabilities - HASH - Following options are accepted:
 
 =item B<sslProxy>           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
 
+=item B<socksProxy>         - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234.  WebDriver 3 only.
+
+=item B<socksVersion>       - <int>    - OPTIONAL, ignored if proxyType is not 'manual'. WebDriver 3 only.
+
+=item B<noProxy>            - <ARRAY>  - OPTIONAL, list of URLs to bypass the proxy for. WebDriver3 only.
+
 =back
 
-=item B<extra_capabilities>   - HASH       - Any other extra capabilities.  Accepted keys will vary by browser.
+=item B<pageLoadStrategy>   - STRING   - OPTIONAL, 'normal|eager|none'. default 'normal'. WebDriver3 only.
+
+=item B<extra_capabilities> - HASH     - Any other extra capabilities.  Accepted keys will vary by browser.  If firefox_profile is passed, the args (or profile) key will be overwritten, depending on how it was passed.
 
 =back
+
+On WebDriver3 the 'extra_capabilities' will be automatically converted into the parameter needed by your browser.
+For example, extra_capabilities is passed to the server as the moz:firefoxOptions parameter.
 
 You can also specify some options in the constructor hash that are
 not part of the browser-related desired capabilities.
@@ -519,6 +566,13 @@ has 'commands' => (
     },
 );
 
+has 'commands_v3' => (
+    is      => 'lazy',
+    builder => sub {
+        return Selenium::Remote::Spec->new;
+    },
+);
+
 has 'auto_close' => (
     is      => 'rw',
     coerce  => sub { ( defined($_[0]) ? $_[0] : 1 )},
@@ -711,37 +765,32 @@ around '_execute_command' => sub {
 sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->session_id;
-    my $resource = $self->commands->get_params($res);
+
+    print "Prepping $res->{command}\n" if $self->{debug};
+
+    #webdriver 3 shims
+    return $self->{capabilities}     if $res->{command} eq 'getCapabilities' && $self->{capabilities};
+    $res->{ms}    = $params->{ms}    if $params->{ms};
+    $res->{type}  = $params->{type}  if $params->{type};
+    $res->{text}  = $params->{text}  if $params->{text};
+    $res->{using} = $params->{using} if $params->{using};
+    $res->{value} = $params->{value} if $params->{value};
+
+    print "Executing $res->{command}\n" if $self->{debug};
+    my $resource = $self->{is_wd3} ? $self->commands_v3->get_params($res) : $self->commands->get_params($res);
+    #Fall-back to legacy if wd3 command doesn't exist
+    if (!$resource && $self->{is_wd3}) {
+        print "Falling back to legacy selenium method for $res->{command}\n" if $self->{debug};
+        $resource = $self->commands->get_params($res);
+    }
 
     if ($resource) {
         $params = {} unless $params;
         my $resp = $self->remote_conn->request( $resource, $params);
-        if ( ref($resp) eq 'HASH' ) {
-            if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
-                return $resp->{cmd_return};
-            }
-            else {
-                my $msg = "Error while executing command";
-                if ( $resp->{cmd_error} ) {
-                    $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
-                }
-                elsif ( $resp->{cmd_return} ) {
-                    if ( ref( $resp->{cmd_return} ) eq 'HASH' ) {
-                        $msg .= ": $res->{command}"
-                          if $res->{command};
-                        $msg .= ": $resp->{cmd_return}->{error}->{msg}"
-                          if $resp->{cmd_return}->{error}->{msg};
-                        $msg .= ": $resp->{cmd_return}->{message}"
-                          if $resp->{cmd_return}->{message};
-                    }
-                    else {
-                        $msg .= ": $resp->{cmd_return}";
-                    }
-                }
-                croak $msg;
-            }
-        }
-        return $resp;
+
+        #In general, the parse_response for v3 is better, which is why we use it *even if* we are falling back.
+        return $self->commands_v3->parse_response($res,$resp) if $self->{is_wd3};
+        return $self->commands->parse_response($res,$resp);
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
@@ -756,6 +805,12 @@ Make a new session on the server.
 Called by new(), not intended for regular use.
 
 Occaisonally handy for recovering from brower crashes.
+
+DANGER DANGER DANGER
+
+This will throw away your old session if you have not closed it!
+
+DANGER DANGER DANGER
 
 =cut
 
@@ -803,6 +858,41 @@ sub new_desired_session {
 sub _request_new_session {
     my ( $self, $args ) = @_;
 
+    #XXX UGLY shim for webdriver3
+    $args->{capabilities}->{alwaysMatch} = clone($args->{desiredCapabilities});
+    my $cmap = $self->commands_v3->get_caps_map();
+    my $caps = $self->commands_v3->get_caps();
+    foreach my $cap (keys(%{$args->{capabilities}->{alwaysMatch} })) {
+        #Handle browser specific capabilities
+        if (exists($args->{desiredCapabilities}->{browserName}) && $cap eq 'extra_capabilities') {
+            if (exists $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args}) {
+                $args->{capabilities}->{alwaysMatch}->{$cap}->{args} = $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args};
+            }
+            $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'} = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'firefox';
+            $args->{capabilities}->{alwaysMatch}->{'chromeOptions'}      = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'chrome';
+            #Does not appear there are any MSIE based options, so let's just let that be
+        }
+        if (exists($args->{desiredCapabilities}->{browserName}) && $args->{desiredCapabilities}->{browserName} eq 'firefox' && $cap eq 'firefox_profile') {
+            if (ref $args->{capabilities}->{alwaysMatch}->{$cap} eq 'Selenium::Firefox::Profile') {
+                #XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
+                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args} = ['-profile', $args->{capabilities}->{alwaysMatch}->{$cap}->{profile_dir}->dirname()];
+            } else {
+                #previously undocumented feature that we can pass the encoded profile
+                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{profile} = $args->{capabilities}->{alwaysMatch}->{$cap};
+            }
+        }
+        foreach my $newkey (keys(%$cmap)) {
+            if ($newkey eq $cap) {
+                last if $cmap->{$newkey} eq $cap;
+                $args->{capabilities}->{alwaysMatch}->{$cmap->{$newkey}} = $args->{capabilities}->{alwaysMatch}->{$cap};
+                delete $args->{capabilities}->{alwaysMatch}->{$cap};
+                last;
+            }
+        }
+        delete $args->{capabilities}->{alwaysMatch}->{$cap} if !any { $_ eq $cap } @$caps;
+    }
+    delete $args->{capabilities} if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
+
     # geckodriver has not yet implemented the GET /status endpoint
     # https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status
     if (! $self->isa('Selenium::Firefox')) {
@@ -820,6 +910,7 @@ sub _request_new_session {
         $resource_new_session,
         $args,
     );
+
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
         $self->session_id( $resp->{'sessionId'} );
     }
@@ -834,6 +925,43 @@ sub _request_new_session {
         }
         croak $error;
     }
+
+    #Webdriver 3 - best guess that this is 'whats goin on'
+    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{capabilities}) {
+        $self->{is_wd3} = 1;
+        $self->{capabilities} = $resp->{cmd_return}->{capabilities};
+    }
+
+    #XXX chromedriver DOES NOT FOLLOW SPEC!
+    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{chrome}) {
+        if (defined $resp->{cmd_return}->{setWindowRect}) { #XXX i'm inferring we are wd3 based on the presence of this
+            $self->{is_wd3} = 1;
+            $self->{capabilities} = $resp->{cmd_return};
+        }
+    }
+
+    #XXX unsurprisingly, neither does microsoft
+    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{pageLoadStrategy} && $self->browser_name eq 'MicrosoftEdge') {
+        $self->{is_wd3} = 1;
+        $self->{capabilities} = $resp->{cmd_return};
+    }
+
+    return ($args,$resp);
+}
+
+=head2 is_webdriver_3
+
+Print whether the server (or browser) thinks it's implemented webdriver 3.
+If this returns true, webdriver 3 methods will be used in the case an action exists in L<Selenium::Remote::Spec> for the method you are trying to call.
+If a method you are calling has no webdriver 3 equivalent (or browser extension), the legacy commands implemented in L<Selenium::Remote::Commands> will be used.
+
+Note how I said *thinks* above.  In the case you want to force usage of legacy methods, call set_webdriver_3() to work around various browser issues.
+
+=cut
+
+sub is_webdriver_3 {
+    my $self = shift;
+    return $self->{is_wd3};
 }
 
 =head2 debug_on
@@ -850,6 +978,7 @@ sub _request_new_session {
 
 sub debug_on {
     my ($self) = @_;
+    $self->{debug} = 1;
     $self->remote_conn->debug(1);
 }
 
@@ -865,6 +994,7 @@ sub debug_on {
 
 sub debug_off {
     my ($self) = @_;
+    $self->{debug} = 0;
     $self->remote_conn->debug(0);
 }
 
@@ -938,6 +1068,9 @@ sub get_alert_text {
     Rather, the state of the modifier keys is kept between calls, so mouse
     interactions can be performed while modifier keys are depressed.
 
+ Compatibility:
+    On webdriver 3 servers, don't use this to send modifier keys; use send_modifier instead.
+
  Input: 1
     Required:
         {ARRAY | STRING} - Array of strings or a string.
@@ -958,6 +1091,30 @@ sub get_alert_text {
 
 sub send_keys_to_active_element {
     my ( $self, @strings ) = @_;
+
+    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge}) ) {
+        @strings = map { split('',$_) } @strings;
+        my @acts = map {
+            (
+                {
+                    type => 'keyDown',
+                    value  => $_,
+                },
+                {
+                    type => 'keyUp',
+                    value  => $_,
+                }
+            )
+        } @strings;
+
+        my $action = { actions => [{
+            id      => 'key',
+            type    => 'key',
+            actions => \@acts,
+        }]};
+        return $self->general_action(%$action);
+    }
+
     my $res = { 'command' => 'sendKeysToActiveElement' };
     my $params = {
         'value' => \@strings,
@@ -1035,6 +1192,96 @@ sub dismiss_alert {
     return $self->_execute_command($res);
 }
 
+=head2 general_action
+
+Provide an 'actions definition' hash to make webdriver use input devices.
+Given the spec for the structure of this data is 'non normative',
+it is left as an exercise to the reader what that means as to how to use this function.
+
+That said, it seems most of the data looks something like this:
+
+    $driver->general_action( actions => [{
+        type => 'pointer|key|none|somethingElseSuperSpecialDefinedByYourBrowserDriver',
+        id => MUST be mouse|key|none|other.  And by 'other' I mean anything else.  The first 3 are 'special' in that they are used in the global actions queue.
+              If you want say, another mouse action to execute in parallel to other mouse actions (to simulate multi-touch, for example), call your action 'otherMouseAction' or something.
+        parameters => {
+            someOption => "basically these are global parameters used by all steps in the forthcoming "action chain".
+        },
+        actions => [
+            {
+                type => "keyUp|KeyDown if key, pointerUp|pointerDown|pointerMove|pointerCancel if pointer, pause if any type",
+                key => A raw keycode or character from the keyboard if this is a key event,
+                duration => how many 'ticks' this action should take, you probably want this to be 0 all of the time unless you are evading Software debounce.
+                button => what number button if you are using a pointer (this sounds terribly like it might be re-purposed to be a joypad in the future sometime)
+                origin => Point of Origin if moving a pointer around
+                x => unit vector to travel along x-axis if pointerMove event
+                y => unit vector to travel along y-axis if pointerMove event
+            },
+            ...
+        ]
+        },
+        ...
+        ]
+    )
+
+Only available on WebDriver3 capable selenium servers.
+
+If you have called any legacy shim, such as mouse_move_to_location() previously, your actions passed will be appended to the existing actions queue.
+Called with no arguments, it simply executes the existing action queue.
+
+If you are looking for pre-baked action chains that aren't currently part of L<Selenium::Remote::Driver>,
+consider L<Selenium::ActionChains>, which is shipped with this distribution instead.
+
+=cut
+
+sub general_action {
+    my ($self,%action) = @_;
+
+    _queue_action(%action);
+    my $res = { 'command' => 'generalAction' };
+    my $out = $self->_execute_command( $res, \%CURRENT_ACTION_CHAIN );
+    %CURRENT_ACTION_CHAIN = ( actions => [] );
+    return $out;
+}
+
+sub _queue_action {
+    my (%action) = @_;
+    if (ref $action{actions} eq 'ARRAY') {
+        foreach my $live_action (@{$action{actions}}) {
+            my $existing_action;
+            foreach my $global_action (@{$CURRENT_ACTION_CHAIN{actions}}) {
+                if ($global_action->{id} eq $live_action->{id}) {
+                    $existing_action = $global_action;
+                    last;
+                }
+            }
+            if ($existing_action) {
+                push(@{$existing_action->{actions}},@{$live_action->{actions}});
+            } else {
+                push(@{$CURRENT_ACTION_CHAIN{actions}},$live_action);
+            }
+        }
+    }
+}
+
+=head2 release_general_action
+
+Nukes *all* input device state (modifier key up/down, pointer button up/down, pointer location, and other device state) from orbit.
+Call if you forget to do a *Up event in your provided action chains, or just to save time.
+
+Also clears the current actions queue.
+
+Only available on WebDriver3 capable selenium servers.
+
+=cut
+
+sub release_general_action {
+    my ($self) = @_;
+    my $res = { 'command' => 'releaseGeneralAction' };
+    %CURRENT_ACTION_CHAIN = ( actions => [] );
+    return $self->_execute_command( $res );
+}
+
 =head2 mouse_move_to_location
 
  Description:
@@ -1043,6 +1290,12 @@ sub dismiss_alert {
     cursor. If an element is provided but no offset, the mouse will be
     moved to the center of the element. If the element is not visible,
     it will be scrolled into view.
+
+ Compatibility:
+    Due to limitations in the Webdriver 3 API, mouse movements have to be executed 'lazily' e.g. only right before a click() event occurs.
+    This is because there is no longer any persistent mouse location state; mouse movements are now totally atomic.
+    This has several problematic aspects; for one, I can't think of a way to both hover an element and then do another action relying on the element staying hover()ed,
+    Aside from using javascript workarounds.
 
  Output:
     STRING -
@@ -1059,6 +1312,26 @@ sub dismiss_alert {
 sub mouse_move_to_location {
     my ( $self, %params ) = @_;
     $params{element} = $params{element}{id} if exists $params{element};
+
+    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge}) ) {
+        my $origin = $params{element};
+        my $move_action = {
+            type => "pointerMove",
+            duration => 0,
+            x => $params{xoffset} // 0,
+            y => $params{yoffset} // 0,
+        };
+        $move_action->{origin} = {'element-6066-11e4-a52e-4f735466cecf' => $origin } if $origin;
+
+        _queue_action( actions => [{
+                type => "pointer",
+                id => 'mouse',
+                "parameters" => { "pointerType" => "mouse" },
+                actions => [$move_action],
+        }]);
+        return 1;
+    }
+
     my $res = { 'command' => 'mouseMoveToLocation' };
     return $self->_execute_command( $res, \%params );
 }
@@ -1071,46 +1344,6 @@ Synonymous with mouse_move_to_location
 
 sub move_to {
     return shift->mouse_move_to_location(@_);
-}
-
-=head2 move_action
-
- Description:
-    Move the mouse similarly to the mouse_move_to_location. But uses the
-    new webdriver actions API which is supported by geckodriver.
-
- Output:
-    STRING -
-
- Usage:
-    # element - the element to move to. Must be specified.
-    # xoffset - X offset to move to, relative to the center of the element. If not specified, the mouse will move to the middle of the element.
-    # yoffset - Y offset to move to, relative to the center of the element. If not specified, the mouse will move to the middle of the element.
-
-    print $driver->move_action(element => e, xoffset => x, yoffset => y);
-
-=cut
-
-sub move_action {
-    my ( $self, %args ) = @_;
-    my $params = {
-        actions => [{
-            type => "pointer",
-            id => 'my pointer move',
-            "parameters" => { "pointerType" => "mouse" },
-            actions => [
-                {
-                    type => "pointerMove",
-                    duration => 0,
-                    x => $args{xoffset} // 0,
-                    y => $args{yoffset} // 0,
-                    origin => {'element-6066-11e4-a52e-4f735466cecf' => $args{element}{id}},
-                },
-            ],
-        }],
-    };
-    my $res = { 'command' => 'generalAction' };
-    return $self->_execute_command( $res, $params );
 }
 
 =head2 get_capabilities
@@ -1131,6 +1364,25 @@ sub get_capabilities {
     my $self = shift;
     my $res = { 'command' => 'getCapabilities' };
     return $self->_execute_command($res);
+}
+
+=head2 get_timeouts
+
+  Description:
+    Get the currently configured values (ms) for the page load, script and implicit timeouts.
+
+  Compatibility:
+    Only available on WebDriver3 enabled selenium servers.
+
+  Usage:
+    $driver->get_timeouts();
+
+=cut
+
+sub get_timeouts {
+    my $self = shift;
+    my $res    = { 'command' => 'getTimeouts' };
+    return $self->_execute_command( $res, {} );
 }
 
 =head2 set_timeout
@@ -1340,6 +1592,10 @@ sub get_window_handles {
  Description:
     Retrieve the window size
 
+ Compatibility:
+    The ability to get the size of arbitrary handles by passing input only exists in WebDriver2.
+    You will have to switch to the window first going forward.
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -1363,6 +1619,10 @@ sub get_window_size {
 
  Description:
     Retrieve the window position
+
+ Compatibility:
+    The ability to get the size of arbitrary handles by passing input only exists in WebDriver2.
+    You will have to switch to the window first going forward.
 
  Input:
     STRING - <optional> - window handle (default is 'current' window)
@@ -1513,10 +1773,13 @@ sub refresh {
     return $self->_execute_command($res);
 }
 
-=head2 javascript
+=head2 has_javascript
 
  Description:
     returns true if javascript is enabled in the driver.
+
+ Compatibility:
+    Can't be false on WebDriver 3.
 
  Usage:
     if ($driver->has_javascript) { ...; }
@@ -1576,7 +1839,11 @@ sub execute_async_script {
             if ( Scalar::Util::blessed( $args[$i] )
                  and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                if ($self->{is_wd3}) {
+                    $args[$i] = { 'element-6066-11e4-a52e-4f735466cecf' => ( $args[$i] )->{id} };
+                } else {
+                    $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                }
             }
         }
 
@@ -1642,7 +1909,11 @@ sub execute_script {
             if ( Scalar::Util::blessed( $args[$i] )
                 and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                if ($self->{is_wd3}) {
+                    $args[$i] = { 'element-6066-11e4-a52e-4f735466cecf' => ( $args[$i] )->{id} };
+                } else {
+                    $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                }
             }
         }
 
@@ -1749,6 +2020,9 @@ sub capture_screenshot {
  Description:
     List all available engines on the machine. To use an engine, it has to be present in this list.
 
+ Compatibility:
+    Does not appear to be available on Webdriver3 enabled selenium servers.
+
  Output:
     {Array.<string>} A list of available engines
 
@@ -1757,6 +2031,9 @@ sub capture_screenshot {
 
 =cut
 
+#TODO emulate behavior on wd3?
+#grep { eval { Selenium::Remote::Driver->new( browser => $_ ) } } (qw{firefox MicrosoftEdge chrome opera safari htmlunit iphone phantomjs},'internet_explorer');
+#might do the trick
 sub available_engines {
     my ($self) = @_;
     my $res = { 'command' => 'availableEngines' };
@@ -1785,18 +2062,38 @@ sub available_engines {
 
 sub switch_to_frame {
     my ( $self, $id ) = @_;
+
+    return $self->switch_to_parent_frame() if ($self->{is_wd3} && !defined($id));
+
     my $json_null = JSON::null;
     my $params;
     $id = ( defined $id ) ? $id : $json_null;
 
     my $res = { 'command' => 'switchToFrame' };
     if ( ref $id eq $self->webelement_class ) {
-        $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
+        if ($self->{is_wd3} && $self->browser_name ne 'chrome') {
+            $params = { 'id' => { 'element-6066-11e4-a52e-4f735466cecf' => $id->{'id'} } };
+        } else {
+            $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
+        }
     }
     else {
         $params = { 'id' => $id };
     }
     return $self->_execute_command( $res, $params );
+}
+
+=head2 switch_to_parent_frame
+
+Webdriver 3 equivalent of calling switch_to_frame with no arguments (e.g. NULL frame).
+This is actually called in that case, supposing you are using WD3 capable servers now.
+
+=cut
+
+sub switch_to_parent_frame {
+    my ( $self ) = @_;
+    my $res = { 'command' => 'switchToParentFrame' };
+    return $self->_execute_command( $res );
 }
 
 =head2 switch_to_window
@@ -1846,6 +2143,10 @@ sub switch_to_window {
  Description:
     Set the position (on screen) where you want your browser to be displayed.
 
+ Compatibility:
+    In webDriver 3 enabled selenium servers, you may only operate on the focused window.
+    As such, the window handle argument below will be ignored in this context.
+
  Input:
     INT - x co-ordinate
     INT - y co-ordinate
@@ -1875,6 +2176,10 @@ sub set_window_position {
 
  Description:
     Set the size of the browser window
+
+ Compatibility:
+    In webDriver 3 enabled selenium servers, you may only operate on the focused window.
+    As such, the window handle argument below will be ignored in this context.
 
  Input:
     INT - height of the window
@@ -1908,6 +2213,10 @@ sub set_window_size {
  Description:
     Maximizes the browser window
 
+ Compatibility:
+    In webDriver 3 enabled selenium servers, you may only operate on the focused window.
+    As such, the window handle argument below will be ignored in this context.
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -1923,6 +2232,48 @@ sub maximize_window {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
+    my $ret = $self->_execute_command( $res );
+    return $ret ? 1 : 0;
+}
+
+=head2 minimize_window
+
+ Description:
+    Minimizes the currently focused browser window (webdriver3 only)
+
+ Output:
+    BOOLEAN - Success or failure
+
+ Usage:
+    $driver->minimize_window();
+
+=cut
+
+sub minimize_window {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'minimizeWindow', 'window_handle' => $window };
+    my $ret = $self->_execute_command( $res );
+    return $ret ? 1 : 0;
+}
+
+=head2 fullscreen_window
+
+ Description:
+    Fullscreens the currently focused browser window (webdriver3 only)
+
+ Output:
+    BOOLEAN - Success or failure
+
+ Usage:
+    $driver->fullscreen_window();
+
+=cut
+
+sub fullscreen_window {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'fullscreenWindow', 'window_handle' => $window };
     my $ret = $self->_execute_command( $res );
     return $ret ? 1 : 0;
 }
@@ -1958,27 +2309,28 @@ sub get_all_cookies {
  Description:
     Set a cookie on the domain.
 
- Input: 5 (1 optional)
+ Input: 2 (4 optional)
     Required:
-        'name' - STRING
-        'value' - STRING
-        'path' - STRING
-        'domain' - STRING
+        'name'   - STRING
+        'value'  - STRING
+
     Optional:
-        'secure' - BOOLEAN - default is false.
+        'path'   - STRING
+        'domain' - STRING
+        'secure'   - BOOLEAN - default false.
+        'httponly' - BOOLEAN - default false.
+        'expiry'   - TIME_T  - default 20 years in the future
 
  Usage:
-    $driver->add_cookie('foo', 'bar', '/', '.google.com', 0)
+    $driver->add_cookie('foo', 'bar', '/', '.google.com', 0, 1)
 
 =cut
 
 sub add_cookie {
-    my ( $self, $name, $value, $path, $domain, $secure ) = @_;
+    my ( $self, $name, $value, $path, $domain, $secure, $httponly, $expiry ) = @_;
 
     if (   ( not defined $name )
-        || ( not defined $value )
-        || ( not defined $path )
-        || ( not defined $domain ) )
+        || ( not defined $value ))
     {
         croak "Missing parameters";
     }
@@ -1990,13 +2342,15 @@ sub add_cookie {
 
     my $params = {
         'cookie' => {
-            'name'   => $name,
-            'value'  => $value,
-            'path'   => $path,
-            'domain' => $domain,
-            'secure' => $secure,
+            'name'     => $name,
+            'value'    => $value,
+            'path'     => $path,
+            'domain'   => $domain,
+            'secure'   => $secure,
         }
     };
+    $params->{cookie}->{'httponly'} = $httponly if $httponly;
+    $params->{cookie}->{'expiry'}   = $expiry   if $expiry;
 
     return $self->_execute_command( $res, $params );
 }
@@ -2014,6 +2368,27 @@ sub add_cookie {
 sub delete_all_cookies {
     my ($self) = @_;
     my $res = { 'command' => 'deleteAllCookies' };
+    return $self->_execute_command($res);
+}
+
+=head2 get_cookie_named
+
+Basically get only the cookie with the provided name.
+Probably preferable to pick it out of the list unless you expect a *really* long list.
+
+ Input:
+    Cookie Name - STRING
+
+Returns cookie definition hash, much like the elements in get_all_cookies();
+
+  Compatibility:
+    Only available on webdriver3 enabled selenium servers.
+
+=cut
+
+sub get_cookie_named {
+    my ( $self, $cookie_name ) = @_;
+    my $res = { 'command' => 'getCookieNamed', 'name' => $cookie_name };
     return $self->_execute_command($res);
 }
 
@@ -2396,7 +2771,7 @@ sub _build_using {
             return $self->FINDERS->{$method};
         }
         else {
-            croak 'Bad method, expected: ' . join(', ', keys %{ $self->FINDERS });
+            croak 'Bad method, expected: ' . join(', ', keys %{ $self->FINDERS }) . ", got $method";
         }
     }
     else {
@@ -2608,6 +2983,24 @@ sub send_modifier {
     if ( $isdown =~ /(down|up)/ ) {
         $isdown = $isdown =~ /down/ ? 1 : 0;
     }
+
+    if ($self->{is_wd3} &&  !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge}))  {
+        my $acts = [
+            {
+                type => $isdown ? 'keyDown' : 'keyUp',
+                value  => KEYS->{lc($modifier)},
+            },
+        ];
+
+        my $action = { actions => [{
+            id      => 'key',
+            type    => 'key',
+            actions => $acts,
+        }]};
+        _queue_action(%$action);
+        return 1;
+    }
+
     my $res = { 'command' => 'sendModifier' };
     my $params = {
         value  => $modifier,
@@ -2652,6 +3045,7 @@ sub compare_elements {
  Input:
     button - any one of 'LEFT'/0 'MIDDLE'/1 'RIGHT'/2
              defaults to 'LEFT'
+    queue - (optional) queue the click, rather than executing it.  WD3 only.
 
  Usage:
     $driver->click('LEFT');
@@ -2662,20 +3056,52 @@ sub compare_elements {
 =cut
 
 sub click {
-    my ( $self, $button ) = @_;
-    my $button_enum = { LEFT => 0, MIDDLE => 1, RIGHT => 2 };
-    if ( defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i ) {
-        $button = $button_enum->{ uc $1 };
-    }
-    elsif ( defined $button && $button =~ /(0|1|2)/ ) {
-        $button = $1;
-    }
-    else {
-        $button = 0;
-    }
+    my ( $self, $button, $append ) = @_;
+    $button = _get_button($button);
+
     my $res    = { 'command' => 'click' };
     my $params = { 'button'  => $button };
+
+    if ($self->{is_wd3} &&  !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        $params = {
+            actions => [{
+                type => "pointer",
+                id => 'mouse',
+                parameters => { "pointerType" => "mouse" },
+                actions => [
+                    {
+                        type     => "pointerDown",
+                        duration => 0,
+                        button   => $button,
+                    },
+                    {
+                        type     => "pointerUp",
+                        duration => 0,
+                        button   => $button,
+                    },
+                ],
+            }],
+        };
+        if ($append) {
+            _queue_action(%$params);
+            return 1;
+        }
+        return $self->general_action(%$params);
+    }
+
     return $self->_execute_command( $res, $params );
+}
+
+sub _get_button {
+    my $button = shift;
+    my $button_enum = { LEFT => 0, MIDDLE => 1, RIGHT => 2 };
+    if ( defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i ) {
+        return $button_enum->{ uc $1 };
+    }
+    if ( defined $button && $button =~ /(0|1|2)/ ) {
+        return $1;
+    }
+    return 0;
 }
 
 =head2 double_click
@@ -2683,13 +3109,25 @@ sub click {
  Description:
     Double-clicks at the current mouse coordinates (set by moveto).
 
+ Compatibility:
+    On webdriver3 enabled servers, you can double click arbitrary mouse buttons.
+
  Usage:
-    $driver->double_click;
+    $driver->double_click(button);
 
 =cut
 
 sub double_click {
-    my ($self) = @_;
+    my ($self,$button) = @_;
+
+    $button = _get_button($button);
+
+    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        $self->click($button,1);
+        $self->click($button,1);
+        $self->general_action();
+    }
+
     my $res = { 'command' => 'doubleClick' };
     return $self->_execute_command($res);
 }
@@ -2702,6 +3140,10 @@ sub double_click {
     should follow is buttonup . Any other mouse command (such as click
     or another call to buttondown) will yield undefined behaviour.
 
+ Compatibility:
+    On WebDriver 3 enabled servers, all this does is queue a button down action.
+    You will either have to call general_action() to perform the queue, or an action like click() which also clears the queue.
+
  Usage:
     $self->button_down;
 
@@ -2709,6 +3151,26 @@ sub double_click {
 
 sub button_down {
     my ($self) = @_;
+
+    if ($self->{is_wd3} &&  !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        my $params = {
+            actions => [{
+                type => "pointer",
+                id => 'mouse',
+                parameters => { "pointerType" => "mouse" },
+                actions => [
+                    {
+                        type     => "pointerDown",
+                        duration => 0,
+                        button   => 0,
+                    },
+                ],
+            }],
+        };
+        _queue_action(%$params);
+        return 1;
+    }
+
     my $res = { 'command' => 'buttonDown' };
     return $self->_execute_command($res);
 }
@@ -2721,6 +3183,10 @@ sub button_down {
     issued. See the note in click and buttondown about implications of
     out-of-order commands.
 
+ Compatibility:
+    On WebDriver 3 enabled servers, all this does is queue a button down action.
+    You will either have to call general_action() to perform the queue, or an action like click() which also clears the queue.
+
  Usage:
     $self->button_up;
 
@@ -2728,6 +3194,26 @@ sub button_down {
 
 sub button_up {
     my ($self) = @_;
+
+    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        my $params = {
+            actions => [{
+                type => "pointer",
+                id => 'mouse',
+                parameters => { "pointerType" => "mouse" },
+                actions => [
+                    {
+                        type     => "pointerDown",
+                        duration => 0,
+                        button   => 0,
+                    },
+                ],
+            }],
+        };
+        _queue_action(%$params);
+        return 1;
+    }
+
     my $res = { 'command' => 'buttonUp' };
     return $self->_execute_command($res);
 }
@@ -2976,9 +3462,10 @@ __END__
 
 =head1 SEE ALSO
 
-http://code.google.com/p/selenium/
-https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object
-https://github.com/gempesaw/Selenium-Remote-Driver/wiki
+L<https://github.com/SeleniumHQ/selenium> - the main selenium RC project
+L<https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol> - the "legacy" webdriver specification
+L<https://www.w3.org/TR/webdriver/> - the WC3 WebDriver 3 specification
+L<https://github.com/teodesian/Selenium-Remote-Driver/wiki>
 Brownie
 Wight
 

@@ -10,6 +10,8 @@ use Test::Selenium::InternetExplorer;
 use Test::Selenium::PhantomJS;
 use Test::More;
 
+$Selenium::Remote::Driver::FORCE_WD2 = 1;
+
 use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;

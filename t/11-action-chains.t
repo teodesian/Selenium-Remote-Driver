@@ -11,6 +11,8 @@ use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;
 
+$Selenium::Remote::Driver::FORCE_WD2 = 1;
+
 my $harness = TestHarness->new(
     this_file => $FindBin::Script
 );
@@ -52,6 +54,5 @@ my %selenium_args = (
       ->is_displayed_ok("The menu is correctly displayed on right click");
     $driver->quit;
 }
-
 
 done_testing;

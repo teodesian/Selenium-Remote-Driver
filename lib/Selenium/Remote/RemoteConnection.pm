@@ -14,6 +14,7 @@ use Carp qw(croak);
 use JSON;
 use Data::Dumper;
 use Selenium::Remote::ErrorHandler;
+use Scalar::Util qw{looks_like_number};
 
 has 'remote_server_addr' => (
     is => 'rw',
@@ -146,6 +147,14 @@ sub request {
     }
 
     if ((defined $params) && $params ne '') {
+
+        #WebDriver 3 shims
+        if ($resource->{payload}) {
+            foreach my $key (keys(%{$resource->{payload}})) {
+                $params->{$key} = $resource->{payload}->{$key};
+            }
+        }
+
         my $json = JSON->new;
         $json->allow_blessed;
         $content = $json->allow_nonref->utf8->encode($params);
@@ -204,6 +213,14 @@ sub _process_response {
         elsif ($response->is_success) {
             $data->{'cmd_status'} = 'OK';
             if (defined $decoded_json) {
+
+                #XXX MS edge doesn't follow spec here either
+                if (looks_like_number($decoded_json->{status}) && $decoded_json->{status} > 0 && $decoded_json->{value}{message}) {
+                    $data->{cmd_status} = 'NOT OK';
+                    $data->{cmd_return} = $decoded_json->{value};
+                    return $data;
+                }
+
                 if ($no_content_success) {
                     $data->{'cmd_return'} = 1
                 }

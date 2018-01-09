@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+         <meta charset="UTF-8" />
+        <title>Test Page</title>
+        <style>
+            .red {
+                color:red;
+            }
+        </style>
+        <script type="text/javascript">
+            window.onload = function() {
+                alert("BEEE DOOO");
+                prompt("Are you a fugitive from Justice?","Yes");
+            };
+        </script>
+        <meta http-equiv="set-cookie" content="GorgonGlaze=Petrified%20Grits; expires=Sat, 25-Nov-2120 12:00:00 GMT; path=/;" />
+    </head>
+    <body>
+        <h1>
+            Howdy Howdy Howdy
+        </h1>
+        <form id="howIsBabbyFormed" action="other.html">
+            <label for="text" class="red">Text</label>
+            <input name="text" type="text" value="default"></input>
+            <input id="radio1" name="radio2" type="radio"></input>
+            <input id="radio2" name="radio2" type="radio" checked></input>
+            <input id="hammertime" type="submit" disabled></input>
+            <input id="hidon" type="hidden"></input>
+        </form>
+        <br />
+        <button id="no-see-em" style="display:none;">Tickle</button>
+        <button id="clickme" onclick="alert('PARTY');">PARTY HARD</button>
+        <br />
+        <a href="other.html" target="_blank" id="linky" class="red">Test Link</a>
+        <br />
+        <iframe id="frame" src="other.html" />
+    </body>
+</html>

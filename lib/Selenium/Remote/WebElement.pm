@@ -140,6 +140,7 @@ sub click {
 
 sub submit {
     my ($self) = @_;
+    return $self->driver->execute_script("return arguments[0].submit();", {'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} ) if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
     my $res = { 'command' => 'submitElement', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -203,6 +204,8 @@ sub send_keys {
 
 sub is_selected {
     my ($self) = @_;
+
+    return $self->get_property('checked') if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
     my $res = { 'command' => 'isElementSelected', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -211,16 +214,19 @@ sub is_selected {
 
  Description:
     Select an OPTION element, or an INPUT element of type checkbox or radiobutton.
+    Forces selected=1 on the element..
 
  Usage:
     $elem->set_selected();
-
- Note: DEPRECATED -- use click instead
 
 =cut
 
 sub set_selected {
     my ($self) = @_;
+    if ($self->driver->{is_wd3}) {
+        return if $self->is_selected();
+        return $self->click();
+    }
     my $res = { 'command' => 'setElementSelected', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -237,12 +243,14 @@ sub set_selected {
  Usage:
     $elem->toggle();
 
- Note: DEPRECATED -- use click instead
-
 =cut
 
 sub toggle {
     my ($self) = @_;
+    if ($self->driver->{is_wd3}) {
+        return $self->click() unless $self->is_selected();
+        return $self->driver->execute_script(qq/ if (arguments[0].checked) { arguments[0].checked = 0 }; return arguments[0].checked; /, {'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}});
+    }
     my $res = { 'command' => 'toggleElement', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -262,6 +270,7 @@ sub toggle {
 
 sub is_enabled {
     my ($self) = @_;
+    return $self->get_property('enabled') ? 1 : 0 if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
     my $res = { 'command' => 'isElementEnabled', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -272,17 +281,76 @@ sub is_enabled {
    Determine an element's location on the page. The point (0, 0) refers to the
    upper-left corner of the page.
 
+ Compatibility:
+    On WebDriver 3 enabled servers, this is an alias for get_element_rect().
+
  Output:
     HASH - The X and Y coordinates for the element on the page.
 
  Usage:
     $elem->get_element_location();
 
+ This method is DEPRECATED on webdriver3 enabled servers.
+
 =cut
 
 sub get_element_location {
     my ($self) = @_;
+    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        my $data = $self->get_element_rect();
+        delete $data->{height};
+        delete $data->{width};
+        return $data;
+    }
     my $res = { 'command' => 'getElementLocation', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+=head2 get_size
+
+ Description:
+    Determine an element's size in pixels. The size will be returned with width
+    and height properties.
+
+ Compatibility:
+    On WebDriver 3 enabled servers, this is an alias for get_element_rect().
+
+ Output:
+    HASH - The width and height of the element, in pixels.
+
+ Usage:
+    $elem->get_size();
+
+ This method is DEPRECATED on webdriver3 enabled servers.
+
+=cut
+
+sub get_size {
+    my ($self) = @_;
+    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        my $data = $self->get_element_rect();
+        delete $data->{x};
+        delete $data->{y};
+        return $data;
+    }
+    my $res = { 'command' => 'getElementSize', 'id' => $self->id };
+    return $self->_execute_command($res);
+}
+
+
+=head2 get_element_rect
+
+Get the element's size AND location in a hash.
+
+Example Output:
+
+    { x => 0, y => 0, height => 10, width => 10 }
+
+=cut
+
+sub get_element_rect {
+    my ($self) = @_;
+    my $res = { 'command' => 'getElementRect', 'id' => $self->id };
     return $self->_execute_command($res);
 }
 
@@ -294,6 +362,9 @@ sub get_element_location {
 
     Note: This is considered an internal command and should only be used to
     determine an element's location for correctly generating native events.
+
+ Compatibility:
+    Not available on WebDriver3 enabled selenium servers.
 
  Output:
     {x:number, y:number} The X and Y coordinates for the element on the page.
@@ -349,23 +420,33 @@ sub clear {
  Description:
     Get the value of an element's attribute.
 
- Input: 1
+ Compatibility:
+    In older webDriver, this actually got the value of an element's property.
+    If you want to get the initial condition (e.g. the values in the tag hardcoded in HTML), pass 1 as the second argument.
+    This can only done on WebDriver 3 enabled servers.
+
+ Input: 2
     Required:
         STRING - name of the attribute of the element
+    Optional:
+        BOOLEAN - "I really mean that I want the initial condition, quit being so compatible!!!"
+
 
  Output:
     {STRING | NULL} The value of the attribute, or null if it is not set on the element.
 
  Usage:
-    $elem->get_attribute('name');
+    $elem->get_attribute('name',1);
 
 =cut
 
 sub get_attribute {
-    my ( $self, $attr_name ) = @_;
+    my ( $self, $attr_name, $no_i_really_mean_it ) = @_;
     if ( not defined $attr_name ) {
         croak 'Attribute name not provided';
     }
+    return $self->get_property($attr_name) if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}) && !$no_i_really_mean_it;
+
     my $res = {
         'command' => 'getElementAttribute',
         'id'      => $self->id,
@@ -373,6 +454,24 @@ sub get_attribute {
     };
     return $self->_execute_command($res);
 }
+
+=head2 get_property
+
+Gets the C<Current Value> of an element's attribute.
+
+Takes a named property as an argument.
+
+Only available on WebDriver 3 enabled servers.
+
+=cut
+
+sub get_property {
+    my ($self,$prop) = @_;
+    return $self->get_attribute($prop) if $self->driver->{is_wd3} && (grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
+    my $res = { 'command' => 'getElementProperty', id => $self->id, name => $prop };
+    return $self->_execute_command($res);
+}
+
 
 =head2 get_value
 
@@ -392,10 +491,13 @@ sub get_value {
     return $self->get_attribute('value');
 }
 
+=head2 get_style
+
 =head2 is_displayed
 
  Description:
     Determine if an element is currently displayed.
+    Note: This does *not* tell you an element's 'visibility' property; as it still takes up space in the DOM and is therefore considered 'displayed'.
 
  Output:
     BOOLEAN - Whether the element is displayed.
@@ -407,6 +509,10 @@ sub get_value {
 
 sub is_displayed {
     my ($self) = @_;
+    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        return 0 if $self->get_tag_name() eq 'input' && $self->get_property('type') eq 'hidden'; #hidden type inputs
+        return int($self->get_css_attribute('display') ne 'none');
+    }
     my $res = { 'command' => 'isElementDisplayed', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -462,26 +568,6 @@ sub is_hidden {
 
 sub drag {
     carp 'drag is no longer available in the JSONWireProtocol.';
-}
-
-=head2 get_size
-
- Description:
-    Determine an element's size in pixels. The size will be returned with width
-    and height properties.
-
- Output:
-    HASH - The width and height of the element, in pixels.
-
- Usage:
-    $elem->get_size();
-
-=cut
-
-sub get_size {
-    my ($self) = @_;
-    my $res = { 'command' => 'getElementSize', 'id' => $self->id };
-    return $self->_execute_command($res);
 }
 
 =head2 get_text
@@ -546,6 +632,8 @@ sub get_css_attribute {
  Note: DEPRECATED as of 2.42.2 -- use get_text, get_value, is_displayed, or
  whatever appropriate WebElement function you need instead
 
+ Entirely unsupported on WebDriver 3 enabled servers.
+
 =cut
 
 sub describe {
@@ -553,5 +641,68 @@ sub describe {
     my $res = { 'command' => 'describeElement', 'id' => $self->id };
     return $self->_execute_command($res);
 }
+
+=head2 screenshot
+
+ Description:
+    Get a screenshot of the visible region that is a subset of the element's bounding box as a base64 encoded image.
+
+ Compatibility:
+    Only available on Webdriver3 enabled selenium servers.
+
+ Input (optional):
+    $scroll_into_view - BOOLEAN default true.  If false, will not scroll the element into the viewport first.
+    Failing to do so may result in an image being cropped partially or entirely.
+
+ Output:
+    STRING - base64 encoded image
+
+ Usage:
+    print $element->screenshot();
+
+To conveniently write the screenshot to a file, see L</capture_screenshot>.
+
+=cut
+
+sub screenshot {
+    my ($self, $scroll) = @_;
+    $scroll //= 1;
+    my $res = { 'command' => 'elementScreenshot', id => $self->id };
+    my $input = {scroll => int($scroll) };
+    return $self->_execute_command($res, $input);
+}
+
+=head2 capture_screenshot
+
+ Description:
+    Capture a screenshot of said element and save as a PNG to provided file name.
+
+ Compatibility:
+    Only available on Webdriver3 enabled selenium servers.
+
+ Input (optional):
+    $scroll_into_view - BOOLEAN default true.  If false, will not scroll the element into the viewport first.
+    Failing to do so may result in an image being cropped partially or entirely.
+
+ Output:
+    TRUE - (Screenshot is written to file)
+
+ Usage:
+    $element->capture_screenshot($filename);
+
+=cut
+
+sub capture_screenshot {
+    my ( $self, $filename, $scroll ) = @_;
+    croak '$filename is required' unless $filename;
+
+    open( my $fh, '>', $filename );
+    binmode $fh;
+    print $fh MIME::Base64::decode_base64( $self->screenshot($scroll) );
+    CORE::close $fh;
+    return 1;
+}
+
+
 
 1;

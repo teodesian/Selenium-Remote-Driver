@@ -4,6 +4,8 @@ use Test::More;
 use Test::Selenium::Remote::Driver;
 use Selenium::Remote::Mock::RemoteConnection;
 
+$Selenium::Remote::Driver::FORCE_WD2 = 1;
+
 use FindBin;
 use lib $FindBin::Bin . '/lib';
 use TestHarness;

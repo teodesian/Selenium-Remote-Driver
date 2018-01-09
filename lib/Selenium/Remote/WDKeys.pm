@@ -33,10 +33,10 @@ use constant KEYS => {
     'page_down'  => "\N{U+E00f}",
     'end'    => "\N{U+E010}",
     'home'   => "\N{U+E011}",
-    'left_arrow'     => "\N{U+E012}",
+    'left_arrow' => "\N{U+E012}",
     'up_arrow'   => "\N{U+E013}",
-    'right_arrow'    => "\N{U+E014}",
-    'down_arrow'     => "\N{U+E015}",
+    'right_arrow'=> "\N{U+E014}",
+    'down_arrow' => "\N{U+E015}",
     'insert'     => "\N{U+E016}",
     'delete'     => "\N{U+E017}",
     'semicolon'  => "\N{U+E018}",
@@ -52,7 +52,7 @@ use constant KEYS => {
     'numpad_8'   => "\N{U+E022}",
     'numpad_9'   => "\N{U+E023}",
     'multiply'   => "\N{U+E024}",
-    'add'    => "\N{U+E025}",
+    'add'        => "\N{U+E025}",
     'separator'  => "\N{U+E026}",
     'subtract'   => "\N{U+E027}",
     'decimal'    => "\N{U+E028}",
@@ -70,6 +70,8 @@ use constant KEYS => {
     'f11'    => "\N{U+E03B}",
     'f12'    => "\N{U+E03C}",
     'command_meta'  => "\N{U+E03D}",
+    'ZenkakuHankaku' => "\N{U+E040}", #Asian language keys, maybe altGr too?
+    #There are other code points for say, left versus right meta/shift/alt etc, but I don't seriously believe anyone uses that level of sophistication on the web yet.
 };
 
 our @EXPORT = ('KEYS');
