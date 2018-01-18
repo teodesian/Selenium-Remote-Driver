@@ -229,8 +229,12 @@ sub parse_response {
             return $resp->{cmd_return};
         }
         my $msg = "Error while executing command";
-        $msg .= ": $resp->{cmd_return}{error}"   if $resp->{cmd_return}{error};
-        $msg .= ": $resp->{cmd_return}{message}" if $resp->{cmd_return}{message};
+        if (ref $resp->{cmd_return} eq 'HASH' ) {
+            $msg .= ": $resp->{cmd_return}{error}"   if $resp->{cmd_return}{error};
+            $msg .= ": $resp->{cmd_return}{message}" if $resp->{cmd_return}{message};
+        } else {
+            $msg .= ": $resp->{cmd_return}";
+        }
         croak $msg;
     }
 
