@@ -4,6 +4,12 @@ Revision history for Selenium-Remote-Driver
         [NEW MAINTAINER]
         - George S. Baugh (@teodesian on github, TEODESIAN on CPAN) is now the maintainer.
 
+        [NEW FEATURES]
+        - WC3 webdriver methods have all been implemented, and shims for servers 'halfway there' have been instituted.
+        - Backwards-compatibility with old selenium servers should still remain.
+        - Attempts to fall-back to JSONWire methods if WC3 methods are not available
+        - drag() re-instated in Selenium::Remote::WebElement as an alias to Selenium::ActionChains::drag_and_drop().
+
         [BUG FIXES]
         - Fix warnings thrown in release testsuite by unescaped regexes on perl 5.24
         - Expand POD for some modules
