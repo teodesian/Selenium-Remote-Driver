@@ -537,37 +537,21 @@ sub is_hidden {
 
 =head2 drag
 
- Description:
-    Drag and drop an element. The distance to drag an element should be
-    specified relative to the upper-left corner of the page and it starts at 0,0
+Alias for Selenium::ActionChains::drag_and_drop().
 
- Input: 2
-    Required:
-        NUMBER - X axis distance in pixels
-        NUMBER - Y axis distance in pixels
+Provide element you wish to drag to as argument.
 
- Usage:
-    $elem->drag(216,158);
-
- Note: DEPRECATED - drag is no longer available in the
- JSONWireProtocol. We are working on an ActionsChains implementation,
- but drag and drop doesn't currently work on the Webdriver side for
- HTML5 pages. For reference, see:
-
- http://elementalselenium.com/tips/39-drag-and-drop
- https://gist.github.com/rcorreia/2362544
-
- Check out the mouse_move_to_location, button_down, and button_up
- functions on Selenium::Remote::Driver.
-
- https://metacpan.org/pod/Selenium::Remote::Driver#mouse_move_to_location
- https://metacpan.org/pod/Selenium::Remote::Driver#button_down
- https://metacpan.org/pod/Selenium::Remote::Driver#button_up
+    my $target = $driver->find_element('receptacle','id');
+    my $subject = $driver->find_element('thingy','id');
+    $subject->drag($target);
 
 =cut
 
 sub drag {
-    carp 'drag is no longer available in the JSONWireProtocol.';
+    my ($self,$target) = @_;
+    require Selenium::ActionChains;
+    my $chain = Selenium::ActionChians->new( driver => $self->driver );
+    return $chain->drag_and_drop($self,$target)->perform();
 }
 
 =head2 get_text
