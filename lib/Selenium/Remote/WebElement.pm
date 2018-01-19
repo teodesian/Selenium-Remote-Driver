@@ -376,6 +376,11 @@ sub get_element_rect {
 
 sub get_element_location_in_view {
     my ($self) = @_;
+    return $self->driver->execute_script(qq{
+        arguments[0].scrollIntoView();
+        var pos = arguments[0].getBoundingClientRect();
+        return {y:pos.top,x:pos.left};
+    }, {'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} ) if $self->driver->{is_wd3} && grep { $self->driver->browser_name eq $_ } ('firefox','internet explorer');
     my $res = { 'command' => 'getElementLocationInView', 'id' => $self->id };
     return $self->_execute_command($res);
 }

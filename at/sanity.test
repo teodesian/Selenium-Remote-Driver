@@ -190,7 +190,7 @@ is( $l2->is_enabled(),0,"is_enabled works (WD3)");
 ok( $l2->get_element_location()->{x},"Can get element rect (WD3)");
 ok( $l2->get_size()->{'height'}, "Size shim on rect works (WD3)");
 is( $l2->get_tag_name(),'input',"get_tag_name works (WD3)");
-isnt( exception { $l2->get_element_location_in_view() }, undef, "get_element_location_in_view not available in WD3");
+ok( defined $l2->get_element_location_in_view()->{x}, "get_element_location_in_view polyfill works (WD3)");
 
 is($driver->find_element('hidon','id')->is_displayed(),0,"is_displayed returns false for type=hidden elements");
 is($driver->find_element('no-see-em','id')->is_displayed(),0,"is_displayed returns false for display=none");
