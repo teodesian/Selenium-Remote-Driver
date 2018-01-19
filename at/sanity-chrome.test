@@ -136,9 +136,9 @@ ok($driver->switch_to_frame(),"can switch to parent frame (WD3 only)");
 ok($driver->set_window_position(1,1),"can set window position (WD3)");
 ok($driver->set_window_size(200,200),"can set window size (WD3)");
 
+ok($driver->maximize_window(),"can maximize window (WD3)");
 SKIP: {
-    skip "chromedriver does not maximize/minimize", 2;
-    ok($driver->maximize_window(),"can maximize window (WD3)");
+    skip "chromedriver does not minimize", 1;
     ok($driver->minimize_window(),"can minimize window (WD3 only)");
 }
 ok($driver->fullscreen_window(),"can fullscreen window (WD3 only)");

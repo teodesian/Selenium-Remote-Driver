@@ -2241,6 +2241,9 @@ sub set_window_size {
 
 sub maximize_window {
     my ( $self, $window ) = @_;
+    if ($self->{is_wd3} && $self->browser_name eq 'chrome') {
+        return $self->execute_script(qq{window.resizeTo(screen.availWidth,screen.availHeight); return 1;});
+    }
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
     my $ret = $self->_execute_command( $res );
