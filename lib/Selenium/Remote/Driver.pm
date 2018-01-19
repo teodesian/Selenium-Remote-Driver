@@ -197,6 +197,8 @@ That said, the following 'sanity tests' in the at/ (acceptance test) directory o
 
 =item edgedriver: 5.16299 - at/sanity-edge.test
 
+=item InternetExplorerDriver : 3.8.1 - at/sanity-ie.test (be sure to enable 'allow local files to run active content in your 'advanced settings' pane)
+
 =back
 
 These tests are intended to be run directly against a working selenium server on the local host with said drivers configured.
@@ -782,6 +784,15 @@ sub _execute_command {
     if (!$resource && $self->{is_wd3}) {
         print "Falling back to legacy selenium method for $res->{command}\n" if $self->{debug};
         $resource = $self->commands->get_params($res);
+    }
+
+    #XXX InternetExplorerDriver quirks
+    if ($self->{is_wd3} && $self->browser_name eq 'internet explorer') {
+        delete $params->{ms};
+        delete $params->{type};
+        delete $resource->{payload}->{type};
+        my $oldvalue = delete $params->{'page load'};
+        $params->{pageLoad} = $oldvalue if $oldvalue;
     }
 
     if ($resource) {
