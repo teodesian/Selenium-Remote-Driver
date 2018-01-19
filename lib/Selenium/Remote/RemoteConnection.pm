@@ -220,6 +220,12 @@ sub _process_response {
                     $data->{cmd_return} = $decoded_json->{value};
                     return $data;
                 }
+                #XXX shockingly, neither does InternetExplorerDriver
+		if ( ref $decoded_json eq 'HASH' && $decoded_json->{error} ) {
+                    $data->{cmd_status} = 'NOT OK';
+		    $data->{cmd_return} = $decoded_json;
+		    return $data;
+		}
 
                 if ($no_content_success) {
                     $data->{'cmd_return'} = 1
