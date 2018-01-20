@@ -199,6 +199,8 @@ That said, the following 'sanity tests' in the at/ (acceptance test) directory o
 
 =item InternetExplorerDriver : 3.8.1 - at/sanity-ie.test (be sure to enable 'allow local files to run active content in your 'advanced settings' pane)
 
+=item safaridriver : 11.0.2 - at/sanity-safari.test (be sure to enable 'allow automated testing' in the developer menu) -- it appears WC3 spec is *unimplemented*
+
 =back
 
 These tests are intended to be run directly against a working selenium server on the local host with said drivers configured.
@@ -228,7 +230,7 @@ Desired capabilities - HASH - Following options are accepted:
 
 =item B<port>               - <string>   - Port on which the Webdriver server is listening. Default: 4444
 
-=item B<browser_name>       - <string>   - desired browser string: {phantomjs|firefox|internet explorer|MicrosoftEdge|htmlunit|iphone|chrome}
+=item B<browser_name>       - <string>   - desired browser string: {phantomjs|firefox|internet explorer|MicrosoftEdge|safari|htmlunit|iphone|chrome}
 
 =item B<version>            - <string>   - desired browser version number
 
@@ -2359,10 +2361,10 @@ sub add_cookie {
             'name'     => $name,
             'value'    => $value,
             'path'     => $path,
-            'domain'   => $domain,
             'secure'   => $secure,
         }
     };
+    $params->{cookie}->{domain}     = $domain if $domain;
     $params->{cookie}->{'httponly'} = $httponly if $httponly;
     $params->{cookie}->{'expiry'}   = $expiry   if $expiry;
 
