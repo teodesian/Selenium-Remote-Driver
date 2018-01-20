@@ -1,0 +1,234 @@
+use strict;
+use warnings;
+
+use Cwd qw{abs_path};
+use FindBin;
+
+use Test::More;
+use Test::Fatal;
+use Test::Deep;
+
+use Selenium::Remote::Driver;
+use Selenium::Remote::WDKeys;
+
+#TODO: cover new_from_caps
+
+my $driver = Selenium::Remote::Driver->new(
+    remote_server_addr => 'localhost',
+    port => 4444,
+    browser_name => 'safari',
+    accept_ssl_certs => 1,
+);
+isa_ok($driver,'Selenium::Remote::Driver',"Can get new S::R::D with WebDriver3");
+
+$driver->debug_on();
+
+is($driver->get_capabilities()->{browserName},'safari',"Can get Capabilities correctly (safaridriver)");
+my $sessions = $driver->get_sessions();
+is(scalar(@$sessions),1,"Can fall back to selenium2 to list sessions");
+
+ok($driver->status()->{ready},"status reports OK (safaridriver)");
+
+#TODO do something about available_engines
+
+$driver->set_timeout('page load',10000);
+$driver->set_timeout('script',10000);
+$driver->set_timeout('implicit',10000);
+
+SKIP: {
+    skip("safari don't do get_timeouts",3);
+    my $timeouts = $driver->get_timeouts();
+    is($timeouts->{pageLoad},10000,"safaridriver set/get timeouts works");
+    is($timeouts->{script},10000,"safaridriver set/get timeouts works");
+    is($timeouts->{implicit},10000,"safaridriver set/get timeouts works");
+}
+
+is( exception { $driver->set_async_script_timeout(20000) }, undef, "can set_async_script_timeout");
+is( exception { $driver->set_implicit_wait_timeout(5000) }, undef, "can set_implicit_wait_timeout");
+
+my $loc = abs_path("$FindBin::Bin/test.html");
+TODO: {
+    local $TODO = "get on pages w/ insta-spawn alerts times out on safari";
+    is( exception { $driver->get("file://$loc") }, undef,"Can load a web page (safaridriver)");
+}
+is($driver->get_alert_text(),"BEEE DOOO","get_alert_text works (safaridriver)");
+is(exception { $driver->dismiss_alert() }, undef, "alert can be dismissed (safaridriver)");
+sleep 5;
+#This sucker wants "value" instead of "text" like in legacy
+ok($driver->send_keys_to_prompt("HORGLE"),"send_keys_to_prompt works (safaridriver)");
+is(exception { $driver->accept_alert() }, undef, "alert can be accepted (safaridriver)");
+
+my $handle = $driver->get_current_window_handle();
+ok($handle,"Got a window handle (safaridriver)");
+cmp_bag($driver->get_window_handles(),[$handle],"Can list window handles (safaridriver)");
+
+my $sz = $driver->get_window_size();
+ok(defined $sz->{height},"get_window_size works (safaridriver)");
+ok(defined $sz->{width},"get window size works (safaridriver)");
+my $pos = $driver->get_window_position();
+ok(defined $pos->{x},"get_window_size works (safaridriver)");
+ok(defined $pos->{y},"get window size works (safaridriver)");
+
+like($driver->get_current_url(),qr/test.html$/,"get_current_url works (safaridriver)");
+like($driver->get_title(),qr/test/i,"get_title works (safaridriver)");
+
+my $otherloc = abs_path("$FindBin::Bin/other.html");
+$driver->get("file://$otherloc");
+$driver->go_back();
+like($driver->get_title(),qr/test/i,"go_back works (safaridriver)");
+
+$driver->go_forward();
+like($driver->get_page_source(),qr/ZIPPY/,"go_forward & get_page_source works (safaridriver)");
+is(exception { $driver->refresh() }, undef, "refresh works (safaridriver)");
+$driver->go_back();
+
+#TODO execute_*_script testing
+
+ok($driver->screenshot(),"can get base64'd whole page screenshot (safaridriver)");
+SKIP: {
+    skip "can't element screenshot on safari", 1;
+    ok($driver->find_element('body','tag_name')->screenshot(0),"can get element screenshot (safaridriver ONLY) and find_element (safaridriver) works.");
+}
+
+isa_ok($driver->find_element('red','class'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_element('text','name'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_element('Test Link', 'link_text'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_element('Test', 'partial_link_text'),"Selenium::Remote::WebElement");
+
+is(scalar(@{$driver->find_elements('red','class')}),2,"can find multiple elements correctly");
+
+my $lem = $driver->find_element('body', 'tag_name');
+isa_ok($driver->find_child_element($lem, 'red','class'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_child_element($lem, 'text','name'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_child_element($lem, 'Test Link', 'link_text'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_child_element($lem, 'Test', 'partial_link_text'),"Selenium::Remote::WebElement");
+
+$lem = $driver->find_element('form','tag_name');
+is(scalar(@{$driver->find_child_elements($lem,'./*')}),6,"can find child elements (safaridriver)");
+
+isa_ok($driver->get_active_element(),"Selenium::Remote::WebElement");
+
+like(exception { $driver->cache_status() },qr/not implemented/, "cache_status unimplemented in safaridriver");
+like(exception {
+diag explain $driver->set_geolocation(location => {
+       latitude  => 40.714353,
+       longitude => -74.005973,
+       altitude  => 0.056747
+});
+}, qr/not implemented/, "set_geolocation unimplemented in safaridriver");
+like(exception { $driver->get_geolocation() }, qr/not implemented/, "get_geolocation unimplemented in safaridriver");
+
+ok($driver->get_log('server'), "get_log fallback works");
+ok( scalar(@{$driver->get_log_types()}),"can fallback for get_log_types");
+
+like(exception { $driver->set_orientation("LANDSCAPE") }, qr/not implemented/, "set_orientation unimplemented in safaridriver");
+like(exception { $driver->get_orientation() }, qr/not implemented/, "get_orientation unimplemented in safaridriver");
+
+like($driver->upload_file($otherloc),qr/other.html$/,"upload_file fallback works");
+
+#Jinkies, this stuff is cool, it prints the selenium server help page @_@
+like( exception { $driver->get_local_storage_item('whee') },qr/help/i,"get_local_storage_item prints help page");
+like( exception { $driver->delete_local_storage_item('whee') },qr/405/i,"get_local_storage_item prints help page");
+
+ok($driver->switch_to_frame($driver->find_element('frame', 'id')),"can switch to frame (safaridriver)");
+ok($driver->switch_to_frame(),"can switch to parent frame (safaridriver only)");
+
+ok($driver->set_window_position(1,1),"can set window position (safaridriver)");
+ok($driver->set_window_size(200,200),"can set window size (safaridriver)");
+
+ok($driver->maximize_window(),"can maximize window (safaridriver)");
+SKIP: {
+    skip "safari can't minimize or fullscreen", 2;
+    ok($driver->minimize_window(),"can minimize window (safaridriver only)");
+    ok($driver->fullscreen_window(),"can fullscreen window (safaridriver only)");
+}
+is(scalar(@{$driver->get_all_cookies()}),1,"can get cookie list (safaridriver)");
+TODO: {
+    local $TODO='delete_all_cookies may be able to get raced by get_all_cookies';
+    $driver->delete_all_cookies();
+    is(scalar(@{$driver->get_all_cookies()}),0,"can delete all cookies (safaridriver)");
+}
+
+SKIP: {
+    skip 'global move/click seems broken', 4;
+    ok($driver->mouse_move_to_location( element => $driver->find_element('a','tag_name')),"Can use new safaridriver Actions API to emulate mouse_move_to_location");
+    $driver->click();
+    sleep 5;
+    my $handles = $driver->get_window_handles();
+    is(scalar(@$handles),2,"Can move to element and then click it correctly (safaridriver)");
+
+    $driver->switch_to_window($handles->[1]);
+    sleep 5;
+    is(exception { $driver->close() }, undef, "Can close new window (safaridriver)");
+    sleep 5;
+    cmp_bag($driver->get_window_handles,[$handles->[0]],"Correct window closed (safaridriver)");
+
+    $driver->switch_to_window($handles->[0]);
+}
+
+my $input = $driver->find_element('input','tag_name');
+$driver->mouse_move_to_location( element => $input );
+$driver->click();
+
+#TODO pretty sure this isn't working right
+#$driver->send_modifier('Shift','down');
+
+$driver->send_keys_to_active_element('howdy',KEYS->{tab});
+$input->send_keys('eee');
+$driver->mouse_move_to_location( element => $driver->find_element('body','tag_name'));
+$driver->click();
+
+TODO: {
+    local $TODO = "safari driver clears input on all key sends, unfortunately";
+    is($input->get_attribute('value'),'defaulthowdyeee',"element->get_attribute() emulates old behavior thru get_property (safaridriver)");
+    is($driver->execute_script(qq/ return document.querySelector('input').value /),'defaulthowdyeee',"execute_script works, and so does send_keys_to_active_element & element->send_keys (safaridriver)");
+}
+$input->clear();
+is($input->get_attribute('value'),'',"clear() works (safaridriver)");
+
+is(exception { $driver->button_down() },undef,"Can button down (safaridriver)");
+is(exception { $driver->button_up() },undef,"Can button up (safaridriver)");
+
+ok($driver->find_element('radio2','id')->is_selected(),"safaridriver is_selected() works");
+
+SKIP: {
+	skip 'safari will not set_selected', 1;
+	my $l1 = $driver->find_element('radio1','id');
+	$l1->set_selected();
+	$l1->set_selected();
+	ok($l1->is_selected(),"safaridriver set_selected works");
+	$l1->toggle();
+	ok(!$l1->is_selected(),"safaridriver toggle works: off");
+	$l1->toggle();
+	ok($l1->is_selected(),"safaridriver toggle works: on");
+}
+
+my $l2 = $driver->find_element('hammertime','id');
+is( $l2->is_enabled(),0,"is_enabled works (safaridriver)");
+ok( $l2->get_element_location()->{x},"Can get element rect (safaridriver)");
+ok( $l2->get_size()->{'height'}, "Size shim on rect works (safaridriver)");
+is( $l2->get_tag_name(),'input',"get_tag_name works (safaridriver)");
+is( exception { $l2->get_element_location_in_view() }, undef, "get_element_location_in_view not available in safaridriver");
+
+is($driver->find_element('hidon','id')->is_displayed(),0,"is_displayed returns false for type=hidden elements");
+is($driver->find_element('no-see-em','id')->is_displayed(),0,"is_displayed returns false for display=none");
+like($driver->find_element('h1','tag_name')->get_text(),qr/Howdy Howdy Howdy/, "get_text works (safaridriver)");
+
+$driver->find_element('clickme','id')->click();
+is(exception { $driver->dismiss_alert() }, undef, "Can click element (safaridriver)");
+
+$driver->find_element('form','tag_name')->submit();
+sleep 5;
+like($driver->get_page_source(),qr/ZIPPY/,"elem submit() works (safaridriver)");
+
+#Pretty sure this one has enough 'inertia' to not disappear all the sudden
+$driver->get('http://w3.org/History.html');
+$driver->add_cookie('foo','bar','/','.w3.org',0,0,time()+5000);
+is(scalar(@{$driver->get_all_cookies()}),1,"can set cookie (safaridriver)");
+
+$driver->delete_cookie_named('foo');
+is(scalar(@{$driver->get_all_cookies()}),0,"can delete named cookies (safaridriver)");
+
+is(exception { $driver->quit() }, undef, "Can quit (safaridriver)");
+
+done_testing();
