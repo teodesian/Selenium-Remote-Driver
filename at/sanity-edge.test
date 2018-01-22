@@ -216,7 +216,10 @@ is( $l2->get_tag_name(),'input',"get_tag_name works (WD3)");
 is( exception { $l2->get_element_location_in_view() }, undef, "get_element_location_in_view works");
 
 is($driver->find_element('hidon','id')->is_displayed(),0,"is_displayed returns false for type=hidden elements");
-is($driver->find_element('no-see-em','id')->is_displayed(),0,"is_displayed returns false for display=none");
+my $gone = $driver->find_element('no-see-em','id');
+is($gone->is_displayed(),0,"is_displayed returns false for display=none");
+is($gone->is_enabled(),1,"is_enabled returns true for non-input elements");
+
 is($driver->find_element('h1','tag_name')->get_text(),'Howdy Howdy Howdy ', "get_text works (WD3)");
 
 $driver->find_element('clickme','id')->click();

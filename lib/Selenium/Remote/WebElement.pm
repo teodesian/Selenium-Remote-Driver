@@ -270,7 +270,10 @@ sub toggle {
 
 sub is_enabled {
     my ($self) = @_;
-    return $self->get_property('enabled') ? 1 : 0 if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
+    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        return 1 if $self->get_tag_name() ne 'input';
+        return $self->get_property('disabled') ? 0 : 1;
+    }
     my $res = { 'command' => 'isElementEnabled', 'id' => $self->id };
     return $self->_execute_command($res);
 }
