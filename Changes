@@ -1,6 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
-1.21   08-??-27 TEODESIAN
+1.22   01-25-2018 TEODESIAN
+        [BUG FIXES]
+        - Fix issue where is_enabled() polyfill on WD3 servers was checking the wrong attribute.
+        - Fix issue where Firefox/Chrome capabilities were not correctly passed
+        - Make some JS polyfill failures non-fatal
+
+1.21   01-19-2018 TEODESIAN
         [NEW MAINTAINER]
         - George S. Baugh (@teodesian on github, TEODESIAN on CPAN) is now the maintainer.
 

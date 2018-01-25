@@ -48,6 +48,7 @@ use constant FINDERS => {
 };
 
 our $FORCE_WD2 = 0;
+our $FORCE_WD3 = 0;
 our %CURRENT_ACTION_CHAIN = ( actions => [] );
 
 =for Pod::Coverage BUILD
@@ -213,6 +214,24 @@ any new browser/driver will likely have problems if it's not listed above.
 
 There is also a 'legacy.test' file available to run against old browsers/selenium (2.x servers, pre geckodriver).
 This should only be used to verify backwards-compatibility has not been broken.
+
+=head2 Firefox Notes
+
+If you are intending to pass extra_capabilities to firefox on a WD3 enabled server with geckodriver, you MUST do the following:
+
+   $Selenium::Remote::Driver::FORCE_WD3=1;
+
+This is because the gecko driver prefers legacy capabilities, both of which are normally passed for compatibility reasons.
+
+=head2 Chrome Notes
+
+extra_capabilities may? not work, because chromedriver considers the chromeOptions parameter to be invalid, despite it's documentation here:
+
+    https://sites.google.com/a/chromium.org/chromedriver/capabilities
+
+Other bindings get around this by just using the 'old' way of passing desired capabilities.  You can do this too like so:
+
+    $Selenium::Remote::Driver::FORCE_WD2=1;
 
 =head1 CONSTRUCTOR
 
@@ -832,14 +851,16 @@ sub new_session {
     $extra_capabilities ||= {};
     my $args = {
         'desiredCapabilities' => {
-            'browserName'       => $self->browser_name,
-            'platform'          => $self->platform,
-            'javascriptEnabled' => $self->javascript,
-            'version'           => $self->version,
-            'acceptSslCerts'    => $self->accept_ssl_certs,
+            'browserName'        => $self->browser_name,
+            'platform'           => $self->platform,
+            'javascriptEnabled'  => $self->javascript,
+            'version'            => $self->version,
+            'acceptSslCerts'     => $self->accept_ssl_certs,
             %$extra_capabilities,
         },
     };
+    $args->{'extra_capabilities'} = \%$extra_capabilities unless $FORCE_WD2;
+
 
     if ( defined $self->proxy ) {
         $args->{desiredCapabilities}->{proxy} = $self->proxy;
@@ -878,11 +899,13 @@ sub _request_new_session {
     foreach my $cap (keys(%{$args->{capabilities}->{alwaysMatch} })) {
         #Handle browser specific capabilities
         if (exists($args->{desiredCapabilities}->{browserName}) && $cap eq 'extra_capabilities') {
+
             if (exists $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args}) {
                 $args->{capabilities}->{alwaysMatch}->{$cap}->{args} = $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args};
             }
             $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'} = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'firefox';
-            $args->{capabilities}->{alwaysMatch}->{'chromeOptions'}      = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'chrome';
+            #XXX the chrome documentation is lies, you can't do this yet
+            #$args->{capabilities}->{alwaysMatch}->{'chromeOptions'}      = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'chrome';
             #Does not appear there are any MSIE based options, so let's just let that be
         }
         if (exists($args->{desiredCapabilities}->{browserName}) && $args->{desiredCapabilities}->{browserName} eq 'firefox' && $cap eq 'firefox_profile') {
@@ -904,6 +927,7 @@ sub _request_new_session {
         }
         delete $args->{capabilities}->{alwaysMatch}->{$cap} if !any { $_ eq $cap } @$caps;
     }
+    delete $args->{desiredCapabilities} if $FORCE_WD3; #XXX fork working-around busted fallback in firefox
     delete $args->{capabilities} if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
 
     # geckodriver has not yet implemented the GET /status endpoint

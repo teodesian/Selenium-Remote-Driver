@@ -19,6 +19,9 @@ my $driver = Selenium::Remote::Driver->new(
     port => 4444,
     browser_name => 'chrome',
     accept_ssl_certs => 1,
+    extra_capabilities => {
+        args => ['start-maximized'],
+    },
 );
 isa_ok($driver,'Selenium::Remote::Driver',"Can get new S::R::D with WebDriver3");
 
