@@ -109,7 +109,7 @@ EXECOMMAND: {
     #_execute_command with payload 'hitting all the right buttons'
     #also check that fallback works w/ the right special missing word
     #also check capability shortcut
-    my $self = bless({ is_wd3 => 1, capabilities => 'wakka wakka' },"Selenium::Remote::Driver");
+    my $self = bless({ is_wd3 => 1, capabilities => 'wakka wakka', browser_name => 'firefox' },"Selenium::Remote::Driver");
 
     no warnings qw{redefine once};
     local *Selenium::Remote::RemoteConnection::request = sub {return { sessionId => 'zippy', cmd_status => 'OK' }};
