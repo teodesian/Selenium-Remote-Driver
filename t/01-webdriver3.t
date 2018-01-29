@@ -186,7 +186,7 @@ SPEC_PARAMS: {
         property_name => 'plan',
         other         => 'a canal',
         window_handle => 'panama',
-        command       => 'setWindowSize',
+        command       => 'fullscreenWindow',
         ms            => 666,
         type          => 'page load',
         using         => 'id',
@@ -204,6 +204,7 @@ SPEC_PARAMS: {
             'value'    => 'zippy',
         },
     };
+
     is_deeply($obj->get_params($args),$expected,"get_params: var substitution works, payload construction works (mostly)");
 
     $args->{type} = 'implicit';

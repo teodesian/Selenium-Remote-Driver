@@ -137,7 +137,7 @@ ok($driver->switch_to_frame($driver->find_element('frame', 'id')),"can switch to
 ok($driver->switch_to_frame(),"can switch to parent frame (WD3 only)");
 
 ok($driver->set_window_position(1,1),"can set window position (WD3)");
-ok($driver->set_window_size(200,200),"can set window size (WD3)");
+ok($driver->set_window_size(640,480),"can set window size (WD3)");
 
 ok($driver->maximize_window(),"can maximize window (WD3)");
 SKIP: {
