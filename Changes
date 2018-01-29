@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.23   01-29-2018 TEODESIAN
+        [BUG FIXES]
+        - Fix issue on legacy chrome/driver with get/set window pos by forcing fallback to JSONWire methods.
+
 1.22   01-25-2018 TEODESIAN
         [BUG FIXES]
         - Fix issue where is_enabled() polyfill on WD3 servers was checking the wrong attribute.
