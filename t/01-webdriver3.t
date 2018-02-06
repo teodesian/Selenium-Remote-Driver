@@ -237,7 +237,7 @@ SPEC_PARAMS: {
     is_deeply($obj->get_params($args),$expected,"get_params: implicit_wait substitution works");
 
     delete $args->{text};
-    $expected->{payload}{value} = "#whee";
+    $expected->{payload}{value} = "[id='whee']";
     is_deeply($obj->get_params($args),$expected,"get_params: id css substitution works");
 
     $args->{using} = 'class name';

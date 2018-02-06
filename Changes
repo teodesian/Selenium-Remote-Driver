@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.24   02-06-2018 TEODESIAN
+        [BUG FIXES]
+        - Fix issue where ID finder polyfills failed on IDs with dots (.) in them.
+
 1.23   01-29-2018 TEODESIAN
         [BUG FIXES]
         - Fix issue on legacy chrome/driver with get/set window pos by forcing fallback to JSONWire methods.

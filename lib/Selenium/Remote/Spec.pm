@@ -202,7 +202,7 @@ sub get_params {
     #map: class, class_name, id, name, link = 'css selector'
     if ($args->{using} && $args->{value}) {
         $data->{payload}->{using} = 'css selector'            if grep {$args->{using} eq $_ } ('id', 'class name', 'name');
-        $data->{payload}->{value} = "#$args->{value}"         if $args->{using} eq 'id';
+        $data->{payload}->{value} = "[id='$args->{value}']"   if $args->{using} eq 'id';
         $data->{payload}->{value} = ".$args->{value}"         if $args->{using} eq 'class name';
         $data->{payload}->{value} = "[name='$args->{value}']" if $args->{using} eq 'name';
     }
