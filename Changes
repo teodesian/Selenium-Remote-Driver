@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.25   02-15-2018 TEODESIAN
+        [BUG FIXES]
+        - Fix issue where only <form> elements and not <input> elements could be submit()ted.
+
 1.24   02-12-2018 TEODESIAN
         [BUG FIXES]
         - Fix issue where ID finder polyfills failed on IDs with dots (.) in them.
