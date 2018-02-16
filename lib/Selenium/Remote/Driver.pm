@@ -241,6 +241,8 @@ Other bindings get around this by just using the 'old' way of passing desired ca
 
     $Selenium::Remote::Driver::FORCE_WD2=1;
 
+This is now forced on during construction for chrome.
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -857,6 +859,10 @@ DANGER DANGER DANGER
 sub new_session {
     my ( $self, $extra_capabilities ) = @_;
     $extra_capabilities ||= {};
+
+    #XXX chromedriver is broken
+    $FORCE_WD2 = 1 if $self->browser_name eq 'chrome';
+
     my $args = {
         'desiredCapabilities' => {
             'browserName'        => $self->browser_name,
