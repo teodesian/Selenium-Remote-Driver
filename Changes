@@ -1,9 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
-1.25   02-15-2018 TEODESIAN
+1.26   02-19-2018 TEODESIAN
         [BUG FIXES]
         - Fix issue where only <form> elements and not <input> elements could be submit()ted.
         - Force chrome into using JSONWire style capabilities passing, as WC3 style is just horribly broken on chromedriver.
+        - Skip v1.25, because the PAUSE indexer apparently thinks 1.25 < 1.24
 
 1.24   02-12-2018 TEODESIAN
         [BUG FIXES]
