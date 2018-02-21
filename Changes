@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.27   02-21-2018 TEODESIAN
+        [BUG FIXES]
+        - Fix incorrect passing of capabilities to geckodriver which caused exceptions on instantiaion.
+
 1.26   02-19-2018 TEODESIAN
         [BUG FIXES]
         - Fix issue where only <form> elements and not <input> elements could be submit()ted.

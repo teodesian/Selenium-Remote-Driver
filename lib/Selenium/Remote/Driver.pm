@@ -200,9 +200,9 @@ That said, the following 'sanity tests' in the at/ (acceptance test) directory o
 
 =item Selenium Server: 3.8.1 - all tests
 
-=item geckodriver: 0.19.1 - at/sanity.test
+=item geckodriver: 0.19.1 - at/sanity.test, at/firefox.test (Selenium::Firefox)
 
-=item chromedriver: 2.35 - at/sanity-chrome.test
+=item chromedriver: 2.35 - at/sanity-chrome.test, at/chrome.test (Selenium::Chrome)
 
 =item edgedriver: 5.16299 - at/sanity-edge.test
 
@@ -943,6 +943,12 @@ sub _request_new_session {
     }
     delete $args->{desiredCapabilities} if $FORCE_WD3; #XXX fork working-around busted fallback in firefox
     delete $args->{capabilities} if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
+
+    #Delete compatibility layer when using drivers directly
+    if ($self->isa('Selenium::Firefox')) {
+        delete $args->{capabilities};
+        delete $args->{extra_capabilities};
+    }
 
     # geckodriver has not yet implemented the GET /status endpoint
     # https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status

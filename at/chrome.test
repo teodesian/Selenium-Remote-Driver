@@ -1,0 +1,11 @@
+use strict;
+use warnings;
+
+use Selenium::Chrome;
+use Test::More tests => 2;
+use Test::Fatal;
+
+$ENV{MOZ_HEADLESS} = 1;
+my $driver;
+is( exception { $driver = Selenium::Chrome->new(); }, undef, "can spawn new Selenium::Chrome");
+is( exception { $driver->shutdown_binary; }, undef, "can shutdown binary correctly");
