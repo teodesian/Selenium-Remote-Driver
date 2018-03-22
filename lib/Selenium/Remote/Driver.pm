@@ -866,13 +866,14 @@ sub new_session {
     my $args = {
         'desiredCapabilities' => {
             'browserName'        => $self->browser_name,
-            'platform'           => $self->platform,
             'javascriptEnabled'  => $self->javascript,
             'version'            => $self->version,
             'acceptSslCerts'     => $self->accept_ssl_certs,
             %$extra_capabilities,
         },
     };
+    $args->{'extra_capabilities'}{'platform'} = $self->platform
+        if $self->browser_name ne 'firefox' || !$self->{is_wd3};
     $args->{'extra_capabilities'} = \%$extra_capabilities unless $FORCE_WD2;
 
 
