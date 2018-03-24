@@ -873,7 +873,7 @@ sub new_session {
         },
     };
     $args->{'desiredCapabilities'}{'platform'} = $self->platform
-        if $self->browser_name ne 'firefox' || !$self->{is_wd3};
+        if $self->browser_name ne 'firefox' || !$FORCE_WD3;
     $args->{'extra_capabilities'} = \%$extra_capabilities unless $FORCE_WD2;
 
 
