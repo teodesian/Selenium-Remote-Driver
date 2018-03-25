@@ -194,6 +194,15 @@ One way of dealing with this is setting:
 
 Of course, this will prevent access of any new WC3 methods, but will probably make your tests pass until your browser's driver gets it's act together.
 
+There are also some JSONWire behaviors that we emulate in methods, such as Selenium::Remote::WebElement::get_attribute.
+You can get around that by passing an extra flag to the sub, or setting:
+
+    $driver->{emulate_jsonwire} = 0;
+
+When in WC3 Webdriver mode.
+
+=head2 WC3 WEBDRIVER CURRENT STATUS
+
 That said, the following 'sanity tests' in the at/ (acceptance test) directory of the module passed on the following versions:
 
 =over 4
@@ -986,6 +995,7 @@ sub _request_new_session {
     #Webdriver 3 - best guess that this is 'whats goin on'
     if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{capabilities}) {
         $self->{is_wd3} = 1;
+        $self->{emulate_jsonwire} = 1;
         $self->{capabilities} = $resp->{cmd_return}->{capabilities};
     }
 
@@ -993,6 +1003,7 @@ sub _request_new_session {
     if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{chrome}) {
         if (defined $resp->{cmd_return}->{setWindowRect}) { #XXX i'm inferring we are wd3 based on the presence of this
             $self->{is_wd3} = 1;
+            $self->{emulate_jsonwire} = 1;
             $self->{capabilities} = $resp->{cmd_return};
         }
     }
@@ -1000,6 +1011,7 @@ sub _request_new_session {
     #XXX unsurprisingly, neither does microsoft
     if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{pageLoadStrategy} && $self->browser_name eq 'MicrosoftEdge') {
         $self->{is_wd3} = 1;
+        $self->{emulate_jsonwire} = 1;
         $self->{capabilities} = $resp->{cmd_return};
     }
 
