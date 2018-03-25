@@ -144,7 +144,13 @@ sub click {
 
 sub submit {
     my ($self) = @_;
-    return $self->driver->execute_script("return arguments[0].form.submit();",{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} ) if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
+    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+        if ($self->get_tag_name() ne 'form') {
+            return $self->driver->execute_script("return arguments[0].form.submit();",{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} );
+        } else {
+            return $self->driver->execute_script("return arguments[0].submit();",{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} );
+        }
+    }
     my $res = { 'command' => 'submitElement', 'id' => $self->id };
     return $self->_execute_command($res);
 }
