@@ -1,8 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
-1.27   02-21-2018 TEODESIAN
+1.27   03-25-2018 TEODESIAN
         [BUG FIXES]
         - Fix incorrect passing of capabilities to geckodriver which caused exceptions on instantiaion.
+        - Fix issue where <form> elements could not be submitted.
+        - Allow bypass of JSONWire emulation in Selenium::Remote::WebElement::get_attribute().
 
 1.26   02-19-2018 TEODESIAN
         [BUG FIXES]
