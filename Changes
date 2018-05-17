@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.28   ??-??-???? TEODESIAN
+        [BUG FIXES]
+        - Fix incorrect documentation of constructor fields.
+
 1.27   03-25-2018 TEODESIAN
         [BUG FIXES]
         - Fix incorrect passing of capabilities to geckodriver which caused exceptions on instantiaion.
