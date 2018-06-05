@@ -528,6 +528,12 @@ sub get_value {
     Determine if an element is currently displayed.
     Note: This does *not* tell you an element's 'visibility' property; as it still takes up space in the DOM and is therefore considered 'displayed'.
 
+ WC3 Compatibility:
+	On JSONWire this method really only checked to see whether the element's style was display:none, or whether it was a hidden input.
+    This is because "displayedness" was pretty loosely defined until fairly late on into the process, and much grief resulted.
+    In WC3 webdriver, it additionally does a viewport check, to account for the firmer definition of "displayedness":
+    https://w3c.github.io/webdriver/#element-displayedness
+
  Output:
     BOOLEAN - Whether the element is displayed.
 
@@ -537,13 +543,27 @@ sub get_value {
 =cut
 
 sub is_displayed {
-    my ($self) = @_;
+    my ($self,$no_vp_check) = @_;
     if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
         return 0 if $self->get_tag_name() eq 'input' && $self->get_property('type') eq 'hidden'; #hidden type inputs
+        return 0 unless $self->_is_in_viewport();
         return int($self->get_css_attribute('display') ne 'none');
     }
     my $res = { 'command' => 'isElementDisplayed', 'id' => $self->id };
     return $self->_execute_command($res);
+}
+
+sub _is_in_viewport {
+    my ($self) = @_;
+    return $self->driver->execute_script(qq{
+		var rect = arguments[0].getBoundingClientRect();
+		return (
+			rect.top >= 0 &&
+			rect.left >= 0 &&
+			rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+			rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+		);
+    },{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}});
 }
 
 =head2 is_hidden
