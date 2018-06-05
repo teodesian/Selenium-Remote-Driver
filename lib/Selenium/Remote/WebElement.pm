@@ -543,7 +543,7 @@ sub get_value {
 =cut
 
 sub is_displayed {
-    my ($self,$no_vp_check) = @_;
+    my ($self) = @_;
     if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
         return 0 if $self->get_tag_name() eq 'input' && $self->get_property('type') eq 'hidden'; #hidden type inputs
         return 0 unless $self->_is_in_viewport();

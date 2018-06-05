@@ -1,9 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
-1.28   ??-??-???? TEODESIAN
+1.28   06-05-2018 TEODESIAN
         [BUG FIXES]
         - Fix incorrect documentation of constructor fields.
+        - Remove bogus get_style header in WebElement POD.
         - Fix chrome maximize() polyfill
+        - Adjust is_displayed to do appropriate "displayedness" checks when in WC3 mode.
 
 1.27   03-25-2018 TEODESIAN
         [BUG FIXES]
