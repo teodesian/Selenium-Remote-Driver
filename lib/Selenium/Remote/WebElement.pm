@@ -522,8 +522,6 @@ sub get_value {
     return $self->get_attribute('value');
 }
 
-=head2 get_style
-
 =head2 is_displayed
 
  Description:
