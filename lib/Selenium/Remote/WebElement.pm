@@ -529,7 +529,7 @@ sub get_value {
     Note: This does *not* tell you an element's 'visibility' property; as it still takes up space in the DOM and is therefore considered 'displayed'.
 
  WC3 Compatibility:
-	On JSONWire this method really only checked to see whether the element's style was display:none, or whether it was a hidden input.
+    On JSONWire this method really only checked to see whether the element's style was display:none, or whether it was a hidden input.
     This is because "displayedness" was pretty loosely defined until fairly late on into the process, and much grief resulted.
     In WC3 webdriver, it additionally does a viewport check, to account for the firmer definition of "displayedness":
     https://w3c.github.io/webdriver/#element-displayedness
