@@ -556,13 +556,13 @@ sub is_displayed {
 sub _is_in_viewport {
     my ($self) = @_;
     return $self->driver->execute_script(qq{
-		var rect = arguments[0].getBoundingClientRect();
-		return (
-			rect.top >= 0 &&
-			rect.left >= 0 &&
-			rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-			rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-		);
+        var rect = arguments[0].getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
     },{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}});
 }
 
