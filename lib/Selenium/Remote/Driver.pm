@@ -2294,6 +2294,9 @@ sub set_window_size {
     In webDriver 3 enabled selenium servers, you may only operate on the focused window.
     As such, the window handle argument below will be ignored in this context.
 
+    Also, on chromedriver maximize is actually just setting the window size to the screen's
+    available height and width.
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -2308,7 +2311,10 @@ sub set_window_size {
 sub maximize_window {
     my ( $self, $window ) = @_;
     if ($self->{is_wd3} && $self->browser_name eq 'chrome') {
-        return $self->execute_script(qq{window.resizeTo(screen.availWidth,screen.availHeight); return 1;});
+        my $h = $self->execute_script(q{return screen.availHeight});
+        my $w = $self->execute_script(q{return screen.availWidth});
+
+        return $self->set_window_size($h,$w);
     }
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
