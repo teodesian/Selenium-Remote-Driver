@@ -1,0 +1,12 @@
+use strict;
+use warnings;
+
+use Test::More;
+use Selenium::Edge;
+
+my $driver = Selenium::Edge->new();
+$driver->get('http://www.perlmonks.org');
+like( $driver->get_title(),qr/monastery gates/i,"Can load perlmonks");
+$driver->quit();
+
+done_testing();
