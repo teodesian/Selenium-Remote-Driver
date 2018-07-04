@@ -959,11 +959,8 @@ sub _request_new_session {
         delete $args->{extra_capabilities};
     }
 
-    # geckodriver has not yet implemented the GET /status endpoint
-    # https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status
-    if (! $self->isa('Selenium::Firefox')) {
-        $self->remote_conn->check_status();
-    }
+    $self->remote_conn->check_status();
+
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
     my $resource_new_session = {
