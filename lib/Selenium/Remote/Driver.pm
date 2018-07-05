@@ -795,7 +795,7 @@ around '_execute_command' => sub {
     }
     catch {
         if ($self->has_error_handler) {
-            return $self->error_handler->($self,$_,@args);
+            $return_value = $self->error_handler->($self,$_,@args);
         }
         else {
             croak $_;
