@@ -844,6 +844,7 @@ sub _execute_command {
         return $self->commands->parse_response($res,$resp);
     }
     else {
+        #Tell the use about the offending setting.
         croak "Couldn't retrieve command settings properly ".$res->{command}."\n";
     }
 }
