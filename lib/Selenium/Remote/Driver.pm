@@ -959,6 +959,7 @@ sub _request_new_session {
         delete $args->{extra_capabilities};
     }
 
+    # Get actual status
     $self->remote_conn->check_status();
 
     # command => 'newSession' to fool the tests of commands implemented
