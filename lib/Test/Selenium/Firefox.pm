@@ -3,6 +3,11 @@ package Test::Selenium::Firefox;
 use Moo;
 extends 'Selenium::Firefox', 'Test::Selenium::Remote::Driver';
 
+has 'webelement_class' => (
+    is      => 'rw',
+    default => sub {'Test::Selenium::Remote::WebElement'},
+);
+
 1;
 
 __END__
