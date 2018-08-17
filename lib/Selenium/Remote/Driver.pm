@@ -788,6 +788,9 @@ sub DEMOLISH {
 
 # We install an 'around' because we can catch more exceptions this way
 # than simply wrapping the explicit croaks in _execute_command.
+# @args should be fed to the handler to provide context
+# return_value could be assigned from the handler if we want to allow the
+# error_handler to handle the errors
 
 around '_execute_command' => sub {
     my $orig = shift;
@@ -800,7 +803,7 @@ around '_execute_command' => sub {
     }
     catch {
         if ($self->has_error_handler) {
-            $self->error_handler->($self,$_);
+            $return_value = $self->error_handler->($self,$_,@args);
         }
         else {
             croak $_;
