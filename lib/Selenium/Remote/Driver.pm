@@ -963,8 +963,11 @@ sub _request_new_session {
 
     #Delete compatibility layer when using drivers directly
     if ($self->isa('Selenium::Firefox')) {
-        delete $args->{capabilities};
-        delete $args->{extra_capabilities};
+        if ( exists $args->{capabilities} && exists $args->{capabilities}->{alwaysMatch} ) {
+            delete $args->{capabilities}->{alwaysMatch}->{browserName};
+            delete $args->{capabilities}->{alwaysMatch}->{browserVersion};
+            delete $args->{capabilities}->{alwaysMatch}->{platformName};
+        }
     }
 
     # geckodriver has not yet implemented the GET /status endpoint
