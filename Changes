@@ -1,5 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
+1.29   ??-??-???? TEODESIAN
+        [New Features]
+        - Selenium::Edge and Test::Selenium::Edge now exist
+        [BUG FIXES]
+        - Fixed Test::Selenium::* direct usage modules from getting undef method errors when acting on WebElements
+
 1.28   06-05-2018 TEODESIAN
         [BUG FIXES]
         - Fix incorrect documentation of constructor fields.
