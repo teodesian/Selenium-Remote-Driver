@@ -5,6 +5,7 @@ Revision history for Selenium-Remote-Driver
         - Selenium::Edge and Test::Selenium::Edge now exist
         [BUG FIXES]
         - Fixed Test::Selenium::* direct usage modules from getting undef method errors when acting on WebElements
+        - Fixed issue where capabilities could not be passed with Selenium::Firefox
 
 1.28   06-05-2018 TEODESIAN
         [BUG FIXES]
