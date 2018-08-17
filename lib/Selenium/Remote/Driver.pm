@@ -345,49 +345,57 @@ not part of the browser-related desired capabilities.
 =back
 
 Output:
-Remote Driver object
+
+Selenium::Remote::Driver object
 
 Usage:
-my $driver = Selenium::Remote::Driver->new;
-or
-my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
-                                           'platform'     => 'MAC');
-or (for Firefox 47 or lower on Selenium 3+)
-my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
-                                           'platform'     => 'MAC',
-                                           'extra_capabilities' => {
-                                                'marionette' => \0,
-                                          });
-or
-my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
-                                           'port'               => '2222',
-                                           'auto_close'         => 0);
-or
-my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome',
-                                           'extra_capabilities' => {
-                                               'chromeOptions' => {
-                                                   'args'  => [
-                                                       'window-size=1260,960',
-                                                       'incognito'
-                                                   ],
-                                                   'prefs' => {
-                                                       'session' => {
-                                                           'restore_on_startup' => 4,
-                                                           'urls_to_restore_on_startup' => [
+
+    my $driver = Selenium::Remote::Driver->new;
+
+    #or
+    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
+                                               'platform'     => 'MAC');
+
+    #or (for Firefox 47 or lower on Selenium 3+)
+    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
+                                               'platform'     => 'MAC',
+                                               'extra_capabilities' => {
+                                                    'marionette' => \0,
+                                              });
+
+    #or
+    my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
+                                               'port'               => '2222',
+                                               'auto_close'         => 0);
+
+    #or
+    my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome',
+                                               'extra_capabilities' => {
+                                                   'chromeOptions' => {
+                                                       'args'  => [
+                                                           'window-size=1260,960',
+                                                           'incognito'
+                                                       ],
+                                                       'prefs' => {
+                                                           'session' => {
+                                                               'restore_on_startup' => 4,
+                                                               'urls_to_restore_on_startup' => [
+                                                                   'http://www.google.com',
+                                                                   'http://docs.seleniumhq.org'
+                                                               ]},
+                                                           'first_run_tabs' => [
                                                                'http://www.google.com',
                                                                'http://docs.seleniumhq.org'
-                                                           ]},
-                                                       'first_run_tabs' => [
-                                                           'http://www.google.com',
-                                                           'http://docs.seleniumhq.org'
-                                                       ]
+                                                           ]
+                                                       }
                                                    }
-                                               }
-                                           });
-or
-my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
-or
-my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
+                                               });
+
+    #or
+    my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
+
+    #or
+    my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
 =head3 error_handler
 
