@@ -419,9 +419,10 @@ already-instantiated driver:
     # (we will croak about the exception)
     $driver->clear_error_handler;
 
-Your error handler will receive two arguments: the first argument is
+Your error handler will receive three arguments: the first argument is
 the C<$driver> object itself, and the second argument is the exception
-message and stack trace in one multiline string.
+message and stack trace in one multiline string.  The final argument(s) are the
+argument array to the command just executed.
 
 B<N.B.>: If you set your own error handler, you are entirely
 responsible for handling webdriver exceptions, _including_ croaking
