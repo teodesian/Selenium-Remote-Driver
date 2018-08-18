@@ -98,12 +98,14 @@ is(scalar(@{$driver->find_elements('red','class')}),2,"can find multiple element
 
 my $lem = $driver->find_element('body', 'tag_name');
 isa_ok($driver->find_child_element($lem, 'red','class'),"Selenium::Remote::WebElement");
+isa_ok($lem->child('red','class'),"Selenium::Remote::WebElement");
 isa_ok($driver->find_child_element($lem, 'text','name'),"Selenium::Remote::WebElement");
 isa_ok($driver->find_child_element($lem, 'Test Link', 'link_text'),"Selenium::Remote::WebElement");
 isa_ok($driver->find_child_element($lem, 'Test', 'partial_link_text'),"Selenium::Remote::WebElement");
 
 $lem = $driver->find_element('form','tag_name');
 is(scalar(@{$driver->find_child_elements($lem,'./*')}),6,"can find child elements (WD3)");
+is(scalar(@{$lem->children('./*')}),6,"can find child elements via children() alias (WD3)");
 
 isa_ok($driver->get_active_element(),"Selenium::Remote::WebElement");
 
