@@ -1,6 +1,6 @@
 Revision history for Selenium-Remote-Driver
 
-1.29   ??-??-???? TEODESIAN
+1.29   08-17-2018 TEODESIAN
         [New Features]
         - Selenium::Edge and Test::Selenium::Edge now exist
         - Pass caller argument array as final arg to error_handler callbacks
