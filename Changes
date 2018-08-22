@@ -1,5 +1,15 @@
 Revision history for Selenium-Remote-Driver
 
+1.29   08-17-2018 TEODESIAN
+        [New Features]
+        - Selenium::Edge and Test::Selenium::Edge now exist
+        - Pass caller argument array as final arg to error_handler callbacks
+        - Add child() and children() aliases to Selenium::Remote::WebElements
+        [BUG FIXES]
+        - Fixed Test::Selenium::* direct usage modules from getting undef method errors when acting on WebElements
+        - Fixed issue where capabilities could not be passed with Selenium::Firefox
+        - Make it actually possible for find_element_ok to fail without dying
+
 1.28   06-05-2018 TEODESIAN
         [BUG FIXES]
         - Fix incorrect documentation of constructor fields.

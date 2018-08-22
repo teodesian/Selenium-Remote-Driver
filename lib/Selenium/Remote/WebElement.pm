@@ -111,6 +111,22 @@ has 'driver' => (
 
 =head1 FUNCTIONS
 
+=head2 child(selector, method)
+
+=head2 children(selector, method)
+
+Alias to Selenium::Remote::Driver::find_child_element and find_child_elements, respectively.
+
+=cut
+
+sub child {
+    return $_[0]->{driver}->find_child_element(@_);
+}
+
+sub children {
+    return $_[0]->{driver}->find_child_elements(@_);
+}
+
 =head2 click
 
  Description:

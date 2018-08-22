@@ -342,8 +342,15 @@ sub _find_element_with_action {
         $desc = $method;
         $desc .= "'" . join( " ", ( $params // '' ) ) . "'";
     }
-    return $self->find_element( $locator, $locator_strategy )
-      ->$method( $params, $desc );
+    my $element;
+    eval {
+        $element = $self->find_element( $locator, $locator_strategy );
+    };
+    if ($@) {
+        print "# Error: $@\n";
+        return 0;
+    }
+    return $element->$method( $params, $desc );
 }
 
 =head2 $twd->type_element_ok($search_target [,$locator], $keys, [, $desc ]);

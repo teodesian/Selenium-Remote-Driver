@@ -1,0 +1,26 @@
+use strict;
+use warnings;
+
+use Test::Selenium::Firefox;
+use Test::More tests => 3;
+use Test::Fatal;
+
+my $driver;
+is( exception { $driver = Test::Selenium::Firefox->new(
+	extra_capabilities => {
+        'moz:firefoxOptions' => {
+            args    => [ '-headless' ],
+        },
+    },
+); }, undef, "can spawn new Selenium::Firefox");
+
+$driver->get('http://google.com');
+
+TODO: {
+    local $TODO = "This test must fail";
+    $driver->click_ok('not_here','css',"click on non-existant element doesn't croak");
+};
+
+
+is( exception { $driver->shutdown_binary; }, undef, "can shutdown binary correctly");
+
