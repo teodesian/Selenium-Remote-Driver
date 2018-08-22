@@ -2250,6 +2250,8 @@ sub set_window_position {
     if ( not defined $x and not defined $y ) {
         croak "X & Y co-ordinates are required";
     }
+    $x += 0;
+    $y += 0;
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
     if ( $self->{is_wd3} && $self->browser_name ne 'chrome') {
