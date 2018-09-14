@@ -276,7 +276,7 @@ Desired capabilities - HASH - Following options are accepted:
 
 =item B<accept_ssl_certs>   - <boolean>  - whether SSL certs should be accepted, default is true.
 
-=item B<firefox_profile>    - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use.  Optionally can pass a base64'd zip data of a profile directory if you don't like Selenium::Firefox::Profile.
+=item B<firefox_profile>    - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use.
 
 =item B<javascript>         - <boolean> - Whether or not to use Javascript.  You probably won't disable this, as you would be using L<WWW::Mechanize> instead.  Default: True
 
@@ -339,6 +339,8 @@ not part of the browser-related desired capabilities.
 =item B<socksVersion>       - <int>    - OPTIONAL, ignored if proxyType is not 'manual'. WebDriver 3 only.
 
 =item B<noProxy>            - <ARRAY>  - OPTIONAL, list of URLs to bypass the proxy for. WebDriver3 only.
+
+=item B<firefox_profile>    - <string> - Base64 encoded ZIP file of a firefox profile directory, for use when you don't want/need Selenium::Firefox::Profile.
 
 =back
 
