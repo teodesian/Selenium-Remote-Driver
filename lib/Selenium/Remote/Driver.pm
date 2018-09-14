@@ -2147,8 +2147,6 @@ sub available_engines {
 sub switch_to_frame {
     my ( $self, $id ) = @_;
 
-    return $self->switch_to_parent_frame() if ($self->{is_wd3} && !defined($id));
-
     my $json_null = JSON::null;
     my $params;
     $id = ( defined $id ) ? $id : $json_null;
