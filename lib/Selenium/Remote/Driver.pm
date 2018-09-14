@@ -2849,7 +2849,7 @@ sub _build_find_params {
     if ($self->isa('Selenium::Firefox') && $using eq 'name') {
         return {
             using => 'css',
-            value => '[name=$query]'
+            value => "[name=$query]"
         };
     }
     else {
