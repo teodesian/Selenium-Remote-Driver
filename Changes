@@ -1,5 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
+1.30   09-17-2018 TEODESIAN
+        [BUG FIXES]
+        - Fix broken name selector polyfill when using Selenium::Firefox directly
+        - Fix switch_to_frame(undef) brokenness due to unneeded polyfill
+        - Correct POD information about how to use raw firefox profiles
+        - Advertise Microsoft Browser Standalone Drivers (Edge, IE)
+
 1.29   08-17-2018 TEODESIAN
         [New Features]
         - Selenium::Edge and Test::Selenium::Edge now exist

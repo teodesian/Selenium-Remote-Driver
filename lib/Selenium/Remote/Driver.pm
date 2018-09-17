@@ -89,9 +89,10 @@ the Selenium Server (Selenium Server is a Java application).
 
 As of v0.25, it's possible to use this module without a standalone
 server - that is, you would not need the JRE or the JDK to run your
-Selenium tests. See L<Selenium::Chrome>, L<Selenium::PhantomJS>, and
-L<Selenium::Firefox> for details. If you'd like additional browsers
-besides these, give us a holler over in
+Selenium tests. See L<Selenium::Chrome>, L<Selenium::PhantomJS>,
+L<Selenium::Edge>, L<Selenium::InternetExplorer>,and L<Selenium::Firefox>
+for details. If you'd like additional browsers besides these,
+give us a holler over in
 L<Github|https://github.com/teodesian/Selenium-Remote-Driver/issues>.
 
 =head2 Remote Driver Response
