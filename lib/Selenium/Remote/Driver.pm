@@ -2850,7 +2850,7 @@ sub _build_find_params {
     # geckodriver doesn't accept name as a valid selector
     if ($self->isa('Selenium::Firefox') && $using eq 'name') {
         return {
-            using => 'css',
+            using => 'css selector',
             value => qq{[name="$query"]}
         };
     }
