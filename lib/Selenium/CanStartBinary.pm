@@ -354,15 +354,6 @@ sub _build_binary_mode {
     }
 }
 
-sub _run_binary {
-    my ($self,@command) = @_;
-
-    $self->{pid} = fork() or die "could not fork to run driver process!";
-    return if $self->{pid};
-    #We don't care about the output.
-    capture_merged { system @command };
-}
-
 sub _handle_firefox_setup {
     my ($self, $port) = @_;
 

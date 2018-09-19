@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.31   XX-XX-XXXX TEODESIAN
+        [BUG FIXES]
+        - Kill dangling driver processes in Selenium::Chrome/Firefox on unix hosts
+
 1.30   09-17-2018 TEODESIAN
         [BUG FIXES]
         - Fix broken name selector polyfill when using Selenium::Firefox directly
