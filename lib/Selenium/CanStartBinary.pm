@@ -354,6 +354,15 @@ sub _build_binary_mode {
     }
 }
 
+sub _run_binary {
+    my ($self,@command) = @_;
+
+    $self->{pid} = fork() or die "could not fork to run driver process!";
+    return if $self->{pid};
+    #We don't care about the output.
+    capture_merged { system @command };
+}
+
 sub _handle_firefox_setup {
     my ($self, $port) = @_;
 
@@ -399,6 +408,22 @@ sub shutdown_binary {
 
         # Close the orphaned command windows on windows
         $self->shutdown_windows_binary;
+        $self->shutdown_unix_binary;
+    }
+
+}
+
+sub shutdown_unix_binary {
+    my ($self) = @_;
+    if (!IS_WIN) {
+        my $cmd = "lsof -t -i :".$self->port();
+        my $pid = `$cmd`;
+        chomp $pid;
+        if ($pid) {
+            print "Killing Driver PID $pid listening on port ".$self->port."...\n";
+            eval { kill 'KILL', $pid };
+            warn "Could not kill driver process! you may have to clean up manually." if $@;
+        }
     }
 }
 

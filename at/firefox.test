@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Selenium::Firefox;
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Test::Fatal;
 
 my $driver;
@@ -13,4 +13,13 @@ is( exception { $driver = Selenium::Firefox->new(
         },
     },
 ); }, undef, "can spawn new Selenium::Firefox");
+
+my $port = $driver->port();
+
 is( exception { $driver->shutdown_binary; }, undef, "can shutdown binary correctly");
+sleep 2;
+
+my $cmd = "lsof -t -i :$port";
+my $pid = `$cmd`;
+chomp $pid;
+is($pid,'',"Destructor appears to have run shutdown_binary and whacked the driver process");
