@@ -3303,7 +3303,7 @@ sub button_up {
                 parameters => { "pointerType" => "mouse" },
                 actions => [
                     {
-                        type     => "pointerDown",
+                        type     => "pointerUp",
                         duration => 0,
                         button   => 0,
                     },
