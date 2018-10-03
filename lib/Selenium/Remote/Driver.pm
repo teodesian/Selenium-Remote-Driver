@@ -2251,6 +2251,10 @@ sub set_window_position {
     if ( not defined $x and not defined $y ) {
         croak "X & Y co-ordinates are required";
     }
+    croak qq{Error: In set_window_size, argument x "$x" isn't numeric} unless Scalar::Util::looks_like_number($x);
+    croak qq{Error: In set_window_size, argument y "$y" isn't numeric} unless Scalar::Util::looks_like_number($y);
+    $x += 0;		# convert to numeric if a string, otherwise they'll be sent as strings
+    $y += 0;
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
     if ( $self->{is_wd3} && $self->browser_name ne 'chrome') {
@@ -2288,7 +2292,9 @@ sub set_window_size {
     if ( not defined $height and not defined $width ) {
         croak "height & width of browser are required";
     }
-    $height += 0;
+    croak qq{Error: In set_window_size, argument height "$height" isn't numeric} unless Scalar::Util::looks_like_number($height);
+    croak qq{Error: In set_window_size, argument width "$width" isn't numeric} unless Scalar::Util::looks_like_number($width);
+    $height += 0;		# convert to numeric if a string, otherwise they'll be sent as strings
     $width += 0;
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
