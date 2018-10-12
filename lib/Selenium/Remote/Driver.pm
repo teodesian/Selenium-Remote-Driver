@@ -2253,7 +2253,7 @@ sub set_window_position {
     }
     croak qq{Error: In set_window_size, argument x "$x" isn't numeric} unless Scalar::Util::looks_like_number($x);
     croak qq{Error: In set_window_size, argument y "$y" isn't numeric} unless Scalar::Util::looks_like_number($y);
-    $x += 0;		# convert to numeric if a string, otherwise they'll be sent as strings
+    $x += 0;            # convert to numeric if a string, otherwise they'll be sent as strings
     $y += 0;
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
@@ -2294,7 +2294,7 @@ sub set_window_size {
     }
     croak qq{Error: In set_window_size, argument height "$height" isn't numeric} unless Scalar::Util::looks_like_number($height);
     croak qq{Error: In set_window_size, argument width "$width" isn't numeric} unless Scalar::Util::looks_like_number($width);
-    $height += 0;		# convert to numeric if a string, otherwise they'll be sent as strings
+    $height += 0;               # convert to numeric if a string, otherwise they'll be sent as strings
     $width += 0;
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
