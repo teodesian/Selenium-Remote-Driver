@@ -10,6 +10,8 @@ use Selenium::Firefox::Binary qw/setup_firefox_binary_env/;
 use Selenium::Waiter qw/wait_until/;
 use Moo::Role;
 
+use constant IS_WIN => $^O eq 'MSWin32';
+
 =for Pod::Coverage *EVERYTHING*
 
 =head1 DESCRIPTION
@@ -294,7 +296,20 @@ has '_command' => (
     }
 );
 
-use constant IS_WIN => $^O eq 'MSWin32';
+=attr logfile
+
+Normally we log what occurs in the driver to /dev/null (or /nul on windows).
+Setting this will redirect it to the provided file.
+
+=cut
+
+has 'logfile' => (
+    is => 'lazy',
+    default => sub {
+        return '/nul' if IS_WIN;
+        return '/dev/null';
+    }
+);
 
 sub BUILDARGS {
     # There's a bit of finagling to do to since we can't ensure the
@@ -490,15 +505,9 @@ sub _cmd_prefix {
 }
 
 sub _cmd_suffix {
-    # TODO: allow users to specify whether & where they want driver
-    # output to go
-
-    if (IS_WIN) {
-        return ' > /nul 2>&1 ';
-    }
-    else {
-        return ' > /dev/null 2>&1 &';
-    }
+    my ($self) = @_;
+    return " > ".$self->logfile." 2>&1 " if IS_WIN;
+    return " > ".$self->logfile." 2>&1 &";
 }
 
 =head1 SEE ALSO
