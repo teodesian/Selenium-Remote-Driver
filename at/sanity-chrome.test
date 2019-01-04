@@ -133,7 +133,7 @@ like($driver->upload_file($otherloc),qr/other.html$/,"upload_file fallback works
 
 #Jinkies, this stuff is cool, it prints the selenium server help page @_@
 like( exception { $driver->get_local_storage_item('whee') },qr/help/i,"get_local_storage_item prints help page");
-like( exception { $driver->delete_local_storage_item('whee') },qr/405/i,"get_local_storage_item prints help page");
+like( exception { $driver->delete_local_storage_item('whee') },qr/help/i,"get_local_storage_item prints help page");
 
 ok($driver->switch_to_frame($driver->find_element('frame', 'id')),"can switch to frame (WD3)");
 ok($driver->switch_to_frame(),"can switch to parent frame (WD3 only)");

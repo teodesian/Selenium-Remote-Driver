@@ -73,7 +73,6 @@ CUSTOM_EXTENSION_LOADED: {
     # the preference 'browser.startup.homepage' isn't blocking, so we
     # need to wait until the page is loaded (when we can find
     # elements)
-    $driver->set_implicit_wait_timeout(30000);
     $driver->find_element("h1", "tag_name");
     cmp_ok($driver->get_current_url, '=~', qr/$domain/i,
            "profile loaded and preference respected!");

@@ -1,8 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
-1.31   XX-XX-XXXX TEODESIAN
+1.31   01-06-2019 TEODESIAN
         [BUG FIXES]
         - Kill dangling driver processes in Selenium::Chrome/Firefox on unix hosts
+        - Adjust set_timeout to WC3 standard changing out from under us
 
 1.30   09-17-2018 TEODESIAN
         [BUG FIXES]

@@ -45,7 +45,7 @@ SKIP: {
 
     $driver->set_async_script_timeout(20000);
     $driver->set_implicit_wait_timeout(5000);
-    my $timeouts = $driver->get_timeouts();
+    $timeouts = $driver->get_timeouts();
     is($timeouts->{script},20000,"WD3 shim for set_async timeouts works");
     is($timeouts->{implicit},5000,"WD3 shim for implicit timeouts works");
 }
@@ -135,8 +135,8 @@ like(exception { $driver->get_geolocation() }, qr/permission to ask/i, "get_geol
 ok($driver->get_log('server'), "get_log fallback works");
 ok( scalar(@{$driver->get_log_types()}),"can fallback for get_log_types");
 
-like(exception { $driver->set_orientation("LANDSCAPE") }, qr/not implemented/i, "set_orientation unimplemented in WD3");
-like(exception { $driver->get_orientation() }, qr/not implemented/i, "get_orientation unimplemented in WD3");
+like(exception { $driver->set_orientation("LANDSCAPE") }, qr/unknown command/i, "set_orientation unimplemented in WD3");
+like(exception { $driver->get_orientation() }, qr/unknown command/i, "get_orientation unimplemented in WD3");
 like($driver->upload_file($otherloc),qr/other.html$/,"upload_file fallback works");
 
 #Jinkies, this stuff is cool, it prints the selenium server help page @_@

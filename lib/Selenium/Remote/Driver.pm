@@ -1496,9 +1496,15 @@ sub set_timeout {
         croak "Expecting type";
     }
     $ms = _coerce_timeout_ms( $ms );
+    $type = 'pageLoad' if $type eq 'page load' && $self->browser_name ne 'MicrosoftEdge'; #XXX SHIM they changed the WC3 standard mid stream
 
     my $res = { 'command' => 'setTimeout' };
-    my $params = { 'type' => $type, 'ms' => $ms, $type => $ms };
+    my $params = { $type => $ms };
+    #XXX edge still follows earlier versions of the WC3 standard
+    if ($self->browser_name eq 'MicrosoftEdge') {
+        $params->{ms}   = $ms;
+        $params->{type} = $type;
+    }
     return $self->_execute_command( $res, $params );
 }
 
@@ -1520,8 +1526,10 @@ sub set_timeout {
 
 sub set_async_script_timeout {
     my ( $self, $ms ) = @_;
-    $ms = _coerce_timeout_ms( $ms );
 
+    return $self->set_timeout('script',$ms) if $self->{is_wd3};
+
+    $ms = _coerce_timeout_ms( $ms );
     my $res    = { 'command' => 'setAsyncScriptTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -1554,8 +1562,9 @@ sub set_async_script_timeout {
 
 sub set_implicit_wait_timeout {
     my ( $self, $ms ) = @_;
-    $ms = _coerce_timeout_ms( $ms );
+    return $self->set_timeout('implicit',$ms) if $self->{is_wd3};
 
+    $ms = _coerce_timeout_ms( $ms );
     my $res    = { 'command' => 'setImplicitWaitTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );

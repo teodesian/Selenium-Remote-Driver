@@ -165,7 +165,7 @@ IME: {
 
 LOAD_PAGE: {
     $driver->get("$website/index.html");
-    pass('Loaded home page');
+    note('Loaded home page');
     $ret = $driver->get_title();
     is($ret, 'Hello WebDriver', 'Got the title');
     $ret = $driver->get_current_url();
@@ -236,17 +236,17 @@ COOKIES: {
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 2, 'Got 2 cookies');
     $ret = $driver->delete_all_cookies();
-    pass('Deleting cookies...');
+    note('Deleting cookies...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 0, 'Deleted all cookies.');
     $driver->debug_on();
     $ret = $driver->add_cookie('foo', 'bar', '/', $domain, 0);
-    pass('Adding cookie foo...');
+    note('Adding cookie foo...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 1, 'foo cookie added.');
     is($ret->[0]{'secure'}, 0, 'foo cookie insecure.');
     $ret = $driver->delete_cookie_named('foo');
-    pass('Deleting cookie foo...');
+    note('Deleting cookie foo...');
     $ret = $driver->get_all_cookies();
     is(@{$ret}, 0, 'foo cookie deleted.');
     $ret = $driver->delete_all_cookies();
@@ -256,15 +256,15 @@ MOVE: {
     $driver->get("$website/index.html");
     $driver->get("$website/formPage.html");
     $ret = $driver->go_back();
-    pass('Clicked Back...');
+    note('Clicked Back...');
     $ret = $driver->get_title();
     is($ret, 'Hello WebDriver', 'Got the right title');
     $ret = $driver->go_forward();
-    pass('Clicked Forward...');
+    note('Clicked Forward...');
     $ret = $driver->get_title();
     is($ret, 'We Leave From Here', 'Got the right title');
     $ret = $driver->refresh();
-    pass('Clicked Refresh...');
+    note('Clicked Refresh...');
     $ret = $driver->get_title();
     is($ret, 'We Leave From Here', 'Got the right title');
 }
