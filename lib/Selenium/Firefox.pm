@@ -159,15 +159,9 @@ has '_binary_args' => (
         my ($self) = @_;
 
         if ( $self->marionette_enabled ) {
-            my $args = ' --port ' . $self->port
-              . ' --marionette-port ' . $self->marionette_binary_port
-              . ' --binary "' . $self->firefox_binary . '"';
-
-            return $args;
+            return (' --port ', $self->port, ' --marionette-port ', $self->marionette_binary_port, ' --binary ', $self->firefox_binary);
         }
-        else {
-            return ' -no-remote';
-        }
+        return ('-no-remote');
     }
 );
 

@@ -287,14 +287,10 @@ was run to start the webdriver server.
 
 =cut
 
-has '_command' => (
-    is => 'lazy',
-    init_arg => undef,
-    builder => sub {
-        my ($self) = @_;
-        return $self->_construct_command;
-    }
-);
+sub _command {
+    my ($self) = @_;
+    return $self->_construct_command;
+}
 
 =attr logfile
 
@@ -358,6 +354,8 @@ sub _build_binary_mode {
 
     $self->_handle_firefox_setup($port);
 
+    use Data::Dumper;
+    print Dumper($self->_command);
     system($self->_command);
 
     my $success = wait_until { probe_port($port) } timeout => $self->startup_timeout;
@@ -465,20 +463,17 @@ sub DEMOLISH {
 
 sub _construct_command {
     my ($self) = @_;
-    my $executable = $self->_real_binary;
-
-    # Executable path names may have spaces
-    $executable = '"' . $executable . '"';
+    my @executable = ($self->_real_binary);
 
     # The different binaries take different arguments for proper setup
-    $executable .= $self->_binary_args;
-    if ($self->has_custom_args) {
-        $executable .= ' ' . $self->custom_args;
-    }
-
-    # Handle Windows vs Unix discrepancies for invoking shell commands
-    my ($prefix, $suffix) = ($self->_cmd_prefix, $self->_cmd_suffix);
-    return join(' ', ($prefix, $executable, $suffix) );
+    my @args = $self->_binary_args();
+    push(@executable, @args);
+    push(@executable, $self->custom_args) if $self->has_custom_args;
+    push(@executable, $self->_cmd_suffix);
+    unshift(@executable, $self->_cmd_prefix) if $self->_cmd_prefix;
+    use Data::Dumper;
+    print Dumper(\@executable);
+    return @executable;
 }
 
 sub _cmd_prefix {

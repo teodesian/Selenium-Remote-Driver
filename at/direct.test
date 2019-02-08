@@ -1,0 +1,27 @@
+use strict;
+use warnings;
+
+use Selenium::Direct;
+use Test::More tests => 3;
+use Test::Fatal;
+
+my $driver;
+is( exception { $driver = Selenium::Direct->new(
+	extra_capabilities => {
+        'moz:firefoxOptions' => {
+            args    => [ '-headless' ],
+        },
+    },
+); }, undef, "can spawn new Selenium::Direct");
+
+my $port = $driver->port();
+
+diag $driver->get('http://google.com');
+
+is( exception { $driver->shutdown_binary; }, undef, "can shutdown binary correctly");
+sleep 2;
+
+my $cmd = "lsof -t -i :$port";
+my $pid = `$cmd`;
+chomp $pid;
+is($pid,'',"Destructor appears to have run shutdown_binary and whacked the driver process");

@@ -1,58 +1,55 @@
-package Selenium::Edge;
+package Selenium::Direct;
 
 use strict;
 use warnings;
 
-# ABSTRACT: Use EdgeDriver without a Selenium server
+# ABSTRACT: Use the Selenium JAR atomically without a running Selenium server
 use Moo;
+use Carp;
+
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
+use File::Which qw{which};
+
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
 
-    my $driver = Selenium::Edge->new;
-    # when you're done
+    my $driver = Selenium::Direct->new();
+
+    #Do stuff...
+
+    #Optional, happens in DESTROY
     $driver->shutdown_binary;
 
 =for Pod::Coverage has_binary
 
 =head1 DESCRIPTION
 
-This class allows you to use the EdgeDriver without needing the JRE
-or a selenium server running. When you refrain from passing the
-C<remote_server_addr> and C<port> arguments, we will search for the
-edgedriver executable binary in your $PATH. We'll try to start the
-binary connect to it, shutting it down at the end of the test.
+Basically runs
 
-If the MicrosoftWebDriver binary is not found, we'll fall back to the
-default L<Selenium::Remote::Driver> behavior of assuming defaults of
-127.0.0.1:4444 after waiting a few seconds.
+    java -Dwebdriver.$browser.driver=path-to-driver ... -Dport=some_random_port -jar selenium.jar
 
-If you specify a remote server address, or a port, we'll assume you
-know what you're doing and take no additional behavior.
+with every available driver known by the other direct driver modules like L<Selenium::Firefox>, L<Selenium::Chrome>, L<Selenium::Edge> et cetera.
 
-If you're curious whether your Selenium::Edge instance is using a
-separate MicrosoftWebDriver binary, or through the selenium server, you can
-check the C<binary_mode> attr after instantiation.
+Looks for the selenium JAR within the existing PATH or CLASSPATH.
+It must be +x (executable) and named exactly:
 
-=cut
-
-has '+browser_name' => (
-    is => 'ro',
-    default => sub { 'MicrosoftEdge' }
-);
+    selenium.jar
 
 =attr binary
 
-Optional: specify the path to your binary. If you don't specify
-anything, we'll try to find it on our own via L<File::Which/which>.
+Optional: specify the path to the java binary to use.
 
 =cut
 
 has 'binary' => (
     is => 'lazy',
     coerce => \&coerce_simple_binary,
-    default => sub { 'MicrosoftWebDriver.exe' },
+    default => sub {
+        my $java = which 'java';
+        croak "Can't find a java executable in your PATH!" unless $java;
+        $java;
+    },
     predicate => 1
 );
 
@@ -72,18 +69,41 @@ actual port turned out to be.
 
 has 'binary_port' => (
     is => 'lazy',
-    default => sub { 17556 }
+    default => sub {
+        '4445'
+    }
 );
 
-has '_binary_args' => (
-    is => 'lazy',
-    builder => sub {
-        my ($self) = @_;
+sub _binary_args {
+    my ($self) = @_;
 
-        my $context = $self->wd_context_prefix;
-        $context =~ s{^/}{};
+    my @args;
 
-        return ( '--port', $self->port, '--url-base', $context );
+    my $geckodriver  = which 'geckodriver';
+    my $chromedriver = which 'chromedriver';
+    my $iedriver     = which 'internetexplorerdriver';
+    my $edgedriver   = which 'microsoftedgedriver';
+
+    push(@args,qq{-Dwebdriver.gecko.driver=$geckodriver})   if $geckodriver;
+    push(@args,qq{-Dwebdriver.chrome.driver=$chromedriver}) if $chromedriver;
+    push(@args,qq{-Dwebdriver.iedriver.driver=$iedriver})   if $iedriver;  #XXX maybe wrong?
+    push(@args,qq{-Dwebdriver.edge.driver=$edgedriver})     if $edgedriver;
+
+    push(@args, qq{-Dwebdriver.port=}.$self->port());
+
+    $ENV{PATH} = $ENV{PATH}.":".$ENV{CLASSPATH};
+    my $jar_binks = which 'selenium.jar';
+    croak "Can't find a selenium.jar that's in \$PATH or \$CLASSPATH that's -x!" unless $jar_binks;
+
+    push(@args, '-jar', $jar_binks);
+
+    return @args;
+}
+
+has '+wd_context_prefix' => (
+    is => 'ro',
+    default => sub {
+        '/hub';
     }
 );
 
@@ -92,7 +112,7 @@ with 'Selenium::CanStartBinary';
 =attr custom_args
 
 Optional: specify any additional command line arguments you'd like
-invoked during the binary startup. See
+invoked during the java binary startup. See
 L<Selenium::CanStartBinary/custom_args> for more information.
 
 =attr startup_timeout
@@ -102,7 +122,7 @@ listen on its port. The default duration is arbitrarily 10 seconds. It
 accepts an integer number of seconds to wait: the following will wait
 up to 20 seconds:
 
-    Selenium::Edge->new( startup_timeout => 20 );
+    Selenium::Firefox->new( startup_timeout => 20 );
 
 See L<Selenium::CanStartBinary/startup_timeout> for more information.
 

@@ -93,7 +93,7 @@ has '_binary_args' => (
     builder => sub {
         my ($self) = @_;
 
-        return ' --webdriver=127.0.0.1:' . $self->port;
+        return (' --webdriver=127.0.0.1:' . $self->port);
     }
 );
 

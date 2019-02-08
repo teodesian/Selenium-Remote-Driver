@@ -83,7 +83,7 @@ has '_binary_args' => (
         my $context = $self->wd_context_prefix;
         $context =~ s{^/}{};
 
-        return ' --port=' . $self->port . ' --url-base=' . $context . ' ';
+        return (' --port ', $self->port, ' --url-base ', $context);
     }
 );
 
