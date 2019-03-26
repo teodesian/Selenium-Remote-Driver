@@ -1,4 +1,5 @@
 package Test::Selenium::Remote::Role::DoesTesting;
+
 # ABSTRACT: Role to cope with everything that is related to testing (could
 # be reused in both testing classes)
 
@@ -17,14 +18,13 @@ has _builder => (
     handles => [qw/is_eq isnt_eq like unlike ok croak/],
 );
 
-
 # get back the key value from an already coerced finder (default finder)
 
 sub _get_finder_key {
-    my $self = shift;
+    my $self         = shift;
     my $finder_value = shift;
-    foreach my $k (keys %{$self->FINDERS}) {
-        return $k if ($self->FINDERS->{$k} eq $finder_value);
+    foreach my $k ( keys %{ $self->FINDERS } ) {
+        return $k if ( $self->FINDERS->{$k} eq $finder_value );
     }
     return;
 }
@@ -54,34 +54,38 @@ sub _check_method {
 # a bit hacked so that find_no_element_ok can also be processed
 
 sub _check_ok {
-    my $self   = shift;
-    my $method = shift;
+    my $self        = shift;
+    my $method      = shift;
     my $real_method = '';
-    my @args   = @_;
-    my ($rv, $num_of_args, @r_args);
+    my @args        = @_;
+    my ( $rv, $num_of_args, @r_args );
     try {
         $num_of_args = $self->has_args($method);
         @r_args = splice( @args, 0, $num_of_args );
-        if ($method =~ m/^find(_no|_child)?_element/) {
+        if ( $method =~ m/^find(_no|_child)?_element/ ) {
+
             # case find_element_ok was called with no arguments
-            if (scalar(@r_args) - $num_of_args == 1) {
-                push @r_args, $self->_get_finder_key($self->default_finder);
+            if ( scalar(@r_args) - $num_of_args == 1 ) {
+                push @r_args, $self->_get_finder_key( $self->default_finder );
             }
             else {
-                if (scalar(@r_args) == $num_of_args) {
+                if ( scalar(@r_args) == $num_of_args ) {
+
                     # case find_element was called with no finder but
                     # a test description
-                    my $finder = $r_args[$num_of_args - 1];
-                    my @FINDERS = keys (%{$self->FINDERS});
-                    unless ( any { $finder eq $_ } @FINDERS) {
-                        $r_args[$num_of_args - 1] = $self->_get_finder_key($self->default_finder);
+                    my $finder  = $r_args[ $num_of_args - 1 ];
+                    my @FINDERS = keys( %{ $self->FINDERS } );
+                    unless ( any { $finder eq $_ } @FINDERS ) {
+                        $r_args[ $num_of_args - 1 ] =
+                          $self->_get_finder_key( $self->default_finder );
                         push @args, $finder;
                     }
                 }
             }
         }
+
         # quick hack to fit 'find_no_element' into check_ok logic
-        if ($method eq 'find_no_element') {
+        if ( $method eq 'find_no_element' ) {
             $real_method = $method;
 
             # If we use `find_element` and find nothing, the error
@@ -91,7 +95,7 @@ sub _check_ok {
             # https://github.com/gempesaw/Selenium-Remote-Driver/issues/253
             $method = 'find_elements';
             my $elements = $self->$method(@r_args);
-            if (scalar(@$elements)) {
+            if ( scalar(@$elements) ) {
                 $rv = $elements->[0];
             }
             else {
@@ -112,22 +116,20 @@ sub _check_ok {
         }
     };
 
-
     my $default_test_name = $method;
-    $default_test_name .= "'" . join("' ", @r_args) . "'"
-        if $num_of_args > 0;
+    $default_test_name .= "'" . join( "' ", @r_args ) . "'"
+      if $num_of_args > 0;
 
     my $test_name = pop @args // $default_test_name;
 
     # case when find_no_element found an element, we should croak
-    if ($real_method eq 'find_no_element') {
-        if (blessed($rv) && $rv->isa('Selenium::Remote::WebElement')) {
+    if ( $real_method eq 'find_no_element' ) {
+        if ( blessed($rv) && $rv->isa('Selenium::Remote::WebElement') ) {
             $self->croak($test_name);
         }
     }
-    return $self->ok( $rv, $test_name);
+    return $self->ok( $rv, $test_name );
 }
-
 
 # build the subs with the correct arg set
 
@@ -170,7 +172,6 @@ sub _build_sub {
 }
 
 1;
-
 
 =head1 NAME
 

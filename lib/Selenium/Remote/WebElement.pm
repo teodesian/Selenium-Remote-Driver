@@ -75,18 +75,20 @@ exact behavior.
 =cut
 
 has 'id' => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
-    coerce => sub {
+    coerce   => sub {
         my ($value) = @_;
-        if (ref($value) eq 'HASH') {
-            if (exists $value->{ELEMENT}) {
+        if ( ref($value) eq 'HASH' ) {
+            if ( exists $value->{ELEMENT} ) {
+
                 # The JSONWireProtocol web element object looks like
                 #
                 #     { "ELEMENT": $INTEGER_ID }
                 return $value->{ELEMENT};
             }
-            elsif (exists $value->{'element-6066-11e4-a52e-4f735466cecf'}) {
+            elsif ( exists $value->{'element-6066-11e4-a52e-4f735466cecf'} ) {
+
                 # but the WebDriver spec web element uses a magic
                 # string. See the spec for more information:
                 #
@@ -94,7 +96,8 @@ has 'id' => (
                 return $value->{'element-6066-11e4-a52e-4f735466cecf'};
             }
             else {
-                croak 'When passing in an object to the WebElement id attribute, it must have at least one of the ELEMENT or element-6066-11e4-a52e-4f735466cecf keys.';
+                croak
+'When passing in an object to the WebElement id attribute, it must have at least one of the ELEMENT or element-6066-11e4-a52e-4f735466cecf keys.';
             }
         }
         else {
@@ -104,9 +107,9 @@ has 'id' => (
 );
 
 has 'driver' => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
-    handles => [qw(_execute_command)],
+    handles  => [qw(_execute_command)],
 );
 
 =head1 FUNCTIONS
@@ -160,11 +163,22 @@ sub click {
 
 sub submit {
     my ($self) = @_;
-    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
-        if ($self->get_tag_name() ne 'form') {
-            return $self->driver->execute_script("return arguments[0].form.submit();",{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} );
-        } else {
-            return $self->driver->execute_script("return arguments[0].submit();",{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} );
+    if (
+        $self->driver->{is_wd3}
+        && !(
+            grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}
+        )
+      )
+    {
+        if ( $self->get_tag_name() ne 'form' ) {
+            return $self->driver->execute_script(
+                "return arguments[0].form.submit();",
+                { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} } );
+        }
+        else {
+            return $self->driver->execute_script(
+                "return arguments[0].submit();",
+                { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} } );
         }
     }
     my $res = { 'command' => 'submitElement', 'id' => $self->id };
@@ -206,10 +220,10 @@ sub send_keys {
     # corresponding value must be ('h', 'e', 'l', 'l', 'o' ). This
     # format conforms with the Spec AND works with the Selenium
     # standalone server.
-    my $strings = join('', map { $_."" } @strings);
+    my $strings = join( '', map { $_ . "" } @strings );
     my $params = {
-        'value' => [ split('', $strings) ],
-        text => $strings,
+        'value' => [ split( '', $strings ) ],
+        text    => $strings,
     };
     return $self->_execute_command( $res, $params );
 }
@@ -231,7 +245,10 @@ sub send_keys {
 sub is_selected {
     my ($self) = @_;
 
-    return $self->get_property('checked') if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
+    return $self->get_property('checked')
+      if $self->driver->{is_wd3}
+      && !( grep { $self->driver->browser_name eq $_ }
+        qw{chrome MicrosoftEdge} );
     my $res = { 'command' => 'isElementSelected', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -249,7 +266,7 @@ sub is_selected {
 
 sub set_selected {
     my ($self) = @_;
-    if ($self->driver->{is_wd3}) {
+    if ( $self->driver->{is_wd3} ) {
         return if $self->is_selected();
         return $self->click();
     }
@@ -273,9 +290,12 @@ sub set_selected {
 
 sub toggle {
     my ($self) = @_;
-    if ($self->driver->{is_wd3}) {
+    if ( $self->driver->{is_wd3} ) {
         return $self->click() unless $self->is_selected();
-        return $self->driver->execute_script(qq/ if (arguments[0].checked) { arguments[0].checked = 0 }; return arguments[0].checked; /, {'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}});
+        return $self->driver->execute_script(
+qq/ if (arguments[0].checked) { arguments[0].checked = 0 }; return arguments[0].checked; /,
+            { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} }
+        );
     }
     my $res = { 'command' => 'toggleElement', 'id' => $self->id };
     return $self->_execute_command($res);
@@ -296,7 +316,13 @@ sub toggle {
 
 sub is_enabled {
     my ($self) = @_;
-    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+    if (
+        $self->driver->{is_wd3}
+        && !(
+            grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}
+        )
+      )
+    {
         return 1 if $self->get_tag_name() ne 'input';
         return $self->get_property('disabled') ? 0 : 1;
     }
@@ -325,7 +351,13 @@ sub is_enabled {
 
 sub get_element_location {
     my ($self) = @_;
-    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+    if (
+        $self->driver->{is_wd3}
+        && !(
+            grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}
+        )
+      )
+    {
         my $data = $self->get_element_rect();
         delete $data->{height};
         delete $data->{width};
@@ -356,7 +388,13 @@ sub get_element_location {
 
 sub get_size {
     my ($self) = @_;
-    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+    if (
+        $self->driver->{is_wd3}
+        && !(
+            grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}
+        )
+      )
+    {
         my $data = $self->get_element_rect();
         delete $data->{x};
         delete $data->{y};
@@ -365,7 +403,6 @@ sub get_size {
     my $res = { 'command' => 'getElementSize', 'id' => $self->id };
     return $self->_execute_command($res);
 }
-
 
 =head2 get_element_rect
 
@@ -407,15 +444,20 @@ sub get_element_rect {
 
 sub get_element_location_in_view {
     my ($self) = @_;
+
     #XXX chrome is dopey here
-    return $self->driver->execute_script(qq{
+    return $self->driver->execute_script(
+        qq{
         if (typeof(arguments[0]) !== 'undefined' && arguments[0].nodeType === Node.ELEMENT_NODE) {
             arguments[0].scrollIntoView();
             var pos = arguments[0].getBoundingClientRect();
             return {y:pos.top,x:pos.left};
         }
         return {};
-    }, {'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}} ) if $self->driver->{is_wd3} && grep { $self->driver->browser_name eq $_ } ('firefox','internet explorer');
+    }, { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} }
+      )
+      if $self->driver->{is_wd3} && grep { $self->driver->browser_name eq $_ }
+      ( 'firefox', 'internet explorer' );
     my $res = { 'command' => 'getElementLocationInView', 'id' => $self->id };
     return $self->_execute_command($res);
 }
@@ -492,7 +534,11 @@ sub get_attribute {
     #Handle global JSONWire emulation flag
     $no_i_really_mean_it = 1 unless $self->{driver}->{emulate_jsonwire};
 
-    return $self->get_property($attr_name) if $self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}) && !$no_i_really_mean_it;
+    return $self->get_property($attr_name)
+      if $self->driver->{is_wd3}
+      && !( grep { $self->driver->browser_name eq $_ }
+        qw{chrome MicrosoftEdge} )
+      && !$no_i_really_mean_it;
 
     my $res = {
         'command' => 'getElementAttribute',
@@ -513,12 +559,15 @@ Only available on WebDriver 3 enabled servers.
 =cut
 
 sub get_property {
-    my ($self,$prop) = @_;
-    return $self->get_attribute($prop) if $self->driver->{is_wd3} && (grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge});
-    my $res = { 'command' => 'getElementProperty', id => $self->id, name => $prop };
+    my ( $self, $prop ) = @_;
+    return $self->get_attribute($prop)
+      if $self->driver->{is_wd3}
+      && ( grep { $self->driver->browser_name eq $_ }
+        qw{chrome MicrosoftEdge} );
+    my $res =
+      { 'command' => 'getElementProperty', id => $self->id, name => $prop };
     return $self->_execute_command($res);
 }
-
 
 =head2 get_value
 
@@ -560,10 +609,18 @@ sub get_value {
 
 sub is_displayed {
     my ($self) = @_;
-    if ($self->driver->{is_wd3} && !(grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
-        return 0 if $self->get_tag_name() eq 'input' && $self->get_property('type') eq 'hidden'; #hidden type inputs
+    if (
+        $self->driver->{is_wd3}
+        && !(
+            grep { $self->driver->browser_name eq $_ } qw{chrome MicrosoftEdge}
+        )
+      )
+    {
+        return 0
+          if $self->get_tag_name() eq 'input'
+          && $self->get_property('type') eq 'hidden';    #hidden type inputs
         return 0 unless $self->_is_in_viewport();
-        return int($self->get_css_attribute('display') ne 'none');
+        return int( $self->get_css_attribute('display') ne 'none' );
     }
     my $res = { 'command' => 'isElementDisplayed', 'id' => $self->id };
     return $self->_execute_command($res);
@@ -571,7 +628,8 @@ sub is_displayed {
 
 sub _is_in_viewport {
     my ($self) = @_;
-    return $self->driver->execute_script(qq{
+    return $self->driver->execute_script(
+        qq{
         var rect = arguments[0].getBoundingClientRect();
         return (
             rect.top >= 0 &&
@@ -579,7 +637,8 @@ sub _is_in_viewport {
             rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
             rect.right <= (window.innerWidth || document.documentElement.clientWidth)
         );
-    },{'element-6066-11e4-a52e-4f735466cecf'=> $self->{id}});
+    }, { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} }
+    );
 }
 
 =head2 is_hidden
@@ -597,7 +656,7 @@ sub _is_in_viewport {
 
 sub is_hidden {
     my ($self) = @_;
-    return ! $self->is_displayed();
+    return !$self->is_displayed();
 }
 
 =head2 drag
@@ -613,10 +672,10 @@ Provide element you wish to drag to as argument.
 =cut
 
 sub drag {
-    my ($self,$target) = @_;
+    my ( $self, $target ) = @_;
     require Selenium::ActionChains;
     my $chain = Selenium::ActionChains->new( driver => $self->driver );
-    return $chain->drag_and_drop($self,$target)->perform();
+    return $chain->drag_and_drop( $self, $target )->perform();
 }
 
 =head2 get_text
@@ -714,11 +773,11 @@ To conveniently write the screenshot to a file, see L</capture_screenshot>.
 =cut
 
 sub screenshot {
-    my ($self, $scroll) = @_;
+    my ( $self, $scroll ) = @_;
     $scroll //= 1;
     my $res = { 'command' => 'elementScreenshot', id => $self->id };
-    my $input = {scroll => int($scroll) };
-    return $self->_execute_command($res, $input);
+    my $input = { scroll => int($scroll) };
+    return $self->_execute_command( $res, $input );
 }
 
 =head2 capture_screenshot
@@ -751,7 +810,5 @@ sub capture_screenshot {
     CORE::close $fh;
     return 1;
 }
-
-
 
 1;

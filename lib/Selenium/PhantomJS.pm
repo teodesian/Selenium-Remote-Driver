@@ -51,7 +51,7 @@ L<Github|https://github.com/gempesaw/Selenium-Remote-Driver>; thanks!
 =cut
 
 has '+browser_name' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'phantomjs' }
 );
 
@@ -63,9 +63,9 @@ anything, we'll try to find it on our own via L<File::Which/which>.
 =cut
 
 has 'binary' => (
-    is => 'lazy',
-    coerce => \&coerce_simple_binary,
-    default => sub { 'phantomjs' },
+    is        => 'lazy',
+    coerce    => \&coerce_simple_binary,
+    default   => sub { 'phantomjs' },
     predicate => 1
 );
 
@@ -84,12 +84,12 @@ actual port turned out to be.
 =cut
 
 has 'binary_port' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { 8910 }
 );
 
 has '_binary_args' => (
-    is => 'lazy',
+    is      => 'lazy',
     builder => sub {
         my ($self) = @_;
 

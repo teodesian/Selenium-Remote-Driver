@@ -16,27 +16,32 @@ has func_list => (
     is      => 'lazy',
     builder => sub {
         return [
-            'alert_text_is',     'alert_text_isnt', 'alert_text_like',
-            'alert_text_unlike', 'current_window_handle_is',
-            'current_window_handle_isnt',   'current_window_handle_like',
-            'current_window_handle_unlike', 'window_handles_is',
-            'window_handles_isnt',          'window_handles_like',
-            'window_handles_unlike', 'window_size_is', 'window_size_isnt',
-            'window_size_like', 'window_size_unlike', 'window_position_is',
-            'window_position_isnt', 'window_position_like',
-            'window_position_unlike', 'current_url_is',     'current_url_isnt',
-            'current_url_like',       'current_url_unlike', 'title_is',
-            'title_isnt', 'title_like', 'title_unlike', 'active_element_is',
-            'active_element_isnt',   'active_element_like',
-            'active_element_unlike', 'send_keys_to_active_element_ok',
-            'send_keys_to_alert_ok', 'send_keys_to_prompt_ok',
-            'send_modifier_ok', 'accept_alert_ok', 'dismiss_alert_ok',
-            'get_ok', 'go_back_ok', 'go_forward_ok', 'add_cookie_ok',
-            'get_page_source_ok', 'find_element_ok', 'find_elements_ok',
-            'find_child_element_ok', 'find_child_elements_ok',
-            'find_no_element_ok',
-            'compare_elements_ok', 'click_ok', 'double_click_ok',
-            'body_like',
+            'alert_text_is',                  'alert_text_isnt',
+            'alert_text_like',                'alert_text_unlike',
+            'current_window_handle_is',       'current_window_handle_isnt',
+            'current_window_handle_like',     'current_window_handle_unlike',
+            'window_handles_is',              'window_handles_isnt',
+            'window_handles_like',            'window_handles_unlike',
+            'window_size_is',                 'window_size_isnt',
+            'window_size_like',               'window_size_unlike',
+            'window_position_is',             'window_position_isnt',
+            'window_position_like',           'window_position_unlike',
+            'current_url_is',                 'current_url_isnt',
+            'current_url_like',               'current_url_unlike',
+            'title_is',                       'title_isnt',
+            'title_like',                     'title_unlike',
+            'active_element_is',              'active_element_isnt',
+            'active_element_like',            'active_element_unlike',
+            'send_keys_to_active_element_ok', 'send_keys_to_alert_ok',
+            'send_keys_to_prompt_ok',         'send_modifier_ok',
+            'accept_alert_ok',                'dismiss_alert_ok',
+            'get_ok',                         'go_back_ok',
+            'go_forward_ok',                  'add_cookie_ok',
+            'get_page_source_ok',             'find_element_ok',
+            'find_elements_ok',               'find_child_element_ok',
+            'find_child_elements_ok',         'find_no_element_ok',
+            'compare_elements_ok',            'click_ok',
+            'double_click_ok',                'body_like',
         ];
     },
 );
@@ -73,7 +78,8 @@ sub BUILD {
         unless ( defined( __PACKAGE__->can($method_name) ) ) {
             my $sub = $self->_build_sub($method_name);
             Sub::Install::install_sub(
-                {   code => $sub,
+                {
+                    code => $sub,
                     into => __PACKAGE__,
                     as   => $method_name
                 }
@@ -139,9 +145,7 @@ Enable/disable debugging output, or view the status of verbosity.
 
 =cut
 
-has verbose => (
-    is => 'rw',
-);
+has verbose => ( is => 'rw', );
 
 =head2 server_is_running( $host, $port )
 
@@ -154,8 +158,8 @@ determine the server to check.
 =cut
 
 sub server_is_running {
-    my $host          = $ENV{TWD_HOST} || shift || 'localhost';
-    my $port          = $ENV{TWD_PORT} || shift || 4444;
+    my $host = $ENV{TWD_HOST} || shift || 'localhost';
+    my $port = $ENV{TWD_PORT} || shift || 4444;
 
     return ( $host, $port )
       if IO::Socket::INET->new(
@@ -343,9 +347,7 @@ sub _find_element_with_action {
         $desc .= "'" . join( " ", ( $params // '' ) ) . "'";
     }
     my $element;
-    eval {
-        $element = $self->find_element( $locator, $locator_strategy );
-    };
+    eval { $element = $self->find_element( $locator, $locator_strategy ); };
     if ($@) {
         print "# Error: $@\n";
         return 0;
@@ -449,7 +451,6 @@ sub is_element_enabled_ok {
     return $self->_find_element_with_action( $method, @_ );
 }
 
-
 =head2 $twd->find_element_ok($search_target [,$finder, $desc ]);
 
    $twd->find_element_ok( $search_target [,$finder, $desc ] );
@@ -495,7 +496,7 @@ sub content_like {
         $desc = qq{Content is like "$regex"} if ( not defined $desc );
         $ret = like_string( $content, $regex, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $regex");
+            $self->error_handler->( $self, "Failed to find $regex" );
         }
         return $ret;
     }
@@ -504,7 +505,7 @@ sub content_like {
             $desc = qq{Content is like "$re"} if ( not defined $desc );
             $ret = like_string( $content, $re, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $re");
+                $self->error_handler->( $self, "Failed to find $re" );
             }
         }
     }
@@ -537,7 +538,7 @@ sub content_unlike {
         $desc = qq{Content is unlike "$regex"} if ( not defined $desc );
         $ret = unlike_string( $content, $regex, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $regex");
+            $self->error_handler->( $self, "Failed to find $regex" );
         }
     }
     elsif ( ref $regex eq 'ARRAY' ) {
@@ -545,12 +546,11 @@ sub content_unlike {
             $desc = qq{Content is unlike "$re"} if ( not defined $desc );
             $ret = unlike_string( $content, $re, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $re");
+                $self->error_handler->( $self, "Failed to find $re" );
             }
         }
     }
 }
-
 
 =head2 $twd->body_text_like( $regex [, $desc ] )
 
@@ -582,7 +582,7 @@ sub body_text_like {
         $desc = qq{Text is like "$regex"} if ( not defined $desc );
         $ret = like_string( $text, $regex, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $regex");
+            $self->error_handler->( $self, "Failed to find $regex" );
         }
         return $ret;
     }
@@ -591,7 +591,7 @@ sub body_text_like {
             $desc = qq{Text is like "$re"} if ( not defined $desc );
             $ret = like_string( $text, $re, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $re");
+                $self->error_handler->( $self, "Failed to find $re" );
             }
         }
     }
@@ -628,7 +628,7 @@ sub body_text_unlike {
         $desc = qq{Text is unlike "$regex"} if ( not defined $desc );
         $ret = unlike_string( $text, $regex, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $regex");
+            $self->error_handler->( $self, "Failed to find $regex" );
         }
         return $ret;
 
@@ -638,7 +638,7 @@ sub body_text_unlike {
             $desc = qq{Text is unlike "$re"} if ( not defined $desc );
             $ret = unlike_string( $text, $re, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $re");
+                $self->error_handler->( $self, "Failed to find $re" );
             }
         }
     }
@@ -674,7 +674,7 @@ sub content_contains {
         $desc = qq{Content contains "$str"} if ( not defined $desc );
         $ret = contains_string( $content, $str, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $str");
+            $self->error_handler->( $self, "Failed to find $str" );
         }
         return $ret;
     }
@@ -684,7 +684,7 @@ sub content_contains {
             $ret = contains_string( $content, $s, $desc );
 
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $s");
+                $self->error_handler->( $self, "Failed to find $s" );
             }
         }
     }
@@ -718,7 +718,7 @@ sub content_lacks {
         $desc = qq{Content lacks "$str"} if ( not defined $desc );
         $ret = lacks_string( $content, $str, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $str");
+            $self->error_handler->( $self, "Failed to find $str" );
         }
         return $ret;
     }
@@ -727,12 +727,11 @@ sub content_lacks {
             $desc = qq{Content lacks "$s"} if ( not defined $desc );
             $ret = lacks_string( $content, $s, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $s");
+                $self->error_handler->( $self, "Failed to find $s" );
             }
         }
     }
 }
-
 
 =head2 $twd->body_text_contains( $str [, $desc ] )
 
@@ -764,7 +763,7 @@ sub body_text_contains {
         $desc = qq{Text contains "$str"} if ( not defined $desc );
         $ret = contains_string( $text, $str, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $str");
+            $self->error_handler->( $self, "Failed to find $str" );
         }
         return $ret;
     }
@@ -773,7 +772,7 @@ sub body_text_contains {
             $desc = qq{Text contains "$s"} if ( not defined $desc );
             $ret = contains_string( $text, $s, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $s");
+                $self->error_handler->( $self, "Failed to find $s" );
             }
         }
     }
@@ -810,7 +809,7 @@ sub body_text_lacks {
         $desc = qq{Text lacks "$str"} if ( not defined $desc );
         $ret = lacks_string( $text, $str, $desc );
         if ( !$ret && $self->has_error_handler ) {
-            $self->error_handler->($self,"Failed to find $str");
+            $self->error_handler->( $self, "Failed to find $str" );
         }
         return $ret;
     }
@@ -819,12 +818,11 @@ sub body_text_lacks {
             $desc = qq{Text lacks "$s"} if ( not defined $desc );
             $ret = lacks_string( $text, $s, $desc );
             if ( !$ret && $self->has_error_handler ) {
-                $self->error_handler->($self,"Failed to find $s");
+                $self->error_handler->( $self, "Failed to find $s" );
             }
         }
     }
 }
-
 
 1;
 

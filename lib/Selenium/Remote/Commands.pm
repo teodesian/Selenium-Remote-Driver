@@ -51,13 +51,13 @@ has '_cmds' => (
                 'no_content_success' => 1
             },
             'setAsyncScriptTimeout' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/timeouts/async_script',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/timeouts/async_script',
                 'no_content_success' => 1
             },
             'setImplicitWaitTimeout' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/timeouts/implicit_wait',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/timeouts/implicit_wait',
                 'no_content_success' => 1
             },
             'quit' => {
@@ -76,28 +76,28 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
             'getWindowSize' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/window/:windowHandle/size',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/window/:windowHandle/size',
                 'no_content_success' => 0
             },
             'getWindowPosition' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/window/:windowHandle/position',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/window/:windowHandle/position',
                 'no_content_success' => 0
             },
             'maximizeWindow' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/window/:windowHandle/maximize',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/window/:windowHandle/maximize',
                 'no_content_success' => 1
             },
             'setWindowSize' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/window/:windowHandle/size',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/window/:windowHandle/size',
                 'no_content_success' => 1
             },
             'setWindowPosition' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/window/:windowHandle/position',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/window/:windowHandle/position',
                 'no_content_success' => 1
             },
             'getCurrentUrl' => {
@@ -141,8 +141,8 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
             'availableEngines' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/ime/available_engines',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/ime/available_engines',
                 'no_content_success' => 0
             },
             'switchToFrame' => {
@@ -206,13 +206,13 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
             'findChildElement' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/element/:id/element',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/element/:id/element',
                 'no_content_success' => 0
             },
             'findChildElements' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/element/:id/elements',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/element/:id/elements',
                 'no_content_success' => 0
             },
             'clickElement' => {
@@ -241,13 +241,13 @@ has '_cmds' => (
                 'no_content_success' => 1
             },
             'isElementSelected' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/selected',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/selected',
                 'no_content_success' => 0
             },
             'setElementSelected' => {
-                'method'             => 'POST',
-                'url'                => 'session/:sessionId/element/:id/selected',
+                'method' => 'POST',
+                'url'    => 'session/:sessionId/element/:id/selected',
                 'no_content_success' => 0
             },
             'toggleElement' => {
@@ -256,18 +256,18 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
             'isElementEnabled' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/enabled',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/enabled',
                 'no_content_success' => 0
             },
             'getElementLocation' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/location',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/location',
                 'no_content_success' => 0
             },
             'getElementLocationInView' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/location_in_view',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/location_in_view',
                 'no_content_success' => 0
             },
             'getElementTagName' => {
@@ -281,18 +281,18 @@ has '_cmds' => (
                 'no_content_success' => 1
             },
             'getElementAttribute' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/attribute/:name',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/attribute/:name',
                 'no_content_success' => 0
             },
             'elementEquals' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/equals/:other',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/equals/:other',
                 'no_content_success' => 0
             },
             'isElementDisplayed' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/displayed',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/displayed',
                 'no_content_success' => 0
             },
             'close' => {
@@ -311,8 +311,8 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
             'getElementValueOfCssProperty' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/element/:id/css/:propertyName',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/element/:id/css/:propertyName',
                 'no_content_success' => 0
             },
             'mouseMoveToLocation' => {
@@ -366,18 +366,18 @@ has '_cmds' => (
                 'no_content_success' => 0
             },
             'getLocalStorageItem' => {
-                'method'             => 'GET',
-                'url'                => '/session/:sessionId/local_storage/key/:key',
+                'method' => 'GET',
+                'url'    => '/session/:sessionId/local_storage/key/:key',
                 'no_content_success' => 0
             },
             'deleteLocalStorageItem' => {
-                'method'             => 'DELETE',
-                'url'                => '/session/:sessionId/local_storage/key/:key',
+                'method' => 'DELETE',
+                'url'    => '/session/:sessionId/local_storage/key/:key',
                 'no_content_success' => 1
             },
             'cacheStatus' => {
-                'method'             => 'GET',
-                'url'                => 'session/:sessionId/application_cache/status',
+                'method' => 'GET',
+                'url'    => 'session/:sessionId/application_cache/status',
                 'no_content_success' => 0
             },
             'setGeolocation' => {
@@ -385,7 +385,7 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/location',
                 'no_content_success' => 1
             },
-            'getGeolocation'   => {
+            'getGeolocation' => {
                 'method'             => 'GET',
                 'url'                => 'session/:sessionId/location',
                 'no_content_success' => 0
@@ -395,7 +395,7 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/log',
                 'no_content_success' => 0
             },
-            'getLogTypes'   => {
+            'getLogTypes' => {
                 'method'             => 'GET',
                 'url'                => 'session/:sessionId/log/types',
                 'no_content_success' => 0
@@ -405,11 +405,12 @@ has '_cmds' => (
                 'url'                => 'session/:sessionId/orientation',
                 'no_content_success' => 1
             },
-            'getOrientation'   => {
+            'getOrientation' => {
                 'method'             => 'GET',
                 'url'                => 'session/:sessionId/orientation',
                 'no_content_success' => 0
             },
+
             # firefox extension
             'setContext' => {
                 'method'             => 'POST',
@@ -473,7 +474,7 @@ sub get_params {
     #Allow fall-back in the event the command passed doesn't exist
     return unless $self->get_cmds()->{$command};
 
-    my $url     = $self->get_url($command);
+    my $url = $self->get_url($command);
 
     # Do the var substitutions.
     $url =~ s/:sessionId/$args->{'session_id'}/;
@@ -483,15 +484,15 @@ sub get_params {
     $url =~ s/:other/$args->{'other'}/;
     $url =~ s/:windowHandle/$args->{'window_handle'}/;
 
-    $data->{'method'} = $self->get_method($command);
+    $data->{'method'}             = $self->get_method($command);
     $data->{'no_content_success'} = $self->get_no_content_success($command);
-    $data->{'url'}    = $url;
+    $data->{'url'}                = $url;
 
     return $data;
 }
 
 sub parse_response {
-    my ($self,$res,$resp) = @_;
+    my ( $self, $res, $resp ) = @_;
     if ( ref($resp) eq 'HASH' ) {
         if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
             return $resp->{cmd_return};

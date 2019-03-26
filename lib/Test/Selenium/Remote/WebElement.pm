@@ -1,4 +1,5 @@
 package Test::Selenium::Remote::WebElement;
+
 # ABSTRACT: A sub-class of L<Selenium::Remote::WebElement>, with several test-specific method additions.
 
 use Moo;
@@ -15,14 +16,14 @@ has func_list => (
     is      => 'lazy',
     builder => sub {
         return [
-            'clear_ok',     'click_ok',
-            'send_keys_ok', 'is_displayed_ok',
-            'is_enabled_ok', 'is_selected_ok', 'submit_ok',
-            'text_is',          'text_isnt',      'text_like',  'text_unlike',
-            'attribute_is',     'attribute_isnt', 'attribute_like',
-            'attribute_unlike', 'value_is',       'value_isnt', 'value_like',
-            'value_unlike', 'tag_name_is', 'tag_name_isnt', 'tag_name_like',
-            'tag_name_unlike'
+            'clear_ok',        'click_ok',       'send_keys_ok',
+            'is_displayed_ok', 'is_enabled_ok',  'is_selected_ok',
+            'submit_ok',       'text_is',        'text_isnt',
+            'text_like',       'text_unlike',    'attribute_is',
+            'attribute_isnt',  'attribute_like', 'attribute_unlike',
+            'value_is',        'value_isnt',     'value_like',
+            'value_unlike',    'tag_name_is',    'tag_name_isnt',
+            'tag_name_like',   'tag_name_unlike'
         ];
     }
 );
@@ -41,7 +42,6 @@ sub has_args {
     return ( $hash_fun_args->{$fun_name} // 0 );
 }
 
-
 # install the test methods into the class namespace
 
 sub BUILD {
@@ -50,7 +50,8 @@ sub BUILD {
         unless ( defined( __PACKAGE__->can($method_name) ) ) {
             my $sub = $self->_build_sub($method_name);
             Sub::Install::install_sub(
-                {   code => $sub,
+                {
+                    code => $sub,
                     into => __PACKAGE__,
                     as   => $method_name
                 }
@@ -58,7 +59,6 @@ sub BUILD {
         }
     }
 }
-
 
 1;
 

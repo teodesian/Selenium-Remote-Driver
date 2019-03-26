@@ -20,20 +20,20 @@ for the specific finder functions.
 =cut
 
 sub _build_find_by {
-    my ($self, $by) = @_;
+    my ( $self, $by ) = @_;
 
     return sub {
-        my ($driver, $locator) = @_;
+        my ( $driver, $locator ) = @_;
         my $strategy = $by;
 
         return try {
-            return $driver->find_element($locator, $strategy);
+            return $driver->find_element( $locator, $strategy );
         }
         catch {
             carp $_;
             return 0;
         };
-    }
+      }
 }
 
 1;

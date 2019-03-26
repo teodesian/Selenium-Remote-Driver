@@ -23,7 +23,7 @@ internal-facing concern.
 =cut
 
 has 'wd_context_prefix' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { '/wd/hub' }
 );
 

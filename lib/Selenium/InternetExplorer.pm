@@ -16,12 +16,12 @@ extends 'Selenium::Remote::Driver';
 =cut
 
 has '+browser_name' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'internet_explorer' }
 );
 
 has '+platform' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'WINDOWS' }
 );
 

@@ -90,15 +90,17 @@ our $spec_parsed;
 
 sub get_spec {
     return $spec_parsed if $spec_parsed;
-    my @split = split(/\n/,$spec);
+    my @split = split( /\n/, $spec );
     foreach my $line (@split) {
         next unless $line;
-        my ($method,$uri,$nc_success,$key,@description) =  split(/ +/,$line);
+        my ( $method, $uri, $nc_success, $key, @description ) =
+          split( / +/, $line );
         $spec_parsed->{$key} = {
-           method             => $method,
-           url                => $uri,
-           no_content_success => int($nc_success), #XXX this *should* always be 0, but specs lie
-           description        => join(' ',@description),
+            method             => $method,
+            url                => $uri,
+            no_content_success => int($nc_success)
+            ,    #XXX this *should* always be 0, but specs lie
+            description => join( ' ', @description ),
         };
     }
     return $spec_parsed;
@@ -130,29 +132,23 @@ New Stuff:
 =cut
 
 has '_caps' => (
-    is     => 'lazy',
-    reader => 'get_caps',
+    is      => 'lazy',
+    reader  => 'get_caps',
     builder => sub {
         return [
-            'browserName',
-            'acceptInsecureCerts',
-            'browserVersion',
-            'platformName',
-            'proxy',
-            'pageLoadStrategy',
-            'setWindowRect',
-            'timeouts',
-            'unhandledPromptBehavior',
-            'moz:firefoxOptions',
+            'browserName',             'acceptInsecureCerts',
+            'browserVersion',          'platformName',
+            'proxy',                   'pageLoadStrategy',
+            'setWindowRect',           'timeouts',
+            'unhandledPromptBehavior', 'moz:firefoxOptions',
             'chromeOptions',
         ];
     }
 );
 
-
 has '_caps_map' => (
-    is     => 'lazy',
-    reader => 'get_caps_map',
+    is      => 'lazy',
+    reader  => 'get_caps_map',
     builder => sub {
         return {
             browserName    => 'browserName',
@@ -171,11 +167,12 @@ sub get_params {
     }
 
     #Allow fall-back in the event the command passed doesn't exist
-    return unless $self->get_cmds()->{$args->{command}};
+    return unless $self->get_cmds()->{ $args->{command} };
 
-    my $url     = $self->get_url($args->{command});
+    my $url = $self->get_url( $args->{command} );
 
     my $data = {};
+
     # Do the var substitutions.
     $url =~ s/:sessionId/$args->{'session_id'}/;
     $url =~ s/:id/$args->{'id'}/;
@@ -184,53 +181,68 @@ sub get_params {
     $url =~ s/:other/$args->{'other'}/;
     $url =~ s/:windowHandle/$args->{'window_handle'}/;
 
-    $data->{'method'} = $self->get_method($args->{command});
-    $data->{'no_content_success'} = $self->get_no_content_success($args->{command});
-    $data->{'url'}    = $url;
+    $data->{'method'} = $self->get_method( $args->{command} );
+    $data->{'no_content_success'} =
+      $self->get_no_content_success( $args->{command} );
+    $data->{'url'} = $url;
 
     #URL & data polyfills for the way selenium2 used to do things, etc
     $data->{payload} = {};
-    if ($args->{type} ) {
-        $data->{payload}->{pageLoad} = $args->{ms} if $data->{url} =~ m/timeouts$/ && $args->{type} eq 'page load';
-        $data->{payload}->{script}   = $args->{ms} if $data->{url} =~ m/timeouts$/ && $args->{type} eq 'script';
-        $data->{payload}->{implicit} = $args->{ms} if $data->{url} =~ m/timeouts$/ && $args->{type} eq 'implicit';
+    if ( $args->{type} ) {
+        $data->{payload}->{pageLoad} = $args->{ms}
+          if $data->{url} =~ m/timeouts$/ && $args->{type} eq 'page load';
+        $data->{payload}->{script} = $args->{ms}
+          if $data->{url} =~ m/timeouts$/ && $args->{type} eq 'script';
+        $data->{payload}->{implicit} = $args->{ms}
+          if $data->{url} =~ m/timeouts$/ && $args->{type} eq 'implicit';
     }
 
-    #finder polyfills
-    #orig: class, class_name, css, id, link, link_text, partial_link_text, tag_name, name, xpath
-    #new:  "css selector", "link text", "partial link text", "tag name", "xpath"
-    #map: class, class_name, id, name, link = 'css selector'
-    if ($args->{using} && $args->{value}) {
-        $data->{payload}->{using} = 'css selector'            if grep {$args->{using} eq $_ } ('id', 'class name', 'name');
-        $data->{payload}->{value} = "[id='$args->{value}']"   if $args->{using} eq 'id';
-        $data->{payload}->{value} = ".$args->{value}"         if $args->{using} eq 'class name';
-        $data->{payload}->{value} = "[name='$args->{value}']" if $args->{using} eq 'name';
+#finder polyfills
+#orig: class, class_name, css, id, link, link_text, partial_link_text, tag_name, name, xpath
+#new:  "css selector", "link text", "partial link text", "tag name", "xpath"
+#map: class, class_name, id, name, link = 'css selector'
+    if ( $args->{using} && $args->{value} ) {
+        $data->{payload}->{using} = 'css selector'
+          if grep { $args->{using} eq $_ } ( 'id', 'class name', 'name' );
+        $data->{payload}->{value} = "[id='$args->{value}']"
+          if $args->{using} eq 'id';
+        $data->{payload}->{value} = ".$args->{value}"
+          if $args->{using} eq 'class name';
+        $data->{payload}->{value} = "[name='$args->{value}']"
+          if $args->{using} eq 'name';
     }
-    if ($data->{url} =~ s/timeouts\/async_script$/timeouts/g) {
+    if ( $data->{url} =~ s/timeouts\/async_script$/timeouts/g ) {
         $data->{payload}->{script} = $args->{ms};
-        $data->{payload}->{type}   = 'script'; #XXX chrome doesn't follow the spec
+        $data->{payload}->{type} = 'script'; #XXX chrome doesn't follow the spec
     }
-    if ( $data->{url} =~ s/timeouts\/implicit_wait$/timeouts/g) {
+    if ( $data->{url} =~ s/timeouts\/implicit_wait$/timeouts/g ) {
         $data->{payload}->{implicit} = $args->{ms};
-        $data->{payload}->{type}     = 'implicit'; #XXX chrome doesn't follow the spec
+        $data->{payload}->{type} =
+          'implicit';                        #XXX chrome doesn't follow the spec
     }
-    $data->{payload}->{value}    = $args->{text}          if $args->{text} && $args->{command} ne 'sendKeysToElement';
-    $data->{payload}->{handle}   = $args->{window_handle} if grep { $args->{command} eq $_ } qw{fullscreenWindow minimizeWindow maximizeWindow};
+    $data->{payload}->{value} = $args->{text}
+      if $args->{text} && $args->{command} ne 'sendKeysToElement';
+    $data->{payload}->{handle} = $args->{window_handle}
+      if grep { $args->{command} eq $_ }
+      qw{fullscreenWindow minimizeWindow maximizeWindow};
     return $data;
 }
 
 sub parse_response {
-    my ($self,undef,$resp) = @_;
+    my ( $self, undef, $resp ) = @_;
 
     if ( ref($resp) eq 'HASH' ) {
         if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
             return $resp->{cmd_return};
         }
         my $msg = "Error while executing command";
-        if (ref $resp->{cmd_return} eq 'HASH' ) {
-            $msg .= ": $resp->{cmd_return}{error}"   if $resp->{cmd_return}{error};
-            $msg .= ": $resp->{cmd_return}{message}" if $resp->{cmd_return}{message};
-        } else {
+        if ( ref $resp->{cmd_return} eq 'HASH' ) {
+            $msg .= ": $resp->{cmd_return}{error}"
+              if $resp->{cmd_return}{error};
+            $msg .= ": $resp->{cmd_return}{message}"
+              if $resp->{cmd_return}{message};
+        }
+        else {
             $msg .= ": $resp->{cmd_return}";
         }
         croak $msg;
@@ -245,11 +257,13 @@ sub get_spec_differences {
     my $v2_spec = Selenium::Remote::Commands->new()->get_cmds();
     my $v3_spec = Selenium::Remote::Spec->new()->get_cmds();
 
-    foreach my $key (keys(%$v2_spec)) {
-        print "v2 $key NOT present in v3 spec!!!\n" unless any { $_ eq $key } keys(%$v3_spec);
+    foreach my $key ( keys(%$v2_spec) ) {
+        print "v2 $key NOT present in v3 spec!!!\n"
+          unless any { $_ eq $key } keys(%$v3_spec);
     }
-    foreach my $key (keys(%$v3_spec)) {
-        print "v3 $key NOT present in v2 spec!!!\n" unless any { $_ eq $key } keys(%$v2_spec);
+    foreach my $key ( keys(%$v3_spec) ) {
+        print "v3 $key NOT present in v2 spec!!!\n"
+          unless any { $_ eq $key } keys(%$v2_spec);
     }
 }
 

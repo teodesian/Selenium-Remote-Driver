@@ -9,7 +9,7 @@ use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
 
 require Exporter;
-our @ISA = qw/Exporter/;
+our @ISA       = qw/Exporter/;
 our @EXPORT_OK = qw/find_open_port_above find_open_port probe_port/;
 
 =for Pod::Coverage *EVERYTHING*
@@ -44,6 +44,6 @@ sub probe_port {
     return IO::Socket::INET->new(
         PeerAddr => '127.0.0.1',
         PeerPort => $port,
-        Timeout => 3
+        Timeout  => 3
     );
 }

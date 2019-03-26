@@ -7,7 +7,8 @@ use warnings;
 use Moo;
 use Carp;
 use Selenium::Firefox::Binary qw/firefox_path/;
-use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary coerce_firefox_binary/;
+use Selenium::CanStartBinary::FindBinary
+  qw/coerce_simple_binary coerce_firefox_binary/;
 extends 'Selenium::Remote::Driver';
 
 =head1 SYNOPSIS
@@ -94,7 +95,7 @@ Firefox.
 =cut
 
 has '+browser_name' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'firefox' }
 );
 
@@ -114,9 +115,9 @@ older FF browsers do not use the separate driver binary startup.
 =cut
 
 has 'binary' => (
-    is => 'lazy',
-    coerce => \&coerce_simple_binary,
-    default => sub { 'geckodriver' },
+    is        => 'lazy',
+    coerce    => \&coerce_simple_binary,
+    default   => sub { 'geckodriver' },
     predicate => 1
 );
 
@@ -135,7 +136,7 @@ actual port turned out to be.
 =cut
 
 has 'binary_port' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { 9090 }
 );
 
@@ -154,14 +155,18 @@ result some options may be overwritten or ignored.
 =cut
 
 has '_binary_args' => (
-    is => 'lazy',
+    is      => 'lazy',
     builder => sub {
         my ($self) = @_;
 
         if ( $self->marionette_enabled ) {
-            my $args = ' --port ' . $self->port
-              . ' --marionette-port ' . $self->marionette_binary_port
-              . ' --binary "' . $self->firefox_binary . '"';
+            my $args =
+                ' --port '
+              . $self->port
+              . ' --marionette-port '
+              . $self->marionette_binary_port
+              . ' --binary "'
+              . $self->firefox_binary . '"';
 
             return $args;
         }
@@ -172,11 +177,11 @@ has '_binary_args' => (
 );
 
 has '+wd_context_prefix' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub {
         my ($self) = @_;
 
-        if ($self->marionette_enabled) {
+        if ( $self->marionette_enabled ) {
             return '';
         }
         else {
@@ -206,7 +211,7 @@ not do anything useful.
 =cut
 
 has 'marionette_binary_port' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { 2828 }
 );
 
@@ -224,7 +229,7 @@ start Firefox 47 or older, you must pass C<< marionette_enabled => 0 >>.
 =cut
 
 has 'marionette_enabled' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => 1
 );
 
@@ -247,14 +252,14 @@ directly start up.
 =cut
 
 has 'firefox_binary' => (
-    is => 'lazy',
-    coerce => \&coerce_firefox_binary,
+    is        => 'lazy',
+    coerce    => \&coerce_firefox_binary,
     predicate => 1,
-    builder => 'firefox_path'
+    builder   => 'firefox_path'
 );
 
 has '_execute_script_suffix' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => 'Gecko'
 );
 

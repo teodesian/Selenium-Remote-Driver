@@ -37,7 +37,7 @@ C<01-driver.t>.
 =cut
 
 has calling_file => (
-    is => 'ro',
+    is       => 'ro',
     init_arg => 'this_file',
     required => 1
 );
@@ -53,11 +53,12 @@ equal to 1.
 =cut
 
 has record => (
-    is => 'ro',
+    is        => 'ro',
     init_args => undef,
-    default => sub {
-        if (defined $ENV{WD_MOCKING_RECORD}
-              && $ENV{WD_MOCKING_RECORD} == 1) {
+    default   => sub {
+        if ( defined $ENV{WD_MOCKING_RECORD}
+            && $ENV{WD_MOCKING_RECORD} == 1 )
+        {
             return 1;
         }
         else {
@@ -67,13 +68,13 @@ has record => (
 );
 
 has base_caps => (
-    is => 'rw',
-    lazy => 1,
+    is      => 'rw',
+    lazy    => 1,
     default => sub {
         my ($self) = @_;
         my $args = {
             browser_name => 'firefox',
-            remote_conn => $self->mock_remote_conn
+            remote_conn  => $self->mock_remote_conn
         };
 
         return $args;
@@ -81,14 +82,12 @@ has base_caps => (
 );
 
 has mock_remote_conn => (
-    is => 'ro',
-    lazy => 1,
+    is      => 'ro',
+    lazy    => 1,
     builder => sub {
         my ($self) = @_;
-        if ($self->record) {
-            return Selenium::Remote::Mock::RemoteConnection->new(
-                record => 1
-            );
+        if ( $self->record ) {
+            return Selenium::Remote::Mock::RemoteConnection->new( record => 1 );
         }
         else {
             return Selenium::Remote::Mock::RemoteConnection->new(
@@ -100,8 +99,8 @@ has mock_remote_conn => (
 );
 
 has mock_file => (
-    is => 'ro',
-    lazy => 1,
+    is      => 'ro',
+    lazy    => 1,
     builder => sub {
         my ($self) = @_;
 
@@ -110,15 +109,16 @@ has mock_file => (
         # to the folder that the *.t files live in - that is, `t`.
         my $mock_folder = $FindBin::Bin . '/mock-recordings/';
 
-        my $test_name = lc($self->calling_file);
+        my $test_name = lc( $self->calling_file );
         $test_name =~ s/\.t$//;
 
         my $mock_file = $mock_folder . $test_name . '-mock.json';
 
         # If we're replaying, we need a mock to read from. Otherwise,
         # we can't do anything
-        if (not $self->record) {
-            plan skip_all => "Mocking of tests is not been enabled for this platform"
+        if ( not $self->record ) {
+            plan skip_all =>
+              "Mocking of tests is not been enabled for this platform"
               unless -e $mock_file;
         }
 
@@ -127,7 +127,7 @@ has mock_file => (
 );
 
 has website => (
-    is => 'ro',
+    is      => 'ro',
     default => sub {
         my ($self) = @_;
         my $port = 63636;
@@ -137,14 +137,14 @@ has website => (
 );
 
 has domain => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'localhost' }
 );
 
 sub DEMOLISH {
     my ($self) = @_;
-    if ($self->record) {
-        $self->mock_remote_conn->dump_session_store($self->mock_file);
+    if ( $self->record ) {
+        $self->mock_remote_conn->dump_session_store( $self->mock_file );
     }
 }
 

@@ -47,8 +47,8 @@ use constant FINDERS => {
     xpath             => 'xpath',
 };
 
-our $FORCE_WD2 = 0;
-our $FORCE_WD3 = 0;
+our $FORCE_WD2            = 0;
+our $FORCE_WD3            = 0;
 our %CURRENT_ACTION_CHAIN = ( actions => [] );
 
 =for Pod::Coverage BUILD
@@ -522,21 +522,21 @@ C<eval>, or use the parameterized versions find_element_*).
 =cut
 
 has 'remote_server_addr' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'localhost' )},
-    default => sub {'localhost'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 'localhost' ) },
+    default   => sub { 'localhost' },
     predicate => 1
 );
 
 has 'browser_name' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'firefox' )},
-    default => sub {'firefox'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 'firefox' ) },
+    default => sub { 'firefox' },
 );
 
 has 'base_url' => (
-    is      => 'lazy',
-    coerce  => sub {
+    is     => 'lazy',
+    coerce => sub {
         my $base_url = shift;
         $base_url =~ s|/$||;
         return $base_url;
@@ -545,38 +545,37 @@ has 'base_url' => (
 );
 
 has 'platform' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'ANY' )},
-    default => sub {'ANY'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 'ANY' ) },
+    default => sub { 'ANY' },
 );
 
 has 'port' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : '4444' )},
-    default => sub {'4444'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : '4444' ) },
+    default   => sub { '4444' },
     predicate => 1
 );
 
 has 'version' => (
     is      => 'rw',
-    default => sub {''},
+    default => sub { '' },
 );
 
 has 'webelement_class' => (
     is      => 'rw',
-    default => sub {'Selenium::Remote::WebElement'},
+    default => sub { 'Selenium::Remote::WebElement' },
 );
-
 
 has 'default_finder' => (
     is      => 'rw',
     coerce  => sub { __PACKAGE__->FINDERS->{ $_[0] } },
-    default => sub {'xpath'},
+    default => sub { 'xpath' },
 );
 
 has 'session_id' => (
     is      => 'rw',
-    default => sub {undef},
+    default => sub { undef },
 );
 
 has 'remote_conn' => (
@@ -593,7 +592,7 @@ has 'remote_conn' => (
 );
 
 has 'error_handler' => (
-    is => 'rw',
+    is     => 'rw',
     coerce => sub {
         my ($maybe_coderef) = @_;
 
@@ -604,7 +603,7 @@ has 'error_handler' => (
             croak 'The error handler must be a code ref.';
         }
     },
-    clearer => 1,
+    clearer   => 1,
     predicate => 1
 );
 
@@ -628,9 +627,9 @@ has 'commands_v3' => (
 );
 
 has 'auto_close' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 1 )},
-    default => sub {1},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 1 ) },
+    default => sub { 1 },
 );
 
 has 'pid' => (
@@ -659,15 +658,16 @@ has 'proxy' => (
                 croak "proxyAutoconfigUrl not provided\n";
             }
             elsif ( not( $proxy->{proxyAutoconfigUrl} =~ /^(http|file)/g ) ) {
-                croak "proxyAutoconfigUrl should be of format http:// or file://";
+                croak
+                  "proxyAutoconfigUrl should be of format http:// or file://";
             }
 
             if ( $proxy->{proxyAutoconfigUrl} =~ /^file/ ) {
                 my $pac_url = $proxy->{proxyAutoconfigUrl};
-                my $file = $pac_url;
+                my $file    = $pac_url;
                 $file =~ s{^file://}{};
 
-                if (! -e $file) {
+                if ( !-e $file ) {
                     warn "proxyAutoConfigUrl file does not exist: '$pac_url'";
                 }
             }
@@ -682,18 +682,19 @@ has 'extra_capabilities' => (
 );
 
 has 'firefox_profile' => (
-    is        => 'rw',
-    coerce    => sub {
+    is     => 'rw',
+    coerce => sub {
         my $profile = shift;
-        unless (Scalar::Util::blessed($profile)
-          && $profile->isa('Selenium::Firefox::Profile')) {
+        unless ( Scalar::Util::blessed($profile)
+            && $profile->isa('Selenium::Firefox::Profile') )
+        {
             croak "firefox_profile should be a Selenium::Firefox::Profile\n";
         }
 
         return $profile;
     },
     predicate => 'has_firefox_profile',
-    clearer => 1
+    clearer   => 1
 );
 
 has 'desired_capabilities' => (
@@ -728,7 +729,7 @@ has 'inner_window_size' => (
 # difference.
 
 has '_execute_script_suffix' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => ''
 );
 
@@ -739,7 +740,7 @@ sub BUILD {
     my $self = shift;
 
     if ( !( defined $self->session_id ) ) {
-        if ($self->has_desired_capabilities) {
+        if ( $self->has_desired_capabilities ) {
             $self->new_desired_session( $self->desired_capabilities );
         }
         else {
@@ -751,32 +752,35 @@ sub BUILD {
     if ( !( defined $self->session_id ) ) {
         croak "Could not establish a session with the remote server\n";
     }
-    elsif ($self->has_inner_window_size) {
+    elsif ( $self->has_inner_window_size ) {
         my $size = $self->inner_window_size;
         $self->set_inner_window_size(@$size);
     }
 
     # Setup non-croaking, parameter versions of finders
-    foreach my $by (keys %{ $self->FINDERS }) {
+    foreach my $by ( keys %{ $self->FINDERS } ) {
         my $finder_name = 'find_element_by_' . $by;
+
         # In case we get instantiated multiple times, we don't want to
         # install into the name space every time.
-        unless ($self->can($finder_name)) {
+        unless ( $self->can($finder_name) ) {
             my $find_sub = $self->_build_find_by($by);
 
-            Sub::Install::install_sub({
-                code => $find_sub,
-                into => __PACKAGE__,
-                as   => $finder_name,
-            });
+            Sub::Install::install_sub(
+                {
+                    code => $find_sub,
+                    into => __PACKAGE__,
+                    as   => $finder_name,
+                }
+            );
         }
     }
 }
 
 sub new_from_caps {
-    my ($self, %args) = @_;
+    my ( $self, %args ) = @_;
 
-    if (not exists $args{desired_capabilities}) {
+    if ( not exists $args{desired_capabilities} ) {
         $args{desired_capabilities} = {};
     }
 
@@ -784,7 +788,7 @@ sub new_from_caps {
 }
 
 sub DEMOLISH {
-    my ($self, $in_global_destruction) = @_;
+    my ( $self, $in_global_destruction ) = @_;
     return if $$ != $self->pid;
     return if $in_global_destruction;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
@@ -799,15 +803,16 @@ sub DEMOLISH {
 around '_execute_command' => sub {
     my $orig = shift;
     my $self = shift;
+
     # copy @_ because it gets lost in the way
     my @args = @_;
     my $return_value;
     try {
-        $return_value = $orig->($self,@args);
+        $return_value = $orig->( $self, @args );
     }
     catch {
-        if ($self->has_error_handler) {
-            $return_value = $self->error_handler->($self,$_,@args);
+        if ( $self->has_error_handler ) {
+            $return_value = $self->error_handler->( $self, $_, @args );
         }
         else {
             croak $_;
@@ -826,7 +831,8 @@ sub _execute_command {
     print "Prepping $res->{command}\n" if $self->{debug};
 
     #webdriver 3 shims
-    return $self->{capabilities}     if $res->{command} eq 'getCapabilities' && $self->{capabilities};
+    return $self->{capabilities}
+      if $res->{command} eq 'getCapabilities' && $self->{capabilities};
     $res->{ms}    = $params->{ms}    if $params->{ms};
     $res->{type}  = $params->{type}  if $params->{type};
     $res->{text}  = $params->{text}  if $params->{text};
@@ -834,15 +840,20 @@ sub _execute_command {
     $res->{value} = $params->{value} if $params->{value};
 
     print "Executing $res->{command}\n" if $self->{debug};
-    my $resource = $self->{is_wd3} ? $self->commands_v3->get_params($res) : $self->commands->get_params($res);
+    my $resource =
+        $self->{is_wd3}
+      ? $self->commands_v3->get_params($res)
+      : $self->commands->get_params($res);
+
     #Fall-back to legacy if wd3 command doesn't exist
-    if (!$resource && $self->{is_wd3}) {
-        print "Falling back to legacy selenium method for $res->{command}\n" if $self->{debug};
+    if ( !$resource && $self->{is_wd3} ) {
+        print "Falling back to legacy selenium method for $res->{command}\n"
+          if $self->{debug};
         $resource = $self->commands->get_params($res);
     }
 
     #XXX InternetExplorerDriver quirks
-    if ($self->{is_wd3} && $self->browser_name eq 'internet explorer') {
+    if ( $self->{is_wd3} && $self->browser_name eq 'internet explorer' ) {
         delete $params->{ms};
         delete $params->{type};
         delete $resource->{payload}->{type};
@@ -852,11 +863,12 @@ sub _execute_command {
 
     if ($resource) {
         $params = {} unless $params;
-        my $resp = $self->remote_conn->request( $resource, $params);
+        my $resp = $self->remote_conn->request( $resource, $params );
 
-        #In general, the parse_response for v3 is better, which is why we use it *even if* we are falling back.
-        return $self->commands_v3->parse_response($res,$resp) if $self->{is_wd3};
-        return $self->commands->parse_response($res,$resp);
+#In general, the parse_response for v3 is better, which is why we use it *even if* we are falling back.
+        return $self->commands_v3->parse_response( $res, $resp )
+          if $self->{is_wd3};
+        return $self->commands->parse_response( $res, $resp );
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
@@ -889,24 +901,25 @@ sub new_session {
 
     my $args = {
         'desiredCapabilities' => {
-            'browserName'        => $self->browser_name,
-            'platform'           => $self->platform,
-            'javascriptEnabled'  => $self->javascript,
-            'version'            => $self->version,
-            'acceptSslCerts'     => $self->accept_ssl_certs,
+            'browserName'       => $self->browser_name,
+            'platform'          => $self->platform,
+            'javascriptEnabled' => $self->javascript,
+            'version'           => $self->version,
+            'acceptSslCerts'    => $self->accept_ssl_certs,
             %$extra_capabilities,
         },
     };
     $args->{'extra_capabilities'} = \%$extra_capabilities unless $FORCE_WD2;
 
-
     if ( defined $self->proxy ) {
         $args->{desiredCapabilities}->{proxy} = $self->proxy;
     }
 
-    if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
-        && $self->has_firefox_profile) {
-        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile->_encode;
+    if (   $args->{desiredCapabilities}->{browserName} =~ /firefox/i
+        && $self->has_firefox_profile )
+    {
+        $args->{desiredCapabilities}->{firefox_profile} =
+          $self->firefox_profile->_encode;
     }
 
     $self->_request_new_session($args);
@@ -922,55 +935,88 @@ Sort of an analog to new_from_caps.
 sub new_desired_session {
     my ( $self, $caps ) = @_;
 
-    $self->_request_new_session({
-        desiredCapabilities => $caps
-    });
+    $self->_request_new_session(
+        {
+            desiredCapabilities => $caps
+        }
+    );
 }
 
 sub _request_new_session {
     my ( $self, $args ) = @_;
 
     #XXX UGLY shim for webdriver3
-    $args->{capabilities}->{alwaysMatch} = clone($args->{desiredCapabilities});
+    $args->{capabilities}->{alwaysMatch} =
+      clone( $args->{desiredCapabilities} );
     my $cmap = $self->commands_v3->get_caps_map();
     my $caps = $self->commands_v3->get_caps();
-    foreach my $cap (keys(%{$args->{capabilities}->{alwaysMatch} })) {
-        #Handle browser specific capabilities
-        if (exists($args->{desiredCapabilities}->{browserName}) && $cap eq 'extra_capabilities') {
+    foreach my $cap ( keys( %{ $args->{capabilities}->{alwaysMatch} } ) ) {
 
-            if (exists $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args}) {
-                $args->{capabilities}->{alwaysMatch}->{$cap}->{args} = $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args};
+        #Handle browser specific capabilities
+        if ( exists( $args->{desiredCapabilities}->{browserName} )
+            && $cap eq 'extra_capabilities' )
+        {
+
+            if (
+                exists $args->{capabilities}->{alwaysMatch}
+                ->{'moz:firefoxOptions'}->{args} )
+            {
+                $args->{capabilities}->{alwaysMatch}->{$cap}->{args} =
+                  $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
+                  ->{args};
             }
-            $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'} = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'firefox';
-            #XXX the chrome documentation is lies, you can't do this yet
-            #$args->{capabilities}->{alwaysMatch}->{'chromeOptions'}      = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'chrome';
-            #Does not appear there are any MSIE based options, so let's just let that be
+            $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'} =
+              $args->{capabilities}->{alwaysMatch}->{$cap}
+              if $args->{desiredCapabilities}->{browserName} eq 'firefox';
+
+#XXX the chrome documentation is lies, you can't do this yet
+#$args->{capabilities}->{alwaysMatch}->{'chromeOptions'}      = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'chrome';
+#Does not appear there are any MSIE based options, so let's just let that be
         }
-        if (exists($args->{desiredCapabilities}->{browserName}) && $args->{desiredCapabilities}->{browserName} eq 'firefox' && $cap eq 'firefox_profile') {
-            if (ref $args->{capabilities}->{alwaysMatch}->{$cap} eq 'Selenium::Firefox::Profile') {
-                #XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
-                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{args} = ['-profile', $args->{capabilities}->{alwaysMatch}->{$cap}->{profile_dir}->dirname()];
-            } else {
-                #previously undocumented feature that we can pass the encoded profile
-                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}->{profile} = $args->{capabilities}->{alwaysMatch}->{$cap};
+        if (   exists( $args->{desiredCapabilities}->{browserName} )
+            && $args->{desiredCapabilities}->{browserName} eq 'firefox'
+            && $cap eq 'firefox_profile' )
+        {
+            if (
+                ref $args->{capabilities}->{alwaysMatch}->{$cap} eq
+                'Selenium::Firefox::Profile' )
+            {
+#XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
+                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
+                  ->{args} = [
+                    '-profile',
+                    $args->{capabilities}->{alwaysMatch}->{$cap}->{profile_dir}
+                      ->dirname()
+                  ];
+            }
+            else {
+           #previously undocumented feature that we can pass the encoded profile
+                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
+                  ->{profile} = $args->{capabilities}->{alwaysMatch}->{$cap};
             }
         }
-        foreach my $newkey (keys(%$cmap)) {
-            if ($newkey eq $cap) {
+        foreach my $newkey ( keys(%$cmap) ) {
+            if ( $newkey eq $cap ) {
                 last if $cmap->{$newkey} eq $cap;
-                $args->{capabilities}->{alwaysMatch}->{$cmap->{$newkey}} = $args->{capabilities}->{alwaysMatch}->{$cap};
+                $args->{capabilities}->{alwaysMatch}->{ $cmap->{$newkey} } =
+                  $args->{capabilities}->{alwaysMatch}->{$cap};
                 delete $args->{capabilities}->{alwaysMatch}->{$cap};
                 last;
             }
         }
-        delete $args->{capabilities}->{alwaysMatch}->{$cap} if !any { $_ eq $cap } @$caps;
+        delete $args->{capabilities}->{alwaysMatch}->{$cap}
+          if !any { $_ eq $cap } @$caps;
     }
-    delete $args->{desiredCapabilities} if $FORCE_WD3; #XXX fork working-around busted fallback in firefox
-    delete $args->{capabilities} if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
+    delete $args->{desiredCapabilities}
+      if $FORCE_WD3;    #XXX fork working-around busted fallback in firefox
+    delete $args->{capabilities}
+      if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
 
     #Delete compatibility layer when using drivers directly
-    if ($self->isa('Selenium::Firefox')) {
-        if ( exists $args->{capabilities} && exists $args->{capabilities}->{alwaysMatch} ) {
+    if ( $self->isa('Selenium::Firefox') ) {
+        if (   exists $args->{capabilities}
+            && exists $args->{capabilities}->{alwaysMatch} )
+        {
             delete $args->{capabilities}->{alwaysMatch}->{browserName};
             delete $args->{capabilities}->{alwaysMatch}->{browserVersion};
             delete $args->{capabilities}->{alwaysMatch}->{platformName};
@@ -984,14 +1030,12 @@ sub _request_new_session {
     # TODO: rewrite the testing better, this is so fragile.
     my $resource_new_session = {
         method => $self->commands->get_method('newSession'),
-        url => $self->commands->get_url('newSession'),
-        no_content_success => $self->commands->get_no_content_success('newSession'),
+        url    => $self->commands->get_url('newSession'),
+        no_content_success =>
+          $self->commands->get_no_content_success('newSession'),
     };
     my $rc = $self->remote_conn;
-    my $resp = $rc->request(
-        $resource_new_session,
-        $args,
-    );
+    my $resp = $rc->request( $resource_new_session, $args, );
 
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
         $self->session_id( $resp->{'sessionId'} );
@@ -999,7 +1043,7 @@ sub _request_new_session {
     else {
         my $error = 'Could not create new session';
 
-        if (ref $resp->{cmd_return} eq 'HASH') {
+        if ( ref $resp->{cmd_return} eq 'HASH' ) {
             $error .= ': ' . $resp->{cmd_return}->{message};
         }
         else {
@@ -1009,29 +1053,35 @@ sub _request_new_session {
     }
 
     #Webdriver 3 - best guess that this is 'whats goin on'
-    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{capabilities}) {
-        $self->{is_wd3} = 1;
+    if ( ref $resp->{cmd_return} eq 'HASH'
+        && $resp->{cmd_return}->{capabilities} )
+    {
+        $self->{is_wd3}           = 1;
         $self->{emulate_jsonwire} = 1;
-        $self->{capabilities} = $resp->{cmd_return}->{capabilities};
+        $self->{capabilities}     = $resp->{cmd_return}->{capabilities};
     }
 
     #XXX chromedriver DOES NOT FOLLOW SPEC!
-    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{chrome}) {
-        if (defined $resp->{cmd_return}->{setWindowRect}) { #XXX i'm inferring we are wd3 based on the presence of this
-            $self->{is_wd3} = 1;
+    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{chrome} ) {
+        if ( defined $resp->{cmd_return}->{setWindowRect} )
+        {    #XXX i'm inferring we are wd3 based on the presence of this
+            $self->{is_wd3}           = 1;
             $self->{emulate_jsonwire} = 1;
-            $self->{capabilities} = $resp->{cmd_return};
+            $self->{capabilities}     = $resp->{cmd_return};
         }
     }
 
     #XXX unsurprisingly, neither does microsoft
-    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{pageLoadStrategy} && $self->browser_name eq 'MicrosoftEdge') {
-        $self->{is_wd3} = 1;
+    if (   ref $resp->{cmd_return} eq 'HASH'
+        && $resp->{cmd_return}->{pageLoadStrategy}
+        && $self->browser_name eq 'MicrosoftEdge' )
+    {
+        $self->{is_wd3}           = 1;
         $self->{emulate_jsonwire} = 1;
-        $self->{capabilities} = $resp->{cmd_return};
+        $self->{capabilities}     = $resp->{cmd_return};
     }
 
-    return ($args,$resp);
+    return ( $args, $resp );
 }
 
 =head2 is_webdriver_3
@@ -1177,33 +1227,37 @@ sub get_alert_text {
 sub send_keys_to_active_element {
     my ( $self, @strings ) = @_;
 
-    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge}) ) {
-        @strings = map { split('',$_) } @strings;
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
+        @strings = map { split( '', $_ ) } @strings;
         my @acts = map {
             (
                 {
-                    type => 'keyDown',
-                    value  => $_,
+                    type  => 'keyDown',
+                    value => $_,
                 },
                 {
-                    type => 'keyUp',
-                    value  => $_,
+                    type  => 'keyUp',
+                    value => $_,
                 }
-            )
+              )
         } @strings;
 
-        my $action = { actions => [{
-            id      => 'key',
-            type    => 'key',
-            actions => \@acts,
-        }]};
+        my $action = {
+            actions => [
+                {
+                    id      => 'key',
+                    type    => 'key',
+                    actions => \@acts,
+                }
+            ]
+        };
         return $self->general_action(%$action);
     }
 
-    my $res = { 'command' => 'sendKeysToActiveElement' };
-    my $params = {
-        'value' => \@strings,
-    };
+    my $res    = { 'command' => 'sendKeysToActiveElement' };
+    my $params = { 'value'   => \@strings, };
     return $self->_execute_command( $res, $params );
 }
 
@@ -1320,7 +1374,7 @@ consider L<Selenium::ActionChains>, which is shipped with this distribution inst
 =cut
 
 sub general_action {
-    my ($self,%action) = @_;
+    my ( $self, %action ) = @_;
 
     _queue_action(%action);
     my $res = { 'command' => 'generalAction' };
@@ -1331,19 +1385,23 @@ sub general_action {
 
 sub _queue_action {
     my (%action) = @_;
-    if (ref $action{actions} eq 'ARRAY') {
-        foreach my $live_action (@{$action{actions}}) {
+    if ( ref $action{actions} eq 'ARRAY' ) {
+        foreach my $live_action ( @{ $action{actions} } ) {
             my $existing_action;
-            foreach my $global_action (@{$CURRENT_ACTION_CHAIN{actions}}) {
-                if ($global_action->{id} eq $live_action->{id}) {
+            foreach my $global_action ( @{ $CURRENT_ACTION_CHAIN{actions} } ) {
+                if ( $global_action->{id} eq $live_action->{id} ) {
                     $existing_action = $global_action;
                     last;
                 }
             }
             if ($existing_action) {
-                push(@{$existing_action->{actions}},@{$live_action->{actions}});
-            } else {
-                push(@{$CURRENT_ACTION_CHAIN{actions}},$live_action);
+                push(
+                    @{ $existing_action->{actions} },
+                    @{ $live_action->{actions} }
+                );
+            }
+            else {
+                push( @{ $CURRENT_ACTION_CHAIN{actions} }, $live_action );
             }
         }
     }
@@ -1364,7 +1422,7 @@ sub release_general_action {
     my ($self) = @_;
     my $res = { 'command' => 'releaseGeneralAction' };
     %CURRENT_ACTION_CHAIN = ( actions => [] );
-    return $self->_execute_command( $res );
+    return $self->_execute_command($res);
 }
 
 =head2 mouse_move_to_location
@@ -1398,22 +1456,30 @@ sub mouse_move_to_location {
     my ( $self, %params ) = @_;
     $params{element} = $params{element}{id} if exists $params{element};
 
-    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge}) ) {
-        my $origin = $params{element};
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
+        my $origin      = $params{element};
         my $move_action = {
-            type => "pointerMove",
+            type     => "pointerMove",
             duration => 0,
-            x => $params{xoffset} // 0,
-            y => $params{yoffset} // 0,
+            x        => $params{xoffset} // 0,
+            y        => $params{yoffset} // 0,
         };
-        $move_action->{origin} = {'element-6066-11e4-a52e-4f735466cecf' => $origin } if $origin;
+        $move_action->{origin} =
+          { 'element-6066-11e4-a52e-4f735466cecf' => $origin }
+          if $origin;
 
-        _queue_action( actions => [{
-                type => "pointer",
-                id => 'mouse',
-                "parameters" => { "pointerType" => "mouse" },
-                actions => [$move_action],
-        }]);
+        _queue_action(
+            actions => [
+                {
+                    type         => "pointer",
+                    id           => 'mouse',
+                    "parameters" => { "pointerType" => "mouse" },
+                    actions      => [$move_action],
+                }
+            ]
+        );
         return 1;
     }
 
@@ -1466,7 +1532,7 @@ sub get_capabilities {
 
 sub get_timeouts {
     my $self = shift;
-    my $res    = { 'command' => 'getTimeouts' };
+    my $res = { 'command' => 'getTimeouts' };
     return $self->_execute_command( $res, {} );
 }
 
@@ -1492,16 +1558,20 @@ sub get_timeouts {
 
 sub set_timeout {
     my ( $self, $type, $ms ) = @_;
-    if ( not defined $type  ) {
+    if ( not defined $type ) {
         croak "Expecting type";
     }
-    $ms = _coerce_timeout_ms( $ms );
-    $type = 'pageLoad' if $type eq 'page load' && $self->browser_name ne 'MicrosoftEdge'; #XXX SHIM they changed the WC3 standard mid stream
+    $ms   = _coerce_timeout_ms($ms);
+    $type = 'pageLoad'
+      if $type eq 'page load'
+      && $self->browser_name ne
+      'MicrosoftEdge';    #XXX SHIM they changed the WC3 standard mid stream
 
-    my $res = { 'command' => 'setTimeout' };
-    my $params = { $type => $ms };
+    my $res    = { 'command' => 'setTimeout' };
+    my $params = { $type     => $ms };
+
     #XXX edge still follows earlier versions of the WC3 standard
-    if ($self->browser_name eq 'MicrosoftEdge') {
+    if ( $self->browser_name eq 'MicrosoftEdge' ) {
         $params->{ms}   = $ms;
         $params->{type} = $type;
     }
@@ -1527,9 +1597,9 @@ sub set_timeout {
 sub set_async_script_timeout {
     my ( $self, $ms ) = @_;
 
-    return $self->set_timeout('script',$ms) if $self->{is_wd3};
+    return $self->set_timeout( 'script', $ms ) if $self->{is_wd3};
 
-    $ms = _coerce_timeout_ms( $ms );
+    $ms = _coerce_timeout_ms($ms);
     my $res    = { 'command' => 'setAsyncScriptTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -1562,9 +1632,9 @@ sub set_async_script_timeout {
 
 sub set_implicit_wait_timeout {
     my ( $self, $ms ) = @_;
-    return $self->set_timeout('implicit',$ms) if $self->{is_wd3};
+    return $self->set_timeout( 'implicit', $ms ) if $self->{is_wd3};
 
-    $ms = _coerce_timeout_ms( $ms );
+    $ms = _coerce_timeout_ms($ms);
     my $res    = { 'command' => 'setImplicitWaitTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -1706,7 +1776,8 @@ sub get_window_size {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'getWindowSize', 'window_handle' => $window };
-    $res = {'command' => 'getWindowRect', handle => $window } if $self->{is_wd3} && $self->browser_name ne 'chrome';
+    $res = { 'command' => 'getWindowRect', handle => $window }
+      if $self->{is_wd3} && $self->browser_name ne 'chrome';
     return $self->_execute_command($res);
 }
 
@@ -1735,7 +1806,8 @@ sub get_window_position {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'getWindowPosition', 'window_handle' => $window };
-    $res = {'command' => 'getWindowRect', handle => $window } if $self->{is_wd3} && $self->browser_name ne 'chrome';
+    $res = { 'command' => 'getWindowRect', handle => $window }
+      if $self->{is_wd3} && $self->browser_name ne 'chrome';
     return $self->_execute_command($res);
 }
 
@@ -1792,13 +1864,13 @@ sub navigate {
 sub get {
     my ( $self, $url ) = @_;
 
-    if ($self->has_base_url && $url !~ m|://|) {
+    if ( $self->has_base_url && $url !~ m|://| ) {
         $url =~ s|^/||;
         $url = $self->base_url . "/" . $url;
     }
 
     my $res    = { 'command' => 'get' };
-    my $params = { 'url'     => $url  };
+    my $params = { 'url'     => $url };
     return $self->_execute_command( $res, $params );
 }
 
@@ -1884,7 +1956,7 @@ sub refresh {
 
 sub has_javascript {
     my $self = shift;
-    return int($self->javascript);
+    return int( $self->javascript );
 }
 
 =head2 execute_async_script
@@ -1927,17 +1999,21 @@ sub execute_async_script {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res = { 'command' => 'executeAsyncScript' . $self->_execute_script_suffix};
+        my $res =
+          { 'command' => 'executeAsyncScript' . $self->_execute_script_suffix };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
-        for ( my $i = 0; $i < @args; $i++ ) {
+        for ( my $i = 0 ; $i < @args ; $i++ ) {
             if ( Scalar::Util::blessed( $args[$i] )
-                 and $args[$i]->isa('Selenium::Remote::WebElement') )
+                and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                if ($self->{is_wd3} && $self->browser_name ne 'chrome') {
-                    $args[$i] = { 'element-6066-11e4-a52e-4f735466cecf' => ( $args[$i] )->{id} };
-                } else {
+                if ( $self->{is_wd3} && $self->browser_name ne 'chrome' ) {
+                    $args[$i] =
+                      { 'element-6066-11e4-a52e-4f735466cecf' =>
+                          ( $args[$i] )->{id} };
+                }
+                else {
                     $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
                 }
             }
@@ -1947,12 +2023,12 @@ sub execute_async_script {
         my $ret = $self->_execute_command( $res, $params );
 
         # replace any ELEMENTS with WebElement
-        if ( ref($ret)
-             and ( ref($ret) eq 'HASH' )
-             and $self->_looks_like_element($ret) )
+        if (    ref($ret)
+            and ( ref($ret) eq 'HASH' )
+            and $self->_looks_like_element($ret) )
         {
             $ret = $self->webelement_class->new(
-                id => $ret,
+                id     => $ret,
                 driver => $self
             );
         }
@@ -1997,17 +2073,21 @@ sub execute_script {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res = { 'command' => 'executeScript' . $self->_execute_script_suffix };
+        my $res =
+          { 'command' => 'executeScript' . $self->_execute_script_suffix };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
-        for ( my $i = 0; $i < @args; $i++ ) {
+        for ( my $i = 0 ; $i < @args ; $i++ ) {
             if ( Scalar::Util::blessed( $args[$i] )
                 and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                if ($self->{is_wd3} && $self->browser_name ne 'chrome') {
-                    $args[$i] = { 'element-6066-11e4-a52e-4f735466cecf' => ( $args[$i] )->{id} };
-                } else {
+                if ( $self->{is_wd3} && $self->browser_name ne 'chrome' ) {
+                    $args[$i] =
+                      { 'element-6066-11e4-a52e-4f735466cecf' =>
+                          ( $args[$i] )->{id} };
+                }
+                else {
                     $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
                 }
             }
@@ -2027,10 +2107,12 @@ sub execute_script {
 # An internal method to check if a return value might be an element
 
 sub _looks_like_element {
-    my ($self, $maybe_element) = @_;
+    my ( $self, $maybe_element ) = @_;
 
-    return (exists $maybe_element->{ELEMENT}
-      or exists $maybe_element->{'element-6066-11e4-a52e-4f735466cecf'});
+    return (
+             exists $maybe_element->{ELEMENT}
+          or exists $maybe_element->{'element-6066-11e4-a52e-4f735466cecf'}
+    );
 }
 
 # _convert_to_webelement
@@ -2042,9 +2124,10 @@ sub _convert_to_webelement {
 
     if ( ref($ret) and ( ref($ret) eq 'HASH' ) ) {
         if ( $self->_looks_like_element($ret) ) {
+
             # replace an ELEMENT with WebElement
             return $self->webelement_class->new(
-                id => $ret,
+                id     => $ret,
                 driver => $self
             );
         }
@@ -2110,7 +2193,6 @@ sub capture_screenshot {
     return 1;
 }
 
-
 =head2 available_engines
 
  Description:
@@ -2165,9 +2247,12 @@ sub switch_to_frame {
 
     my $res = { 'command' => 'switchToFrame' };
     if ( ref $id eq $self->webelement_class ) {
-        if ($self->{is_wd3} && $self->browser_name ne 'chrome') {
-            $params = { 'id' => { 'element-6066-11e4-a52e-4f735466cecf' => $id->{'id'} } };
-        } else {
+        if ( $self->{is_wd3} && $self->browser_name ne 'chrome' ) {
+            $params =
+              { 'id' =>
+                  { 'element-6066-11e4-a52e-4f735466cecf' => $id->{'id'} } };
+        }
+        else {
             $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
         }
     }
@@ -2185,9 +2270,9 @@ This is actually called in that case, supposing you are using WD3 capable server
 =cut
 
 sub switch_to_parent_frame {
-    my ( $self ) = @_;
+    my ($self) = @_;
     my $res = { 'command' => 'switchToParentFrame' };
-    return $self->_execute_command( $res );
+    return $self->_execute_command($res);
 }
 
 =head2 switch_to_window
@@ -2227,8 +2312,8 @@ sub switch_to_window {
     if ( not defined $name ) {
         return 'Window name not provided';
     }
-    my $res    = { 'command' => 'switchToWindow' };
-    my $params = { 'name'  => $name, 'handle' => $name };
+    my $res = { 'command' => 'switchToWindow' };
+    my $params = { 'name' => $name, 'handle' => $name };
     return $self->_execute_command( $res, $params );
 }
 
@@ -2260,14 +2345,17 @@ sub set_window_position {
     if ( not defined $x and not defined $y ) {
         croak "X & Y co-ordinates are required";
     }
-    croak qq{Error: In set_window_size, argument x "$x" isn't numeric} unless Scalar::Util::looks_like_number($x);
-    croak qq{Error: In set_window_size, argument y "$y" isn't numeric} unless Scalar::Util::looks_like_number($y);
-    $x += 0;            # convert to numeric if a string, otherwise they'll be sent as strings
+    croak qq{Error: In set_window_size, argument x "$x" isn't numeric}
+      unless Scalar::Util::looks_like_number($x);
+    croak qq{Error: In set_window_size, argument y "$y" isn't numeric}
+      unless Scalar::Util::looks_like_number($y);
+    $x +=
+      0;  # convert to numeric if a string, otherwise they'll be sent as strings
     $y += 0;
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
-    if ( $self->{is_wd3} && $self->browser_name ne 'chrome') {
-        $res = {'command' => 'setWindowRect', handle => $window };
+    if ( $self->{is_wd3} && $self->browser_name ne 'chrome' ) {
+        $res = { 'command' => 'setWindowRect', handle => $window };
     }
     my $ret = $self->_execute_command( $res, $params );
     return $ret ? 1 : 0;
@@ -2301,14 +2389,17 @@ sub set_window_size {
     if ( not defined $height and not defined $width ) {
         croak "height & width of browser are required";
     }
-    croak qq{Error: In set_window_size, argument height "$height" isn't numeric} unless Scalar::Util::looks_like_number($height);
-    croak qq{Error: In set_window_size, argument width "$width" isn't numeric} unless Scalar::Util::looks_like_number($width);
-    $height += 0;               # convert to numeric if a string, otherwise they'll be sent as strings
+    croak qq{Error: In set_window_size, argument height "$height" isn't numeric}
+      unless Scalar::Util::looks_like_number($height);
+    croak qq{Error: In set_window_size, argument width "$width" isn't numeric}
+      unless Scalar::Util::looks_like_number($width);
+    $height +=
+      0;  # convert to numeric if a string, otherwise they'll be sent as strings
     $width += 0;
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
-    if ( $self->{is_wd3} && $self->browser_name ne 'chrome') {
-        $res = {'command' => 'setWindowRect', handle => $window };
+    if ( $self->{is_wd3} && $self->browser_name ne 'chrome' ) {
+        $res = { 'command' => 'setWindowRect', handle => $window };
     }
     my $ret = $self->_execute_command( $res, $params );
     return $ret ? 1 : 0;
@@ -2339,15 +2430,15 @@ sub set_window_size {
 
 sub maximize_window {
     my ( $self, $window ) = @_;
-    if ($self->{is_wd3} && $self->browser_name eq 'chrome') {
+    if ( $self->{is_wd3} && $self->browser_name eq 'chrome' ) {
         my $h = $self->execute_script(q{return screen.availHeight});
         my $w = $self->execute_script(q{return screen.availWidth});
 
-        return $self->set_window_size($h,$w);
+        return $self->set_window_size( $h, $w );
     }
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
-    my $ret = $self->_execute_command( $res );
+    my $ret = $self->_execute_command($res);
     return $ret ? 1 : 0;
 }
 
@@ -2368,7 +2459,7 @@ sub minimize_window {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'minimizeWindow', 'window_handle' => $window };
-    my $ret = $self->_execute_command( $res );
+    my $ret = $self->_execute_command($res);
     return $ret ? 1 : 0;
 }
 
@@ -2389,7 +2480,7 @@ sub fullscreen_window {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'fullscreenWindow', 'window_handle' => $window };
-    my $ret = $self->_execute_command( $res );
+    my $ret = $self->_execute_command($res);
     return $ret ? 1 : 0;
 }
 
@@ -2442,10 +2533,11 @@ sub get_all_cookies {
 =cut
 
 sub add_cookie {
-    my ( $self, $name, $value, $path, $domain, $secure, $httponly, $expiry ) = @_;
+    my ( $self, $name, $value, $path, $domain, $secure, $httponly, $expiry ) =
+      @_;
 
     if (   ( not defined $name )
-        || ( not defined $value ))
+        || ( not defined $value ) )
     {
         croak "Missing parameters";
     }
@@ -2457,13 +2549,13 @@ sub add_cookie {
 
     my $params = {
         'cookie' => {
-            'name'     => $name,
-            'value'    => $value,
-            'path'     => $path,
-            'secure'   => $secure,
+            'name'   => $name,
+            'value'  => $value,
+            'path'   => $path,
+            'secure' => $secure,
         }
     };
-    $params->{cookie}->{domain}     = $domain if $domain;
+    $params->{cookie}->{domain}     = $domain   if $domain;
     $params->{cookie}->{'httponly'} = $httponly if $httponly;
     $params->{cookie}->{'expiry'}   = $expiry   if $expiry;
 
@@ -2600,12 +2692,13 @@ sub find_element {
     }
 
     my $res = { 'command' => 'findElement' };
-    my $params = $self->_build_find_params($method, $query);
+    my $params = $self->_build_find_params( $method, $query );
     my $ret_data = eval { $self->_execute_command( $res, $params ); };
     if ($@) {
-        if ( $@
-             =~ /(An element could not be located on the page using the given search parameters)/
-         ) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
             # give details on what element wasn't found
             $@ = "$1: $query,$params->{using}";
             local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
@@ -2617,7 +2710,7 @@ sub find_element {
         }
     }
     return $self->webelement_class->new(
-        id => $ret_data,
+        id     => $ret_data,
         driver => $self
     );
 }
@@ -2652,12 +2745,13 @@ sub find_elements {
     }
 
     my $res = { 'command' => 'findElements' };
-    my $params = $self->_build_find_params($method, $query);
+    my $params = $self->_build_find_params( $method, $query );
     my $ret_data = eval { $self->_execute_command( $res, $params ); };
     if ($@) {
-        if ( $@
-             =~ /(An element could not be located on the page using the given search parameters)/
-         ) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
             # give details on what element wasn't found
             $@ = "$1: $query,$params->{using}";
             local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
@@ -2673,12 +2767,12 @@ sub find_elements {
         push(
             @$elem_obj_arr,
             $self->webelement_class->new(
-                id => $_,
+                id     => $_,
                 driver => $self
             )
         );
     }
-    return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
+    return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
 }
 
 =head2 find_child_element
@@ -2718,12 +2812,13 @@ sub find_child_element {
         croak "Missing parameters";
     }
     my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-    my $params = $self->_build_find_params($method, $query);
+    my $params = $self->_build_find_params( $method, $query );
     my $ret_data = eval { $self->_execute_command( $res, $params ); };
     if ($@) {
-        if ( $@
-             =~ /(An element could not be located on the page using the given search parameters)/
-         ) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
             # give details on what element wasn't found
             $@ = "$1: $query,$params->{using}";
             local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
@@ -2735,7 +2830,7 @@ sub find_child_element {
         }
     }
     return $self->webelement_class->new(
-        id => $ret_data,
+        id     => $ret_data,
         driver => $self
     );
 }
@@ -2775,12 +2870,13 @@ sub find_child_elements {
     }
 
     my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-    my $params = $self->_build_find_params($method, $query);
+    my $params = $self->_build_find_params( $method, $query );
     my $ret_data = eval { $self->_execute_command( $res, $params ); };
     if ($@) {
-        if ( $@
-             =~ /(An element could not be located on the page using the given search parameters)/
-         ) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
             # give details on what element wasn't found
             $@ = "$1: $query,$params->{using}";
             local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
@@ -2792,13 +2888,12 @@ sub find_child_elements {
         }
     }
     my $elem_obj_arr = [];
-    my $i = 0;
+    my $i            = 0;
     foreach (@$ret_data) {
-        $elem_obj_arr->[$i] =
-          $self->webelement_class->new(
-              id => $_,
-              driver => $self
-          );
+        $elem_obj_arr->[$i] = $self->webelement_class->new(
+            id     => $_,
+            driver => $self
+        );
         $i++;
     }
     return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
@@ -2859,12 +2954,12 @@ See L</find_element>.
 =cut
 
 sub _build_find_params {
-    my ($self, $method, $query) = @_;
+    my ( $self, $method, $query ) = @_;
 
     my $using = $self->_build_using($method);
 
     # geckodriver doesn't accept name as a valid selector
-    if ($self->isa('Selenium::Firefox') && $using eq 'name') {
+    if ( $self->isa('Selenium::Firefox') && $using eq 'name' ) {
         return {
             using => 'css selector',
             value => qq{[name="$query"]}
@@ -2879,14 +2974,16 @@ sub _build_find_params {
 }
 
 sub _build_using {
-    my ($self, $method) = @_;
+    my ( $self, $method ) = @_;
 
     if ($method) {
-        if ($self->FINDERS->{$method}) {
+        if ( $self->FINDERS->{$method} ) {
             return $self->FINDERS->{$method};
         }
         else {
-            croak 'Bad method, expected: ' . join(', ', keys %{ $self->FINDERS }) . ", got $method";
+            croak 'Bad method, expected: '
+              . join( ', ', keys %{ $self->FINDERS } )
+              . ", got $method";
         }
     }
     else {
@@ -2903,7 +3000,7 @@ sub get_active_element {
     }
     else {
         return $self->webelement_class->new(
-            id => $ret_data,
+            id     => $ret_data,
             driver => $self
         );
     }
@@ -3002,7 +3099,7 @@ sub get_geolocation {
 sub get_log {
     my ( $self, $type ) = @_;
     my $res = { 'command' => 'getLog' };
-    return $self->_execute_command( $res, { type => $type });
+    return $self->_execute_command( $res, { type => $type } );
 }
 
 =head2 get_log_types
@@ -3026,7 +3123,6 @@ sub get_log_types {
     my $res = { 'command' => 'getLogTypes' };
     return $self->_execute_command($res);
 }
-
 
 =head2 set_orientation
 
@@ -3099,19 +3195,25 @@ sub send_modifier {
         $isdown = $isdown =~ /down/ ? 1 : 0;
     }
 
-    if ($self->{is_wd3} &&  !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge}))  {
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
         my $acts = [
             {
                 type => $isdown ? 'keyDown' : 'keyUp',
-                value  => KEYS->{lc($modifier)},
+                value => KEYS->{ lc($modifier) },
             },
         ];
 
-        my $action = { actions => [{
-            id      => 'key',
-            type    => 'key',
-            actions => $acts,
-        }]};
+        my $action = {
+            actions => [
+                {
+                    id      => 'key',
+                    type    => 'key',
+                    actions => $acts,
+                }
+            ]
+        };
         _queue_action(%$action);
         return 1;
     }
@@ -3177,25 +3279,29 @@ sub click {
     my $res    = { 'command' => 'click' };
     my $params = { 'button'  => $button };
 
-    if ($self->{is_wd3} &&  !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
         $params = {
-            actions => [{
-                type => "pointer",
-                id => 'mouse',
-                parameters => { "pointerType" => "mouse" },
-                actions => [
-                    {
-                        type     => "pointerDown",
-                        duration => 0,
-                        button   => $button,
-                    },
-                    {
-                        type     => "pointerUp",
-                        duration => 0,
-                        button   => $button,
-                    },
-                ],
-            }],
+            actions => [
+                {
+                    type       => "pointer",
+                    id         => 'mouse',
+                    parameters => { "pointerType" => "mouse" },
+                    actions    => [
+                        {
+                            type     => "pointerDown",
+                            duration => 0,
+                            button   => $button,
+                        },
+                        {
+                            type     => "pointerUp",
+                            duration => 0,
+                            button   => $button,
+                        },
+                    ],
+                }
+            ],
         };
         if ($append) {
             _queue_action(%$params);
@@ -3233,13 +3339,15 @@ sub _get_button {
 =cut
 
 sub double_click {
-    my ($self,$button) = @_;
+    my ( $self, $button ) = @_;
 
     $button = _get_button($button);
 
-    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
-        $self->click($button,1);
-        $self->click($button,1);
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
+        $self->click( $button, 1 );
+        $self->click( $button, 1 );
         $self->general_action();
     }
 
@@ -3267,20 +3375,24 @@ sub double_click {
 sub button_down {
     my ($self) = @_;
 
-    if ($self->{is_wd3} &&  !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
         my $params = {
-            actions => [{
-                type => "pointer",
-                id => 'mouse',
-                parameters => { "pointerType" => "mouse" },
-                actions => [
-                    {
-                        type     => "pointerDown",
-                        duration => 0,
-                        button   => 0,
-                    },
-                ],
-            }],
+            actions => [
+                {
+                    type       => "pointer",
+                    id         => 'mouse',
+                    parameters => { "pointerType" => "mouse" },
+                    actions    => [
+                        {
+                            type     => "pointerDown",
+                            duration => 0,
+                            button   => 0,
+                        },
+                    ],
+                }
+            ],
         };
         _queue_action(%$params);
         return 1;
@@ -3310,20 +3422,24 @@ sub button_down {
 sub button_up {
     my ($self) = @_;
 
-    if ($self->{is_wd3} && !(grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge})) {
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{chrome MicrosoftEdge} ) )
+    {
         my $params = {
-            actions => [{
-                type => "pointer",
-                id => 'mouse',
-                parameters => { "pointerType" => "mouse" },
-                actions => [
-                    {
-                        type     => "pointerDown",
-                        duration => 0,
-                        button   => 0,
-                    },
-                ],
-            }],
+            actions => [
+                {
+                    type       => "pointer",
+                    id         => 'mouse',
+                    parameters => { "pointerType" => "mouse" },
+                    actions    => [
+                        {
+                            type     => "pointerDown",
+                            duration => 0,
+                            button   => 0,
+                        },
+                    ],
+                }
+            ],
         };
         _queue_action(%$params);
         return 1;
@@ -3361,11 +3477,10 @@ sub upload_file {
     my ( $self, $filename, $raw_content ) = @_;
 
     my $params;
-    if (defined $raw_content) {
+    if ( defined $raw_content ) {
+
         #If no processing is passed, send the argument raw
-        $params = {
-            file => $raw_content
-        };
+        $params = { file => $raw_content };
     }
     else {
         #Otherwise, zip/base64 it.
@@ -3379,19 +3494,17 @@ sub upload_file {
 }
 
 sub _prepare_file {
-    my ($self,$filename) = @_;
+    my ( $self, $filename ) = @_;
 
     if ( not -r $filename ) { croak "upload_file: no such file: $filename"; }
-    my $string = "";    # buffer
-    my $zip = Archive::Zip->new();
-    $zip->addFile($filename, basename($filename));
-    if ($zip->writeToFileHandle(IO::String->new($string)) != AZ_OK) {
+    my $string = "";                            # buffer
+    my $zip    = Archive::Zip->new();
+    $zip->addFile( $filename, basename($filename) );
+    if ( $zip->writeToFileHandle( IO::String->new($string) ) != AZ_OK ) {
         die 'zip failed';
     }
 
-    return {
-        file => MIME::Base64::encode_base64($string, '')
-    };
+    return { file => MIME::Base64::encode_base64( $string, '' ) };
 }
 
 =head2 get_text
@@ -3422,7 +3535,7 @@ sub get_text {
 
 sub get_body {
     my $self = shift;
-    return $self->get_text('//body', 'xpath');
+    return $self->get_text( '//body', 'xpath' );
 }
 
 =head2 get_path
@@ -3460,7 +3573,6 @@ sub get_user_agent {
     return $self->execute_script('return window.navigator.userAgent;');
 }
 
-
 =head2 set_inner_window_size
 
  Description:
@@ -3484,15 +3596,15 @@ sub get_user_agent {
 =cut
 
 sub set_inner_window_size {
-    my $self = shift;
-    my $height = shift;
-    my $width = shift;
+    my $self     = shift;
+    my $height   = shift;
+    my $width    = shift;
     my $location = $self->get_current_url;
 
-    $self->execute_script('window.open("' . $location . '", "_blank")');
+    $self->execute_script( 'window.open("' . $location . '", "_blank")' );
     $self->close;
     my @handles = @{ $self->get_window_handles };
-    $self->switch_to_window(pop @handles);
+    $self->switch_to_window( pop @handles );
 
     my @resize = (
         'window.innerHeight = ' . $height,
@@ -3500,7 +3612,7 @@ sub set_inner_window_size {
         'return 1'
     );
 
-    return $self->execute_script(join(';', @resize)) ? 1 : 0;
+    return $self->execute_script( join( ';', @resize ) ) ? 1 : 0;
 }
 
 =head2 get_local_storage_item
@@ -3521,10 +3633,10 @@ sub set_inner_window_size {
 =cut
 
 sub get_local_storage_item {
-    my ($self, $key) = @_;
-    my $res = { 'command' => 'getLocalStorageItem' };
-    my $params = { 'key' => $key };
-    return $self->_execute_command($res, $params);
+    my ( $self, $key ) = @_;
+    my $res    = { 'command' => 'getLocalStorageItem' };
+    my $params = { 'key'     => $key };
+    return $self->_execute_command( $res, $params );
 }
 
 =head2 delete_local_storage_item
@@ -3542,17 +3654,17 @@ sub get_local_storage_item {
 =cut
 
 sub delete_local_storage_item {
-    my ($self, $key) = @_;
-    my $res = { 'command' => 'deleteLocalStorageItem' };
-    my $params = { 'key' => $key };
-    return $self->_execute_command($res, $params);
+    my ( $self, $key ) = @_;
+    my $res    = { 'command' => 'deleteLocalStorageItem' };
+    my $params = { 'key'     => $key };
+    return $self->_execute_command( $res, $params );
 }
 
 sub _coerce_timeout_ms {
     my ($ms) = @_;
 
     if ( defined $ms ) {
-        return _coerce_number( $ms );
+        return _coerce_number($ms);
     }
     else {
         croak 'Expecting a timeout in ms';
@@ -3562,14 +3674,13 @@ sub _coerce_timeout_ms {
 sub _coerce_number {
     my ($maybe_number) = @_;
 
-    if ( Scalar::Util::looks_like_number( $maybe_number )) {
+    if ( Scalar::Util::looks_like_number($maybe_number) ) {
         return $maybe_number + 0;
     }
     else {
         croak "Expecting a number, not: $maybe_number";
     }
 }
-
 
 1;
 

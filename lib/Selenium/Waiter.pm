@@ -6,7 +6,7 @@ use warnings;
 # ABSTRACT: Provides a utility wait_until function
 use Try::Tiny;
 require Exporter;
-our @ISA = qw/Exporter/;
+our @ISA    = qw/Exporter/;
 our @EXPORT = qw/wait_until/;
 
 =head1 SYNOPSIS
@@ -77,21 +77,21 @@ iterations.
 
 sub wait_until (&%) {
     my $assert = shift;
-    my $args = {
-        timeout => 30,
+    my $args   = {
+        timeout  => 30,
         interval => 1,
-        debug => 0,
+        debug    => 0,
         @_
     };
 
-    my $start = time;
+    my $start               = time;
     my $timeout_not_elapsed = sub {
         my $elapsed = time - $start;
         return $elapsed < $args->{timeout};
     };
 
     my $exception = '';
-    while ($timeout_not_elapsed->()) {
+    while ( $timeout_not_elapsed->() ) {
         my $assert_ret;
         my $try_ret = try {
             $assert_ret = $assert->();
@@ -103,8 +103,8 @@ sub wait_until (&%) {
             return '';
         }
         finally {
-            if (! $assert_ret) {
-                sleep($args->{interval});
+            if ( !$assert_ret ) {
+                sleep( $args->{interval} );
             }
         };
 
@@ -112,7 +112,7 @@ sub wait_until (&%) {
     }
 
     # No need to repeat ourselves if we're already debugging.
-    warn $exception if $exception && ! $args->{debug};
+    warn $exception if $exception && !$args->{debug};
     return '';
 }
 
