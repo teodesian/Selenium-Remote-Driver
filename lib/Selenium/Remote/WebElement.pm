@@ -615,7 +615,7 @@ Provide element you wish to drag to as argument.
 sub drag {
     my ($self,$target) = @_;
     require Selenium::ActionChains;
-    my $chain = Selenium::ActionChians->new( driver => $self->driver );
+    my $chain = Selenium::ActionChains->new( driver => $self->driver );
     return $chain->drag_and_drop($self,$target)->perform();
 }
 

@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.32   XX-XX-2019 TEODESIAN
+        [BUG FIXES]
+        - Fix typo in WebElement drag() talking to action chains module.  No wonder that didn't work
+
 1.31   01-06-2019 TEODESIAN
         [BUG FIXES]
         - Kill dangling driver processes in Selenium::Chrome/Firefox on unix hosts
