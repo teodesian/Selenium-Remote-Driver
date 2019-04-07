@@ -99,7 +99,9 @@ sub check_status {
     }
 
     unless ($status->{cmd_status} eq 'OK') {
-        croak "Selenium server did not return proper status";
+        warn $status->{cmd_return};
+        my $stat = $status->{cmd_status};
+        croak "Selenium server did not return proper status: [$stat]";
     }
 }
 
