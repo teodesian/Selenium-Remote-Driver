@@ -426,7 +426,7 @@ sub shutdown_unix_binary {
         my $pid = `$cmd`;
         chomp $pid;
         if ($pid) {
-            print "Killing Driver PID $pid listening on port ".$self->port."...\n";
+            # print "Killing Driver PID $pid listening on port ".$self->port."...\n";
             eval { kill 'KILL', $pid };
             warn "Could not kill driver process! you may have to clean up manually." if $@;
         }
