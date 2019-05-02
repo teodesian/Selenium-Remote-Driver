@@ -7,7 +7,7 @@ module is a Perl implementation of the client for the Webdriver
 [JSONWireProtocol that Selenium provides.][jsonwire]
 
 [wd]: http://www.seleniumhq.org/
-[jsonwire]: https://code.google.com/p/selenium/wiki/JsonWireProtocol
+[jsonwire]: https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol
 [standalone]: http://selenium-release.storage.googleapis.com/index.html
 
 ## Installation
