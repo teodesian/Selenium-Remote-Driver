@@ -74,7 +74,7 @@ any HTTP website using any mainstream JavaScript-enabled browser. This module is
 an implementation of the client for the Remote driver that Selenium provides.
 You can find bindings for other languages at this location:
 
-L<http://code.google.com/p/selenium/>
+L<https://www.seleniumhq.org/download/>
 
 This module sends commands directly to the Server using HTTP. Using this module
 together with the Selenium Server, you can automatically control any supported
@@ -98,13 +98,13 @@ L<Github|https://github.com/teodesian/Selenium-Remote-Driver/issues>.
 =head2 Remote Driver Response
 
 Selenium::Remote::Driver uses the
-L<JsonWireProtocol|http://code.google.com/p/selenium/wiki/JsonWireProtocol>
+L<JsonWireProtocol|https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol>
 And the
 L<WC3 WebDriver Protocol|https://www.w3.org/TR/webdriver/>
 to communicate with the Selenium Server. If an error occurs while
 executing the command then the server sends back an HTTP error code
 with a JSON encoded reponse that indicates the precise
-L<Response Error Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>.
+L<Response Error Code|https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol#response-status-codes>.
 The module will then croak with the error message associated with this
 code. If no error occurred, then the subroutine called will return the
 value sent back from the server (if a return value was sent).
