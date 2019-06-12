@@ -14,3 +14,4 @@ _prove
 #vim swapfiles
 *.swo
 *.swp
+*.bak
