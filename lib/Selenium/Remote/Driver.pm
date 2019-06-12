@@ -2151,20 +2151,27 @@ sub _convert_to_webelement {
 
  Description:
     Get a screenshot of the current page as a base64 encoded image.
+    Optionally pass {'full' => 1} as argument to take a full screenshot and not
+    only the viewport. (Works only with firefox and geckodriver >= 0.24.0)
 
  Output:
     STRING - base64 encoded image
 
  Usage:
     print $driver->screenshot();
+    print $driver->screenshot({'full' => 1});
 
 To conveniently write the screenshot to a file, see L</capture_screenshot>.
 
 =cut
 
 sub screenshot {
-    my ($self) = @_;
-    my $res = { 'command' => 'screenshot' };
+    my ($self, $params) = @_;
+    $params //= { full => 0 };
+
+    croak "Full page screenshot only supported on geckodriver" if $params->{full} && ( $self->{browser} ne 'firefox' );
+
+    my $res = { 'command' => $params->{'full'} == 1 ? 'mozScreenshotFull' : 'screenshot' };
     return $self->_execute_command($res);
 }
 
@@ -2173,22 +2180,25 @@ sub screenshot {
  Description:
     Capture a screenshot and save as a PNG to provided file name.
     (The method is compatible with the WWW::Selenium method of the same name)
+    Optionally pass {'full' => 1} as second argument to take a full screenshot
+    and not only the viewport. (Works only with firefox and geckodriver >= 0.24.0)
 
  Output:
     TRUE - (Screenshot is written to file)
 
  Usage:
     $driver->capture_screenshot($filename);
+    $driver->capture_screenshot($filename, {'full' => 1});
 
 =cut
 
 sub capture_screenshot {
-    my ( $self, $filename ) = @_;
+    my ( $self, $filename, $params ) = @_;
     croak '$filename is required' unless $filename;
 
     open( my $fh, '>', $filename );
     binmode $fh;
-    print $fh MIME::Base64::decode_base64( $self->screenshot() );
+    print $fh MIME::Base64::decode_base64( $self->screenshot($params) );
     CORE::close $fh;
     return 1;
 }

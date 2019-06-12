@@ -83,6 +83,7 @@ POST    session/:sessionId/alert/accept                      1 acceptAlert      
 GET     session/:sessionId/alert/text                        0 getAlertText                 Get Alert Text
 POST    session/:sessionId/alert/text                        1 sendKeysToPrompt             Send Alert Text
 GET     session/:sessionId/screenshot                        0 screenshot                   Take Screenshot
+GET     session/:sessionId/moz/screenshot/full               0 mozScreenshotFull            Take Full Screenshot
 GET     session/:sessionId/element/:id/screenshot            0 elementScreenshot            Take Element Screenshot
 };
 
