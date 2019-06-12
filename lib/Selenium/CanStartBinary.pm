@@ -423,8 +423,7 @@ sub shutdown_unix_binary {
     my ($self) = @_;
     if (!IS_WIN) {
         my $cmd = "lsof -t -i :".$self->port();
-        my $pid = `$cmd`;
-        chomp $pid;
+        my ( $pid ) = grep { $_ && $_ ne $$ } split /\s+/, scalar `$cmd`;
         if ($pid) {
             print "Killing Driver PID $pid listening on port ".$self->port."...\n";
             eval { kill 'KILL', $pid };
