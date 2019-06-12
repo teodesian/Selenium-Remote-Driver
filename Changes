@@ -1,8 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
-1.32   XX-XX-2019 TEODESIAN
+1.32   06-12-2019 TEODESIAN
+        [New Features]
+        - Add support for mozilla full pags screenshots
         [BUG FIXES]
         - Fix typo in WebElement drag() talking to action chains module.  No wonder that didn't work
+        - Don't auto-da-fe on Macos when shutting down the binary in direct drivers
 
 1.31   01-06-2019 TEODESIAN
         [BUG FIXES]

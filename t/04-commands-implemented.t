@@ -27,7 +27,7 @@ for my $command (keys %{$comm}) {
       }
     }
   }
-  if (!$found_command && $command !~ /Gecko/) {
+  if (!$found_command && $command !~ /Gecko|screenshot/i) {
     fail("find $command");
   }
 }
@@ -50,7 +50,7 @@ for my $command (keys %{$comm}) {
       }
     }
   }
-  if (!$found_command && $command !~ /Gecko/) {
+  if (!$found_command && $command !~ /Gecko|screenshot/i) {
     fail("find $command");
   }
 }
