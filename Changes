@@ -1,5 +1,10 @@
 Revision history for Selenium-Remote-Driver
 
+1.33   06-17-2019 TEODESIAN
+        [BUG FIXES]
+        - Add chrome shim to disable sandboxing by default so that Selenium::Chrome usage isn't broken by default
+        - Report failures to obtain sessions better
+
 1.32   06-12-2019 TEODESIAN
         [New Features]
         - Add support for mozilla full pags screenshots
