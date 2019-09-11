@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.34   09-11-2019 TEODESIAN
+        [BUG FIXES]
+        - Remove .so files from Firefox lib tree to simplify CPAN RPM build tool chains
+
 1.33   06-17-2019 TEODESIAN
         [BUG FIXES]
         - Add chrome shim to disable sandboxing by default so that Selenium::Chrome usage isn't broken by default
