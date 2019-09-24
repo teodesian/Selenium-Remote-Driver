@@ -721,6 +721,11 @@ has 'inner_window_size' => (
 
 );
 
+has 'force_wd2' => (
+    is      => 'lazy',
+    default => 0
+);
+
 # At the time of writing, Geckodriver uses a different endpoint than
 # the java bindings for executing synchronous and asynchronous
 # scripts. As a matter of fact, Geckodriver does conform to the W3C
@@ -897,7 +902,7 @@ sub new_session {
     $extra_capabilities ||= {};
 
     #XXX chromedriver is broken
-    $FORCE_WD2 = 1 if $self->browser_name eq 'chrome';
+    $FORCE_WD2 = 1 if ($self->browser_name eq 'chrome' || $self->force_wd2);
 
     my $args = {
         'desiredCapabilities' => {
