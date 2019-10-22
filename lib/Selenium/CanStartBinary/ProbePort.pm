@@ -17,19 +17,11 @@ our @EXPORT_OK = qw/find_open_port_above find_open_port probe_port/;
 =cut
 
 sub find_open_port_above {
-    my ($port) = @_;
-
-    my $free_port = wait_until {
-        if ( probe_port($port) ) {
-            $port++;
-            return 0;
-        }
-        else {
-            return $port;
-        }
-    };
-
-    return $free_port;
+    socket(SOCK, PF_INET, SOCK_STREAM, getprotobyname("tcp"));
+    bind(SOCK, sockaddr_in(0, INADDR_ANY));
+    my $port = (sockaddr_in(getsockname(SOCK)))[0];
+    close(SOCK);
+    return $port;
 }
 
 sub find_open_port {
