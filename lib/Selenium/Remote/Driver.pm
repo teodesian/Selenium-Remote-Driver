@@ -1223,8 +1223,6 @@ sub get_alert_text {
 
     # include the WDKeys module
     use Selenium::Remote::WDKeys;
-    .
-    .
     $driver->send_keys_to_active_element(KEYS->{'space'}, KEYS->{'enter'});
 
 =cut
