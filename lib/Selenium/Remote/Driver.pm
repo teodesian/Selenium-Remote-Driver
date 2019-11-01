@@ -2443,7 +2443,7 @@ sub set_window_size {
 
 sub maximize_window {
     my ( $self, $window ) = @_;
- 
+
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
     my $ret = $self->_execute_command($res);
