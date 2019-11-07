@@ -6,6 +6,9 @@ any HTTP website using any mainstream JavaScript-enabled browser. This
 module is a Perl implementation of the client for the Webdriver
 [JSONWireProtocol that Selenium provides.][jsonwire]
 
+It also implements WC3 [selenium][wc3]
+
+[wc3]: https://w3c.github.io/webdriver/
 [wd]: http://www.seleniumhq.org/
 [jsonwire]: https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol
 [standalone]: http://selenium-release.storage.googleapis.com/index.html
