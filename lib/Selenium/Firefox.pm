@@ -164,7 +164,7 @@ has '_binary_args' => (
                 ' --port '
               . $self->port
               . ' --marionette-port '
-              . $self->marionette_binary_port
+              . $self->marionette_port
               . ' --binary "'
               . $self->firefox_binary . '"';
 
