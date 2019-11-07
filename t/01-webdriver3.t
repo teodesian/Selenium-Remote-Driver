@@ -93,9 +93,9 @@ NEWSESS: {
     is($self->{capabilities},'eee',"Caps set correctly in wd3 mode");
     is_deeply($args_modified->{capabilities},$expected,"Desired capabilities correctly translated to Firefox (WD3)");
 
-    #$expected->{alwaysMatch}->{'chromeOptions'} = $expected->{alwaysMatch}->{'moz:firefoxOptions'};
+    #$expected->{alwaysMatch}->{'goog:chromeOptions'} = $expected->{alwaysMatch}->{'moz:firefoxOptions'};
     $expected->{alwaysMatch}->{'moz:firefoxOptions'} = {};
-    #$expected->{alwaysMatch}->{chromeOptions}->{args} = ['-profile', '~/.mozilla/firefox/vbdgri9o.default'];
+    #$expected->{alwaysMatch}->{'goog:chromeOptions'}->{args} = ['-profile', '~/.mozilla/firefox/vbdgri9o.default'];
     $expected->{alwaysMatch}->{browserName} = 'chrome';
 
     $args->{desiredCapabilities}->{browserName} = 'chrome';

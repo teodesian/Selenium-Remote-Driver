@@ -142,7 +142,7 @@ has '_caps' => (
             'proxy',                   'pageLoadStrategy',
             'setWindowRect',           'timeouts',
             'unhandledPromptBehavior', 'moz:firefoxOptions',
-            'chromeOptions',
+            'goog:chromeOptions',
         ];
     }
 );
