@@ -2172,7 +2172,7 @@ sub screenshot {
     my ($self, $params) = @_;
     $params //= { full => 0 };
 
-    croak "Full page screenshot only supported on geckodriver" if $params->{full} && ( $self->{browser} ne 'firefox' );
+    croak "Full page screenshot only supported on geckodriver" if $params->{full} && ( $self->{browser_name} ne 'firefox' );
 
     my $res = { 'command' => $params->{'full'} == 1 ? 'mozScreenshotFull' : 'screenshot' };
     return $self->_execute_command($res);
