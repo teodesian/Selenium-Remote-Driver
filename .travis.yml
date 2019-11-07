@@ -1,15 +1,15 @@
 sudo: false
 language: perl
 perl:
+   - '5.28'
+   - '5.26'
+   - '5.24'
    - '5.22'
    - '5.20'
-   - '5.18'
-   - '5.16'
-   - '5.14'
 matrix:
    fast_finish: true
    include:
-     - perl: '5.24'
+     - perl: '5.30'
        env: COVERAGE=1
 before_install:
    - git config --global user.name "TravisCI"
