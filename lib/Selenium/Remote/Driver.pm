@@ -1006,7 +1006,7 @@ sub _request_new_session {
       if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
 
     #Delete compatibility layer when using drivers directly
-    if ( $self->isa('Selenium::Firefox') ) {
+    if ( $self->isa('Selenium::Firefox') || $self->isa('Selenium::Chrome') ) {
         if (   exists $args->{capabilities}
             && exists $args->{capabilities}->{alwaysMatch} )
         {
