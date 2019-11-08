@@ -1,5 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
+1.36  10-21-2019 TEODESIAN
+        [BUG FIXES]
+        - Adjust handling of chrome due to it implementing WC3 mostly correctly now
+        - Fix browser detection logic in screenshot()
+        - Actually apply the fix from 1.35 in the right place, heh
+
 1.35  10-21-2019 TEODESIAN
         [BUG FIXES]
         - Fix race condition and inability to find a port in certain circumstances when using direct driver modules.

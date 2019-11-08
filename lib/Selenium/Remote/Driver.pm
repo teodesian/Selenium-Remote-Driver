@@ -248,6 +248,8 @@ WD3 enabled server with chromedriver enabled.
 
     https://sites.google.com/a/chromium.org/chromedriver/capabilities
 
+Also, if you instantiate the object in WC3 mode (which is the default), the remote driver will throw exceptions you have no choice but to catch,
+rather than falling back to JSONWire methods where applicable like geckodriver does.
 
 =head1 CONSTRUCTOR
 
