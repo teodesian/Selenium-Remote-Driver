@@ -251,6 +251,11 @@ WD3 enabled server with chromedriver enabled.
 Also, if you instantiate the object in WC3 mode (which is the default), the remote driver will throw exceptions you have no choice but to catch,
 rather than falling back to JSONWire methods where applicable like geckodriver does.
 
+As of chrome 75 (and it's appropriate driver versions), the WC3 spec has finally been implemented.
+As such, to use chrome older than this, you will have to manually force on JSONWire mode:
+
+    $Selenium::Remote::Driver::FORCE_WD2=1;
+
 =head1 CONSTRUCTOR
 
 =head2 new
