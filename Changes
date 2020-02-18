@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.37  02-17-2019 TEODESIAN
+        [BUG FIXES]
+        - obey the auto_close flag in the direct drivers
+
 1.36  10-21-2019 TEODESIAN
         [BUG FIXES]
         - Adjust handling of chrome due to it implementing WC3 mostly correctly now
