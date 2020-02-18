@@ -256,6 +256,19 @@ As such, to use chrome older than this, you will have to manually force on JSONW
 
     $Selenium::Remote::Driver::FORCE_WD2=1;
 
+=head2 Notes on Running Selenium at Scale via selenium.jar
+
+When running many, many tests in parallel you can eventually reach resource exhaustion.
+You have to instruct the Selenium JAR to do some cleanup to avoid explosions:
+
+Inside of your selenium server's node.json (running a grid), you would put in the following:
+
+"configuration" :
+{
+"cleanUpCycle":2000
+}
+Or run the selenium jar with the -cleanupCycle parameter. Of course use whatever # of seconds is appropriate to your situation.
+
 =head1 CONSTRUCTOR
 
 =head2 new

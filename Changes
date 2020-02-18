@@ -4,6 +4,7 @@ Revision history for Selenium-Remote-Driver
         [BUG FIXES]
         -correct incorrect prior changelog date
         -fix undefined value warnings when the remote server goes out to lunch
+        -add a note about doing lots of testing with the selenium JAR to POD
 
 1.37  02-17-2020 TEODESIAN
         [BUG FIXES]
