@@ -88,7 +88,8 @@ sub check_status {
         croak "Could not connect to SeleniumWebDriver: $_";
     };
 
-    if ( $status->{cmd_status} ne 'OK' ) {
+    my $cmdOut = $status->{cmd_status} || '';
+    if ( $cmdOut ne 'OK' ) {
 
         # Could be grid, see if we can talk to it
         $status = undef;
@@ -96,7 +97,7 @@ sub check_status {
           $self->request( { method => 'GET', url => 'grid/api/hub/status' } );
     }
 
-    unless ( $status->{cmd_status} eq 'OK' ) {
+    unless ( $cmdOut eq 'OK' ) {
         croak "Selenium server did not return proper status";
     }
 }
