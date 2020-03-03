@@ -297,7 +297,7 @@ FIND: {
       . " at " . __FILE__ . " line " . (__LINE__+1);
     eval { $driver->find_element("element_that_doesnt_exist","id"); };
     chomp $@;
-    like($@,qr/$expected_err/,"find_element croaks properly");
+    like($@,qr/\Q$expected_err\E/,"find_element croaks properly");
     my $elems = $driver->find_elements("//input[\@id='checky']");
     is(scalar(@$elems),1, 'Got an arrayref of WebElements');
     my @array_elems = $driver->find_elements("//input[\@id='checky']");
