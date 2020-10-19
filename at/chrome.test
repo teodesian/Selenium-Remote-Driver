@@ -2,11 +2,214 @@ use strict;
 use warnings;
 
 use Selenium::Chrome;
-use Test::More tests => 3;
+use Selenium::Remote::WDKeys;
+
+use Cwd qw{abs_path};
+use FindBin;
+
+use Test::More;
 use Test::Fatal;
+use Test::Deep;
 
 my $driver;
 is( exception { $driver = Selenium::Chrome->new(); }, undef, "can spawn new Selenium::Chrome");
+
+$driver->debug_on();
+
+ok($driver->maximize_window(),"can maximize window (WD3)");
+
+is($driver->get_capabilities()->{browserName},'chrome',"Can get Capabilities correctly (WD3)");
+my $sessions = $driver->get_sessions();
+is(scalar(@$sessions),1,"Can fall back to selenium2 to list sessions");
+
+ok($driver->status()->{ready},"status reports OK (WD3)");
+
+#TODO do something about available_engines
+
+$driver->set_timeout('page load',10000);
+$driver->set_timeout('script',10000);
+$driver->set_timeout('implicit',10000);
+my $timeouts = $driver->get_timeouts();
+is($timeouts->{pageLoad},10000,"WD3 set/get timeouts works");
+is($timeouts->{script},10000,"WD3 set/get timeouts works");
+is($timeouts->{implicit},10000,"WD3 set/get timeouts works");
+
+$driver->set_async_script_timeout(20000);
+$driver->set_implicit_wait_timeout(5000);
+$timeouts = $driver->get_timeouts();
+is($timeouts->{script},20000,"WD3 shim for set_async timeouts works");
+is($timeouts->{implicit},5000,"WD3 shim for implicit timeouts works");
+
+my $loc = abs_path("$FindBin::Bin/test.html");
+ok($driver->get("file://$loc"),"Can load a web page (WD3)");
+
+is($driver->get_alert_text(),"BEEE DOOO","get_alert_text works (WD3)");
+is(exception { $driver->dismiss_alert() }, undef, "alert can be dismissed (WD3)");
+
+#This sucker wants "value" instead of "text" like in legacy
+ok($driver->send_keys_to_prompt("HORGLE"),"send_keys_to_prompt works (WD3)");
+is(exception { $driver->accept_alert() }, undef, "alert can be accepted (WD3)");
+
+my $handle = $driver->get_current_window_handle();
+ok($handle,"Got a window handle (WD3)");
+cmp_bag($driver->get_window_handles(),[$handle],"Can list window handles (WD3)");
+
+my $sz = $driver->get_window_size();
+ok(defined $sz->{height},"get_window_size works (WD3)");
+ok(defined $sz->{width},"get window size works (WD3)");
+my $pos = $driver->get_window_position();
+ok(defined $pos->{x},"get_window_size works (WD3)");
+ok(defined $pos->{y},"get window size works (WD3)");
+
+like($driver->get_current_url(),qr/test.html$/,"get_current_url works (WD3)");
+like($driver->get_title(),qr/test/i,"get_title works (WD3)");
+
+my $otherloc = abs_path("$FindBin::Bin/other.html");
+$driver->get("file://$otherloc");
+$driver->go_back();
+$driver->dismiss_alert();
+$driver->dismiss_alert();
+like($driver->get_title(),qr/test/i,"go_back works (WD3)");
+
+$driver->go_forward();
+like($driver->get_page_source(),qr/ZIPPY/,"go_forward & get_page_source works (WD3)");
+is(exception { $driver->refresh() }, undef, "refresh works (WD3)");
+$driver->go_back();
+$driver->dismiss_alert();
+$driver->dismiss_alert();
+
+#TODO execute_*_script testing
+
+ok($driver->screenshot(),"can get base64'd whole page screenshot (WD3)");
+SKIP: {
+    skip "chromedriver doesn't know how to take element screenshots", 1;
+    ok($driver->find_element('body','tag_name')->screenshot(0),"can get element screenshot (WD3 ONLY) and find_element (WD3) works.");
+}
+
+isa_ok($driver->find_element('red','class'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_element('text','name'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_element('Test Link', 'link_text'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_element('Test', 'partial_link_text'),"Selenium::Remote::WebElement");
+
+is(scalar(@{$driver->find_elements('red','class')}),2,"can find multiple elements correctly");
+
+my $lem = $driver->find_element('body', 'tag_name');
+isa_ok($driver->find_child_element($lem, 'red','class'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_child_element($lem, 'text','name'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_child_element($lem, 'Test Link', 'link_text'),"Selenium::Remote::WebElement");
+isa_ok($driver->find_child_element($lem, 'Test', 'partial_link_text'),"Selenium::Remote::WebElement");
+
+$lem = $driver->find_element('form','tag_name');
+is(scalar(@{$driver->find_child_elements($lem,'./*')}),6,"can find child elements (WD3)");
+
+isa_ok($driver->get_active_element(),"Selenium::Remote::WebElement");
+
+is(exception { $driver->cache_status() },undef, "cache_status implemented in krom");
+my $coords = {
+   latitude  => 40.714353,
+   longitude => -74.005973,
+};
+ok($driver->set_geolocation(location => $coords),"can set_geolocation in krom");
+is( $driver->get_geolocation()->{latitude},$coords->{latitude},"cang get_geolocation in krom");
+
+like($driver->upload_file($otherloc),qr/other.html$/,"upload_file fallback works");
+
+ok($driver->switch_to_frame($driver->find_element('frame', 'id')),"can switch to frame (WD3)");
+ok($driver->switch_to_frame(),"can switch to parent frame (WD3 only)");
+
+ok($driver->set_window_position(1,1),"can set window position (WD3)");
+ok($driver->set_window_size(640,480),"can set window size (WD3)");
+
+SKIP: {
+    skip "chromedriver does not minimize", 1;
+    ok($driver->minimize_window(),"can minimize window (WD3 only)");
+}
+ok($driver->fullscreen_window(),"can fullscreen window (WD3 only)");
+
+#XXX chrome has issued a fatwah against cookies issued by file:// urls
+is(scalar(@{$driver->get_all_cookies()}),0,"can get cookie list (WD3)");
+$driver->delete_all_cookies();
+is(scalar(@{$driver->get_all_cookies()}),0,"can delete all cookies (WD3)");
+
+ok($driver->mouse_move_to_location( element => $driver->find_element('a','tag_name')),"Can use new WD3 Actions API to emulate mouse_move_to_location");
+$driver->click();
+my $handles = $driver->get_window_handles();
+is(scalar(@$handles),2,"Can move to element and then click it correctly (WD3)");
+
+$driver->switch_to_window($handles->[1]);
+is(exception { $driver->close() }, undef, "Can close new window (WD3)");
+cmp_bag($driver->get_window_handles,[$handles->[0]],"Correct window closed (WD3)");
+$driver->switch_to_window($handles->[0]);
+
+my $input = $driver->find_element('input','tag_name');
+$driver->mouse_move_to_location( element => $input );
+$driver->click();
+is(exception {$driver->send_modifier('Shift','down')}, undef, "chromedriver can send_modifier");
+$driver->send_keys_to_active_element('howdy',KEYS->{tab});
+$input->send_keys('eee');
+$driver->mouse_move_to_location( element => $driver->find_element('body','tag_name'));
+$driver->click();
+
+#XXX this has to be a BUG in the driver, the keys are getting thru
+is($input->get_attribute('value'),'defaultHOWDYEEE',"element->get_attribute() emulates old behavior thru get_property (WD3)");
+TODO: {
+    local $TODO = "chrome can't get_property()";
+    is($input->get_attribute('value',1),'default',"element->get_attribute() can do it's actual job (WD3)");
+}
+is($driver->execute_script(qq/ return document.querySelector('input').value /),'defaultHOWDYEEE',"execute_script works, and so does send_keys_to_active_element & element->send_keys (WD3)");
+$input->clear();
+is($input->get_property('value'),'',"clear() works (WD3)");
+
+is(exception { $driver->button_down() },undef,"Can button down (WD3)");
+is(exception { $driver->button_up() },undef,"Can button up (WD3)");
+SKIP: {
+    skip "chrome don't actionChain", 1;
+    is(exception { $driver->release_general_action() }, undef, "Can release_general_action (WD3)");
+}
+ok($driver->find_element('radio2','id')->is_selected(),"WD3 is_selected() works");
+my $l1 = $driver->find_element('radio1','id');
+$l1->set_selected();
+$l1->set_selected();
+ok($l1->is_selected(),"WD3 set_selected works");
+$l1->toggle();
+TODO: {
+    local $TODO = "chrome toggle won't allow bogus values (radios with both disabled)";
+    ok(!$l1->is_selected(),"WD3 toggle works: off");
+}
+$l1->toggle();
+ok($l1->is_selected(),"WD3 toggle works: on");
+
+my $l2 = $driver->find_element('hammertime','id');
+is( $l2->is_enabled(),0,"is_enabled works (WD3)");
+#ok( $l2->get_element_location()->{x},"Can get element rect (WD3)");
+#ok( $l2->get_size()->{'height'}, "Size shim on rect works (WD3)");
+is( $l2->get_tag_name(),'input',"get_tag_name works (WD3)");
+is( exception { $l2->get_element_location_in_view() }, undef, "get_element_location_in_view available in gegl krom");
+
+is($driver->find_element('hidon','id')->is_displayed(),0,"is_displayed returns false for type=hidden elements");
+my $gone = $driver->find_element('no-see-em','id');
+is($gone->is_displayed(),0,"is_displayed returns false for display=none");
+is($gone->is_enabled(),1,"is_enabled returns true for non-input elements");
+
+is($driver->find_element('h1','tag_name')->get_text(),'Howdy Howdy Howdy', "get_text works (WD3)");
+
+$driver->find_element('clickme','id')->click();
+is(exception { $driver->dismiss_alert() }, undef, "Can click element (WD3)");
+
+$driver->find_element('form','tag_name')->submit();
+like($driver->get_page_source(),qr/ZIPPY/,"elem submit() works (WD3)");
+
+#Pretty sure this one has enough 'inertia' to not disappear all the sudden
+$driver->get('http://w3.org/History.html');
+$driver->add_cookie('foo','bar','/',undef,0,0,time()+5000);
+is(scalar(@{$driver->get_all_cookies()}),1,"can get cookie (WD3)");
+
+is($driver->get_cookie_named('foo')->{value},'bar',"can get cookie by name (WD3 only)");
+
+$driver->delete_cookie_named('foo');
+is(scalar(@{$driver->get_all_cookies()}),0,"can delete named cookies (WD3)");
+
+is(exception { $driver->quit() }, undef, "Can quit (WD3)");
 
 my $port = $driver->port();
 
@@ -17,3 +220,6 @@ my $cmd = "lsof -t -i :$port";
 my $pid = `$cmd`;
 chomp $pid;
 is($pid,'',"Destructor appears to have run shutdown_binary and whacked the driver process");
+
+done_testing();
+
