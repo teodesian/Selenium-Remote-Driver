@@ -314,6 +314,8 @@ Desired capabilities - HASH - Following options are accepted:
 
 =item B<extra_capabilities> - HASH     - Any other extra capabilities.  Accepted keys will vary by browser.  If firefox_profile is passed, the args (or profile) key will be overwritten, depending on how it was passed.
 
+=item B<debug>              - BOOL     - Turn Debug mode on from the start if true, rather than having to call debug_on().
+
 =back
 
 On WebDriver3 the 'extra_capabilities' will be automatically converted into the parameter needed by your browser.
@@ -720,6 +722,11 @@ has 'firefox_profile' => (
     clearer   => 1
 );
 
+has debug => (
+    is => 'lazy',
+    default => sub { 0 },
+);
+
 has 'desired_capabilities' => (
     is        => 'lazy',
     predicate => 'has_desired_capabilities'
@@ -779,6 +786,9 @@ sub BUILD {
         my $size = $self->inner_window_size;
         $self->set_inner_window_size(@$size);
     }
+
+    #Set debug if needed
+    $self->debug_on() if $self->debug;
 
     # Setup non-croaking, parameter versions of finders
     foreach my $by ( keys %{ $self->FINDERS } ) {
