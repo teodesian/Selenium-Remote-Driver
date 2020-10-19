@@ -2287,6 +2287,10 @@ sub available_engines {
     or
     $driver->switch_to_frame($driver->find_element('iframe', 'tag_name'));
 
+=head3 COMPATIBILITY
+
+Chromedriver will vomit if you pass anything but a webElement, so you probably should do that from now on.
+
 =cut
 
 sub switch_to_frame {
@@ -2297,6 +2301,7 @@ sub switch_to_frame {
     $id = ( defined $id ) ? $id : $json_null;
 
     my $res = { 'command' => 'switchToFrame' };
+
     if ( ref $id eq $self->webelement_class ) {
         if ( $self->{is_wd3} ) {
             $params =
