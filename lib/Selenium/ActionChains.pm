@@ -133,7 +133,7 @@ sub key_down {
         $self->click($element);
     }
     push @{ $self->actions },
-      sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyDown', value => KEYS->{'shift'} } ] } ] ) };
+      sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyDown', value => $value } ] } ] ) };
     $self;
 }
 
@@ -144,7 +144,7 @@ sub key_up {
         $self->click($element);
     }
     push @{ $self->actions },
-      sub { $self->driver->$self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => KEYS->{'shift'} } ] } ] ) };
+      sub { $self->driver->$self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $value } ] } ] ) };
     $self;
 }
 
