@@ -925,7 +925,7 @@ sub new_session {
             'browserName'       => $self->browser_name,
             'platform'          => $self->platform,
             'javascriptEnabled' => $self->javascript,
-            'version'           => $self->version,
+            'version'           => $self->version // '',
             'acceptSslCerts'    => $self->accept_ssl_certs,
             %$extra_capabilities,
         },
