@@ -1791,7 +1791,7 @@ sub get_window_handles {
 
  Usage:
     my $window_size = $driver->get_window_size();
-    print $window_size->{'height'}, $window_size->('width');
+    print $window_size->{'height'}, $window_size->{'width'};
 
 =cut
 
