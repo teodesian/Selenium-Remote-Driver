@@ -146,6 +146,30 @@ sub click {
     return $self->_execute_command($res);
 }
 
+=head2 execute_script($script, @args), execute_async_script($script, @args)
+
+Convenience method to execute a script with the element passed as the first argument to the script function, and the remaining args appended.
+See the documentation for Selenium::Remote::Driver::execute_script for more information.
+
+=cut
+
+sub execute_script {
+    my ($self, $script, @args) = @_;
+    return $self->driver->execute_script(
+        $script,
+        { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} },
+        @args );
+}
+
+sub execute_async_script {
+    my ($self, $script, @args) = @_;
+    return $self->driver->execute_async_script(
+        $script,
+        { 'element-6066-11e4-a52e-4f735466cecf' => $self->{id} },
+        @args );
+}
+
+
 =head2 submit
 
  Description:
