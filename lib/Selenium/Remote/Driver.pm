@@ -202,6 +202,13 @@ You can get around that by passing an extra flag to the sub, or setting:
 
 When in WC3 Webdriver mode.
 
+=head2 FINDERS
+
+This constant is a hashref map of the old element finder aliases from wd2 to wd3.
+
+    use Data::Dumper;
+    print Dumper($Selenium::Remote::Driver::FINDERS);
+
 =head2 WC3 WEBDRIVER CURRENT STATUS
 
 That said, the following 'sanity tests' in the at/ (acceptance test) directory of the module passed on the following versions:
