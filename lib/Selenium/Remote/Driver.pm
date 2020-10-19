@@ -1402,6 +1402,16 @@ Called with no arguments, it simply executes the existing action queue.
 If you are looking for pre-baked action chains that aren't currently part of L<Selenium::Remote::Driver>,
 consider L<Selenium::ActionChains>, which is shipped with this distribution instead.
 
+=head3 COMPATIBILITY
+
+Like most places, the WC3 standard is openly ignored by the driver binaries.
+Generally an "actions" object will only accept:
+
+    { type => ..., value => ... }
+
+When using the direct drivers (E.G. Selenium::Chrome, Selenium::Firefox).
+This is not documented anywhere but here, as far as I can tell.
+
 =cut
 
 sub general_action {
