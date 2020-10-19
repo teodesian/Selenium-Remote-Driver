@@ -1,10 +1,11 @@
 Revision history for Selenium-Remote-Driver
 
-1.38  02-18-2020 TEODESIAN
+1.38  10-19-2020 TEODESIAN
         [BUG FIXES]
         -correct incorrect prior changelog date
         -fix undefined value warnings when the remote server goes out to lunch
         -add a note about doing lots of testing with the selenium JAR to POD
+        -Fix other minor things about the documentation and error messages
 
 1.37  02-17-2020 TEODESIAN
         [BUG FIXES]
