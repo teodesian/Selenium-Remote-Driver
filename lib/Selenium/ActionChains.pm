@@ -132,9 +132,11 @@ sub key_down {
     if ( defined($element) ) {
         $self->click($element);
     }
-    push @{ $self->actions },
-      sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyDown', value => $value } ] } ] ) };
-    $self;
+    foreach my $v (@$value) {
+        push @{ $self->actions },
+          sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyDown', value => $v } ] } ] ) };
+    }
+    return $self;
 }
 
 sub key_up {
@@ -143,9 +145,11 @@ sub key_up {
     if ( defined($element) ) {
         $self->click($element);
     }
-    push @{ $self->actions },
-      sub { $self->driver->$self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $value } ] } ] ) };
-    $self;
+    foreach my $v (@$value) {
+        push @{ $self->actions },
+          sub { $self->driver->$self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $v } ] } ] ) };
+    }
+    return $self;
 }
 
 sub send_keys {
