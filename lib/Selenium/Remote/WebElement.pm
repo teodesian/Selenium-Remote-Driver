@@ -269,7 +269,8 @@ sub send_keys {
 sub is_selected {
     my ($self) = @_;
 
-    return $self->get_property('checked')
+    my $to_check = $self->get_tag_name() eq 'option' ? 'selected' : 'checked';
+    return $self->get_property($to_check)
       if $self->driver->{is_wd3}
       && !( grep { $self->driver->browser_name eq $_ }
         qw{chrome MicrosoftEdge} );
