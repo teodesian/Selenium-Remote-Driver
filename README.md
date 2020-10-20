@@ -1,17 +1,26 @@
 # Selenium::Remote::Driver [![Build Status](https://travis-ci.org/teodesian/Selenium-Remote-Driver.svg?branch=master)](https://travis-ci.org/teodesian/Selenium-Remote-Driver) [![Coverage Status](https://coveralls.io/repos/github/teodesian/Selenium-Remote-Driver/badge.svg?branch=master)](https://coveralls.io/github/teodesian/Selenium-Remote-Driver?branch=master)
 
+## WARNING
+
+Selenium has essentially been leapfrogged technologically by Puppetteer (using Chrome Dev tools directly).
+Use [Chrome::DevToolsProtocol][dt] instead of this unless you want to be frustrated by a tool which doesn't do half of what you want.
+Even then you are probably shooting yourself in the foot not using Javascript directly to automate the testing of webpages.
+
+## Introduction
+
 [Selenium WebDriver][wd] is a test tool that allows you to write
 automated web application UI tests in any programming language against
 any HTTP website using any mainstream JavaScript-enabled browser. This
 module is a Perl implementation of the client for the Webdriver
 [JSONWireProtocol that Selenium provides.][jsonwire]
 
-It also implements WC3 [selenium][wc3]
+It also implements WC3 [selenium][wc3].
 
 [wc3]: https://w3c.github.io/webdriver/
 [wd]: http://www.seleniumhq.org/
 [jsonwire]: https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol
 [standalone]: http://selenium-release.storage.googleapis.com/index.html
+[dt]: https://metacpan.org/pod/Chrome::DevToolsProtocol
 
 ## Installation
 
