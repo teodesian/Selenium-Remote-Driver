@@ -2,7 +2,7 @@
 
 ## WARNING
 
-Selenium has essentially been leapfrogged technologically by Puppetteer (using Chrome Dev tools directly).
+Selenium has essentially been leapfrogged technologically by [Playwright][pw]. (using the devtools protocol for all browsers)
 Use [Chrome::DevToolsProtocol][dt] instead of this unless you want to be frustrated by a tool which doesn't do half of what you want.
 Even then you are probably shooting yourself in the foot not using Javascript directly to automate the testing of webpages.
 
@@ -21,6 +21,7 @@ It also implements WC3 [selenium][wc3].
 [jsonwire]: https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol
 [standalone]: http://selenium-release.storage.googleapis.com/index.html
 [dt]: https://metacpan.org/pod/Chrome::DevToolsProtocol
+[pw]: https://github.com/microsoft/playwright
 
 ## Installation
 
