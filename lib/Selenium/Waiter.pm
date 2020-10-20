@@ -65,6 +65,11 @@ to see the massacre:
     # carps: "kept from dying" once a second for thirty seconds
     wait_until { die 'kept from dying' } debug => 1;
 
+If you want to die anyways, just pass die => 1 to wait_until instead:
+
+    # Dies on the first failure, do your own error handling:
+    wait_until { die 'oops' } die => 1;
+
 =head4 Timeouts and Intervals
 
 You can also customize the timeout, and/or the retry interval between
@@ -81,6 +86,7 @@ sub wait_until (&%) {
         timeout  => 30,
         interval => 1,
         debug    => 0,
+        die      => 0,
         @_
     };
 
@@ -99,6 +105,7 @@ sub wait_until (&%) {
         }
         catch {
             $exception = $_;
+            die $_  if $args->{die};
             warn $_ if $args->{debug};
             return '';
         }
