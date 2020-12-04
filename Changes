@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.40  12-04-2020 TEODESIAN
+        [BUG FIX]
+        - fix double_click
+
 1.39  10-20-2020 TEODESIAN
         [NEW FEATURES]
         - Add execute_script and execute_async_script convenience methods to WebElements.
