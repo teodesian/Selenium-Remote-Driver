@@ -3381,7 +3381,8 @@ sub _get_button {
         return $button_enum->{ uc $1 };
     }
     if ( defined $button && $button =~ /(0|1|2)/ ) {
-        return $1;
+        #Handle user error sending in "1"
+        return int($1);
     }
     return 0;
 }
@@ -3409,7 +3410,7 @@ sub double_click {
     {
         $self->click( $button, 1 );
         $self->click( $button, 1 );
-        $self->general_action();
+        return $self->general_action();
     }
 
     my $res = { 'command' => 'doubleClick' };
