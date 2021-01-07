@@ -50,6 +50,7 @@ on 'test' => sub {
   requires "Test::Warn" => "0";
   requires "blib" => "1.01";
   requires "lib" => "0";
+  requires "Test::MockModule" => "0.176";  
 };
 
 on 'configure' => sub {
