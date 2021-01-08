@@ -7,15 +7,20 @@ use Selenium::Remote::Mock::RemoteConnection;
 
 use FindBin;
 use lib $FindBin::Bin . '/lib';
+use Test::MockModule;
 use TestHarness;
 
 my $harness = TestHarness->new(
     this_file => $FindBin::Script
 );
 
-my @browsers = qw/chrome firefox/;
+my @browsers = qw/chrome/;
 
 $Selenium::Remote::Driver::FORCE_WD2 = 1;
+
+my @sessions = qw{897bfa82-0f28-4875-8544-5cc02e8b82f6};
+my $mock = Test::MockModule->new('Selenium::Remote::Driver');
+$mock->redefine('new_session', sub { my $s = shift; $s->{session_id} = shift @sessions } );
 
 foreach (@browsers) {
     my %selenium_args = (
