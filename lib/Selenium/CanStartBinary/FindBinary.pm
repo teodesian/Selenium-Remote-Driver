@@ -48,7 +48,7 @@ sub _validate_manual_binary {
 
     my $abs_executable = eval {
         my $path = abs_path($executable);
-        die unless -e $path;
+        die if $path && !-f $path;
         $path;
     };
 
