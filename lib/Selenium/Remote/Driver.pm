@@ -53,7 +53,7 @@ our %CURRENT_ACTION_CHAIN = ( actions => [] );
 
 =for Pod::Coverage BUILD
 
-=for Pod::Coverage oEMOLISH
+=for Pod::Coverage DEMOLISH
 
 =head1 SYNOPSIS
 
