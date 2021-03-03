@@ -53,7 +53,7 @@ our %CURRENT_ACTION_CHAIN = ( actions => [] );
 
 =for Pod::Coverage BUILD
 
-=for Pod::Coverage DEMOLISH
+=for Pod::Coverage oEMOLISH
 
 =head1 SYNOPSIS
 
@@ -1044,7 +1044,7 @@ sub _request_new_session {
       if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
 
     #Delete compatibility layer when using drivers directly
-    if ( $self->isa('Selenium::Firefox') || $self->isa('Selenium::Chrome') ) {
+    if ( $self->isa('Selenium::Firefox') || $self->isa('Selenium::Chrome') || $self->isa('Selenium::Edge') ) {
         if (   exists $args->{capabilities}
             && exists $args->{capabilities}->{alwaysMatch} )
         {
