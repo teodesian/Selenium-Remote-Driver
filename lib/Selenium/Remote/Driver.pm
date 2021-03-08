@@ -3750,10 +3750,10 @@ __END__
 
 =head1 SEE ALSO
 
-L<https://github.com/SeleniumHQ/selenium> - the main selenium RC project
-L<https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol> - the "legacy" webdriver specification
-L<https://www.w3.org/TR/webdriver/> - the WC3 WebDriver 3 specification
-L<https://github.com/teodesian/Selenium-Remote-Driver/wiki>
+https://github.com/SeleniumHQ/selenium - the main selenium RC project
+https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol - the "legacy" webdriver specification
+https://www.w3.org/TR/webdriver/ - the WC3 WebDriver 3 specification
+https://github.com/teodesian/Selenium-Remote-Driver/wiki
 Brownie
 Wight
 
