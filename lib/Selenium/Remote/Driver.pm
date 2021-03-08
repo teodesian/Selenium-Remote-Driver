@@ -3572,7 +3572,7 @@ sub _prepare_file {
 =head2 get_text
 
  Description:
-    Get the text of a particular element. Wrapper around L<find_element()>
+    Get the text of a particular element. Wrapper around L</find_element>
 
  Usage:
     $text = $driver->get_text("//div[\@name='q']");
@@ -3588,7 +3588,7 @@ sub get_text {
 
  Description:
     Get the current text for the whole body. If you want the entire raw HTML instead,
-    See L<get_page_source>.
+    See L</get_page_source>.
 
  Usage:
     $body_text = $driver->get_body();
