@@ -3745,16 +3745,3 @@ sub _coerce_number {
 }
 
 1;
-
-__END__
-
-=head1 SEE ALSO
-
-https://github.com/SeleniumHQ/selenium - the main selenium RC project
-https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol - the "legacy" webdriver specification
-https://www.w3.org/TR/webdriver/ - the WC3 WebDriver 3 specification
-https://github.com/teodesian/Selenium-Remote-Driver/wiki
-Brownie
-Wight
-
-=cut
