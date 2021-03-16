@@ -3572,7 +3572,7 @@ sub _prepare_file {
 =head2 get_text
 
  Description:
-    Get the text of a particular element. Wrapper around L<find_element()>
+    Get the text of a particular element. Wrapper around L</find_element>
 
  Usage:
     $text = $driver->get_text("//div[\@name='q']");
@@ -3588,7 +3588,7 @@ sub get_text {
 
  Description:
     Get the current text for the whole body. If you want the entire raw HTML instead,
-    See L<get_page_source>.
+    See L</get_page_source>.
 
  Usage:
     $body_text = $driver->get_body();
@@ -3745,16 +3745,3 @@ sub _coerce_number {
 }
 
 1;
-
-__END__
-
-=head1 SEE ALSO
-
-L<https://github.com/SeleniumHQ/selenium> - the main selenium RC project
-L<https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol> - the "legacy" webdriver specification
-L<https://www.w3.org/TR/webdriver/> - the WC3 WebDriver 3 specification
-L<https://github.com/teodesian/Selenium-Remote-Driver/wiki>
-Brownie
-Wight
-
-=cut

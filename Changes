@@ -1,11 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
-1.41  02-03-2021 TEODESIAN
+1.40  02-03-2021 TEODESIAN
         [BUG FIXES]
         - suppress warning in CanStartBinary when geckodriver not in PWD
-
-1.40  12-04-2020 TEODESIAN
-        [BUG FIX]
         - fix double_click
 
 1.39  10-20-2020 TEODESIAN
