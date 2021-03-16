@@ -6,7 +6,7 @@ use Test::More;
 use LWP::UserAgent;
 use Test::LWP::UserAgent;
 use IO::Socket::INET;
-use Test::MockModule;
+use Test::MockModule v0.13;
 use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::Commands;
 use Selenium::Remote::Mock::RemoteConnection;
