@@ -52,7 +52,7 @@ anything, we'll try to find it on our own via L<File::Which/which>.
 has 'binary' => (
     is        => 'lazy',
     coerce    => \&coerce_simple_binary,
-    default   => sub { 'MicrosoftWebDriver.exe' },
+    default   => sub { 'msedgedriver.exe' },
     predicate => 1
 );
 

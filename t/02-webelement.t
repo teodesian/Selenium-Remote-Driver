@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::MockModule;
+use Test::MockModule v0.13;
 use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::RemoteConnection;
 
