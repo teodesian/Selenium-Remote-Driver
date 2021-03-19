@@ -135,7 +135,7 @@ GRID_STARTUP: {
     $tua->map_response(qr{(?:grid/api/hub/status|session)}, $ok);
 
     my $mock = Test::MockModule->new('Selenium::Remote::RemoteConnection');
-    $mock->redefine('check_status', sub { $grid_status_count++; 1 });
+    $mock->mock('check_status', sub { $grid_status_count++; 1 });
     my $grid_driver = Selenium::Remote::Driver->new(ua => $tua);
 
     ok(defined $grid_driver, 'Grid: Object loaded fine using grid/api/hub/status');
