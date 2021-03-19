@@ -1,5 +1,12 @@
 Revision history for Selenium-Remote-Driver
 
+1.42  03-17-2021 TEODESIAN
+        - Once more with feeling
+
+1.41  03-16-2021 TEODESIAN
+        [BUG FIXES]
+        - Declare minimum versions in testsuite to suppress CPANTesters failures
+
 1.40  02-03-2021 TEODESIAN
         [BUG FIXES]
         - suppress warning in CanStartBinary when geckodriver not in PWD

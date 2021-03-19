@@ -106,16 +106,22 @@ distribution, and some interfaces may change.
 
 This will create a new Test::Selenium::Remote::Driver object, which subclasses
 L<Selenium::Remote::Driver>.  This subclass provides useful testing
-functions.  It is modeled on L<Test::WWW::Selenium>.
+functions. It is modeled on L<Test::WWW::Selenium>.
 
 Environment vars can be used to specify options to pass to
 L<Selenium::Remote::Driver>. ENV vars are prefixed with C<TWD_>.
-( After the old fork name, "Test::WebDriver" )
+( After the old fork name, "Test::WebDriver" ). The explicity passed
+options have precedence. ENV vars take only effect when they are
+actually set. This important e.g. for the option C<javascript>, which
+is turned on per default in L<Selenium::Remote::Driver>.
 
 Set the Selenium server address with C<$TWD_HOST> and C<$TWD_PORT>.
 
 Pick which browser is used using the  C<$TWD_BROWSER>, C<$TWD_VERSION>,
 C<$TWD_PLATFORM>, C<$TWD_JAVASCRIPT>, C<$TWD_EXTRA_CAPABILITIES>.
+
+C<$TWD_BROWSER> is actually an alias for C<$TWD_BROWSER_NAME>.
+C<$TWD_HOST> is actually an alias for C<$TWD_REMOTE_SERVER_ADDR>.
 
 See L<Selenium::Remote::Driver> for the meanings of these options.
 
@@ -126,15 +132,20 @@ See L<Selenium::Remote::Driver> for the meanings of these options.
 sub BUILDARGS {
     my ( undef, %p ) = @_;
 
+    OPT:
     for my $opt (
         qw/remote_server_addr port browser_name version platform
         javascript auto_close extra_capabilities/
       )
     {
-        $p{$opt} //= $ENV{ 'TWD_' . uc($opt) };
+        my $env_var_name = 'TWD_' . uc($opt);
+
+        next OPT unless exists $ENV{$env_var_name};
+
+        $p{$opt} //= $ENV{$env_var_name};
     }
-    $p{browser_name}       //= $ENV{TWD_BROWSER};                      # ykwim
-    $p{remote_server_addr} //= $ENV{TWD_HOST};                         # ykwim
+    $p{browser_name}       //= $ENV{TWD_BROWSER} if exists $ENV{TWD_BROWSER};  # ykwim
+    $p{remote_server_addr} //= $ENV{TWD_HOST}    if exists $ENV{TWD_HOST};     # ykwim
     $p{webelement_class}   //= 'Test::Selenium::Remote::WebElement';
     return \%p;
 }
