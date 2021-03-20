@@ -90,15 +90,15 @@ sub BUILD {
 
 =head1 NAME
 
-Test::Selenium::Remote::Driver
+Test::Selenium::Remote::Driver - add testing methods to L<Selenium::Remote::Driver>
 
 =head1 DESCRIPTION
 
-A subclass of L<Selenium::Remote::Driver>.  which provides useful testing
-functions.
+A subclass of L<Selenium::Remote::Driver> which provides useful testing
+methods.
 
 This is an I<experimental> addition to the Selenium::Remote::Driver
-distribution, and some interfaces may change.
+distribution. Some interfaces may change.
 
 =head1 Methods
 
@@ -161,10 +161,10 @@ has verbose => ( is => 'rw', );
 =head2 server_is_running( $host, $port )
 
 Returns true if a Selenium server is running.  The host and port
-parameters are optional, and default to C<localhost:4444>.
+parameters are optional, and they default to C<localhost:4444>.
 
-Environment vars C<TWD_HOST> and C<TWD_PORT> can also be used to
-determine the server to check.
+The environment vars C<TWD_HOST> and C<TWD_PORT> can also be used to
+determine which server should be checked.
 
 =cut
 
@@ -231,11 +231,11 @@ output if you do not handle it properly.
 
 =head1 Testing Methods
 
-The following testing methods are available. For
-more documentation, see the related test methods in L<Selenium::Remote::Driver>
+The following testing methods are available.
+For more documentation, see the related methods in L<Selenium::Remote::Driver>.
 (And feel free to submit a patch to flesh out the documentation for these here).
 Defaults for optional arguments B<should> be the same as for their analogues in
-L<Selenium::Remote::Driver> and L<Selenium::Remote::WebElement>.
+L<Selenium::Remote::Driver>.
 
     alert_text_is
     alert_text_isnt
@@ -575,7 +575,7 @@ regex against the content of the current page.
 A default description of 'Content is like "$regex"' will be provided if there
 is no description.
 
-To also match the HTML see, C<< content_unlike() >>.
+To also match the HTML, see C<< content_unlike() >>.
 
 =cut
 
@@ -621,7 +621,7 @@ current page.
 A default description of 'Text is unlike "$regex"' will be provided if there
 is no description.
 
-To also match the HTML see, C<< content_unlike() >>.
+To also match the HTML, see C<< content_unlike() >>.
 
 =cut
 
@@ -662,7 +662,7 @@ sub body_text_unlike {
    $twd->content_contains( $str [, $desc ] )
    $twd->content_contains( [$str_1, $str_2] [, $desc ] )
 
-Tells if the content of the page contains I<$str>. If an arrayref of strngs's
+Tells if the content of the page contains I<$str>. If an arrayref of strings
 are provided, one 'test' is run for each string against the content of the
 current page.
 
@@ -756,7 +756,7 @@ regex against the content of the current page.
 A default description of 'Text contains "$str"' will be provided if there
 is no description.
 
-To also match the HTML see, C<< content_uncontains() >>.
+To also match the HTML, see C<< content_lacks() >>.
 
 =cut
 
@@ -802,7 +802,7 @@ current page.
 A default description of 'Text lacks "$str"' will be provided if there
 is no description.
 
-To also match the HTML see, C<< content_lacks() >>.
+To also match the HTML, see C<< content_lacks() >>.
 
 =cut
 
