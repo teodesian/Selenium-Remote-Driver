@@ -122,6 +122,7 @@ C<$TWD_PLATFORM>, C<$TWD_JAVASCRIPT>, C<$TWD_EXTRA_CAPABILITIES>.
 
 C<$TWD_BROWSER> is actually an alias for C<$TWD_BROWSER_NAME>.
 C<$TWD_HOST> is actually an alias for C<$TWD_REMOTE_SERVER_ADDR>.
+The aliases habe lower precedence than the original values.
 
 See L<Selenium::Remote::Driver> for the meanings of these options.
 
