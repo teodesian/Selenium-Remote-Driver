@@ -752,7 +752,7 @@ sub content_lacks {
 
 Tells if the text of the page (as returned by C<< get_body() >>) contains
 I<$str>. If an arrayref of strings are provided, one 'test' is run for each
-regex against the content of the current page.
+string against the text of the current page.
 
 A default description of 'Text contains "$str"' will be provided if there
 is no description.
@@ -796,8 +796,8 @@ sub body_text_contains {
    $twd->body_text_lacks( [$str_1, $str_2] [, $desc ] )
 
 Tells if the text of the page (as returned by C<< get_body() >>)
- does NOT contain I<$str>. If an arrayref of strings
-are provided, one 'test' is run for each regex against the content of the
+does NOT contain I<$str>. If an arrayref of strings
+are provided, one 'test' is run for each string against the content of the
 current page.
 
 A default description of 'Text lacks "$str"' will be provided if there
