@@ -571,9 +571,9 @@ sub content_unlike {
 
 Tells if the text of the page (as returned by C<< get_body() >>)  matches
 I<$regex>. If an arrayref of regex's are provided, one 'test' is run for each
-regex against the content of the current page.
+regex against the text of the current page.
 
-A default description of 'Content is like "$regex"' will be provided if there
+A default description of 'Text is like "$regex"' will be provided if there
 is no description.
 
 To also match the HTML, see C<< content_unlike() >>.
@@ -615,8 +615,8 @@ sub body_text_like {
    $twd->body_text_unlike( [$regex_1, $regex_2] [, $desc ] )
 
 Tells if the text of the page (as returned by C<< get_body() >>)
- does NOT match I<$regex>. If an arrayref of regex's
-are provided, one 'test' is run for each regex against the content of the
+does NOT match I<$regex>. If an arrayref of regex's
+are provided, one 'test' is run for each regex against the text of the
 current page.
 
 A default description of 'Text is unlike "$regex"' will be provided if there
