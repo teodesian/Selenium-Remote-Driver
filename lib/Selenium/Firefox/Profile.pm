@@ -205,7 +205,6 @@ for a new geckodriver session.
 sub add_webdriver {
     my ( $self, $port, $is_marionette ) = @_;
 
-    my $prefs              = {};
     my $current_user_prefs = $self->{user_prefs};
 
     $self->set_preference(
