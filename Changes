@@ -1,5 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
+1.44 2021-03-26 TEODESIAN
+    - Remove all usage of default profiles for Firefox when in direct binary mode.
+
 1.43  03-18-2021 TEODESIAN
         - Remove all usage of the redefine() method in Test::MockModule, because that module is a mess to upgrade apparently
         - Tweak ENV setting in Test::* namespaces, see POD
