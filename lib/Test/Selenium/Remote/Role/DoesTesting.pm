@@ -23,9 +23,11 @@ has _builder => (
 sub _get_finder_key {
     my $self         = shift;
     my $finder_value = shift;
+
     foreach my $k ( keys %{ $self->FINDERS } ) {
         return $k if ( $self->FINDERS->{$k} eq $finder_value );
     }
+
     return;
 }
 
@@ -56,7 +58,7 @@ sub _check_method {
 sub _check_ok {
     my $self        = shift;
     my $method      = shift;
-    my $real_method = '';
+
     my @args        = @_;
     my ( $rv, $num_of_args, @r_args );
     try {
@@ -86,30 +88,26 @@ sub _check_ok {
 
         # quick hack to fit 'find_no_element' into check_ok logic
         if ( $method eq 'find_no_element' ) {
-            $real_method = $method;
-
             # If we use `find_element` and find nothing, the error
             # handler is incorrectly invoked. Doing a `find_elements`
             # and checking that it returns an empty array does not
             # invoke the error_handler. See
             # https://github.com/gempesaw/Selenium-Remote-Driver/issues/253
-            $method = 'find_elements';
-            my $elements = $self->$method(@r_args);
-            if ( scalar(@$elements) ) {
+            my $elements = $self->find_elements(@r_args);
+            if ( @{$elements} ) {
                 $rv = $elements->[0];
             }
             else {
-                $rv = 1;
+                $rv = 1; # empty list means success
             }
         }
         else {
-            $rv = $self->$method(@r_args);
+            $rv = $self->$method(@r_args); # a true $rv means success
         }
     }
     catch {
-        if ($real_method) {
-            $method = $real_method;
-            $rv     = 1;
+        if ($method eq 'find_no_element') {
+            $rv = 1; # an exception from find_elements() means success
         }
         else {
             $self->croak($_);
@@ -123,11 +121,12 @@ sub _check_ok {
     my $test_name = pop @args // $default_test_name;
 
     # case when find_no_element found an element, we should croak
-    if ( $real_method eq 'find_no_element' ) {
+    if ( $method eq 'find_no_element' ) {
         if ( blessed($rv) && $rv->isa('Selenium::Remote::WebElement') ) {
             $self->croak($test_name);
         }
     }
+
     return $self->ok( $rv, $test_name );
 }
 
