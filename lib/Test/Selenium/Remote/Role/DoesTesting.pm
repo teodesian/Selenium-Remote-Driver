@@ -140,39 +140,50 @@ sub _check_ok {
 sub _build_sub {
     my $self      = shift;
     my $meth_name = shift;
-    my @func_args;
-    my $comparators = {
+
+    # e.g. for $meth_name =  'find_no_element_ok':
+    #   $meth_comp         = 'ok'
+    #   $meth_without_comp = 'find_no_element'
+    my @meth_elements     = split '_', $meth_name;
+    my $meth_comp         = pop @meth_elements;
+    my $meth_without_comp = join '_', @meth_elements;
+
+    # handle the ok testing methods
+    if ( $meth_comp eq 'ok' ) {
+        return sub {
+            my $self = shift;
+
+            local $Test::Builder::Level = $Test::Builder::Level + 2;
+
+            return $self->_check_ok($meth_without_comp, @_);
+        };
+    }
+
+    # find the Test::More comparator method
+    my %comparators = (
         is     => 'is_eq',
         isnt   => 'isnt_eq',
         like   => 'like',
         unlike => 'unlike',
-    };
-    my @meth_elements = split( '_', $meth_name );
-    my $meth          = '_check_ok';
-    my $meth_comp     = pop @meth_elements;
-    if ( $meth_comp eq 'ok' ) {
-        push @func_args, join( '_', @meth_elements );
-    }
-    else {
-        if ( defined( $comparators->{$meth_comp} ) ) {
-            $meth = '_check_method';
-            push @func_args, join( '_', @meth_elements ),
-              $comparators->{$meth_comp};
-        }
-        else {
-            return sub {
-                my $self = shift;
-                $self->croak("Sub $meth_name could not be defined");
-              }
-        }
+    );
+
+    # croak on unknown comparator methods
+    if ( ! exists $comparators{$meth_comp} ) {
+        return sub {
+            my $self = shift;
+
+            return $self->croak("Sub $meth_name could not be defined");
+        };
     }
 
+    # handle check in _check_method()
     return sub {
         my $self = shift;
-        local $Test::Builder::Level = $Test::Builder::Level + 2;
-        $self->$meth( @func_args, @_ );
-    };
 
+        local $Test::Builder::Level = $Test::Builder::Level + 2;
+
+        return $self->_check_method( $meth_without_comp, $comparators{$meth_comp}, @_ );
+    };
 }
 
 1;
