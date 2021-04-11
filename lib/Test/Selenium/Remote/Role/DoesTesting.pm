@@ -114,11 +114,16 @@ sub _check_ok {
         }
     };
 
-    my $default_test_name = $method;
-    $default_test_name .= "'" . join( "' ", @r_args ) . "'"
-      if $num_of_args > 0;
+    # test description might have been explicitly passed
+    my $test_name = pop @args;
 
-    my $test_name = pop @args // $default_test_name;
+    # generic test description when no explicit test description was passed
+    if ( ! defined $test_name ) {
+        $test_name = $num_of_args  > 0 ?
+            join( ' ', $method, map { q{'$_'} } @r_args )
+            :
+            $method;
+    }
 
     # case when find_no_element found an element, we should croak
     if ( $method eq 'find_no_element' ) {
