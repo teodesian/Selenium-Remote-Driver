@@ -23,9 +23,11 @@ has _builder => (
 sub _get_finder_key {
     my $self         = shift;
     my $finder_value = shift;
+
     foreach my $k ( keys %{ $self->FINDERS } ) {
         return $k if ( $self->FINDERS->{$k} eq $finder_value );
     }
+
     return;
 }
 
@@ -56,7 +58,7 @@ sub _check_method {
 sub _check_ok {
     my $self        = shift;
     my $method      = shift;
-    my $real_method = '';
+
     my @args        = @_;
     my ( $rv, $num_of_args, @r_args );
     try {
@@ -86,48 +88,50 @@ sub _check_ok {
 
         # quick hack to fit 'find_no_element' into check_ok logic
         if ( $method eq 'find_no_element' ) {
-            $real_method = $method;
-
             # If we use `find_element` and find nothing, the error
             # handler is incorrectly invoked. Doing a `find_elements`
             # and checking that it returns an empty array does not
             # invoke the error_handler. See
             # https://github.com/gempesaw/Selenium-Remote-Driver/issues/253
-            $method = 'find_elements';
-            my $elements = $self->$method(@r_args);
-            if ( scalar(@$elements) ) {
+            my $elements = $self->find_elements(@r_args);
+            if ( @{$elements} ) {
                 $rv = $elements->[0];
             }
             else {
-                $rv = 1;
+                $rv = 1; # empty list means success
             }
         }
         else {
-            $rv = $self->$method(@r_args);
+            $rv = $self->$method(@r_args); # a true $rv means success
         }
     }
     catch {
-        if ($real_method) {
-            $method = $real_method;
-            $rv     = 1;
+        if ($method eq 'find_no_element') {
+            $rv = 1; # an exception from find_elements() means success
         }
         else {
             $self->croak($_);
         }
     };
 
-    my $default_test_name = $method;
-    $default_test_name .= "'" . join( "' ", @r_args ) . "'"
-      if $num_of_args > 0;
+    # test description might have been explicitly passed
+    my $test_name = pop @args;
 
-    my $test_name = pop @args // $default_test_name;
+    # generic test description when no explicit test description was passed
+    if ( ! defined $test_name ) {
+        $test_name = $num_of_args  > 0 ?
+            join( ' ', $method, map { q{'$_'} } @r_args )
+            :
+            $method;
+    }
 
     # case when find_no_element found an element, we should croak
-    if ( $real_method eq 'find_no_element' ) {
+    if ( $method eq 'find_no_element' ) {
         if ( blessed($rv) && $rv->isa('Selenium::Remote::WebElement') ) {
             $self->croak($test_name);
         }
     }
+
     return $self->ok( $rv, $test_name );
 }
 
@@ -136,39 +140,50 @@ sub _check_ok {
 sub _build_sub {
     my $self      = shift;
     my $meth_name = shift;
-    my @func_args;
-    my $comparators = {
+
+    # e.g. for $meth_name =  'find_no_element_ok':
+    #   $meth_comp         = 'ok'
+    #   $meth_without_comp = 'find_no_element'
+    my @meth_elements     = split '_', $meth_name;
+    my $meth_comp         = pop @meth_elements;
+    my $meth_without_comp = join '_', @meth_elements;
+
+    # handle the ok testing methods
+    if ( $meth_comp eq 'ok' ) {
+        return sub {
+            my $self = shift;
+
+            local $Test::Builder::Level = $Test::Builder::Level + 2;
+
+            return $self->_check_ok($meth_without_comp, @_);
+        };
+    }
+
+    # find the Test::More comparator method
+    my %comparators = (
         is     => 'is_eq',
         isnt   => 'isnt_eq',
         like   => 'like',
         unlike => 'unlike',
-    };
-    my @meth_elements = split( '_', $meth_name );
-    my $meth          = '_check_ok';
-    my $meth_comp     = pop @meth_elements;
-    if ( $meth_comp eq 'ok' ) {
-        push @func_args, join( '_', @meth_elements );
-    }
-    else {
-        if ( defined( $comparators->{$meth_comp} ) ) {
-            $meth = '_check_method';
-            push @func_args, join( '_', @meth_elements ),
-              $comparators->{$meth_comp};
-        }
-        else {
-            return sub {
-                my $self = shift;
-                $self->croak("Sub $meth_name could not be defined");
-              }
-        }
+    );
+
+    # croak on unknown comparator methods
+    if ( ! exists $comparators{$meth_comp} ) {
+        return sub {
+            my $self = shift;
+
+            return $self->croak("Sub $meth_name could not be defined");
+        };
     }
 
+    # handle check in _check_method()
     return sub {
         my $self = shift;
-        local $Test::Builder::Level = $Test::Builder::Level + 2;
-        $self->$meth( @func_args, @_ );
-    };
 
+        local $Test::Builder::Level = $Test::Builder::Level + 2;
+
+        return $self->_check_method( $meth_without_comp, $comparators{$meth_comp}, @_ );
+    };
 }
 
 1;
