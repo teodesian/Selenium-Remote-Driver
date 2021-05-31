@@ -10,11 +10,16 @@ use Test::More;
 my $res;
 
 subtest 'basic' => sub {
+    my @warning;
+    local $SIG{__WARN__} = sub { push( @warning, $_[0] ) };
+
     $res = wait_until { 1 };
     is $res, 1, 'right return value';
 
     $res = wait_until { 0 } timeout => 1;
     is $res, '', 'right return value';
+
+    is( scalar @warning, 0, 'no warnings' );
 };
 
 subtest 'exception' => sub {
