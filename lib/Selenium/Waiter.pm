@@ -93,7 +93,9 @@ sub wait_until (&%) {
     my $start               = time;
     my $timeout_not_elapsed = sub {
         my $elapsed = time - $start;
-        return $elapsed < $args->{timeout};
+        my $ret = $elapsed < $args->{timeout};
+        warn 'timeout' if ( !$ret && $args->{debug} );
+        return $ret;
     };
 
     my $exception = '';
