@@ -93,9 +93,7 @@ sub wait_until (&%) {
     my $start               = time;
     my $timeout_not_elapsed = sub {
         my $elapsed = time - $start;
-        my $ret = $elapsed < $args->{timeout};
-        warn 'timeout' if ( !$ret && $args->{debug} );
-        return $ret;
+        return $elapsed < $args->{timeout};
     };
 
     my $exception = '';
@@ -120,6 +118,8 @@ sub wait_until (&%) {
         return $try_ret if $try_ret;
     }
 
+    warn 'timeout' if $args->{debug};
+    
     # No need to repeat ourselves if we're already debugging.
     warn $exception if $exception && !$args->{debug};
     return '';
