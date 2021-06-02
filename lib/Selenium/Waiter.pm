@@ -118,6 +118,8 @@ sub wait_until (&%) {
         return $try_ret if $try_ret;
     }
 
+    warn 'timeout' if $args->{debug};
+    
     # No need to repeat ourselves if we're already debugging.
     warn $exception if $exception && !$args->{debug};
     return '';
