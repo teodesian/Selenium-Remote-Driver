@@ -119,7 +119,7 @@ sub wait_until (&%) {
     }
 
     warn 'timeout' if $args->{debug};
-    
+
     # No need to repeat ourselves if we're already debugging.
     warn $exception if $exception && !$args->{debug};
     return '';
