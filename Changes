@@ -1,5 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
+1.45 2021-10-21 TEODESIAN
+    - Remove ill-advised test reaching out to saucelabs at install-time, vendors are the users' problem
+
 1.44 2021-03-26 TEODESIAN
     - Remove all usage of default profiles for Firefox when in direct binary mode.
 
