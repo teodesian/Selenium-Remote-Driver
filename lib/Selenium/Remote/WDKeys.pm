@@ -9,10 +9,10 @@ The constant KEYS is defined here.
 =head1 SYNOPSIS
 
    use Selenium::Remote::WDKeys;
-   
+
    my $space_key = KEYS->{'space'};
    my $enter_key = KEYS->{'enter'};
-   
+
 =head1 CONSTANT KEYS
 
   null
