@@ -1,5 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
+1.46 2021-12-04 TEODESIAN
+    - Document the keys of WDKEYS hash in POD. Contribution by Yuki Kimoto.
+
 1.45 2021-10-21 TEODESIAN
     - Remove ill-advised test reaching out to saucelabs at install-time, vendors are the users' problem
 
