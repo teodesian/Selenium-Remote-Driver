@@ -147,7 +147,7 @@ sub key_up {
     }
     foreach my $v (@$value) {
         push @{ $self->actions },
-          sub { $self->driver->$self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $v } ] } ] ) };
+          sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $v } ] } ] ) };
     }
     return $self;
 }
