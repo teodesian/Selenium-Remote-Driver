@@ -18,7 +18,6 @@ my $harness = TestHarness->new(
 );
 my %selenium_args = %{ $harness->base_caps };
 
-use Carp::Always;
 my $selfmock = Test::MockModule->new('Selenium::Remote::Driver');
 $selfmock->mock('new_session', sub { my $self = shift; $self->{session_id} = "58aff7be-e46c-42c0-ae5e-571ea1c1f466"  });
 
