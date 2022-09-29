@@ -336,7 +336,7 @@ LIMITATIONS.
 =head2 key_down
 
 Sends key presses only, without releasing them.
-Useful when modifier keys are requried
+Useful when modifier keys are requiried
 
 Will DWIM your input and accept either a string or ARRAYREF of keys.
 
@@ -353,7 +353,7 @@ Will DWIM your input and accept either a string or ARRAYREF of keys.
 =head2 key_up
 
 Releases prior key presses.
-Useful when modifier keys are requried
+Useful when modifier keys are requiried
 
 Will DWIM your input and accept either a string or ARRAYREF of keys.
 
