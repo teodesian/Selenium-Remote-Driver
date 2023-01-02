@@ -3313,7 +3313,7 @@ sub compare_elements {
 =head2 click
 
  Description:
-    Click any mouse button (at the coordinates set by the last moveto command).
+    Click any mouse button (at the coordinates set by the last move_to command).
 
  Input:
     button - any one of 'LEFT'/0 'MIDDLE'/1 'RIGHT'/2
@@ -3385,7 +3385,7 @@ sub _get_button {
 =head2 double_click
 
  Description:
-    Double-clicks at the current mouse coordinates (set by moveto).
+    Double-clicks at the current mouse coordinates (set by move_to).
 
  Compatibility:
     On webdriver3 enabled servers, you can double click arbitrary mouse buttons.
@@ -3416,7 +3416,7 @@ sub double_click {
 
  Description:
     Click and hold the left mouse button (at the coordinates set by the
-    last moveto command). Note that the next mouse-related command that
+    last move_to command). Note that the next mouse-related command that
     should follow is buttonup . Any other mouse command (such as click
     or another call to buttondown) will yield undefined behaviour.
 
