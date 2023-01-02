@@ -1012,18 +1012,13 @@ sub _request_new_session {
                 ref $args->{capabilities}->{alwaysMatch}->{$cap} eq
                 'Selenium::Firefox::Profile' )
             {
-#XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
+                #XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
                 $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
                   ->{args} = [
                     '-profile',
                     $args->{capabilities}->{alwaysMatch}->{$cap}->{profile_dir}
                       ->dirname()
                   ];
-            }
-            else {
-           #previously undocumented feature that we can pass the encoded profile
-                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
-                  ->{profile} = $args->{capabilities}->{alwaysMatch}->{$cap};
             }
         }
         foreach my $newkey ( keys(%$cmap) ) {
