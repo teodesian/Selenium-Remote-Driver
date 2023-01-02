@@ -1,5 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
+1.48 2023-01-01 TEODESIAN
+    - Remove usage of undocumented firefox features for passing profiles
+
 1.47 2022-05-02 TEODESIAN
     - Add DWIM to inputs accepted by ActionChains send_keys, key_up & key_down, and add some docu
 
