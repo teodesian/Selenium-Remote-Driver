@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::MockModule;
+use Test::MockModule v0.13;
 use Selenium::Remote::Driver;
 use Selenium::Remote::Mock::RemoteConnection;
 
@@ -48,14 +48,14 @@ INPUT: {
     $ret = $elem->get_tag_name();
     is($ret, 'input', 'Get tag name');
     my $selfmock = Test::MockModule->new('Selenium::Remote::WebElement');
-    $selfmock->redefine('get_tag_name',sub { 'input' });
-    $selfmock->redefine('get_property',sub { 0 });
+    $selfmock->mock('get_tag_name',sub { 'input' });
+    $selfmock->mock('get_property',sub { 0 });
 
     $elem = $driver->find_element('checky', 'id');
     $ret = $elem->is_selected();
     is($ret, 0, 'Checkbox not selected');
     $ret = $elem->click();
-    $selfmock->redefine('get_property',sub { 1 });
+    $selfmock->mock('get_property',sub { 1 });
 
     $ret = $elem->is_selected();
     is($ret, 1, 'Checkbox is selected');

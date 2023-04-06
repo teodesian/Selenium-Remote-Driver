@@ -3,8 +3,12 @@
 ## WARNING
 
 Selenium has essentially been leapfrogged technologically by [Playwright][pw]. (using the devtools protocol for all browsers)
-Use [Chrome::DevToolsProtocol][dt] instead of this unless you want to be frustrated by a tool which doesn't do half of what you want.
+Use [Chrome::DevToolsProtocol][dt] (or the [Playwright][pwc] interface on CPAN) instead of this unless you want to be frustrated by a tool which doesn't do half of what you want.
 Even then you are probably shooting yourself in the foot not using Javascript directly to automate the testing of webpages.
+
+This module is also not ready for SeleniumHQ's 4.0 series JAR.
+For compatibility with that, try our next generation selenium client:
+[Selenium::Client][sc]
 
 ## Introduction
 
@@ -22,6 +26,8 @@ It also implements WC3 [selenium][wc3].
 [standalone]: http://selenium-release.storage.googleapis.com/index.html
 [dt]: https://metacpan.org/pod/Chrome::DevToolsProtocol
 [pw]: https://github.com/microsoft/playwright
+[pwc]: https://metacpan.org/pod/Playwright
+[sc]: https://metacpan.org/pod/Selenium::Client
 
 ## Installation
 

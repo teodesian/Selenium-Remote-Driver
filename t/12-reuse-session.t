@@ -22,7 +22,7 @@ foreach (@browsers) {
     my @mock_session_ids = qw{2257c1cf-17d9-401a-a13b-fc7a279d7db5 dddddddd-17d9-401a-a13b-fc7a279d7db5 17c83f3a-3f23-4ffc-a50f-06ba5f5202d1};
 
     my $mock = Test::MockModule->new('Selenium::Remote::Driver');
-    $mock->redefine('new_session', sub { my $s = shift; $s->{session_id} //= shift @mock_session_ids } );
+    $mock->mock('new_session', sub { my $s = shift; $s->{session_id} //= shift @mock_session_ids } );
 
 
     my %selenium_args = (

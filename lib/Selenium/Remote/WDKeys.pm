@@ -6,6 +6,82 @@ package Selenium::Remote::WDKeys;
 
 The constant KEYS is defined here.
 
+=head1 SYNOPSIS
+
+   use Selenium::Remote::WDKeys;
+
+   my $space_key = KEYS->{'space'};
+   my $enter_key = KEYS->{'enter'};
+
+=head1 CONSTANT KEYS
+
+  null
+  cancel
+  help
+  backspace
+  tab
+  clear
+  return
+  enter
+  shift
+  control
+  alt
+  pause
+  escape
+  space
+  page_up
+  page_down
+  end
+  home
+  left_arrow
+  up_arrow
+  right_arrow
+  down_arrow
+  insert
+  delete
+  semicolon
+  equals
+  numpad_0
+  numpad_1
+  numpad_2
+  numpad_3
+  numpad_4
+  numpad_5
+  numpad_6
+  numpad_7
+  numpad_8
+  numpad_9
+  multiply
+  add
+  separator
+  subtract
+  decimal
+  divide
+  f1
+  f2
+  f3
+  f4
+  f5
+  f6
+  f7
+  f8
+  f9
+  f10
+  f11
+  f12
+  command_meta
+  ZenkakuHankaku
+
+=head1 FUNCTIONS
+
+Functions of Selenium::Remote::WDKeys.
+
+=head2 KEYS
+
+  my $keys = KEYS();
+
+A hash reference that contains constant keys. This function is exported by default.
+
 =cut
 
 use strict;

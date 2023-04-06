@@ -1012,18 +1012,13 @@ sub _request_new_session {
                 ref $args->{capabilities}->{alwaysMatch}->{$cap} eq
                 'Selenium::Firefox::Profile' )
             {
-#XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
+                #XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
                 $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
                   ->{args} = [
                     '-profile',
                     $args->{capabilities}->{alwaysMatch}->{$cap}->{profile_dir}
                       ->dirname()
                   ];
-            }
-            else {
-           #previously undocumented feature that we can pass the encoded profile
-                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
-                  ->{profile} = $args->{capabilities}->{alwaysMatch}->{$cap};
             }
         }
         foreach my $newkey ( keys(%$cmap) ) {
@@ -1044,7 +1039,7 @@ sub _request_new_session {
       if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
 
     #Delete compatibility layer when using drivers directly
-    if ( $self->isa('Selenium::Firefox') || $self->isa('Selenium::Chrome') ) {
+    if ( $self->isa('Selenium::Firefox') || $self->isa('Selenium::Chrome') || $self->isa('Selenium::Edge') ) {
         if (   exists $args->{capabilities}
             && exists $args->{capabilities}->{alwaysMatch} )
         {
@@ -3318,7 +3313,7 @@ sub compare_elements {
 =head2 click
 
  Description:
-    Click any mouse button (at the coordinates set by the last moveto command).
+    Click any mouse button (at the coordinates set by the last move_to command).
 
  Input:
     button - any one of 'LEFT'/0 'MIDDLE'/1 'RIGHT'/2
@@ -3390,7 +3385,7 @@ sub _get_button {
 =head2 double_click
 
  Description:
-    Double-clicks at the current mouse coordinates (set by moveto).
+    Double-clicks at the current mouse coordinates (set by move_to).
 
  Compatibility:
     On webdriver3 enabled servers, you can double click arbitrary mouse buttons.
@@ -3421,7 +3416,7 @@ sub double_click {
 
  Description:
     Click and hold the left mouse button (at the coordinates set by the
-    last moveto command). Note that the next mouse-related command that
+    last move_to command). Note that the next mouse-related command that
     should follow is buttonup . Any other mouse command (such as click
     or another call to buttondown) will yield undefined behaviour.
 
@@ -3572,7 +3567,7 @@ sub _prepare_file {
 =head2 get_text
 
  Description:
-    Get the text of a particular element. Wrapper around L<find_element()>
+    Get the text of a particular element. Wrapper around L</find_element>
 
  Usage:
     $text = $driver->get_text("//div[\@name='q']");
@@ -3588,7 +3583,7 @@ sub get_text {
 
  Description:
     Get the current text for the whole body. If you want the entire raw HTML instead,
-    See L<get_page_source>.
+    See L</get_page_source>.
 
  Usage:
     $body_text = $driver->get_body();
@@ -3745,16 +3740,3 @@ sub _coerce_number {
 }
 
 1;
-
-__END__
-
-=head1 SEE ALSO
-
-L<https://github.com/SeleniumHQ/selenium> - the main selenium RC project
-L<https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol> - the "legacy" webdriver specification
-L<https://www.w3.org/TR/webdriver/> - the WC3 WebDriver 3 specification
-L<https://github.com/teodesian/Selenium-Remote-Driver/wiki>
-Brownie
-Wight
-
-=cut
