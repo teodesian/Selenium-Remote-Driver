@@ -1,5 +1,8 @@
 Revision history for Selenium-Remote-Driver
 
+1.49 2023-04-06 TEODESIAN
+    - Fix the action type for button_up(), courtesy of Bernard Schmalhofer
+
 1.48 2023-01-01 TEODESIAN
     - Remove usage of undocumented firefox features for passing profiles
 
