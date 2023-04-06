@@ -1,583 +1,598 @@
 Revision history for Selenium-Remote-Driver
 
-1.43  03-18-2021 TEODESIAN
-        - Remove all usage of the redefine() method in Test::MockModule, because that module is a mess to upgrade apparently
-        - Tweak ENV setting in Test::* namespaces, see POD
-
-1.42  03-17-2021 TEODESIAN
-        - Once more with feeling
-
-1.41  03-16-2021 TEODESIAN
-        [BUG FIXES]
-        - Declare minimum versions in testsuite to suppress CPANTesters failures
-
-1.40  02-03-2021 TEODESIAN
-        [BUG FIXES]
-        - suppress warning in CanStartBinary when geckodriver not in PWD
-        - fix double_click
-
-1.39  10-20-2020 TEODESIAN
-        [NEW FEATURES]
-        - Add execute_script and execute_async_script convenience methods to WebElements.
-        - Add die flag to Selenium::Waiter
-        [BUG FIXES]
-        - Fix a couple more documentation issues with driver specific problems
-        [REMOVALS]
-        - Removed ide-plugin.js, as it's not been supported or working in years
-
-1.38  10-19-2020 TEODESIAN
-        [BUG FIXES]
-        -correct incorrect prior changelog date
-        -fix undefined value warnings when the remote server goes out to lunch
-        -add a note about doing lots of testing with the selenium JAR to POD
-        -Fix other minor things about the documentation and error messages
-
-1.37  02-17-2020 TEODESIAN
-        [BUG FIXES]
-        - obey the auto_close flag in the direct drivers
-
-1.36  10-21-2019 TEODESIAN
-        [BUG FIXES]
-        - Adjust handling of chrome due to it implementing WC3 mostly correctly now
-        - Fix browser detection logic in screenshot()
-        - Actually apply the fix from 1.35 in the right place, heh
-
-1.35  10-21-2019 TEODESIAN
-        [BUG FIXES]
-        - Fix race condition and inability to find a port in certain circumstances when using direct driver modules.
-
-1.34   09-11-2019 TEODESIAN
-        [BUG FIXES]
-        - Remove .so files from Firefox lib tree to simplify CPAN RPM build tool chains
-
-1.33   06-17-2019 TEODESIAN
-        [BUG FIXES]
-        - Add chrome shim to disable sandboxing by default so that Selenium::Chrome usage isn't broken by default
-        - Report failures to obtain sessions better
-
-1.32   06-12-2019 TEODESIAN
-        [New Features]
-        - Add support for mozilla full pags screenshots
-        [BUG FIXES]
-        - Fix typo in WebElement drag() talking to action chains module.  No wonder that didn't work
-        - Don't auto-da-fe on Macos when shutting down the binary in direct drivers
-
-1.31   01-06-2019 TEODESIAN
-        [BUG FIXES]
-        - Kill dangling driver processes in Selenium::Chrome/Firefox on unix hosts
-        - Adjust set_timeout to WC3 standard changing out from under us
-
-1.30   09-17-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix broken name selector polyfill when using Selenium::Firefox directly
-        - Fix switch_to_frame(undef) brokenness due to unneeded polyfill
-        - Correct POD information about how to use raw firefox profiles
-        - Advertise Microsoft Browser Standalone Drivers (Edge, IE)
-
-1.29   08-17-2018 TEODESIAN
-        [New Features]
-        - Selenium::Edge and Test::Selenium::Edge now exist
-        - Pass caller argument array as final arg to error_handler callbacks
-        - Add child() and children() aliases to Selenium::Remote::WebElements
-        [BUG FIXES]
-        - Fixed Test::Selenium::* direct usage modules from getting undef method errors when acting on WebElements
-        - Fixed issue where capabilities could not be passed with Selenium::Firefox
-        - Make it actually possible for find_element_ok to fail without dying
-
-1.28   06-05-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix incorrect documentation of constructor fields.
-        - Remove bogus get_style header in WebElement POD.
-        - Fix chrome maximize() polyfill
-        - Adjust is_displayed to do appropriate "displayedness" checks when in WC3 mode.
-
-1.27   03-25-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix incorrect passing of capabilities to geckodriver which caused exceptions on instantiaion.
-        - Fix issue where <form> elements could not be submitted.
-        - Allow bypass of JSONWire emulation in Selenium::Remote::WebElement::get_attribute().
-
-1.26   02-19-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix issue where only <form> elements and not <input> elements could be submit()ted.
-        - Force chrome into using JSONWire style capabilities passing, as WC3 style is just horribly broken on chromedriver.
-        - Skip v1.25, because the PAUSE indexer apparently thinks 1.25 < 1.24
-
-1.24   02-12-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix issue where ID finder polyfills failed on IDs with dots (.) in them.
-        - Force fallback to JSONWire execute_script calls in chrome, they're not quite right in WC3 mode.
-
-1.23   01-29-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix issue on legacy chrome/driver with get/set window pos by forcing fallback to JSONWire methods.
-
-1.22   01-25-2018 TEODESIAN
-        [BUG FIXES]
-        - Fix issue where is_enabled() polyfill on WD3 servers was checking the wrong attribute.
-        - Fix issue where Firefox/Chrome capabilities were not correctly passed
-        - Make some JS polyfill failures non-fatal
-
-1.21   01-19-2018 TEODESIAN
-        [NEW MAINTAINER]
-        - George S. Baugh (@teodesian on github, TEODESIAN on CPAN) is now the maintainer.
-
-        [NEW FEATURES]
-        - WC3 webdriver methods have all been implemented, and shims for servers 'halfway there' have been instituted.
-        - Backwards-compatibility with old selenium servers should still remain.
-        - Attempts to fall-back to JSONWire methods if WC3 methods are not available
-        - drag() re-instated in Selenium::Remote::WebElement as an alias to Selenium::ActionChains::drag_and_drop().
-
-        [BUG FIXES]
-        - Fix warnings thrown in release testsuite by unescaped regexes on perl 5.24
-        - Expand POD for some modules
-
-        [DEPRECATIONS]
-        - Selenium::Remote::Driver::pause() - There are plenty of other ways to sleep().
-
-1.20   05-25-2017
-        [BUG FIXES]
-        - Shim use of name as find method for geckodriver
-        - Start up geckodriver/binary Firefox properly
-        - #309, #310: @syspete: Fix issues with dependencies
-        - #313, #312: @lukec: Handle saucelabs redirect during session create
-
-        [NEW FEATURES]
-        - #307: @vitstradal: Re-use an existing session
-
-1.12   02-05-2017
-        [BUG FIXES]
-        - #303: Restore switchWindow functionality in Chrome
-
-1.11   02-01-2017
-        [NEW FEATURES]
-        - #298: @vkatsikaris: fixed ports option (long overdue on my part, thanks)!
-
-        [BUG FIXES]
-        - #301: Update json parameter for switchWindow
-
-1.02   12-13-2016
-        (bundled firefox driver version: 3.0.0b2)
-
-        [NEW FEATURES]
-        - #288: @vkatsikaris: Add context endpoints for Firefox
-
-        [BUG FIXES]
-        - #279, #281: @richi235: Fix errors in IDE plugin script generator
-        - #291, #292, #299: Handle spec element key format
-
-1.00   09-01-2016
-        (bundled firefox driver version: 3.0.0b2)
-
-        [BREAKING]
-        - For users of Selenium::Firefox, FF support defaults to v48;
-          if you have FF47 installed, your existing scripts will require
-          modification. See docs in Selenium::Firefox for more info.
-
-        [NEW FEATURES]
-        - #271: Support geckodriver & FF48
-        - #260: Update firefox artifacts to 3.0.0b2 to support FF47
-        - #259: Allow users to pass in existing FF profile dir
-        - #276: Simplify recordings to enable easier releases
-
-        [BUG FIXES]
-        - Encode Firefox profiles without newlines for Sel 3.0 compatibility
-        - #272: Remove unnecessary sleeps for successful waits
-        - #270: Fix bug in find_child_element default finder
-        - #263, #275: Address various documentation issues
-        - #253: Fix error_handler being called incorrectly
-
-0.2701 01-11-2016
-        (firefox driver version: 2.48.2)
-
-        [BUG FIXES]
-        - #239: Respect existing prefs when using custom profile with Selenium::Firefox
-        - #238: Update firefox driver extension to latest 2.48.2
-        - #21: Update docs about using child finders with xpath
-
-0.27   08-30-2015
-        [NEW FEATURES]
-        - #219: Add `startup_timeout` to CanStartBinary role
-        - #211: @peroumal1: Document locator usage for Test::SRD functions
-
-        [BUG FIXES]
-        - #215: Replace Time::Mock with the more reliable & tested Test::Time
-        - #212: @peroumal1: Fix bug in find_no_element_ok
-        - #209: @peroumal1: Make error_handler catch non-webdriver exceptions in Test::SRD
-        - #222: Describe demolish/destroy behavior.
-        - #226: Allow local file URLs for PAC url
-        - Stop trying to do things during global destruction
-
-0.26   05-16-2015
-        (selenium version: 2.45.0)
-
-        [NEW FEATURES]
-        - #203: Allow users to install a custom error handler
-        - #204: Implement action chains
-
-        [BUG FIXES]
-        - #147: Allow for inflation to a full Moose class
-        - #192: Stop assuming objects are around during global destruction
-        - #200: Fix undocumented upload_file endpoint bug for paths with ".."
-        - Refactor to remove some unnecessary dependencies
-
-0.25   03-24-2015
-        (selenium version: 2.45.0)
-
-        [NEW FEATURES]
-        - #189 Start webdrivers directly, removing the need for the JRE. See
-           Selenium::Chrome, Selenium::Firefox, Selenium::PhantomJS.
-
-        [BUG FIXES]
-        - #194, #195: @teodesian, @jamadam: fix undocumented upload file behavior
-
-0.24    02-18-2015
-        [NEW FEATURES]
-        - #182 Non-crashing warn-instead-of-die parameter finders: find_element_by_class, etc
-        - #183 Convenience packages for starting up browsers: Selenium::Chrome, Selenium::Firefox, etc
-        - Provide wait_until utility functionality in Selenium::Waiter
-
-        [BUG FIXES]
-        - #184 Fix bug about reverting default finder in T:S:R:D
-
-0.23   01-25-2014
-        [NEW FEATURES]
-        - #178 Fix upload_file's return value & add test suite
-        - #179 Add optional middle finder-strategy argument to T:S:R:D's find_element-like functions
-        - #174 Add new endpoints: cache status, geolocation, log types, orientation, etc
-
-        [BUG FIXES]
-        - #175 Fix find_elements
-        - #180 Stop overwriting body_text_unlike test descriptions
-        - #141 Explicitly cast height and weight to integers for set_window_size
-
-0.2203 01-18-2014
-        [BUG FIXES]
-        - #175 Fix find_elements_ok
-
-0.2202 11-26-2014
-        [BUG FIXES]
-        - Generalize error message for invalid finder strategies
-
-0.2201 11-13-2014
-        [BUG FIXES]
-        - Fix redirect handling mishap in RemoteConnection
-
-0.22   11-10-2014
-        [NEW FEATURES]
-        - Improved error messaging for Saucelabs non-json cases
-        - Improved error messaging for malconfigured chromedrivers
-        - #169 Add maximize_window function
-        - #58 Add get_user_agent function
-
-        [MAINTENAINCE]
-        - Specify minimum compatible version of Moo dep
-        - Make Driver.pm more easily subclassed ( ea68e06, 63e78e3 )
-        - Get TravisCI passing again
-        - #164 Roll & use our own mocking classes
-        - #152 Gracefully catch more error cases
-
-        [BREAKING]
-        - #161 get|set_speed subs are no-ops and will be removed in
-          the upcoming release
-        - #158 WebElement's drag function is deprecated and will be
-          removed in the upcoming release. Use mouse_move_to_location
-          in the interim
-
-0.2102 7-16-2014
-        [NEW FEATURES]
-        - Add inner_window_size sub and hash key option to accomodate S-R-D-UserAgent use
-
-0.2101 7-16-2014
-        [BUG FIXES]
-        - Update list of no_content_success methods that interpret an undef value as success
-
-0.21   7-16-2014
-        [NEW FEATURES]
-        - #87: Implement is_hidden for WebElements
-
-        [BUG FIXES]
-        - #145: Revert previous 2.42.2 fix to allow for endpoints properly returning ''
-        - #146: Keep test description when using content_like
-
-0.2002 7-2-2014
-        [BUG FIXES]
-        - #135, #136, #142: Fix compatability issues with JSONWireProtocol changes in 2.42.2
-
-        [NEW FEATURES]
-        - Add an optional base_url parameter for automatic concatenation in get/get_ok
-
-0.2001 5-23-2014
-        [BUG FIXES]
-        - #128: Fix upload_file where encode_base64 was not exported properly
-        - #54 : Update the status endpoint when checking for Grid
-        - #124: Explicitly specify finder type in get_body
-
-0.20   4-25-2014
-        [DESIRED CAPABILITIES]
-        - Add a desired_capabilities option that provides full control over the desiredCapability object
-        - Add a new_from_caps constructor to distinguish against the normal new constructor
-        - Add a ua option to allow injection of LWP::UserAgent for testing
-
-        [MOO REWRITE]
-        - Completed the Moo restructure (pr #103) with pr #122, fixing a bug in _check_ok (#121).
-
-0.19   4-11-2014
-        [FIREFOX PROFILE]
-        - Added Selenium::Remote::Driver::Firefox::Profile for managing Firefox profiles.
-
-
-0.1801 4-9-2014
-        [DOCUMENTATION]
-        - Using Dist::Zilla & Pod::Weaver to keep the POD as DRY as possible
-
-        [BUG FIXES]
-        - Restore broken proxy functionality - should use the value passed in ->new
-        - #119 Restore broken find_elements functionality - should return an arrayref or an array
-
-0.18   3-28-2014
-        - New maintainer: Daniel Gempesaw <gempesaw@gmail.com>
-        - Fix failing tests in CPAN distribution!
-
-        [THINGS THAT MIGHT BREAK YOUR CODE]
-        - We now 'croak' instead of returning error strings in a number of
-          cases where invalid method calls were made. This should make
-          debugging easier in some cases, and is more aligned with our
-          documentation which already stated that we would croak on errors.
-          Still, your code may depend on the old behavior.
-          https://github.com/aivaturi/Selenium-Remote-Driver/commit/7cdf3dce0fcaa48a883d045368c094351754e85a
-
-        - The hover() method on the WebElement has been removed. This is not in the JSON Wire protocol,
-          and the same functionality is avialable with the Driver object's move_to() method.
-          https://github.com/aivaturi/Selenium-Remote-Driver/pull/77
-
-        [NEW FEATURES]
-        - Merged Test::WebDriver into this distribution as Test::Selenium::Remote::Driver.
-          Several updates to it are included since the last release. (Mark Stosberg)
-
-        - The existence of most (or all?) key testing methods in
-          Test::Selenium::Remote::Driver is now documented, rather than leaving it to users
-          to figure out the magic effects of AUTOLOAD on the methods in the parent
-          class. (Mark Stosberg)
-
-        - Added type_ok() to Test::Selenium::Remote::Driver, similar to the method by the same name
-          from Test::WWW::Mechanize (Mark Stosberg)
-
-        - Added several methods to Test::Selenium::Remote::Driver that allow you to find
-          an WebElement and test against in a single command. (Mark Stosberg)
-          The test methods for WebElements include:
-
-             type_element_ok   - find an element and type into it.
-             element_text_is   - find an element and check the text.
-             element_value_is  - find an element and check the value.
-             click_element_ok  - find an element and click on it.
-             clear_element_ok  - find an element and clear it.
-             is_element_displayed_ok - find an element and check to see if it's displayed.
-             is_element_enabled_ok - find an element and check to see if it's enabled.
-
-        - Added and started using Test::Selenium::Remote::WebElement. This a
-          sub-class of Selenium::Remote::WebElement. This allows testing
-          methods on the "WebElement" object as well as main '$driver' object.
-
-        - Added a pause() function, that sleeps for the given number of milliseconds, just like
-          Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
-
-        - new() now accepts a 'default_finder' option to allow you to change the default finder, which
-          is currently 'xpath'. This will be of interest to those who prefer CSS-style selectors,
-          such as jQuery uses.
-           https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
-
-        - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
-          This could be used to add testing methods or functionality for WebElements.
-
-        - Shortcut methods absorbed from Test::WebDriver into Selenium::Remote::Driver:
-
-          get_text() Returns the text for a particular element.
-          get_body() Returns the text for the whole body.
-          get_path() Returns the path part of the current URL.
-
-        - New short method to save a screenshot to a file: $driver->capture_screenshot($filename).
-          The name was chosen for compatibility with a WWW::Selenium method of the same name.
-
-        - Removed 'get_location()' as an alias in Test::Selenium::Remote::Driver.
-          Please use the more specific 'get_current_url()' instead.
-          It's a more specific name that matches the Selenium API method name.
-
-        - Adding text checking methods to Test::Selenium::Remote::Driver
-
-            # Run regex's against the entire page source
-            content_like()
-            content_unlike()
-
-            # Run regex's against just the "text" of the page
-            body_text_like()
-            body_text_unlike()
-
-            # Check page source for strings
-            content_contains()
-            content_lacks()
-
-            # Check text of page for strings
-            body_text_contains()
-            body_text_lacks()
-
-          The names are intentionally the same as their Test::WWW::Mechanize
-          counterparts.  However, these methods may take an arrayref of regular
-          expressions for improved performance when you want to run multiple
-          tests against the same page.
-
-          Normally Selenium::Remote::Driver would make an HTTP request to the
-          driven browser for each content check. By using an arrayref for
-          multiple checks of the same page, you can avoid the extra HTTP
-          requests and speed up your tests. (Mark Stosberg)
-
-
-        [DOCUMENTATION]
-        - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
-
-        [INTERNALS]
-        - Switch S::R::D to Moo; this should not have any adverse impacts, as our API is unchanged
-
-        - Take advantage of additional Dist::Zilla plugins (travis, commitbuild, autoprereqs, etc)
-
-        - MIME::Base64 is now only loaded if it used for a file upload or taking a screenshot.
-          This will create a minor speed-up for common cases which don't use these features.
-
-        - Explained why the code does 'use 5.006; use v5.10.0;', and it's not pretty.
-           The short version: before perl 5.006, the v-string 'v5.10.0' would not be understood.
-           The page http://www.dagolden.com/index.php/369/version-numbers-should-be-boring/
-           explains it in much more detail than I can.
-           Fortunately, it boils down to this: http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
-
-        - Added Test::LongString as a dependency to support the new content checking methods.
-
-0.17   7-13-2013
-        - Second build with DistZilla, now with distzilla branch merged into master.
-        - commit db99a00: Dave Rolsky: Fix broken use of =cut
-        - commit 505232b: Dave Rolsky: Changed indentation of commit 0d78dbe
-        - commit f042929: Dave Rolsky: Check for content_type not being json
-        - commit 0e7ad05: Dave Rolsky: Include error message from
-                          server when we can't create a session
-        - commit aba915e: Dave Rolsky: Don't assume response
-                          structure, avoid undef warnings
-        - commit 6e34634: Dave Rolsky: Move cmd_return check up a
-                          little higher to simplify the code
-        - commit b6e79c1: Mucking about trying to create 0.17
-        - commit 81a6ffe: Merged branch 'dist-zilla'
-        - commit 45bcea2: Updated Changes file for version 0.16 and 0.17
-        - commit b28b61e: Changed maintainer information
-        - commit b28b61e: Improved DistZilla configuration
-        - commit b28b61e: Improved 03-spec-coverage test
-        - commit b6b2cdb: Improved 03-spec-coverage test, skip some methods
-        - commit 61ae784: Reformatted README to 80 columns, fixed a typo.
-
-0.16   4-11-2013
-        - New maintainer and beginning CPAN artist: Charles Howes <chowes@cpan.org>
-        - First build with DistZilla (using distzilla branch from git repository, somewhat stale)
-        - Added debug_on() and debug_off() methods.
-        - commit 338872f: Deleted MANIFEST, MANIFEST.SKIP, Makefile.PL
-        - commit 338872f: Changed README
-        - commit 338872f: Created dist.ini for Distzilla
-        - commit 338872f: Added 'uploadFile' to Commands.pm
-        - commit 338872f: Forced stringification of arguments in send_keys,
-          https://github.com/aivaturi/Selenium-Remote-Driver/issues/52
-        - commit 338872f: Removed check for secure cookie in t/01-driver.t
-        - commit 338872f: Updated
-             t/mock-recordings/01-driver-mock-MSWin32.json
-             t/mock-recordings/01-driver-mock-darwin.json
-             t/mock-recordings/01-driver-mock-linux.json
-             t/mock-recordings/02-webelement-mock-MSWin32.json
-             t/mock-recordings/02-webelement-mock-darwin.json
-             t/mock-recordings/02-webelement-mock-linux.json
-        - commit 0d78dbe: Show error message from server
-          https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
-        - commit dadb329: Click wasn't working due to typo
-          https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
-        - commit b992873: Added Pod headers to WDKeys.pm
-        - commit d30e31e: Bumped version number to 0.16 in dist.ini
-        - commit 6936c64: Stripped CR from end of lines everywhere
-
-0.15   3-12-2012
-        - execute_script() can return web elements for data structures
-          (arrays for .e.g.).
-        - The error messages are now a little more descriptive in cases of
-          "UNKNOWN ERROR".
-        - Fixed the carp 1.25 related issue in tests.
-        - Added support for proxy configuration.
-
-0.14   3-1-2012
-        - Added method send_keys_to_active_element() in driver
-        - Added method get_sessions()
-        - Fixed issue #11
-        - Fixed documentation from issue #21
-
-0.13   2-8-2012
-        - Added support for key events in send_keys() method
-        - Added methods to get/set window position/size
-        - get_active_element() now returns a WebElement object
-        - Bunch of bug fixes & documentation fixes.
-
-0.12   9-20-2011
-        - Tests now use mock recordings for each major os
-          this will be expanded to include different versions
-          of selenium
-        - added module metadata so bug tracking and repository
-          info will appear on metacpan (Thanks Tom Hukins!)
-        - Fixed issue with find_child_element(s) which caused
-          search methods which had 2+ words to fail
-          ("css selector","class name","tag name", etc)
-
-0.11   8-16-2011
+1.48 2023-01-01 TEODESIAN
+    - Remove usage of undocumented firefox features for passing profiles
+
+1.47 2022-05-02 TEODESIAN
+    - Add DWIM to inputs accepted by ActionChains send_keys, key_up & key_down, and add some docu
+
+1.46 2021-12-04 TEODESIAN
+    - Document the keys of WDKEYS hash in POD. Contribution by Yuki Kimoto.
+
+1.45 2021-10-21 TEODESIAN
+    - Remove ill-advised test reaching out to saucelabs at install-time, vendors are the users' problem
+
+1.44 2021-03-26 TEODESIAN
+    - Remove all usage of default profiles for Firefox when in direct binary mode.
+
+1.43  2021-18-03 TEODESIAN
+    - Remove all usage of the redefine() method in Test::MockModule, because that module is a mess to upgrade apparently
+    - Tweak ENV setting in Test::* namespaces, see POD
+
+1.42  2021-17-03 TEODESIAN
+    - Once more with feeling
+
+1.41  2021-16-03 TEODESIAN
+    [BUG FIXES]
+    - Declare minimum versions in testsuite to suppress CPANTesters failures
+
+1.40  2021-03-02 TEODESIAN
+    [BUG FIXES]
+    - suppress warning in CanStartBinary when geckodriver not in PWD
+    - fix double_click
+
+1.39  2020-20-10 TEODESIAN
+    [NEW FEATURES]
+    - Add execute_script and execute_async_script convenience methods to WebElements.
+    - Add die flag to Selenium::Waiter
+    [BUG FIXES]
+    - Fix a couple more documentation issues with driver specific problems
+    [REMOVALS]
+    - Removed ide-plugin.js, as it's not been supported or working in years
+
+1.38  2020-19-10 TEODESIAN
+    [BUG FIXES]
+    -correct incorrect prior changelog date
+    -fix undefined value warnings when the remote server goes out to lunch
+    -add a note about doing lots of testing with the selenium JAR to POD
+    -Fix other minor things about the documentation and error messages
+
+1.37  2020-17-02 TEODESIAN
+    [BUG FIXES]
+    - obey the auto_close flag in the direct drivers
+
+1.36  2019-21-10 TEODESIAN
+    [BUG FIXES]
+    - Adjust handling of chrome due to it implementing WC3 mostly correctly now
+    - Fix browser detection logic in screenshot()
+    - Actually apply the fix from 1.35 in the right place, heh
+
+1.35  2019-21-10 TEODESIAN
+    [BUG FIXES]
+    - Fix race condition and inability to find a port in certain circumstances when using direct driver modules.
+
+1.34   2019-11-09 TEODESIAN
+    [BUG FIXES]
+    - Remove .so files from Firefox lib tree to simplify CPAN RPM build tool chains
+
+1.33   2019-17-06 TEODESIAN
+    [BUG FIXES]
+    - Add chrome shim to disable sandboxing by default so that Selenium::Chrome usage isn't broken by default
+    - Report failures to obtain sessions better
+
+1.32   2019-12-06 TEODESIAN
+    [New Features]
+    - Add support for mozilla full pags screenshots
+    [BUG FIXES]
+    - Fix typo in WebElement drag() talking to action chains module.  No wonder that didn't work
+    - Don't auto-da-fe on Macos when shutting down the binary in direct drivers
+
+1.31   2019-06-01 TEODESIAN
+    [BUG FIXES]
+    - Kill dangling driver processes in Selenium::Chrome/Firefox on unix hosts
+    - Adjust set_timeout to WC3 standard changing out from under us
+
+1.30   2018-17-09 TEODESIAN
+    [BUG FIXES]
+    - Fix broken name selector polyfill when using Selenium::Firefox directly
+    - Fix switch_to_frame(undef) brokenness due to unneeded polyfill
+    - Correct POD information about how to use raw firefox profiles
+    - Advertise Microsoft Browser Standalone Drivers (Edge, IE)
+
+1.29   2018-17-08 TEODESIAN
+    [New Features]
+    - Selenium::Edge and Test::Selenium::Edge now exist
+    - Pass caller argument array as final arg to error_handler callbacks
+    - Add child() and children() aliases to Selenium::Remote::WebElements
+    [BUG FIXES]
+    - Fixed Test::Selenium::* direct usage modules from getting undef method errors when acting on WebElements
+    - Fixed issue where capabilities could not be passed with Selenium::Firefox
+    - Make it actually possible for find_element_ok to fail without dying
+
+1.28   2018-05-06 TEODESIAN
+    [BUG FIXES]
+    - Fix incorrect documentation of constructor fields.
+    - Remove bogus get_style header in WebElement POD.
+    - Fix chrome maximize() polyfill
+    - Adjust is_displayed to do appropriate "displayedness" checks when in WC3 mode.
+
+1.27   2018-25-03 TEODESIAN
+    [BUG FIXES]
+    - Fix incorrect passing of capabilities to geckodriver which caused exceptions on instantiaion.
+    - Fix issue where <form> elements could not be submitted.
+    - Allow bypass of JSONWire emulation in Selenium::Remote::WebElement::get_attribute().
+
+1.26   2018-19-02 TEODESIAN
+    [BUG FIXES]
+    - Fix issue where only <form> elements and not <input> elements could be submit()ted.
+    - Force chrome into using JSONWire style capabilities passing, as WC3 style is just horribly broken on chromedriver.
+    - Skip v1.25, because the PAUSE indexer apparently thinks 1.25 < 1.24
+
+1.24   2018-12-02 TEODESIAN
+    [BUG FIXES]
+    - Fix issue where ID finder polyfills failed on IDs with dots (.) in them.
+    - Force fallback to JSONWire execute_script calls in chrome, they're not quite right in WC3 mode.
+
+1.23   2018-29-01 TEODESIAN
+    [BUG FIXES]
+    - Fix issue on legacy chrome/driver with get/set window pos by forcing fallback to JSONWire methods.
+
+1.22   2018-25-01 TEODESIAN
+    [BUG FIXES]
+    - Fix issue where is_enabled() polyfill on WD3 servers was checking the wrong attribute.
+    - Fix issue where Firefox/Chrome capabilities were not correctly passed
+    - Make some JS polyfill failures non-fatal
+
+1.21   2018-19-01 TEODESIAN
+    [NEW MAINTAINER]
+    - George S. Baugh (@teodesian on github, TEODESIAN on CPAN) is now the maintainer.
+
+    [NEW FEATURES]
+    - WC3 webdriver methods have all been implemented, and shims for servers 'halfway there' have been instituted.
+    - Backwards-compatibility with old selenium servers should still remain.
+    - Attempts to fall-back to JSONWire methods if WC3 methods are not available
+    - drag() re-instated in Selenium::Remote::WebElement as an alias to Selenium::ActionChains::drag_and_drop().
+
+    [BUG FIXES]
+    - Fix warnings thrown in release testsuite by unescaped regexes on perl 5.24
+    - Expand POD for some modules
+
+    [DEPRECATIONS]
+    - Selenium::Remote::Driver::pause() - There are plenty of other ways to sleep().
+
+1.20   2017-25-05
+    [BUG FIXES]
+    - Shim use of name as find method for geckodriver
+    - Start up geckodriver/binary Firefox properly
+    - #309, #310: @syspete: Fix issues with dependencies
+    - #313, #312: @lukec: Handle saucelabs redirect during session create
+
+    [NEW FEATURES]
+    - #307: @vitstradal: Re-use an existing session
+
+1.12   2017-05-02
+    [BUG FIXES]
+    - #303: Restore switchWindow functionality in Chrome
+
+1.11   2017-01-02
+    [NEW FEATURES]
+    - #298: @vkatsikaris: fixed ports option (long overdue on my part, thanks)!
+
+    [BUG FIXES]
+    - #301: Update json parameter for switchWindow
+
+1.02   2016-13-12
+    (bundled firefox driver version: 3.0.0b2)
+
+    [NEW FEATURES]
+    - #288: @vkatsikaris: Add context endpoints for Firefox
+
+    [BUG FIXES]
+    - #279, #281: @richi235: Fix errors in IDE plugin script generator
+    - #291, #292, #299: Handle spec element key format
+
+1.00   2016-01-09
+    (bundled firefox driver version: 3.0.0b2)
+
+    [BREAKING]
+    - For users of Selenium::Firefox, FF support defaults to v48;
+      if you have FF47 installed, your existing scripts will require
+      modification. See docs in Selenium::Firefox for more info.
+
+    [NEW FEATURES]
+    - #271: Support geckodriver & FF48
+    - #260: Update firefox artifacts to 3.0.0b2 to support FF47
+    - #259: Allow users to pass in existing FF profile dir
+    - #276: Simplify recordings to enable easier releases
+
+    [BUG FIXES]
+    - Encode Firefox profiles without newlines for Sel 3.0 compatibility
+    - #272: Remove unnecessary sleeps for successful waits
+    - #270: Fix bug in find_child_element default finder
+    - #263, #275: Address various documentation issues
+    - #253: Fix error_handler being called incorrectly
+
+0.2701 2016-11-01
+    (firefox driver version: 2.48.2)
+
+    [BUG FIXES]
+    - #239: Respect existing prefs when using custom profile with Selenium::Firefox
+    - #238: Update firefox driver extension to latest 2.48.2
+    - #21: Update docs about using child finders with xpath
+
+0.27   2015-30-08
+    [NEW FEATURES]
+    - #219: Add `startup_timeout` to CanStartBinary role
+    - #211: @peroumal1: Document locator usage for Test::SRD functions
+
+    [BUG FIXES]
+    - #215: Replace Time::Mock with the more reliable & tested Test::Time
+    - #212: @peroumal1: Fix bug in find_no_element_ok
+    - #209: @peroumal1: Make error_handler catch non-webdriver exceptions in Test::SRD
+    - #222: Describe demolish/destroy behavior.
+    - #226: Allow local file URLs for PAC url
+    - Stop trying to do things during global destruction
+
+0.26   2015-16-05
+    (selenium version: 2.45.0)
+
+    [NEW FEATURES]
+    - #203: Allow users to install a custom error handler
+    - #204: Implement action chains
+
+    [BUG FIXES]
+    - #147: Allow for inflation to a full Moose class
+    - #192: Stop assuming objects are around during global destruction
+    - #200: Fix undocumented upload_file endpoint bug for paths with ".."
+    - Refactor to remove some unnecessary dependencies
+
+0.25   2015-24-03
+    (selenium version: 2.45.0)
+
+    [NEW FEATURES]
+    - #189 Start webdrivers directly, removing the need for the JRE. See
+       Selenium::Chrome, Selenium::Firefox, Selenium::PhantomJS.
+
+    [BUG FIXES]
+    - #194, #195: @teodesian, @jamadam: fix undocumented upload file behavior
+
+0.24    2015-18-02
+    [NEW FEATURES]
+    - #182 Non-crashing warn-instead-of-die parameter finders: find_element_by_class, etc
+    - #183 Convenience packages for starting up browsers: Selenium::Chrome, Selenium::Firefox, etc
+    - Provide wait_until utility functionality in Selenium::Waiter
+
+    [BUG FIXES]
+    - #184 Fix bug about reverting default finder in T:S:R:D
+
+0.23   2014-25-01
+    [NEW FEATURES]
+    - #178 Fix upload_file's return value & add test suite
+    - #179 Add optional middle finder-strategy argument to T:S:R:D's find_element-like functions
+    - #174 Add new endpoints: cache status, geolocation, log types, orientation, etc
+
+    [BUG FIXES]
+    - #175 Fix find_elements
+    - #180 Stop overwriting body_text_unlike test descriptions
+    - #141 Explicitly cast height and weight to integers for set_window_size
+
+0.2203 2014-18-01
+    [BUG FIXES]
+    - #175 Fix find_elements_ok
+
+0.2202 2014-26-11
+    [BUG FIXES]
+    - Generalize error message for invalid finder strategies
+
+0.2201 2014-13-11
+    [BUG FIXES]
+    - Fix redirect handling mishap in RemoteConnection
+
+0.22   2014-10-11
+    [NEW FEATURES]
+    - Improved error messaging for Saucelabs non-json cases
+    - Improved error messaging for malconfigured chromedrivers
+    - #169 Add maximize_window function
+    - #58 Add get_user_agent function
+
+    [MAINTENAINCE]
+    - Specify minimum compatible version of Moo dep
+    - Make Driver.pm more easily subclassed ( ea68e06, 63e78e3 )
+    - Get TravisCI passing again
+    - #164 Roll & use our own mocking classes
+    - #152 Gracefully catch more error cases
+
+    [BREAKING]
+    - #161 get|set_speed subs are no-ops and will be removed in
+      the upcoming release
+    - #158 WebElement's drag function is deprecated and will be
+      removed in the upcoming release. Use mouse_move_to_location
+      in the interim
+
+0.2102 2014-07-16
+    [NEW FEATURES]
+    - Add inner_window_size sub and hash key option to accomodate S-R-D-UserAgent use
+
+0.2101 2014-07-16
+    [BUG FIXES]
+    - Update list of no_content_success methods that interpret an undef value as success
+
+0.21   2014-07-16
+    [NEW FEATURES]
+    - #87: Implement is_hidden for WebElements
+
+    [BUG FIXES]
+    - #145: Revert previous 2.42.2 fix to allow for endpoints properly returning ''
+    - #146: Keep test description when using content_like
+
+0.2002 2014-07-02
+    [BUG FIXES]
+    - #135, #136, #142: Fix compatability issues with JSONWireProtocol changes in 2.42.2
+
+    [NEW FEATURES]
+    - Add an optional base_url parameter for automatic concatenation in get/get_ok
+
+0.2001 2014-05-23
+    [BUG FIXES]
+    - #128: Fix upload_file where encode_base64 was not exported properly
+    - #54 : Update the status endpoint when checking for Grid
+    - #124: Explicitly specify finder type in get_body
+
+0.20   2014-04-25
+    [DESIRED CAPABILITIES]
+    - Add a desired_capabilities option that provides full control over the desiredCapability object
+    - Add a new_from_caps constructor to distinguish against the normal new constructor
+    - Add a ua option to allow injection of LWP::UserAgent for testing
+
+    [MOO REWRITE]
+    - Completed the Moo restructure (pr #103) with pr #122, fixing a bug in _check_ok (#121).
+
+0.19   2014-04-11
+    [FIREFOX PROFILE]
+    - Added Selenium::Remote::Driver::Firefox::Profile for managing Firefox profiles.
+
+
+0.1801 2014-04-09
+    [DOCUMENTATION]
+    - Using Dist::Zilla & Pod::Weaver to keep the POD as DRY as possible
+
+    [BUG FIXES]
+    - Restore broken proxy functionality - should use the value passed in ->new
+    - #119 Restore broken find_elements functionality - should return an arrayref or an array
+
+0.18   2014-03-28
+    - New maintainer: Daniel Gempesaw <gempesaw@gmail.com>
+    - Fix failing tests in CPAN distribution!
+
+    [THINGS THAT MIGHT BREAK YOUR CODE]
+    - We now 'croak' instead of returning error strings in a number of
+      cases where invalid method calls were made. This should make
+      debugging easier in some cases, and is more aligned with our
+      documentation which already stated that we would croak on errors.
+      Still, your code may depend on the old behavior.
+      https://github.com/aivaturi/Selenium-Remote-Driver/commit/7cdf3dce0fcaa48a883d045368c094351754e85a
+
+    - The hover() method on the WebElement has been removed. This is not in the JSON Wire protocol,
+      and the same functionality is avialable with the Driver object's move_to() method.
+      https://github.com/aivaturi/Selenium-Remote-Driver/pull/77
+
+    [NEW FEATURES]
+    - Merged Test::WebDriver into this distribution as Test::Selenium::Remote::Driver.
+      Several updates to it are included since the last release. (Mark Stosberg)
+
+    - The existence of most (or all?) key testing methods in
+      Test::Selenium::Remote::Driver is now documented, rather than leaving it to users
+      to figure out the magic effects of AUTOLOAD on the methods in the parent
+      class. (Mark Stosberg)
+
+    - Added type_ok() to Test::Selenium::Remote::Driver, similar to the method by the same name
+      from Test::WWW::Mechanize (Mark Stosberg)
+
+    - Added several methods to Test::Selenium::Remote::Driver that allow you to find
+      an WebElement and test against in a single command. (Mark Stosberg)
+      The test methods for WebElements include:
+
+         type_element_ok   - find an element and type into it.
+         element_text_is   - find an element and check the text.
+         element_value_is  - find an element and check the value.
+         click_element_ok  - find an element and click on it.
+         clear_element_ok  - find an element and clear it.
+         is_element_displayed_ok - find an element and check to see if it's displayed.
+         is_element_enabled_ok - find an element and check to see if it's enabled.
+
+    - Added and started using Test::Selenium::Remote::WebElement. This a
+      sub-class of Selenium::Remote::WebElement. This allows testing
+      methods on the "WebElement" object as well as main '$driver' object.
+
+    - Added a pause() function, that sleeps for the given number of milliseconds, just like
+      Test::WWW::Selenium.  https://github.com/aivaturi/Selenium-Remote-Driver/issues/60
+
+    - new() now accepts a 'default_finder' option to allow you to change the default finder, which
+      is currently 'xpath'. This will be of interest to those who prefer CSS-style selectors,
+      such as jQuery uses.
+       https://github.com/aivaturi/Selenium-Remote-Driver/pull/49
+
+    - new() now accepts a 'webelement_class' option to allow you to specify an alternate WebElement class.
+      This could be used to add testing methods or functionality for WebElements.
+
+    - Shortcut methods absorbed from Test::WebDriver into Selenium::Remote::Driver:
+
+      get_text() Returns the text for a particular element.
+      get_body() Returns the text for the whole body.
+      get_path() Returns the path part of the current URL.
+
+    - New short method to save a screenshot to a file: $driver->capture_screenshot($filename).
+      The name was chosen for compatibility with a WWW::Selenium method of the same name.
+
+    - Removed 'get_location()' as an alias in Test::Selenium::Remote::Driver.
+      Please use the more specific 'get_current_url()' instead.
+      It's a more specific name that matches the Selenium API method name.
+
+    - Adding text checking methods to Test::Selenium::Remote::Driver
+
+        # Run regex's against the entire page source
+        content_like()
+        content_unlike()
+
+        # Run regex's against just the "text" of the page
+        body_text_like()
+        body_text_unlike()
+
+        # Check page source for strings
+        content_contains()
+        content_lacks()
+
+        # Check text of page for strings
+        body_text_contains()
+        body_text_lacks()
+
+      The names are intentionally the same as their Test::WWW::Mechanize
+      counterparts.  However, these methods may take an arrayref of regular
+      expressions for improved performance when you want to run multiple
+      tests against the same page.
+
+      Normally Selenium::Remote::Driver would make an HTTP request to the
+      driven browser for each content check. By using an arrayref for
+      multiple checks of the same page, you can avoid the extra HTTP
+      requests and speed up your tests. (Mark Stosberg)
+
+
+    [DOCUMENTATION]
+    - Updated ChangeLog to reflect that debug_on() and debug_off() methods were added in 0.16.
+
+    [INTERNALS]
+    - Switch S::R::D to Moo; this should not have any adverse impacts, as our API is unchanged
+
+    - Take advantage of additional Dist::Zilla plugins (travis, commitbuild, autoprereqs, etc)
+
+    - MIME::Base64 is now only loaded if it used for a file upload or taking a screenshot.
+      This will create a minor speed-up for common cases which don't use these features.
+
+    - Explained why the code does 'use 5.006; use v5.10.0;', and it's not pretty.
+       The short version: before perl 5.006, the v-string 'v5.10.0' would not be understood.
+       The page http://www.dagolden.com/index.php/369/version-numbers-should-be-boring/
+       explains it in much more detail than I can.
+       Fortunately, it boils down to this: http://perldoc.perl.org/5.10.0/functions/use.html#use-VERSION
+
+    - Added Test::LongString as a dependency to support the new content checking methods.
+
+0.17   2013-07-13
+    - Second build with DistZilla, now with distzilla branch merged into master.
+    - commit db99a00: Dave Rolsky: Fix broken use of =cut
+    - commit 505232b: Dave Rolsky: Changed indentation of commit 0d78dbe
+    - commit f042929: Dave Rolsky: Check for content_type not being json
+    - commit 0e7ad05: Dave Rolsky: Include error message from
+              server when we can't create a session
+    - commit aba915e: Dave Rolsky: Don't assume response
+              structure, avoid undef warnings
+    - commit 6e34634: Dave Rolsky: Move cmd_return check up a
+              little higher to simplify the code
+    - commit b6e79c1: Mucking about trying to create 0.17
+    - commit 81a6ffe: Merged branch 'dist-zilla'
+    - commit 45bcea2: Updated Changes file for version 0.16 and 0.17
+    - commit b28b61e: Changed maintainer information
+    - commit b28b61e: Improved DistZilla configuration
+    - commit b28b61e: Improved 03-spec-coverage test
+    - commit b6b2cdb: Improved 03-spec-coverage test, skip some methods
+    - commit 61ae784: Reformatted README to 80 columns, fixed a typo.
+
+0.16   2013-04-11
+    - New maintainer and beginning CPAN artist: Charles Howes <chowes@cpan.org>
+    - First build with DistZilla (using distzilla branch from git repository, somewhat stale)
+    - Added debug_on() and debug_off() methods.
+    - commit 338872f: Deleted MANIFEST, MANIFEST.SKIP, Makefile.PL
+    - commit 338872f: Changed README
+    - commit 338872f: Created dist.ini for Distzilla
+    - commit 338872f: Added 'uploadFile' to Commands.pm
+    - commit 338872f: Forced stringification of arguments in send_keys,
+      https://github.com/aivaturi/Selenium-Remote-Driver/issues/52
+    - commit 338872f: Removed check for secure cookie in t/01-driver.t
+    - commit 338872f: Updated
+         t/mock-recordings/01-driver-mock-MSWin32.json
+         t/mock-recordings/01-driver-mock-darwin.json
+         t/mock-recordings/01-driver-mock-linux.json
+         t/mock-recordings/02-webelement-mock-MSWin32.json
+         t/mock-recordings/02-webelement-mock-darwin.json
+         t/mock-recordings/02-webelement-mock-linux.json
+    - commit 0d78dbe: Show error message from server
+      https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
+    - commit dadb329: Click wasn't working due to typo
+      https://github.com/aivaturi/Selenium-Remote-Driver/issues/53
+    - commit b992873: Added Pod headers to WDKeys.pm
+    - commit d30e31e: Bumped version number to 0.16 in dist.ini
+    - commit 6936c64: Stripped CR from end of lines everywhere
+
+0.15   2012-03-12
+    - execute_script() can return web elements for data structures
+      (arrays for .e.g.).
+    - The error messages are now a little more descriptive in cases of
+      "UNKNOWN ERROR".
+    - Fixed the carp 1.25 related issue in tests.
+    - Added support for proxy configuration.
+
+0.14   2012-03-01
+    - Added method send_keys_to_active_element() in driver
+    - Added method get_sessions()
+    - Fixed issue #11
+    - Fixed documentation from issue #21
+
+0.13   2012-02-08
+    - Added support for key events in send_keys() method
+    - Added methods to get/set window position/size
+    - get_active_element() now returns a WebElement object
+    - Bunch of bug fixes & documentation fixes.
+
+0.12   2011-09-20
+    - Tests now use mock recordings for each major os
+      this will be expanded to include different versions
+      of selenium
+    - added module metadata so bug tracking and repository
+      info will appear on metacpan (Thanks Tom Hukins!)
+    - Fixed issue with find_child_element(s) which caused
+      search methods which had 2+ words to fail
+      ("css selector","class name","tag name", etc)
+
+0.11   2011-08-16
   This is quite a large list for this release and will be
   the first cpan release. The later releases will hopefully
   happen often and won't be quite as large.
 
-        - subroutine calls carp when an error occurs or when
-          an element cannot be found
-        - if an element cannot be found, carp should tell you
-          which line in your local script where the element was
-          not found
-        - added the following driver api calls
-           click,double_click,button_down,button_up,close,status,
-           send_modifier,execute_script,execute_async_script
+    - subroutine calls carp when an error occurs or when
+      an element cannot be found
+    - if an element cannot be found, carp should tell you
+      which line in your local script where the element was
+      not found
+    - added the following driver api calls
+       click,double_click,button_down,button_up,close,status,
+       send_modifier,execute_script,execute_async_script
 
-        - fixed the following api calls
-           refresh,delete_cookie_named
-        - $element->get_value is deprecated...
-           subroutine now points to get_attribute('value')
-        - added the following element api calls
-           describe
-        - added initial IDE plugin for the Selenium-IDE
-           (this is based off the Rspec webdriver ide plugin)
+    - fixed the following api calls
+       refresh,delete_cookie_named
+    - $element->get_value is deprecated...
+       subroutine now points to get_attribute('value')
+    - added the following element api calls
+       describe
+    - added initial IDE plugin for the Selenium-IDE
+       (this is based off the Rspec webdriver ide plugin)
 
-        - Added "extra_capabilities" named argument to the driver
-        - make send_keys accept one or more string argument
-        - added javascript method to driver
-           (thanks Phil Kania!)
+    - Added "extra_capabilities" named argument to the driver
+    - make send_keys accept one or more string argument
+    - added javascript method to driver
+       (thanks Phil Kania!)
 
-        - fixed issue: check for empty string before trying to decode
-        - fixed issue: if script using the module ever forked, the
-          driver would call quit whenever that fork was closed
-        - fixed issue: Marked as deprecated: WebElement::set_selected
-          and WebElement::toggle
-        - fixed issue: global $driver variable in WebElement caused the
-          remote connection to be destroyed before the driver was able
-          to call quit()
+    - fixed issue: check for empty string before trying to decode
+    - fixed issue: if script using the module ever forked, the
+      driver would call quit whenever that fork was closed
+    - fixed issue: Marked as deprecated: WebElement::set_selected
+      and WebElement::toggle
+    - fixed issue: global $driver variable in WebElement caused the
+      remote connection to be destroyed before the driver was able
+      to call quit()
 
-        - fixed issues:
-          - improper definition of setImplicitWaitTimeout
-          - Driver.pm: missing 'css' entry in FINDERS
-          - Driver.pm::find_elements: set up $using correctly
-            (thanks Phil Mitchell!)
+    - fixed issues:
+      - improper definition of setImplicitWaitTimeout
+      - Driver.pm: missing 'css' entry in FINDERS
+      - Driver.pm::find_elements: set up $using correctly
+        (thanks Phil Mitchell!)
 
-0.10    5-2-2010
-        - Implemented support for JSON wire protocol as of a4 release of
-        Selenium 2.0.
-        - The main Driver & WebElement modules are implemented & functional.
-        - Added unit tests for Driver. As of this moment only live testing is
-        supported as the server itself is alpha & mocking its behavior doesn't
-        help our cause.
-        - Added POD for Driver & WebElement
+0.10    2010-05-02
+    - Implemented support for JSON wire protocol as of a4 release of
+    Selenium 2.0.
+    - The main Driver & WebElement modules are implemented & functional.
+    - Added unit tests for Driver. As of this moment only live testing is
+    supported as the server itself is alpha & mocking its behavior doesn't
+    help our cause.
+    - Added POD for Driver & WebElement
 
-0.01    2-21-2010
-        - First version, released on an unsuspecting world.
+0.01    2010-02-21
+    - First version, released on an unsuspecting world.

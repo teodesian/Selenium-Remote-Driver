@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Selenium::Firefox;
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Test::Fatal;
 
 my $driver;
@@ -15,6 +15,9 @@ is( exception { $driver = Selenium::Firefox->new(
 ); }, undef, "can spawn new Selenium::Firefox");
 
 my $port = $driver->port();
+
+ok($driver->get('http://google.com'),"can load a page");
+$driver->quit();
 
 is( exception { $driver->shutdown_binary; }, undef, "can shutdown binary correctly");
 sleep 2;

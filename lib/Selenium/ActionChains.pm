@@ -127,11 +127,12 @@ sub move_to_element_with_offset {
 }
 
 sub key_down {
-    my $self = shift;
-    my ( $value, $element ) = @_;
-    if ( defined($element) ) {
-        $self->click($element);
-    }
+    my ( $self, $value, $element ) = @_;
+
+    #DWIM
+    $value = [$value] unless ref $value eq 'ARRAY';
+
+    $self->click($element) if defined $element;
     foreach my $v (@$value) {
         push @{ $self->actions },
           sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyDown', value => $v } ] } ] ) };
@@ -140,30 +141,54 @@ sub key_down {
 }
 
 sub key_up {
-    my $self = shift;
-    my ( $value, $element ) = @_;
-    if ( defined($element) ) {
-        $self->click($element);
-    }
+    my ( $self, $value, $element ) = @_;
+
+    #DWIM
+    $value = [$value] unless ref $value eq 'ARRAY';
+
+    $self->click($element) if defined $element;
     foreach my $v (@$value) {
         push @{ $self->actions },
-          sub { $self->driver->$self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $v } ] } ] ) };
+          sub { $self->driver->general_action( actions => [ { type => 'key', id => 'key', actions => [ { type => 'keyUp', value => $v } ] } ] ) };
     }
     return $self;
 }
 
 sub send_keys {
-    my $self = shift;
-    my $keys = shift;
+    my ($self,$keys) =@_;
+
+    # Do nothing if there are no keys to send
+    return unless $keys;
+
+    # DWIM
+    $keys = [split('',$keys)] unless ref $keys eq 'ARRAY';
+
     push @{ $self->actions },
-      sub { $self->driver->get_active_element->send_keys($keys) };
+      sub {
+          foreach my $key (@$keys) {
+              $self->key_down($key, $self->driver->get_active_element);
+              $self->key_up($key, $self->driver->get_active_element);
+          }
+      };
     $self;
 }
 
 sub send_keys_to_element {
-    my $self = shift;
-    my ( $element, $keys ) = @_;
-    push @{ $self->actions }, sub { $element->send_keys($keys) };
+    my ($self, $element, $keys) =@_;
+
+    # Do nothing if there are no keys to send
+    return unless $keys;
+
+    # DWIM
+    $keys = [split('',$keys)] unless ref $keys eq 'ARRAY';
+
+    push @{ $self->actions },
+        sub {
+            foreach my $key (@$keys) {
+                $self->key_down($key,$element);
+                $self->key_up($key,$element);
+            }
+        };
     $self;
 }
 
@@ -311,7 +336,9 @@ LIMITATIONS.
 =head2 key_down
 
 Sends key presses only, without releasing them.
-Should be used only with modifier keys (Control, Alt, Shift)
+Useful when modifier keys are requried
+
+Will DWIM your input and accept either a string or ARRAYREF of keys.
 
     Args:
         An array ref to keys to send. Use the KEY constant from Selenium::Remote::WDKeys
@@ -319,12 +346,16 @@ Should be used only with modifier keys (Control, Alt, Shift)
 
     Usage:
         use Selenium::Remote::WDKeys 'KEYS';
-        $action_chains->key_down( [ KEYS->{'alt'} ] );
+        # DEFINITELY cut and paste this in without looking
+        $action_chains->key_down( [ KEYS->{'alt'}, KEYS->{'F4'} ] );
 
 
 =head2 key_up
 
-Releases a mofifier key.
+Releases prior key presses.
+Useful when modifier keys are requried
+
+Will DWIM your input and accept either a string or ARRAYREF of keys.
 
     Args:
         An array ref to keys to send. Use the KEY constant from Selenium::Remote::WDKeys
@@ -332,8 +363,10 @@ Releases a mofifier key.
 
     Usage:
         use Selenium::Remote::WDKeys 'KEYS';
+        # Fullscreen the foo element
         my $element = $driver->find_element('foo','id');
-        $action_chains->key_up( [ KEYS->{'alt'} ],$element);
+        $action_chains->key_down( [ KEYS->{'alt'}, KEYS->{'enter'} ], $element );
+        $action_chains->key_up( [ KEYS->{'alt'}, KEYS->{'enter'} ],   $element);
 
 
 =head2 move_by_offset
@@ -388,7 +421,10 @@ Releases a held mouse_button
 
 =head2 send_keys
 
-Sends keys to the currently focused element
+Sends keys to the currently focused element.
+Essentially an alias around key_down then key_up.
+
+Will DWIM your input and accept either a string or ARRAYREF of keys.
 
     Args:
         The keys to send
@@ -398,7 +434,9 @@ Sends keys to the currently focused element
 
 =head2 send_keys_to_element
 
-Sends keys to an element
+Sends keys to an element in much the same fashion as send_keys.
+
+Will DWIM your input and accept either a string or ARRAYREF of keys.
 
     Args:
         A Selenium::Remote::WebElement
