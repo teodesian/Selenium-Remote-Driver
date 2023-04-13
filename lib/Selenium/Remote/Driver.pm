@@ -103,7 +103,7 @@ And the
 L<WC3 WebDriver Protocol|https://www.w3.org/TR/webdriver/>
 to communicate with the Selenium Server. If an error occurs while
 executing the command then the server sends back an HTTP error code
-with a JSON encoded reponse that indicates the precise
+with a JSON encoded response that indicates the precise
 L<Response Error Code|https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol#response-status-codes>.
 The module will then croak with the error message associated with this
 code. If no error occurred, then the subroutine called will return the
@@ -916,7 +916,7 @@ sub _execute_command {
 Make a new session on the server.
 Called by new(), not intended for regular use.
 
-Occaisonally handy for recovering from brower crashes.
+Occaisonally handy for recovering from browser crashes.
 
 DANGER DANGER DANGER
 
