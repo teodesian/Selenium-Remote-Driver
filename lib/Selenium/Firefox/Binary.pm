@@ -32,14 +32,16 @@ q/We couldn't find a viable firefox.EXE; you may want to specify it via the bina
 
 sub _firefox_darwin_path {
     my $default_firefox =
+      '/Applications/Firefox.app/Contents/MacOS/firefox';
+    my $default_firefox_bin =
       '/Applications/Firefox.app/Contents/MacOS/firefox-bin';
 
-    if ( -e $default_firefox && -x $default_firefox ) {
-        return $default_firefox;
+    for my $path ( $default_firefox_bin, $default_firefox ) {
+        if ( -e $path && -x $path ) {
+            return $path;
+        }
     }
-    else {
-        return which('firefox-bin');
-    }
+    return which('firefox-bin') || which('firefox');
 }
 
 sub _firefox_unix_path {
