@@ -98,7 +98,8 @@ sub check_status {
     }
 
     unless ( $cmdOut eq 'OK' ) {
-        croak "Selenium server did not return proper status";
+        my $cr = $status->{cmd_return} // '';
+        croak "Selenium server did not return proper status: $cmdOut: $cr";
     }
 }
 
