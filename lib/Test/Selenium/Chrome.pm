@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Test::Selenium::Chrome
+Test::Selenium::Chrome - Test using Selenium::Chrome
 
 =head1 SYNOPSIS
 

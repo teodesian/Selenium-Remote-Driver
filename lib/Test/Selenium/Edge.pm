@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Test::Selenium::Edge
+Test::Selenium::Edge - Test using Selenium::Edge
 
 =head1 SYNOPSIS
 

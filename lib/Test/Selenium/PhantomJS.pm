@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Test::Selenium::PhantomJS
+Test::Selenium::PhantomJS - Test using Selenium::PhantomJS
 
 =head1 SYNOPSIS
 

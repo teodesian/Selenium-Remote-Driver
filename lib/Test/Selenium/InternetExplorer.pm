@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Test::Selenium::InternetExplorer
+Test::Selenium::InternetExplorer - Test using Selenium::InternetExplorer
 
 =head1 SYNOPSIS
 
