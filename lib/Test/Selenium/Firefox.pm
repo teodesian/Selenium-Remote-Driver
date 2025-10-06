@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Test::Selenium::Firefox
+Test::Selenium::Firefox - Test using Test::Selenium
 
 =head1 SYNOPSIS
 

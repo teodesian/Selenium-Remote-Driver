@@ -64,6 +64,10 @@ sub BUILD {
 
 __END__
 
+=head1 NAME
+
+Test::Selenium::Remote::WebElement - Test using Selenium::Remote::WebElement
+
 =head1 DESCRIPTION
 
 This is an I<experimental> addition to the Selenium::Remote::Driver
