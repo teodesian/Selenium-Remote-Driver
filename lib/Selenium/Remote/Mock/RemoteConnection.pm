@@ -178,7 +178,7 @@ __END__
 =head1 DESCRIPTION
 
 Selenium::Remote::Mock::RemoteConnection is a class to act as a short-circuit or a pass through to the connection to a Selenium Server.
-Using this class in place of L<Selenium::Remote::RemoteConnection> allows to:
+Using this class in place of L<Selenium::Remote::RemoteConnection> allows one to:
 
 =over
 
