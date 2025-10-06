@@ -1,5 +1,9 @@
 Revision history for Selenium-Remote-Driver
 
+1.50 2025-10-06 TEODESIAN
+    - Fix some spelling and grammar issues in POD, and some pod2man issues (see contributors)
+    - Slightly better reporting of errors based on a patch from tod22.
+
 1.49 2023-04-06 TEODESIAN
     - Fix the action type for button_up(), courtesy of Bernard Schmalhofer
 
